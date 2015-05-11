@@ -1,3 +1,6 @@
 [submodule "shared"]
 	path = shared
 	url = git@github.com:fyndiq/fyndiq-module-shared.git
+[submodule "api"]
+	path = api
+	url = git@github.com:fyndiq/fyndiq-api-wrapper-php.git
