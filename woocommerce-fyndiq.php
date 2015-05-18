@@ -145,15 +145,15 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 if(!$product->is_downloadable()) {
 
                     echo '<div class="options_group">';
+                    $value = (get_post_meta(get_the_ID(), '_fyndiq_export', true) == "exported") ? 1 : 0;
 
-                    woocommerce_wp_checkbox(
-                        array(
-                            'id' => '_fyndiq_export',
-                            'wrapper_class' => 'show_if_simple',
+                    woocommerce_form_field( '_fyndiq_export', array(
+                            'type' => 'checkbox',
+                            'class' => array('input-checkbox'),
                             'label' => __('Export to Fyndiq', 'woocommerce'),
-                            'description' => __('mark this as true if you want to export to Fyndiq', 'woocommerce')
-                        )
-                    );
+                            'description' => __('mark this as true if you want to export to Fyndiq', 'woocommerce'),
+                            'required' => false,
+                        ), $value );
 
                     echo '</div>';
                 }
