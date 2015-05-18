@@ -356,6 +356,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     'meta_value'        => 'exported'
                 );
                 $posts_array = get_posts( $args );
+                if (get_option('wcfyndiq_username') != '' && get_option('wcfyndiq_apitoken') != '') {
                 $filePath = plugin_dir_path( __FILE__ ) . 'files/feed.csv';
                 $fileExistsAndFresh = file_exists($filePath) && filemtime($filePath) > strtotime('-1 hour');
                 if (!$fileExistsAndFresh) {
@@ -369,6 +370,10 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 }
                 $result = file_get_contents($filePath);
                 die($result);
+                }
+                else {
+                    die();
+                }
             }
 
             private function getProduct($product)
