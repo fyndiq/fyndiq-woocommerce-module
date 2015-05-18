@@ -69,7 +69,11 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
                 //bulk action
                 add_action('admin_footer-edit.php', array(&$this, 'fyndiq_product_add_bulk_action'));
-                //add_action('load-edit.php', array( &$this, 'fyndiq_product_export_bulk_action'));
+                add_action('load-edit.php', array( &$this, 'fyndiq_product_export_bulk_action'));
+                if(isset($_GET['fyndiq_feed'])) {
+                    $this->generate_feed();
+                }
+
             }
 
             function fyndiq_settings_action($sections)
@@ -301,7 +305,85 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
              */
             public function include_template_functions()
             {
+            }
 
+            public function generate_feed() {
+
+                $paged = get_query_var('paged');
+                $args = array(
+                    'numberposts'       => -1,
+                    'orderby'           => 'post_date',
+                    'order'             => 'DESC',
+                    'post_type'         => 'product',
+                    'post_status'       => 'publish',
+                    'suppress_filters'  => true,
+                    'meta_key'          => '_fyndiq_export',
+                    'meta_value'        => 'exported'
+                );
+                $posts_array = get_posts( $args );
+                $filePath = plugin_dir_path( __FILE__ ) . 'files/feed.csv';
+                $fileExistsAndFresh = file_exists($filePath) && filemtime($filePath) > strtotime('-1 hour');
+                if (!$fileExistsAndFresh) {
+                    $file = fopen($filePath, 'w+');
+                    $feedWriter = new FyndiqCSVFeedWriter($file);
+                    foreach ($posts_array as $product) {
+                        $product = new WC_Product($product->ID);
+                        $feedWriter->addProduct($this->getProduct($product));
+                    }
+                    $feedWriter->write();
+                }
+                $result = file_get_contents($filePath);
+                die($result);
+            }
+
+            private function getProduct($product)
+            {
+                //Initialize models here so it saves memory.
+                $feedProduct['product-id'] = $product->id;
+                $feedProduct['product-title'] = $product->post->post_title;
+                $feedProduct['product-description'] = $product->post->post_content;
+
+                $discount = 10;
+                $product_price = get_post_meta( $product->id, '_regular_price');
+                $price = FyndiqUtils::getFyndiqPrice($product_price[0], $discount);
+                $_tax = new WC_Tax();//looking for appropriate vat for specific product
+                $rates = $_tax->get_rates( $product->get_tax_class() );
+
+
+                $feedProduct['product-price'] = FyndiqUtils::formatPrice($price);
+                $feedProduct['product-vat-percent'] = !empty($rates['rate']) ? $rates['rate'] : 0;
+                $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($product_price);
+                $feedProduct['product-market'] = 'SE';
+                $feedProduct['product-currency'] = 'SEK';
+                $feedProduct['product-brand'] = 'UNKNOWN';
+
+                $terms = get_the_terms( $product->id, 'product_cat' );
+                if ( $terms && ! is_wp_error( $terms ) ) {
+                    foreach ($cats as $term) {
+                        var_dump($term);
+                        $feedProduct['product-category-id'] = $term->term_id;
+                        $feedProduct['product-category-name'] = $term->term_name;
+                        break;
+                    }
+                }
+
+                $attachment_ids = $product->get_gallery_attachment_ids();
+                $imageId=1;
+                foreach( $attachment_ids as $attachment_id )
+                {
+                    $image_link = wp_get_attachment_url( $attachment_id );
+                    $feedProduct['product-image-' . $imageId . '-url'] = $image_link;
+                    $feedProduct['product-image-' . $imageId . '-identifier'] = substr(md5($image_link), 0, 10);
+                    $imageId++;
+                }
+
+                $feedProduct['article-quantity'] = intval(get_post_meta( $product->id, '_stock')[0]);
+
+                $feedProduct['article-location'] = 'unknown';
+                $feedProduct['article-sku'] = get_post_meta( $product->id, '_sku')[0];
+                $feedProduct['article-name'] = $product->post->post_title;
+
+                return $feedProduct;
             }
         }
 
