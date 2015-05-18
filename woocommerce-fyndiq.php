@@ -227,6 +227,8 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                         jQuery(document).ready(function () {
                             jQuery('<option>').val('fyndiq_export').text('<?php _e('Export to Fyndiq')?>').appendTo("select[name='action']");
                             jQuery('<option>').val('fyndiq_export').text('<?php _e('Export to Fyndiq')?>').appendTo("select[name='action2']");
+                            jQuery('<option>').val('fyndiq_no_export').text('<?php _e('Remove from Fyndiq')?>').appendTo("select[name='action']");
+                            jQuery('<option>').val('fyndiq_no_export').text('<?php _e('Remove from Fyndiq')?>').appendTo("select[name='action2']");
                         });
                     </script>
                 <?php
@@ -235,52 +237,46 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
             function fyndiq_product_export_bulk_action()
             {
-
-                // ...
-
-                // 1. get the action
-                $wp_list_table = _get_list_table('WP_Posts_List_Table');
+                $wp_list_table = _get_list_table( 'WP_Posts_List_Table' );
                 $action = $wp_list_table->current_action();
 
-                // ...
-
-                // 2. security check
-                check_admin_referer('bulk-posts');
-
-                // ...
-
-                switch ($action) {
-                    // 3. Perform the action
-                    case 'export':
-                        // if we set up user permissions/capabilities, the code might look like:
-                        //if ( !current_user_can($post_type_object->cap->export_post, $post_id) )
-                        //  pp_die( __('You are not allowed to export this post.') );
-
-                        $exported = 0;
-
-                        foreach ($post_ids as $post_id) {
-                            if (!$this->perform_export($post_id)) {
-                                wp_die(__('Error exporting post.'));
-                            }
-                            $exported++;
-                        }
-
-                        // build the redirect url
-                        $sendback = add_query_arg(
-                            array('exported' => $exported, 'ids' => join(',', $post_ids)),
-                            $sendback
-                        );
-
+                switch ( $action ) {
+                    case 'fyndiq_export':
+                        $report_action = 'exported';
+                        $exporting = true;
+                        break;
+                    case 'fyndiq_no_export':
+                        $report_action = 'removed';
+                        $exporting = false;
                         break;
                     default:
                         return;
                 }
 
-                // ...
-
-                // 4. Redirect client
-                wp_redirect($sendback);
-
+                $changed = 0;
+                $post_ids = array();
+                if($exporting) {
+                    foreach( $_REQUEST['post'] as $post_id ) {
+                        $product = new WC_Product($post_id);
+                        if(!$product->is_downloadable()) {
+                            $this->perform_export($post_id);
+                            $post_ids[] = $post_id;
+                            $changed++;
+                        }
+                    }
+                }
+                else {
+                    foreach( $_REQUEST['post'] as $post_id ) {
+                        $product = new WC_Product($post_id);
+                        if(!$product->is_downloadable()) {
+                            $this->perform_no_export($post_id);
+                            $post_ids[] = $post_id;
+                            $changed++;
+                        }
+                    }
+                }
+                $sendback = add_query_arg( array( 'post_type' => 'product', $report_action => $changed, 'ids' => join( ',', $post_ids ) ), '' );
+                wp_redirect( $sendback );
                 exit();
             }
 
@@ -290,6 +286,44 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     add_post_meta($post_id, '_fyndiq_export', 'exported', true);
                 };
             }
+            public function perform_no_export($post_id)
+            {
+                if (!update_post_meta($post_id, '_fyndiq_export', 'not exported')) {
+                    add_post_meta($post_id, '_fyndiq_export', 'not exported', true);
+                };
+            }
+
+            function fyndiq_export_products_button($wp_admin){
+                $this->fyndiq_admin_bar_render($wp_admin,'Fyndiq'); // Parent item
+                $this->fyndiq_admin_bar_render($wp_admin,'Export Products', 'http://', 'Fyndiq');
+                $this->fyndiq_admin_bar_render($wp_admin,'Import Orders', 'http://', 'Fyndiq');
+            }
+
+            /**
+             * Add's menu parent or submenu item.
+             * @param string $name the label of the menu item
+             * @param string $href the link to the item (settings page or ext site)
+             * @param string $parent Parent label (if creating a submenu item)
+             *
+             * @return void
+             * */
+            function fyndiq_admin_bar_render($wp_admin_bar, $name, $href = '', $parent = '', $custom_meta = array() ) {
+
+                // Generate ID based on the current filename and the name supplied.
+                $id = sanitize_key( $name );
+
+                // Generate the ID of the parent.
+                $parent = sanitize_key( $parent );
+
+                // links from the current host will open in the current window
+
+                $wp_admin_bar->add_node( array(
+                        'parent' => $parent,
+                        'id' => $id,
+                        'title' => $name,
+                        'href' => $href,
+                    ) );
+            }
 
             /**
              * Take care of anything that needs all plugins to be loaded
@@ -297,6 +331,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
             public function plugins_loaded()
             {
                 include_once('fyndiqHelper.php');
+                require_once('shared/src/init.php');
             }
 
             /**
