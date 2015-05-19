@@ -233,6 +233,16 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     </script>
                 <?php
                 }
+                else if($post_type == 'shop_order') {
+                    ?>
+                    <script type="text/javascript">
+                        jQuery(document).ready(function () {
+                            jQuery('<option>').val('fyndiq_delivery').text('<?php _e('Get Fyndiq Delivery Note')?>').appendTo("select[name='action']");
+                            jQuery('<option>').val('fyndiq_delivery').text('<?php _e('Get Fyndiq Delivery Note')?>').appendTo("select[name='action2']");
+                        });
+                    </script>
+                <?php
+                }
             }
 
             function fyndiq_product_export_bulk_action()
