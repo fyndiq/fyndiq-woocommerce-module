@@ -239,6 +239,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                         jQuery(document).ready(function () {
                             jQuery('<option>').val('fyndiq_delivery').text('<?php _e('Get Fyndiq Delivery Note')?>').appendTo("select[name='action']");
                             jQuery('<option>').val('fyndiq_delivery').text('<?php _e('Get Fyndiq Delivery Note')?>').appendTo("select[name='action2']");
+                            jQuery(jQuery(".wrap h2")[0]).append("<a  id='fyndiq_order_import' class='add-new-h2'>Import From Fyndiq</a>");
                         });
                     </script>
                 <?php
