@@ -73,6 +73,9 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 if(isset($_GET['fyndiq_feed'])) {
                     $this->generate_feed();
                 }
+                if(isset($_GET['fyndiq_orders'])) {
+                    $this->generate_orders();
+                }
 
             }
 
@@ -343,6 +346,8 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
             {
                 include_once('fyndiqHelper.php');
                 require_once('shared/src/init.php');
+                require_once('models/order.php');
+                require_once('models/orderFetch.php');
             }
 
             /**
@@ -435,6 +440,12 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 $feedProduct['article-name'] = $product->post->post_title;
 
                 return $feedProduct;
+            }
+
+            public function generate_orders() {
+                $orderFetch = new FmOrderFetch(false);
+                $orderFetch->getAll();
+                wp_die();
             }
         }
 
