@@ -50,6 +50,10 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
              */
             public function woocommerce_loaded()
             {
+                //javascript
+                add_action('admin_head', array(&$this, 'get_url'));
+
+
                 //Settings
                 add_filter('woocommerce_get_sections_products', array(&$this, 'fyndiq_settings_action'));
                 add_filter('woocommerce_get_settings_products', array(&$this, 'fyndiq_all_settings'), 10, 2);
@@ -70,6 +74,8 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 //bulk action
                 add_action('admin_footer-edit.php', array(&$this, 'fyndiq_product_add_bulk_action'));
                 add_action('load-edit.php', array( &$this, 'fyndiq_product_export_bulk_action'));
+
+                //functions
                 if(isset($_GET['fyndiq_feed'])) {
                     $this->generate_feed();
                 }
@@ -77,6 +83,16 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     $this->generate_orders();
                 }
 
+            }
+
+            function get_url()
+            {
+                ?>
+                <script type="text/javascript">
+                    var wordpressurl = '<?php echo get_site_url(); ?>' ;
+                </script>
+                <script src="<?php echo plugins_url( '/stylesheet/order-import.js', __FILE__ ); ?>" type="text/javascript"></script>
+                <?
             }
 
             function fyndiq_settings_action($sections)
@@ -242,7 +258,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                         jQuery(document).ready(function () {
                             jQuery('<option>').val('fyndiq_delivery').text('<?php _e('Get Fyndiq Delivery Note')?>').appendTo("select[name='action']");
                             jQuery('<option>').val('fyndiq_delivery').text('<?php _e('Get Fyndiq Delivery Note')?>').appendTo("select[name='action2']");
-                            jQuery(jQuery(".wrap h2")[0]).append("<a  id='fyndiq_order_import' class='add-new-h2'>Import From Fyndiq</a>");
+                            jQuery(jQuery(".wrap h2")[0]).append("<a href='#' id='fyndiq-order-import' class='add-new-h2'>Import From Fyndiq</a>");
                         });
                     </script>
                 <?php
@@ -443,8 +459,10 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
             }
 
             public function generate_orders() {
+                define('DOING_AJAX', true);
                 $orderFetch = new FmOrderFetch(false);
-                $orderFetch->getAll();
+                $return = $orderFetch->getAll();
+                echo json_encode($return);
                 wp_die();
             }
         }
