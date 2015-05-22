@@ -75,6 +75,9 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 add_action('admin_footer-edit.php', array(&$this, 'fyndiq_product_add_bulk_action'));
                 add_action('load-edit.php', array( &$this, 'fyndiq_product_export_bulk_action'));
 
+                //add_action('post_submitbox_misc_actions', array( &$this, 'fyndiq_order_edit_action'));
+                add_action( 'add_meta_boxes', array( &$this, 'fyndiq_order_meta_boxes') );
+
                 //functions
                 if(isset($_GET['fyndiq_feed'])) {
                     $this->generate_feed();
@@ -83,6 +86,32 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     $this->generate_orders();
                 }
 
+            }
+
+
+            function fyndiq_order_meta_boxes()
+            {
+                global $post;
+                $post_id = $post->ID;
+                $meta = get_post_custom( $post_id );
+                if(isset($meta['fyndiq_delivery_note']) && isset($meta['fyndiq_delivery_note'][0]) && $meta['fyndiq_delivery_note'][0] != "") {
+                    add_meta_box(
+                        'woocommerce-order-fyndiq-delivery-note',
+                        __( 'Fyndiq' ),
+                        array( &$this, 'order_meta_box_delivery_note'),
+                        'shop_order',
+                        'side',
+                        'default'
+                    );
+                }
+            }
+            function order_meta_box_delivery_note()
+            {
+                global $post;
+                $post_id = $post->ID;
+                $meta = get_post_custom( $post_id );
+
+                echo '<a href="'.$meta['fyndiq_delivery_note'][0].'" class="button button-primary">Get Fyndiq Delivery Note</a>';
             }
 
             function get_url()
