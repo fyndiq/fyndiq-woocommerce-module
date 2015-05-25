@@ -74,6 +74,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 //bulk action
                 add_action('admin_footer-edit.php', array(&$this, 'fyndiq_product_add_bulk_action'));
                 add_action('load-edit.php', array( &$this, 'fyndiq_product_export_bulk_action'));
+                add_action('load-edit.php', array( &$this, 'fyndiq_order_delivery_note_bulk_action'));
 
                 //add_action('post_submitbox_misc_actions', array( &$this, 'fyndiq_order_edit_action'));
                 add_action( 'add_meta_boxes', array( &$this, 'fyndiq_order_meta_boxes') );
@@ -339,13 +340,61 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 exit();
             }
 
-            public function perform_export($post_id)
+            function fyndiq_order_delivery_note_bulk_action()
+            {
+                $wp_list_table = _get_list_table( 'WP_Posts_List_Table' );
+                $action = $wp_list_table->current_action();
+
+                switch ( $action ) {
+                    case 'fyndiq_delivery':
+                        break;
+                    default:
+                        return;
+                }
+
+                $orders = array(
+                    'orders' => array()
+                );
+                if (!isset($_REQUEST['post'])) {
+                    throw new Exception('Pick at least one order');
+                }
+                foreach ($_REQUEST['post'] as $order) {
+                    $meta = get_post_custom( $order );
+                    if(isset($meta['fyndiq_id']) && isset($meta['fyndiq_id'][0]) && $meta['fyndiq_id'][0] != "")
+                    $orders['orders'][] = array('order' => intval($meta['fyndiq_id'][0]));
+                }
+
+                $ret = FmHelpers::callApi('POST', 'delivery_notes/', $orders, true);
+
+                if ($ret['status'] == 200) {
+                    $fileName = 'delivery_notes-' . implode('-', $_REQUEST['post']) . '.pdf';
+
+                    header('Content-Type: application/pdf');
+                    header('Content-Disposition: attachment; filename="' . $fileName . '"');
+                    header('Content-Transfer-Encoding: binary');
+                    header('Content-Length: ' . strlen($ret['data']));
+                    header('Expires: 0');
+                    $handler = fopen('php://temp', 'wb+');
+                    // Saving data to file
+                    fputs($handler, $ret['data']);
+                    rewind($handler);
+                    fpassthru($handler);
+                    fclose($handler);
+                }
+                else {
+                    $sendback = add_query_arg( array( 'post_type' => 'shop_order', $report_action => $changed, 'ids' => join( ',', $post_ids ) ), '' );
+                    wp_redirect($sendback);
+                }
+                exit();
+            }
+
+            private function perform_export($post_id)
             {
                 if (!update_post_meta($post_id, '_fyndiq_export', 'exported')) {
                     add_post_meta($post_id, '_fyndiq_export', 'exported', true);
                 };
             }
-            public function perform_no_export($post_id)
+            private function perform_no_export($post_id)
             {
                 if (!update_post_meta($post_id, '_fyndiq_export', 'not exported')) {
                     add_post_meta($post_id, '_fyndiq_export', 'not exported', true);
