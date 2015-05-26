@@ -28,9 +28,6 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 // called after all plugins have loaded
                 add_action('plugins_loaded', array(&$this, 'plugins_loaded'));
 
-                // called just before the woocommerce template functions are included
-                add_action('init', array(&$this, 'include_template_functions'), 20);
-
                 // indicates we are running the admin
                 if (is_admin()) {
 
@@ -442,14 +439,6 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 require_once('shared/src/init.php');
                 require_once('models/order.php');
                 require_once('models/orderFetch.php');
-            }
-
-            /**
-             * Override any of the template functions from woocommerce/woocommerce-template.php
-             * with our own template functions file
-             */
-            public function include_template_functions()
-            {
             }
 
             public function generate_feed() {
