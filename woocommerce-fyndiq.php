@@ -398,38 +398,6 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 };
             }
 
-            function fyndiq_export_products_button($wp_admin){
-                $this->fyndiq_admin_bar_render($wp_admin,'Fyndiq'); // Parent item
-                $this->fyndiq_admin_bar_render($wp_admin,'Export Products', 'http://', 'Fyndiq');
-                $this->fyndiq_admin_bar_render($wp_admin,'Import Orders', 'http://', 'Fyndiq');
-            }
-
-            /**
-             * Add's menu parent or submenu item.
-             * @param string $name the label of the menu item
-             * @param string $href the link to the item (settings page or ext site)
-             * @param string $parent Parent label (if creating a submenu item)
-             *
-             * @return void
-             * */
-            function fyndiq_admin_bar_render($wp_admin_bar, $name, $href = '', $parent = '', $custom_meta = array() ) {
-
-                // Generate ID based on the current filename and the name supplied.
-                $id = sanitize_key( $name );
-
-                // Generate the ID of the parent.
-                $parent = sanitize_key( $parent );
-
-                // links from the current host will open in the current window
-
-                $wp_admin_bar->add_node( array(
-                        'parent' => $parent,
-                        'id' => $id,
-                        'title' => $name,
-                        'href' => $href,
-                    ) );
-            }
-
             /**
              * Take care of anything that needs all plugins to be loaded
              */
