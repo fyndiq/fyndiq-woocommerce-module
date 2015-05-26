@@ -26,13 +26,11 @@ class FyndiqTest extends WP_UnitTestCase {
         $this->assertEquals($data, $this->wc_fyndiq->fyndiq_product_column_sort());
     }
 
-    function test_fyndiq_product_add_bulk_action() {
+    function test_fyndiq_product_add_bulk_action_product() {
         $contributor_id = $this->factory->user->create( array( 'role' => 'editor' ) );
         wp_set_current_user( $contributor_id );
         global $post_type;
         $post_type = 'product';
-        //$this->assertTrue($product_id > 0);
-        //$_REQUEST['post'] = array($product_id);
         $this->wc_fyndiq->fyndiq_product_add_bulk_action();
         $this->expectOutputString("                    <script type=\"text/javascript\">
                         jQuery(document).ready(function () {
@@ -44,6 +42,24 @@ class FyndiqTest extends WP_UnitTestCase {
                     </script>
                 ");
     }
+
+    function test_fyndiq_product_add_bulk_action_order() {
+        $contributor_id = $this->factory->user->create( array( 'role' => 'editor' ) );
+        wp_set_current_user( $contributor_id );
+        global $post_type;
+        $post_type = 'shop_order';
+        $this->wc_fyndiq->fyndiq_product_add_bulk_action();
+        $this->expectOutputString("                    <script type=\"text/javascript\">
+                        jQuery(document).ready(function () {
+                            jQuery('<option>').val('fyndiq_delivery').text('Get Fyndiq Delivery Note').appendTo(\"select[name='action']\");
+                            jQuery('<option>').val('fyndiq_delivery').text('Get Fyndiq Delivery Note').appendTo(\"select[name='action2']\");
+                            jQuery(jQuery(\".wrap h2\")[0]).append(\"<a href='#' id='fyndiq-order-import' class='add-new-h2'>Import From Fyndiq</a>\");
+                        });
+                    </script>
+                ");
+    }
+
+
 
     private function createProduct() {
         $post = array(
