@@ -60,6 +60,21 @@ class FyndiqTest extends WP_UnitTestCase {
     }
 
 
+    function test_order_meta_box_fyndiq_should_echo_link() {
+        $contributor_id = $this->factory->user->create( array( 'role' => 'editor' ) );
+        wp_set_current_user( $contributor_id );
+
+        $order_id = $this->createOrder();
+
+        $order = get_post($order_id);
+        global $post;
+        $post = $order;
+
+        $this->wc_fyndiq->order_meta_box_delivery_note();
+
+        $this->expectOutputString('<a href="https://fyndiq.se/merchant/fake/delivery/note/32" class="button button-primary">Get Fyndiq Delivery Note</a>');
+    }
+
 
     private function createProduct() {
         $post = array(
@@ -102,6 +117,31 @@ class FyndiqTest extends WP_UnitTestCase {
         update_post_meta( $post_id, '_stock', "" );
 
         return $post_id;
+    }
+
+    function createOrder() {
+        // build order data
+        $order_data = array(
+            'post_name' => 'order-' . date_format(new DateTime(date("Y-m-d H:i:s")), 'M-d-Y-hi-a'), //'order-jun-19-2014-0648-pm'
+            'post_type' => 'shop_order',
+            'post_title' => 'Order &ndash; ' . date_format(new DateTime(date("Y-m-d H:i:s")), 'F d, Y @ h:i A'), //'June 19, 2014 @ 07:19 PM'
+            'post_status' => 'wc-completed',
+            'ping_status' => 'closed',
+            'post_excerpt' => 'Generated from Fyndiq',
+            'post_author' => 0,
+            'post_password' => uniqid('order_'), // Protects the post just in case
+            'post_date' => date_format(new DateTime(date("Y-m-d H:i:s")), 'Y-m-d H:i:s e'), //'order-jun-19-2014-0648-pm'
+            'comment_status' => 'open'
+        );
+
+// create order
+        $order_id = wp_insert_post($order_data, true);
+
+        if(!is_wp_error($order_id)) {
+            add_post_meta($order_id, 'fyndiq_id', 32, true);
+            add_post_meta($order_id, 'fyndiq_delivery_note', 'https://fyndiq.se' . "/merchant/fake/delivery/note/32", true);
+        }
+        return $order_id;
     }
 }
 
