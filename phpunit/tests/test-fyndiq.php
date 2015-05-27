@@ -4,7 +4,12 @@ class FyndiqTest extends WP_UnitTestCase {
 
     public function setUp() {
         parent::setUp();
-        $this->wc_fyndiq = $GLOBALS['wc_fyndiq'];
+        $hook = parse_url('edit.php?post_type=product');
+        $GLOBALS['hook_suffix'] = $hook['path'];
+        set_current_screen();
+        $this->wc_fyndiq = $this->getMockBuilder('WC_Fyndiq')->setMethods(array('getAction','getRequestPost', 'bulkRedirect', 'returnAndDie'))->getMock();
+        $this->wc_fyndiq->woocommerce_loaded();
+        $this->wc_fyndiq->plugins_loaded();
     }
 
 	function test_fyndiq_class_should_exist() {
@@ -18,7 +23,7 @@ class FyndiqTest extends WP_UnitTestCase {
         $this->assertTrue(isset($this->wc_fyndiq->fyndiq_settings_action($fakeSections)['wcfyndiq']));
     }
 
-    // Column
+    // Columnable' );
     function test_fyndiq_product_column_sort_return_array() {
         $data = array(
             'fyndiq_export' => 'fyndiq_export'
@@ -75,8 +80,145 @@ class FyndiqTest extends WP_UnitTestCase {
         $this->expectOutputString('<a href="https://fyndiq.se/merchant/fake/delivery/note/32" class="button button-primary">Get Fyndiq Delivery Note</a>');
     }
 
+    function test_fyndiq_product_add_column_return_right_array() {
+        $defaults = array();
+        $return = $this->wc_fyndiq->fyndiq_product_add_column($defaults);
+        $correct = array('fyndiq_export' => 'Fyndiq Exported');
+        $this->assertEquals($return, $correct);
+    }
 
-    private function createProduct() {
+    function test_fyndiq_product_column_export() {
+        $contributor_id = $this->factory->user->create( array( 'role' => 'editor' ) );
+        wp_set_current_user( $contributor_id );
+
+        $p = $this->createProduct();
+
+        $this->wc_fyndiq->fyndiq_product_column_export('fyndiq_export', $p);
+
+        $this->expectOutputString("not exported");
+
+        $this->wc_fyndiq->fyndiq_product_column_export('fyndiq_export', $p);
+
+        $this->expectOutputString("not exportednot exported");
+    }
+
+    function test_fyndiq_all_settings_correct_section() {
+        $settings = array();
+        $return = $this->wc_fyndiq->fyndiq_all_settings($settings, 'wcfyndiq');
+
+        $expected = array(
+            array('name' => 'Fyndiq Settings',
+                  'type' => 'title',
+                  'desc' => 'The following options are used to configure Fyndiq',
+                  'id' => 'wcfyndiq'),
+            array('name' => 'Username',
+                  'desc_tip' => 'This is the username you use for login on Fyndiq Merchant',
+                  'id' => 'wcfyndiq_username',
+                  'type' => 'text',
+                  'desc' => 'Must be your username'),
+            array('name' => 'API-token',
+                  'desc_tip' => 'This is the API V2 Token on Fyndiq',
+                  'id' => 'wcfyndiq_apitoken',
+                  'type' => 'text',
+                  'desc' => 'Must be API v2 token'),
+            array('type' => 'sectionend',
+                  'id' => 'wcfyndiq')
+        );
+
+        $this->assertEquals($expected, $return);
+    }
+
+    function test_fyndiq_all_settings_wrong_section() {
+        $settings = array();
+        $return = $this->wc_fyndiq->fyndiq_all_settings($settings, 'wrong_section');
+
+        $this->assertEquals($settings, $return);
+    }
+
+    function test_fyndiq_order_meta_boxes() {
+        $contributor_id = $this->factory->user->create( array( 'role' => 'editor' ) );
+        wp_set_current_user( $contributor_id );
+
+        $p = $this->createProduct(false, true);
+        global $post;
+        $post = get_post($p);
+
+        $this->wc_fyndiq->fyndiq_order_meta_boxes();
+        global $wp_meta_boxes;
+        $expected = array('shop_order' => array('side' => array('default' => array('woocommerce-order-fyndiq-delivery-note' => array(
+            'id' => 'woocommerce-order-fyndiq-delivery-note',
+            'title' => 'Fyndiq',
+            'callback' => Array (0 => $this->wc_fyndiq,
+                                 1 => 'order_meta_box_delivery_note'),
+            'args' => null
+        )))));
+        $this->assertEquals($expected, $wp_meta_boxes);
+    }
+
+    function test_fyndiq_product_export_bulk_action() {
+        $return = $this->wc_fyndiq->fyndiq_product_export_bulk_action();
+        echo $return;
+        $this->expectOutputString("");
+    }
+
+    function test_fyndiq_product_export_bulk_action_working() {
+        $contributor_id = $this->factory->user->create( array( 'role' => 'editor' ) );
+        wp_set_current_user( $contributor_id );
+
+        $p = $this->createProduct(false, true);
+
+        $this->wc_fyndiq->expects($this->once())->method('getAction')->with($this->equalTo('WP_Posts_List_Table'))->willReturn('fyndiq_export');
+        $this->wc_fyndiq->expects($this->once())->method('getRequestPost')->willReturn(array($p));
+        $this->wc_fyndiq->expects($this->once())->method('bulkRedirect')->will($this->returnArgument(1));
+        $return = $this->wc_fyndiq->fyndiq_product_export_bulk_action();
+        $this->assertEquals(1, $return);
+    }
+
+    function test_fyndiq_product_export_bulk_action_remove_working() {
+        $contributor_id = $this->factory->user->create( array( 'role' => 'editor' ) );
+        wp_set_current_user( $contributor_id );
+
+        $p = $this->createProduct(false, true);
+
+        $this->wc_fyndiq->expects($this->once())->method('getAction')->with($this->equalTo('WP_Posts_List_Table'))->willReturn('fyndiq_no_export');
+        $this->wc_fyndiq->expects($this->once())->method('getRequestPost')->willReturn(array($p));
+        $this->wc_fyndiq->expects($this->once())->method('bulkRedirect')->will($this->returnArgument(1));
+        $return = $this->wc_fyndiq->fyndiq_product_export_bulk_action();
+        $this->assertEquals(1, $return);
+    }
+
+    function test_generate_feed_notset() {
+        $contributor_id = $this->factory->user->create( array( 'role' => 'editor' ) );
+        wp_set_current_user( $contributor_id );
+
+        $p = $this->createProduct(false, true);
+
+        $this->wc_fyndiq->expects($this->once())->method('returnAndDie')->will($this->returnArgument(0));
+
+        $return = $this->wc_fyndiq->generate_feed();
+
+        $this->assertEquals("", $return);
+    }
+
+    function test_generate_feed_working() {
+        $contributor_id = $this->factory->user->create( array( 'role' => 'editor' ) );
+        wp_set_current_user( $contributor_id );
+
+        $p = $this->createProduct(false, true);
+
+        update_option('wcfyndiq_username', 'test');
+        update_option('wcfyndiq_apitoken', 'test');
+
+        $this->wc_fyndiq->expects($this->once())->method('returnAndDie')->will($this->returnArgument(0));
+
+        $return = $this->wc_fyndiq->generate_feed();
+
+        $this->assertEquals("product-id,product-image-1-identifier,product-image-1-url,product-title,product-market,product-description,product-price,product-oldprice,product-currency,product-vat-percent,article-quantity,article-sku,article-name
+", $return);
+    }
+
+
+    private function createProduct($downloadable = false, $fyndiq = false) {
         $post = array(
             'post_author' => 0,
             'post_content' => '',
@@ -96,7 +238,16 @@ class FyndiqTest extends WP_UnitTestCase {
         update_post_meta( $post_id, '_visibility', 'visible' );
         update_post_meta( $post_id, '_stock_status', 'instock');
         update_post_meta( $post_id, 'total_sales', '0');
-        update_post_meta( $post_id, '_downloadable', 'yes');
+        if ($downloadable) {
+            update_post_meta( $post_id, '_downloadable', 'yes');
+        }
+        else {
+            update_post_meta( $post_id, '_downloadable', 'no');
+        }
+
+        if($fyndiq) {
+            update_post_meta( $post_id, 'fyndiq_delivery_note', 'https://fyndiq.se/merchant/delivery_note');
+        }
         update_post_meta( $post_id, '_virtual', 'yes');
         update_post_meta( $post_id, '_regular_price', "1" );
         update_post_meta( $post_id, '_sale_price', "1" );
