@@ -294,8 +294,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
             function fyndiq_product_export_bulk_action()
             {
-                $wp_list_table = _get_list_table( 'WP_Posts_List_Table' );
-                $action = $wp_list_table->current_action();
+                $action = $this->getAction( 'WP_Posts_List_Table' );
 
                 switch ( $action ) {
                     case 'fyndiq_export':
@@ -313,7 +312,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 $changed = 0;
                 $post_ids = array();
                 if($exporting) {
-                    foreach( $_REQUEST['post'] as $post_id ) {
+                    foreach( $this->getRequestPost() as $post_id ) {
                         $product = new WC_Product($post_id);
                         if(!$product->is_downloadable()) {
                             $this->perform_export($post_id);
@@ -323,7 +322,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     }
                 }
                 else {
-                    foreach( $_REQUEST['post'] as $post_id ) {
+                    foreach( $this->getRequestPost() as $post_id ) {
                         $product = new WC_Product($post_id);
                         if(!$product->is_downloadable()) {
                             $this->perform_no_export($post_id);
@@ -332,9 +331,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                         }
                     }
                 }
-                $sendback = add_query_arg( array( 'post_type' => 'product', $report_action => $changed, 'ids' => join( ',', $post_ids ) ), '' );
-                wp_redirect( $sendback );
-                exit();
+                return $this->bulkRedirect($report_action, $changed, $post_ids);
             }
 
             function fyndiq_order_delivery_note_bulk_action()
@@ -436,10 +433,10 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     $feedWriter->write();
                 }
                 $result = file_get_contents($filePath);
-                die($result);
+                return $this->returnAndDie($result);
                 }
                 else {
-                    die();
+                    return $this->returnAndDie(false);
                 }
             }
 
@@ -499,6 +496,25 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 $return = $orderFetch->getAll();
                 echo json_encode($return);
                 wp_die();
+            }
+
+            function getAction($table) {
+                $wp_list_table = _get_list_table( $table );
+                return $wp_list_table->current_action();
+            }
+
+            function getRequestPost() {
+                return $_REQUEST['post'];
+            }
+
+            function returnAndDie($return) {
+                die($return);
+            }
+
+            function bulkRedirect($report_action, $changed, $post_ids) {
+                $sendback = add_query_arg( array( 'post_type' => 'product', $report_action => $changed, 'ids' => join( ',', $post_ids ) ), '' );
+                wp_redirect( $sendback );
+                exit();
             }
         }
 
