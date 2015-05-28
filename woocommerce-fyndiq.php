@@ -84,6 +84,10 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 if(isset($_GET['fyndiq_orders'])) {
                     $this->generate_orders();
                 }
+                if(isset($_GET['fyndiq_notification'])) {
+                    $this->notification_handle();
+                    die();
+                }
 
             }
 
@@ -427,6 +431,13 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
             public function generate_feed() {
 
+                $filePath = plugin_dir_path( __FILE__ ) . 'files/feed.csv';
+                $this->feed_write($filePath);
+                $result = file_get_contents($filePath);
+                return $this->returnAndDie($result);
+            }
+
+            private function feed_write($filePath) {
                 $paged = get_query_var('paged');
                 $args = array(
                     'numberposts'       => -1,
@@ -440,22 +451,17 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 );
                 $posts_array = get_posts( $args );
                 if (get_option('wcfyndiq_username') != '' && get_option('wcfyndiq_apitoken') != '') {
-                $filePath = plugin_dir_path( __FILE__ ) . 'files/feed.csv';
-                $fileExistsAndFresh = file_exists($filePath) && filemtime($filePath) > strtotime('-1 hour');
-                if (!$fileExistsAndFresh) {
-                    $file = fopen($filePath, 'w+');
-                    $feedWriter = new FyndiqCSVFeedWriter($file);
-                    foreach ($posts_array as $product) {
-                        $product = new WC_Product($product->ID);
-                        $feedWriter->addProduct($this->getProduct($product));
+
+                    $fileExistsAndFresh = file_exists($filePath) && filemtime($filePath) > strtotime('-1 hour');
+                    if (!$fileExistsAndFresh) {
+                        $file = fopen($filePath, 'w+');
+                        $feedWriter = new FyndiqCSVFeedWriter($file);
+                        foreach ($posts_array as $product) {
+                            $product = new WC_Product($product->ID);
+                            $feedWriter->addProduct($this->getProduct($product));
+                        }
+                        $feedWriter->write();
                     }
-                    $feedWriter->write();
-                }
-                $result = file_get_contents($filePath);
-                return $this->returnAndDie($result);
-                }
-                else {
-                    return $this->returnAndDie(false);
                 }
             }
 
@@ -506,6 +512,77 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 $feedProduct['article-name'] = $product->post->post_title;
 
                 return $feedProduct;
+            }
+
+            public function notification_handle() {
+                if(isset($_GET['event'])) {
+                    $event = $_GET['event'];
+                    $eventName = $event ? $event : false;
+                    if ($eventName) {
+                        if ($eventName[0] != '_' && method_exists($this, $eventName)) {
+                            return $this->$eventName();
+                        }
+                    }
+                }
+                header('HTTP/1.0 400 Bad Request');
+                die('400 Bad Request');
+            }
+
+            public function order_created() {
+                $order_id = $_GET['order_id'];
+                $orderId = is_numeric($order_id) ? intval($order_id) : 0;
+                if ($orderId > 0) {
+                    try {
+                        $ret = FmHelpers::callApi('GET', 'orders/' . $orderId . '/');
+
+                        $fyndiqOrder = $ret['data'];
+
+                        $orderModel = new FmOrder();
+
+                        if (!$orderModel->orderExists($fyndiqOrder->id)) {
+                            $orderModel->createOrder($fyndiqOrder);
+                        }
+                    } catch (Exception $e) {
+                        header('HTTP/1.0 500 Internal Server Error');
+                        die('500 Internal Server Error');
+                    }
+                    return true;
+                }
+            }
+
+            public function ping() {
+                $pingToken = get_option("wcfyndiq_ping_token");
+
+                $token = $_GET['token'];
+
+                if (is_null($token) || $token != $pingToken) {
+                    header('HTTP/1.0 400 Bad Request');
+
+                    return die('400 Bad Request');
+                }
+
+                // http://stackoverflow.com/questions/138374/close-a-connection-early
+                ob_end_clean();
+                header('Connection: close');
+                ignore_user_abort(true); // just to be safe
+                ob_start();
+                echo 'OK';
+                $size = ob_get_length();
+                header('Content-Length: ' . $size);
+                ob_end_flush(); // Strange behaviour, will not work
+                flush(); // Unless both are called !
+
+                $locked = false;
+                $lastPing = get_option("wcfyndiq_ping_time");
+                $lastPing = $lastPing ? unserialize($lastPing) : false;
+                if ($lastPing && $lastPing > strtotime('15 minutes ago')) {
+                    $locked = true;
+                }
+                if (!$locked) {
+                    update_option('wcfyndiq_ping_time', time());
+                    $filePath = plugin_dir_path( __FILE__ ) . 'files/feed.csv';
+                    $this->feed_write($filePath);
+                }
             }
 
             public function generate_orders() {
