@@ -54,6 +54,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 //Settings
                 add_filter('woocommerce_get_sections_products', array(&$this, 'fyndiq_settings_action'));
                 add_filter('woocommerce_get_settings_products', array(&$this, 'fyndiq_all_settings'), 10, 2);
+                add_action( 'woocommerce_update_options_products', array(&$this, 'update_settings') );
 
                 //products
                 add_action(
@@ -185,6 +186,24 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     return $settings;
 
                 }
+            }
+
+            function update_settings() {
+                woocommerce_update_options($this->fyndiq_all_settings(array(), "wcfyndiq"));
+                $this->updateUrls();
+            }
+
+            function updateUrls() {
+                //Generate pingtoken
+                $pingToken = md5(uniqid());
+                update_option("wcfyndiq_ping_token", $pingToken);
+
+                $data = array(
+                    FyndiqUtils::NAME_PRODUCT_FEED_URL => get_site_url().'/?fyndiq_feed',
+                    FyndiqUtils::NAME_NOTIFICATION_URL => get_site_url().'/?fyndiq_notification',
+                    FyndiqUtils::NAME_PING_URL => get_site_url().'/?fyndiq_notification&event=ping&pingToken='.$pingToken
+                );
+                return FmHelpers::callApi('PATCH', 'settings/', $data);
             }
 
 
