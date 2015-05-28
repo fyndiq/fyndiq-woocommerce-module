@@ -190,7 +190,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
             function fyndiq_add_product_field()
             {
-                $product = get_product( get_the_ID() );
+                $product = get_product( $this->getProductId() );
 
                 if(!$product->is_downloadable()) {
 
@@ -214,7 +214,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
             function fyndiq_product_save($post_id)
             {
-                $woocommerce_checkbox = isset($_POST['_fyndiq_export']) ? 'exported' : 'not exported';
+                $woocommerce_checkbox = $this->getExportState();
                 update_post_meta($post_id, '_fyndiq_export', $woocommerce_checkbox);
             }
 
@@ -463,10 +463,9 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
                 $terms = get_the_terms( $product->id, 'product_cat' );
                 if ( $terms && ! is_wp_error( $terms ) ) {
-                    foreach ($cats as $term) {
-                        var_dump($term);
+                    foreach ($terms as $term) {
                         $feedProduct['product-category-id'] = $term->term_id;
-                        $feedProduct['product-category-name'] = $term->term_name;
+                        $feedProduct['product-category-name'] = $term->name;
                         break;
                     }
                 }
@@ -515,6 +514,14 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 $sendback = add_query_arg( array( 'post_type' => 'product', $report_action => $changed, 'ids' => join( ',', $post_ids ) ), '' );
                 wp_redirect( $sendback );
                 exit();
+            }
+
+            function getProductId() {
+                return get_the_ID();
+            }
+
+            function getExportState() {
+                return isset($_POST['_fyndiq_export']) ? 'exported' : 'not exported';
             }
         }
 
