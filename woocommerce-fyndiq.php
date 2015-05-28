@@ -68,6 +68,8 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 add_action('manage_product_posts_custom_column', array(&$this, 'fyndiq_product_column_export'), 5, 2);
                 add_filter("manage_edit-product_sortable_columns", array(&$this, 'fyndiq_product_column_sort'));
                 add_action('pre_get_posts', array(&$this, 'fyndiq_product_column_sort_by'));
+                add_action('admin_notices', array(&$this, 'fyndiq_bulk_notices'));
+
 
                 //bulk action
                 add_action('admin_footer-edit.php', array(&$this, 'fyndiq_product_add_bulk_action'));
@@ -194,7 +196,18 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
             function update_settings() {
                 woocommerce_update_options($this->fyndiq_all_settings(array(), "wcfyndiq"));
+                try {
                 $this->updateUrls();
+                }
+                catch (Exception $e) {
+                    if ($e->getMessage() == "Unauthorized") {
+                        //echo "Wrong api-token or username to Fyndiq.";
+                        ?><div class="error">
+                            <p><?php _e( 'Fyndiq credentials was wrong, try again.', 'fyndiq_username' ); ?></p>
+                        </div><?
+                    }
+                    //die();
+                }
             }
 
             function updateUrls() {
@@ -267,6 +280,8 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 }
             }
 
+
+
             function fyndiq_product_column_sort()
             {
                 return array(
@@ -321,11 +336,11 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
                 switch ( $action ) {
                     case 'fyndiq_export':
-                        $report_action = 'exported';
+                        $report_action = 'fyndiq_exported';
                         $exporting = true;
                         break;
                     case 'fyndiq_no_export':
-                        $report_action = 'removed';
+                        $report_action = 'fyndiq_removed';
                         $exporting = false;
                         break;
                     default:
@@ -355,6 +370,19 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     }
                 }
                 return $this->bulkRedirect($report_action, $changed, $post_ids);
+            }
+
+            function fyndiq_bulk_notices() {
+                global $post_type, $pagenow;
+
+                if($pagenow == 'edit.php' && isset($_REQUEST['fyndiq_removed']) && (int) $_REQUEST['fyndiq_removed']) {
+                    $message = sprintf( _n( 'Products removed from Fyndiq.', '%s products removed from Fyndiq.', $_REQUEST['fyndiq_removed'] ), number_format_i18n( $_REQUEST['fyndiq_removed'] ) );
+                    echo "<div class=\"updated\"><p>{$message}</p></div>";
+                }
+                if($pagenow == 'edit.php' && isset($_REQUEST['fyndiq_exported']) && (int) $_REQUEST['fyndiq_exported']) {
+                    $message = sprintf( _n( 'Products exported to Fyndiq.', '%s products exported to Fyndiq.', $_REQUEST['fyndiq_exported'] ), number_format_i18n( $_REQUEST['fyndiq_exported'] ) );
+                    echo "<div class=\"updated\"><p>{$message}</p></div>";
+                }
             }
 
             function fyndiq_order_delivery_note_bulk_action()
