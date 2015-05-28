@@ -7,7 +7,7 @@ class FyndiqTest extends WP_UnitTestCase {
         $hook = parse_url('edit.php?post_type=product');
         $GLOBALS['hook_suffix'] = $hook['path'];
         set_current_screen();
-        $this->wc_fyndiq = $this->getMockBuilder('WC_Fyndiq')->setMethods(array('getAction','getRequestPost', 'bulkRedirect', 'returnAndDie'))->getMock();
+        $this->wc_fyndiq = $this->getMockBuilder('WC_Fyndiq')->setMethods(array('getAction','getRequestPost', 'bulkRedirect', 'returnAndDie', 'getProductId', 'getExportState'))->getMock();
         $this->wc_fyndiq->woocommerce_loaded();
         $this->wc_fyndiq->plugins_loaded();
     }
@@ -100,6 +100,17 @@ class FyndiqTest extends WP_UnitTestCase {
         $this->wc_fyndiq->fyndiq_product_column_export('fyndiq_export', $p);
 
         $this->expectOutputString("not exportednot exported");
+    }
+
+    function test_fyndiq_product_column_export_downloadable() {
+        $contributor_id = $this->factory->user->create( array( 'role' => 'editor' ) );
+        wp_set_current_user( $contributor_id );
+
+        $p = $this->createProduct(true);
+
+        $this->wc_fyndiq->fyndiq_product_column_export('fyndiq_export', $p);
+
+        $this->expectOutputString("Can't be exported");
     }
 
     function test_fyndiq_all_settings_correct_section() {
@@ -201,10 +212,20 @@ class FyndiqTest extends WP_UnitTestCase {
     }
 
     function test_generate_feed_working() {
+        // Removing the feed so it will test correct part of the function
+        $filePath = dirname(dirname(dirname(__FILE__))) . '/files/feed.csv';
+        if(file_exists($filePath)) {
+            unlink($filePath);
+        }
+
         $contributor_id = $this->factory->user->create( array( 'role' => 'editor' ) );
         wp_set_current_user( $contributor_id );
 
         $p = $this->createProduct(false, true);
+
+        $this->wc_fyndiq->expects($this->once())->method('getExportState')->willReturn("exported");
+
+        $this->wc_fyndiq->fyndiq_product_save($p);
 
         update_option('wcfyndiq_username', 'test');
         update_option('wcfyndiq_apitoken', 'test');
@@ -215,6 +236,58 @@ class FyndiqTest extends WP_UnitTestCase {
 
         $this->assertEquals("product-id,product-image-1-identifier,product-image-1-url,product-title,product-market,product-description,product-price,product-oldprice,product-currency,product-vat-percent,article-quantity,article-sku,article-name
 ", $return);
+    }
+
+    function test_get_url() {
+        $this->wc_fyndiq->get_url();
+        $this->expectOutputString('                <script type="text/javascript">
+                    var wordpressurl = \'http://example.org\' ;
+                </script>
+                <script src="http://example.org/wp-content/plugins/woocommerce-fyndiq/stylesheet/order-import.js" type="text/javascript"></script>
+                ');
+    }
+
+    function test_fyndiq_add_product_field() {
+        $contributor_id = $this->factory->user->create( array( 'role' => 'editor' ) );
+        wp_set_current_user( $contributor_id );
+
+        $p = $this->createProduct(false, true);
+
+        $this->wc_fyndiq->expects($this->once())->method('getProductId')->willReturn($p);
+
+        $this->wc_fyndiq->fyndiq_add_product_field();
+
+        $this->expectOutputString('<div class="options_group"><p class="form-row input-checkbox" id="_fyndiq_export_field">
+						<label class="checkbox " >
+						<input type="checkbox" class="input-checkbox " name="_fyndiq_export" id="_fyndiq_export" value="1"  /> Export to Fyndiq</label><span class="description">mark this as true if you want to export to Fyndiq</span></p></div>');
+    }
+
+    function test_fyndiq_add_product_field_downloadable() {
+        $contributor_id = $this->factory->user->create( array( 'role' => 'editor' ) );
+        wp_set_current_user( $contributor_id );
+
+        $p = $this->createProduct(true, false);
+
+        $this->wc_fyndiq->expects($this->once())->method('getProductId')->willReturn($p);
+
+        $this->wc_fyndiq->fyndiq_add_product_field();
+
+        $this->expectOutputString('<div class="options_group">Can\'t export this product to Fyndiq</div>');
+    }
+
+    function test_fyndiq_product_save() {
+        $contributor_id = $this->factory->user->create( array( 'role' => 'editor' ) );
+        wp_set_current_user( $contributor_id );
+
+        $p = $this->createProduct(true, false);
+
+        $this->wc_fyndiq->expects($this->once())->method('getExportState')->willReturn("exported");
+
+        $this->wc_fyndiq->fyndiq_product_save($p);
+
+        $exported = get_post_meta($p, '_fyndiq_export', true);
+
+        $this->assertEquals("exported", $exported);
     }
 
 
@@ -247,6 +320,7 @@ class FyndiqTest extends WP_UnitTestCase {
 
         if($fyndiq) {
             update_post_meta( $post_id, 'fyndiq_delivery_note', 'https://fyndiq.se/merchant/delivery_note');
+            update_post_meta( $post_id, '_fyndiq_export', 'exported');
         }
         update_post_meta( $post_id, '_virtual', 'yes');
         update_post_meta( $post_id, '_regular_price', "1" );
