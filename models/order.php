@@ -94,9 +94,6 @@ class FmOrder
 
                     }
 
-                    // set order status as completed
-                    wp_set_object_terms($order_id, 'completed', 'shop_order_status');
-
                     // if downloadable
                     if ($product->is_downloadable()) {
                         wp_die("ERROR - product is downloadable.");
@@ -106,6 +103,12 @@ class FmOrder
                     echo 'Product SKU (' . $order_row->sku . ') not found.';
                 }
             }
+
+            $wc_order = new WC_Order($order_id);
+
+            // set order status as completed
+            $order_status = get_option('wcfyndiq_create_order_status');
+            $wc_order->update_status($order_status);
         }
 
     }

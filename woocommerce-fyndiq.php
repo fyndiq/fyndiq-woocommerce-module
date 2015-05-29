@@ -179,6 +179,18 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
                     );
 
+                    // Add order status setting
+                    $settings_slider[] = array(
+
+                        'name' => __('Order Status', 'text-domain'),
+                        'desc_tip' => __('When a order is imported from fyndiq, this status will be applied.', 'text-domain'),
+                        'id' => 'wcfyndiq_create_order_status',
+                        'type' => 'select',
+                        'options' => array('completed' => 'completed', 'processing' => 'processing', 'pending' => 'pending', 'on-hold' => 'on-hold'),
+                        'desc' => __('This must be picked accurate', 'text-domain'),
+
+                    );
+
                     $settings_slider[] = array('type' => 'sectionend', 'id' => 'wcfyndiq');
 
                     return $settings_slider;
