@@ -460,9 +460,14 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
             public function generate_feed() {
 
                 $filePath = plugin_dir_path( __FILE__ ) . 'files/feed.csv';
-                $this->feed_write($filePath);
-                $result = file_get_contents($filePath);
-                return $this->returnAndDie($result);
+                $return = $this->feed_write($filePath);
+                if($return) {
+                    $result = file_get_contents($filePath);
+                    return $this->returnAndDie($result);
+                }
+                else {
+                    return $this->returnAndDie("");
+                }
             }
 
             private function feed_write($filePath) {
@@ -489,8 +494,14 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                             $feedWriter->addProduct($this->getProduct($product));
                         }
                         $feedWriter->write();
+                        return true;
+                    }
+                    else {
+
+                        return true;
                     }
                 }
+                return false;
             }
 
             private function getProduct($product)
