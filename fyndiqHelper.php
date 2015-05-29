@@ -24,15 +24,10 @@ class FmHelpers
      */
     public static function callApi($method, $path, $data = array())
     {
-        if ( ! function_exists( 'get_plugins' ) )
-            require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-
-        $plugin_folder = get_plugins( '/' . 'woocommerce-fyndiq' );
-        $plugin_file = 'woocommerce-fyndiq.php';
-
+        $wp_version = self::get_woocommerce_version();
         // If the plugin version number is set, return it
-        if ( isset( $plugin_folder[$plugin_file]['Version'] ) ) {
-            $plugin_version = $plugin_folder[$plugin_file]['Version'];
+        if ( $wp_version != NULL ) {
+            $plugin_version = $wp_version;
         }
         else {
             $plugin_version = "0.0.0";
