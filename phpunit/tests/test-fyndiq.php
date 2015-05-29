@@ -132,6 +132,13 @@ class FyndiqTest extends WP_UnitTestCase {
                   'id' => 'wcfyndiq_apitoken',
                   'type' => 'text',
                   'desc' => 'Must be API v2 token'),
+            Array (
+                  'type' => 'select',
+                  'id' => 'wcfyndiq_create_order_status',
+                  'name' => 'Order Status',
+                  'desc_tip' => 'When a order is imported from fyndiq, this status will be applied.',
+                  'options' => array('completed' => 'completed', 'processing' => 'processing', 'pending' => 'pending', 'on-hold' => 'on-hold'),
+                  'desc' => 'This must be picked accurate'),
             array('type' => 'sectionend',
                   'id' => 'wcfyndiq')
         );
