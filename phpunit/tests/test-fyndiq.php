@@ -168,7 +168,6 @@ class FyndiqTest extends WP_UnitTestCase {
 
     function test_fyndiq_product_export_bulk_action() {
         $return = $this->wc_fyndiq->fyndiq_product_export_bulk_action();
-        echo $return;
         $this->expectOutputString("");
     }
 
