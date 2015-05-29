@@ -36,7 +36,7 @@ class FmHelpers
         $username = get_option('wcfyndiq_username');
         $apiToken = get_option('wcfyndiq_apitoken');
 
-        $userAgent = "FyndiqMerchantMagento" . $plugin_version . "-" . self::get_woocommerce_version();
+        $userAgent = "FyndiqMerchantWoocommerce" . $plugin_version . "-" . self::get_woocommerce_version();
 
         return FyndiqAPICall::callApiRaw($userAgent, $username, $apiToken, $method, $path, $data,
             array('FyndiqAPI', 'call'));
