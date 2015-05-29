@@ -13,10 +13,15 @@
 	</testsuites>
     <filter>
         <whitelist>
-            <directory suffix=".php">./</directory>
-            <exclude>
-                <directory suffix=".php">./phpunit</directory>
-            </exclude>
+            <directory suffix=".php">./models</directory>
+            <file>woocommerce-fyndiq.php</file>
+            <file>fyndiqHelper.php</file>
         </whitelist>
+        <blacklist>
+            <directory>./api</directory>
+            <directory>./bin</directory>
+            <directory>./phpunit</directory>
+            <directory>./shared</directory>
+        </blacklist>
     </filter>
 </phpunit>
