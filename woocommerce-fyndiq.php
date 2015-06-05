@@ -502,8 +502,13 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                         $file = fopen($filePath, 'w+');
                         $feedWriter = new FyndiqCSVFeedWriter($file);
                         foreach ($posts_array as $product) {
-                            $product = new WC_Product($product->ID);
+                            $product = new WC_Product_Variable($product->ID);
                             $feedWriter->addProduct($this->getProduct($product));
+                            $variations = $product->get_available_variations();
+                            foreach($variations as $variation) {
+                                var_dump($variation);
+                                $feedWriter->addProduct($this->getVariation($product, $variation));
+                            }
                         }
                         $feedWriter->write();
                         return true;
@@ -556,6 +561,15 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     $imageId++;
                 }
 
+                $variations = $product->get_available_variations();
+                foreach($variations as $variation) {
+                    if($variation['image_src'] != "") {
+                        $feedProduct['product-image-' . $imageId . '-url'] = $variation['image_src'];
+                        $feedProduct['product-image-' . $imageId . '-identifier'] = substr(md5($variation['image_src']), 0, 10);
+                        $imageId++;
+                    }
+                }
+
                 $feedProduct['article-quantity'] = intval(get_post_meta( $product->id, '_stock')[0]);
 
                 $feedProduct['article-location'] = 'unknown';
@@ -563,6 +577,66 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 $feedProduct['article-name'] = $product->post->post_title;
 
                 return $feedProduct;
+            }
+
+
+            private function getVariation($product, $variation)
+            {
+                if($variation['is_purchasable'] && $variation['is_in_stock'] && !$variation['is_downloadable'] && !$variation['is_virtual']) {
+                    //Initialize models here so it saves memory.
+                    $feedProduct['product-id'] = $product->id;
+                    $feedProduct['product-title'] = $product->post->post_title;
+                    $feedProduct['product-description'] = $product->post->post_content;
+
+                    $discount = 10;
+                    $product_price = get_post_meta( $product->id, '_regular_price');
+                    $price = FyndiqUtils::getFyndiqPrice($product_price[0], $discount);
+                    $_tax = new WC_Tax();//looking for appropriate vat for specific product
+                    $rates = $_tax->get_rates( $product->get_tax_class() );
+
+
+                    $feedProduct['product-price'] = FyndiqUtils::formatPrice($variation['display_price']);
+                    $feedProduct['product-vat-percent'] = !empty($rates['rate']) ? $rates['rate'] : 0;
+                    $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($product_price);
+                    $feedProduct['product-market'] = 'SE';
+                    $feedProduct['product-currency'] = 'SEK';
+                    $feedProduct['product-brand'] = 'UNKNOWN';
+
+                    $terms = get_the_terms( $product->id, 'product_cat' );
+                    if ( $terms && ! is_wp_error( $terms ) ) {
+                        foreach ($terms as $term) {
+                            $feedProduct['product-category-id'] = $term->term_id;
+                            $feedProduct['product-category-name'] = $term->name;
+                            break;
+                        }
+                    }
+
+                    $attachment_ids = $product->get_gallery_attachment_ids();
+                    $imageId=1;
+                    foreach( $attachment_ids as $attachment_id )
+                    {
+                        $image_link = wp_get_attachment_url( $attachment_id );
+                        $feedProduct['product-image-' . $imageId . '-url'] = $image_link;
+                        $feedProduct['product-image-' . $imageId . '-identifier'] = substr(md5($image_link), 0, 10);
+                        $imageId++;
+                    }
+
+
+
+                    $feedProduct['article-quantity'] = intval(get_post_meta( $product->id, '_stock')[0]);
+
+                    $feedProduct['article-location'] = 'unknown';
+                    if($variation['sku'] != "") {
+                        $sku = $variation['sku'];
+                    }
+                    else {
+                        $sku = $product->id."-".$variation['variation_id'];
+                    }
+                    $feedProduct['article-sku'] = $sku;
+                    $feedProduct['article-name'] = array_shift(array_values($variation['attributes']));
+
+                    return $feedProduct;
+                }
             }
 
             public function notification_handle() {
