@@ -70,6 +70,11 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 add_action('pre_get_posts', array(&$this, 'fyndiq_product_column_sort_by'));
                 add_action('admin_notices', array(&$this, 'fyndiq_bulk_notices'));
 
+                //order list
+                add_filter('manage_edit-shop_order_columns', array(&$this, 'fyndiq_order_add_column'));
+                add_action('manage_shop_order_posts_custom_column', array(&$this, 'fyndiq_order_column'), 5, 2);
+                add_filter("manage_edit-shop_order_sortable_columns", array(&$this, 'fyndiq_order_column_sort'));
+
 
                 //bulk action
                 add_action('admin_footer-edit.php', array(&$this, 'fyndiq_product_add_bulk_action'));
@@ -291,6 +296,51 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     }
                 }
             }
+
+
+
+            function fyndiq_order_column_sort()
+            {
+                return array(
+                    'fyndiq_order' => 'fyndiq_order'
+                );
+            }
+
+            function fyndiq_order_column_sort_by($query)
+            {
+                if (!is_admin()) {
+                    return;
+                }
+                $orderby = $query->get('orderby');
+                if ('fyndiq_order' == $orderby) {
+                    $query->set('meta_key', 'fyndiq_id');
+                    $query->set('orderby', 'meta_value_integer');
+                }
+            }
+
+
+
+            function fyndiq_order_add_column($defaults)
+            {
+                $defaults['fyndiq_order'] = 'Fyndiq Order';
+
+                return $defaults;
+            }
+
+            function fyndiq_order_column($column, $postid)
+            {
+                $product = new WC_Order($postid);
+                if ($column == 'fyndiq_order') {
+                        $fyndiq_order = get_post_meta($postid, 'fyndiq_id', true);
+                        if ($fyndiq_order != "") {
+                            echo $fyndiq_order;
+                        } else {
+                            update_post_meta($postid, 'fyndiq_id', '-');
+                            echo "-";
+                        }
+                }
+            }
+
 
 
 
