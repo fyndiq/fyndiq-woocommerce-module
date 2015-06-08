@@ -84,6 +84,9 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 //add_action('post_submitbox_misc_actions', array( &$this, 'fyndiq_order_edit_action'));
                 add_action( 'add_meta_boxes', array( &$this, 'fyndiq_order_meta_boxes') );
 
+                //notice for currency check
+                add_action('admin_notices', array( &$this, 'my_admin_notice'));
+
                 //functions
                 if(isset($_GET['fyndiq_feed'])) {
                     $this->generate_feed();
@@ -294,6 +297,16 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     else {
                         echo "Can't be exported";
                     }
+                }
+            }
+
+
+            function my_admin_notice()
+            {
+                if(get_woocommerce_currency() != "SEK" && get_woocommerce_currency() != "EUR") {
+                echo '<div class="error">
+                   <p><Storng>Wrong Currency</Storng>: Fyndiq only works in EUR and SEK. change to correct currency. Current Currency: '.get_woocommerce_currency().'</p>
+                </div>';
                 }
             }
 
@@ -589,7 +602,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 $feedProduct['product-vat-percent'] = !empty($rates['rate']) ? $rates['rate'] : 0;
                 $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($product_price);
                 $feedProduct['product-market'] = 'SE';
-                $feedProduct['product-currency'] = 'SEK';
+                $feedProduct['product-currency'] = get_woocommerce_currency();
                 $feedProduct['product-brand'] = 'UNKNOWN';
 
                 $terms = get_the_terms( $product->id, 'product_cat' );
@@ -649,7 +662,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     $feedProduct['product-vat-percent'] = !empty($rates['rate']) ? $rates['rate'] : 0;
                     $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($product_price);
                     $feedProduct['product-market'] = 'SE';
-                    $feedProduct['product-currency'] = 'SEK';
+                    $feedProduct['product-currency'] = get_woocommerce_currency();
                     $feedProduct['product-brand'] = 'UNKNOWN';
 
                     $terms = get_the_terms( $product->id, 'product_cat' );
