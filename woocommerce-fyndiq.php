@@ -199,19 +199,6 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
                     );
 
-                    // Add order status setting
-                    $settings_slider[] = array(
-
-                        'name' => __('Country', 'text-domain'),
-                        'desc_tip' => __('This is the country that will be used when exporting products to fyndiq.', 'text-domain'),
-                        'id' => 'wcfyndiq_country',
-                        'type' => 'select',
-                        'options' => WC()->countries->get_allowed_countries(),
-                        'desc' => __('This must be the country your merchant is set for on Fyndiq', 'text-domain'),
-
-                    );
-
-
 
                     $settings_slider[] = array('type' => 'sectionend', 'id' => 'wcfyndiq');
 
@@ -318,8 +305,13 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
             function my_admin_notice()
             {
                 if(get_woocommerce_currency() != "SEK" && get_woocommerce_currency() != "EUR") {
-                echo '<div class="error">
+                    echo '<div class="error">
                    <p><Storng>Wrong Currency</Storng>: Fyndiq only works in EUR and SEK. change to correct currency. Current Currency: '.get_woocommerce_currency().'</p>
+                </div>';
+                }
+                if(WC()->countries->get_base_country() != "SE" && WC()->countries->get_base_country() != "DE") {
+                    echo '<div class="error">
+                   <p><Storng>Wrong Country</Storng>: Fyndiq only works in Sweden and Germany. change to correct country. Current Country: '.WC()->countries->get_base_country().'</p>
                 </div>';
                 }
             }
@@ -614,7 +606,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 $feedProduct['product-price'] = FyndiqUtils::formatPrice($price);
                 $feedProduct['product-vat-percent'] = !empty($rates['rate']) ? $rates['rate'] : 0;
                 $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($product_price);
-                $feedProduct['product-market'] = get_option('wcfyndiq_country');
+                $feedProduct['product-market'] = WC()->countries->get_base_country();
                 $feedProduct['product-currency'] = get_woocommerce_currency();
                 $feedProduct['product-brand'] = 'UNKNOWN';
 
@@ -674,7 +666,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     $feedProduct['product-price'] = FyndiqUtils::formatPrice($variation['display_price']);
                     $feedProduct['product-vat-percent'] = !empty($rates['rate']) ? $rates['rate'] : 0;
                     $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($product_price);
-                    $feedProduct['product-market'] = get_option('wcfyndiq_country');
+                    $feedProduct['product-market'] = WC()->countries->get_base_country();
                     $feedProduct['product-currency'] = get_woocommerce_currency();
                     $feedProduct['product-brand'] = 'UNKNOWN';
 
