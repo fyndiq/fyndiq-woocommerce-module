@@ -134,7 +134,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     var wordpressurl = '<?php echo get_site_url(); ?>' ;
                 </script>
                 <script src="<?php echo plugins_url( '/stylesheet/order-import.js', __FILE__ ); ?>" type="text/javascript"></script>
-                <?
+                <?php
             }
 
             function fyndiq_settings_action($sections)
@@ -225,7 +225,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                         //echo "Wrong api-token or username to Fyndiq.";
                         ?><div class="error">
                             <p><?php _e( 'Fyndiq credentials was wrong, try again.', 'fyndiq_username' ); ?></p>
-                        </div><?
+                        </div><?php
                     }
                     //die();
                 }
