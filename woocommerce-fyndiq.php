@@ -583,7 +583,6 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                             $feedWriter->addProduct($this->getProduct($product));
                             $variations = $product->get_available_variations();
                             foreach($variations as $variation) {
-                                var_dump($variation);
                                 $feedWriter->addProduct($this->getVariation($product, $variation));
                             }
                         }
@@ -710,7 +709,8 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                         $sku = $product->id."-".$variation['variation_id'];
                     }
                     $feedProduct['article-sku'] = $sku;
-                    $feedProduct['article-name'] = array_shift(array_values($variation['attributes']));
+                    $tag_values = array_values($variation['attributes']);
+                    $feedProduct['article-name'] = array_shift($tag_values);
 
                     return $feedProduct;
                 }
