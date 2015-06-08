@@ -199,6 +199,20 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
                     );
 
+                    // Add order status setting
+                    $settings_slider[] = array(
+
+                        'name' => __('Country', 'text-domain'),
+                        'desc_tip' => __('This is the country that will be used when exporting products to fyndiq.', 'text-domain'),
+                        'id' => 'wcfyndiq_country',
+                        'type' => 'select',
+                        'options' => WC()->countries->get_allowed_countries(),
+                        'desc' => __('This must be the country your merchant is set for on Fyndiq', 'text-domain'),
+
+                    );
+
+
+
                     $settings_slider[] = array('type' => 'sectionend', 'id' => 'wcfyndiq');
 
                     return $settings_slider;
@@ -601,7 +615,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 $feedProduct['product-price'] = FyndiqUtils::formatPrice($price);
                 $feedProduct['product-vat-percent'] = !empty($rates['rate']) ? $rates['rate'] : 0;
                 $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($product_price);
-                $feedProduct['product-market'] = 'SE';
+                $feedProduct['product-market'] = get_option('wcfyndiq_country');
                 $feedProduct['product-currency'] = get_woocommerce_currency();
                 $feedProduct['product-brand'] = 'UNKNOWN';
 
@@ -661,7 +675,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     $feedProduct['product-price'] = FyndiqUtils::formatPrice($variation['display_price']);
                     $feedProduct['product-vat-percent'] = !empty($rates['rate']) ? $rates['rate'] : 0;
                     $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($product_price);
-                    $feedProduct['product-market'] = 'SE';
+                    $feedProduct['product-market'] = get_option('wcfyndiq_country');
                     $feedProduct['product-currency'] = get_woocommerce_currency();
                     $feedProduct['product-brand'] = 'UNKNOWN';
 
