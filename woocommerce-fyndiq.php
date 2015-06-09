@@ -304,12 +304,12 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
             function my_admin_notice()
             {
-                if(get_woocommerce_currency() != "SEK" && get_woocommerce_currency() != "EUR") {
+                if($this->checkCurrency()) {
                     echo '<div class="error">
                    <p><Storng>Wrong Currency</Storng>: Fyndiq only works in EUR and SEK. change to correct currency. Current Currency: '.get_woocommerce_currency().'</p>
                 </div>';
                 }
-                if(WC()->countries->get_base_country() != "SE" && WC()->countries->get_base_country() != "DE") {
+                if($this->checkCountry()) {
                     echo '<div class="error">
                    <p><Storng>Wrong Country</Storng>: Fyndiq only works in Sweden and Germany. change to correct country. Current Country: '.WC()->countries->get_base_country().'</p>
                 </div>';
@@ -812,6 +812,13 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
             function getExportState() {
                 return isset($_POST['_fyndiq_export']) ? 'exported' : 'not exported';
+            }
+
+            function checkCurrency() {
+                return (get_woocommerce_currency() != "SEK" && get_woocommerce_currency() != "EUR");
+            }
+            function checkCountry() {
+                return (WC()->countries->get_base_country() != "SE" && WC()->countries->get_base_country() != "DE");
             }
         }
 
