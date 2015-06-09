@@ -579,12 +579,8 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                             }
                         }
                         $feedWriter->write();
-                        return true;
                     }
-                    else {
-
-                        return true;
-                    }
+                    return true;
                 }
                 return false;
             }
