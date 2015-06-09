@@ -54,6 +54,11 @@ if [ ! -f "$WC_PATH/index.php" ]; then
     ## Install WooCommerce
     sudo -u vagrant -i -- wp plugin install --path=$WC_PATH woocommerce --activate
 
+    ## Install woocommerce-fyndiq
+    ln -s /opt/fyndiq-woocommerce-module/ $WC_PATH/wp-content/plugins/woocommerce-fyndiq
+    sudo -u vagrant -i -- wp plugin activate --path=$WC_PATH woocommerce-fyndiq
+
+
     ## Add hosts to file
     echo "192.168.13.37  fyndiq.local" >> /etc/hosts
     echo "127.0.0.1  woocommerce.local" >> /etc/hosts
