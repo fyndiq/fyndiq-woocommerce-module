@@ -638,7 +638,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 $feedProduct['article-quantity'] = intval($stock[0]);
 
                 $feedProduct['article-location'] = 'unknown';
-                $sku = get_post_meta($product->id, '_sku')
+                $sku = get_post_meta($product->id, '_sku');
                 $feedProduct['article-sku'] = $sku[0];
                 $feedProduct['article-name'] = $product->post->post_title;
 
