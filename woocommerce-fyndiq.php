@@ -533,7 +533,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
             public function plugins_loaded()
             {
                 include_once('fyndiqHelper.php');
-                require_once('shared/src/init.php');
+                require_once('include/shared/src/init.php');
                 require_once('models/order.php');
                 require_once('models/orderFetch.php');
             }

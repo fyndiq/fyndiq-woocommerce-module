@@ -1,5 +1,5 @@
 <?php
-require_once('api/fyndiqAPI.php');
+require_once('include/api/fyndiqAPI.php');
 class FmHelpers
 {
 
