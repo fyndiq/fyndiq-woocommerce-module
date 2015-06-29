@@ -634,10 +634,12 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     }
                 }
 
-                $feedProduct['article-quantity'] = intval(get_post_meta( $product->id, '_stock')[0]);
+                $stock = get_post_meta($product->id, '_stock');
+                $feedProduct['article-quantity'] = intval($stock[0]);
 
                 $feedProduct['article-location'] = 'unknown';
-                $feedProduct['article-sku'] = get_post_meta( $product->id, '_sku')[0];
+                $sku = get_post_meta($product->id, '_sku');
+                $feedProduct['article-sku'] = $sku[0];
                 $feedProduct['article-name'] = $product->post->post_title;
 
                 return $feedProduct;
@@ -686,8 +688,8 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     }
 
 
-
-                    $feedProduct['article-quantity'] = intval(get_post_meta( $product->id, '_stock')[0]);
+                    $stock = get_post_meta($product->id, '_stock');
+                    $feedProduct['article-quantity'] = intval($stock[0]);
 
                     $feedProduct['article-location'] = 'unknown';
                     if($variation['sku'] != "") {
