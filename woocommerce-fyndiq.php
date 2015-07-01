@@ -16,7 +16,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
         /**
          * Localisation
          **/
-        load_plugin_textdomain('wc_fyndiq', false, dirname(plugin_basename(__FILE__)) . '/');
+        load_plugin_textdomain('fyndiq', false, dirname(plugin_basename(__FILE__)) . '/translations/');
 
         class WC_Fyndiq
         {
@@ -265,7 +265,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     echo '</div>';
                 }
                 else {
-                    echo '<div class="options_group">Can\'t export this product to Fyndiq</div>';
+                    echo '<div class="options_group">' . __('Can\'t export this product to Fyndiq') . '</div>';
                 }
             }
 
@@ -277,7 +277,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
             function fyndiq_product_add_column($defaults)
             {
-                $defaults['fyndiq_export'] = 'Fyndiq Exported';
+                $defaults['fyndiq_export'] = __('Fyndiq Exported');
 
                 return $defaults;
             }
@@ -289,14 +289,14 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     if (!$product->is_downloadable()) {
                         $exported = get_post_meta($postid, '_fyndiq_export', true);
                         if ($exported != "") {
-                            echo $exported;
+                            _e($exported);
                         } else {
                             update_post_meta($postid, '_fyndiq_export', 'not exported');
-                            echo "not exported";
+                            _e("Not exported");
                         }
                     }
                     else {
-                        echo "Can't be exported";
+                        _e("Can't be exported");
                     }
                 }
             }
@@ -306,12 +306,12 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
             {
                 if($this->checkCurrency()) {
                     echo '<div class="error">
-                   <p><Storng>Wrong Currency</Storng>: Fyndiq only works in EUR and SEK. change to correct currency. Current Currency: '.get_woocommerce_currency().'</p>
+                   <p><strong>' . __("Wrong Currency") . '</strong>: ' . __("Fyndiq only works in EUR and SEK. change to correct currency. Current Currency:") . ' '.get_woocommerce_currency().'</p>
                 </div>';
                 }
                 if($this->checkCountry()) {
                     echo '<div class="error">
-                   <p><Storng>Wrong Country</Storng>: Fyndiq only works in Sweden and Germany. change to correct country. Current Country: '.WC()->countries->get_base_country().'</p>
+                   <p><strong>' . __("Wrong Country") . '</strong>: ' . __("Fyndiq only works in Sweden and Germany. change to correct country. Current Country:") . ' '.WC()->countries->get_base_country().'</p>
                 </div>';
                 }
             }
@@ -404,7 +404,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                         jQuery(document).ready(function () {
                             jQuery('<option>').val('fyndiq_delivery').text('<?php _e('Get Fyndiq Delivery Note')?>').appendTo("select[name='action']");
                             jQuery('<option>').val('fyndiq_delivery').text('<?php _e('Get Fyndiq Delivery Note')?>').appendTo("select[name='action2']");
-                            jQuery(jQuery(".wrap h2")[0]).append("<a href='#' id='fyndiq-order-import' class='add-new-h2'>Import From Fyndiq</a>");
+                            jQuery(jQuery(".wrap h2")[0]).append("<a href='#' id='fyndiq-order-import' class='add-new-h2'><?php _e("Import From Fyndiq"); ?></a>");
                         });
                     </script>
                 <?php
