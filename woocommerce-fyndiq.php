@@ -16,7 +16,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
         /**
          * Localisation
          **/
-        load_plugin_textdomain('wc_fyndiq', false, dirname(plugin_basename(__FILE__)) . '/');
+        load_plugin_textdomain('fyndiq', false, dirname(plugin_basename(__FILE__)) . '/translations/');
 
         class WC_Fyndiq
         {
