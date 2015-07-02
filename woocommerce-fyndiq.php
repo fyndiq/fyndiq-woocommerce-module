@@ -824,7 +824,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 return (WC()->countries->get_base_country() != "SE" && WC()->countries->get_base_country() != "DE");
             }
             function checkCredentials() {
-                return (is_null(get_option('wcfyndiq_username')) || get_option('wcfyndiq_username') == "") || (is_null(get_option('wcfyndiq_apitoken')) || get_option('wcfyndiq_apitoken') == "");
+                return empty(get_option('wcfyndiq_username')) || empty(get_option('wcfyndiq_apitoken'));
             }
         }
 
