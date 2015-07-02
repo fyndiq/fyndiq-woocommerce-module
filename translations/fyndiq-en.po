@@ -100,14 +100,14 @@ msgstr ""
 
 #: woocommerce-fyndiq.php:465
 #, php-format
-msgid "Products removed from Fyndiq."
+msgid "Product removed from Fyndiq."
 msgid_plural "%s products removed from Fyndiq."
 msgstr[0] ""
 msgstr[1] ""
 
 #: woocommerce-fyndiq.php:469
 #, php-format
-msgid "Products exported to Fyndiq."
+msgid "Product exported to Fyndiq."
 msgid_plural "%s products exported to Fyndiq."
 msgstr[0] ""
 msgstr[1] ""
