@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Fyndiq Woocommerce\n"
-"POT-Creation-Date: 2015-07-01 09:30+0100\n"
-"PO-Revision-Date: 2015-07-01 09:32+0100\n"
+"POT-Creation-Date: 2015-07-02 10:49+0100\n"
+"PO-Revision-Date: 2015-07-02 10:50+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en\n"
@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.7.6\n"
-"X-Poedit-Basepath: ..\n"
+"X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
 "esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;"
@@ -71,8 +71,8 @@ msgstr ""
 msgid "Fyndiq credentials was wrong, try again."
 msgstr ""
 
-#: woocommerce-fyndiq.php:260 woocommerce-fyndiq.php:393
-#: woocommerce-fyndiq.php:394
+#: woocommerce-fyndiq.php:260 woocommerce-fyndiq.php:398
+#: woocommerce-fyndiq.php:399
 msgid "Export to Fyndiq"
 msgstr ""
 
@@ -80,64 +80,34 @@ msgstr ""
 msgid "mark this as true if you want to export to Fyndiq"
 msgstr ""
 
-#: woocommerce-fyndiq.php:268
-msgid "Can't export this product to Fyndiq"
+#: woocommerce-fyndiq.php:319
+msgid "Fyndiq Credentials"
 msgstr ""
 
-#: woocommerce-fyndiq.php:280
-msgid "Fyndiq Exported"
-msgstr ""
-
-#: woocommerce-fyndiq.php:295
-msgid "Not exported"
-msgstr ""
-
-#: woocommerce-fyndiq.php:299
-msgid "Can't be exported"
-msgstr ""
-
-#: woocommerce-fyndiq.php:309
-msgid "Wrong Currency"
-msgstr ""
-
-#: woocommerce-fyndiq.php:309
+#: woocommerce-fyndiq.php:319
 msgid ""
-"Fyndiq only works in EUR and SEK. change to correct currency. Current "
-"Currency:"
+"You need to set Fyndiq Credentials to make it work. Do it in Woocommerce "
+"Settings > Products > Fyndiq."
 msgstr ""
 
-#: woocommerce-fyndiq.php:314
-msgid "Wrong Country"
-msgstr ""
-
-#: woocommerce-fyndiq.php:314
-msgid ""
-"Fyndiq only works in Sweden and Germany. change to correct country. Current "
-"Country:"
-msgstr ""
-
-#: woocommerce-fyndiq.php:395 woocommerce-fyndiq.php:396
+#: woocommerce-fyndiq.php:400 woocommerce-fyndiq.php:401
 msgid "Remove from Fyndiq"
 msgstr ""
 
-#: woocommerce-fyndiq.php:405 woocommerce-fyndiq.php:406
+#: woocommerce-fyndiq.php:410 woocommerce-fyndiq.php:411
 msgid "Get Fyndiq Delivery Note"
 msgstr ""
 
-#: woocommerce-fyndiq.php:407
-msgid "Import From Fyndiq"
-msgstr ""
-
-#: woocommerce-fyndiq.php:460
+#: woocommerce-fyndiq.php:465
 #, php-format
-msgid "Product removed from Fyndiq."
+msgid "Products removed from Fyndiq."
 msgid_plural "%s products removed from Fyndiq."
 msgstr[0] ""
 msgstr[1] ""
 
-#: woocommerce-fyndiq.php:464
+#: woocommerce-fyndiq.php:469
 #, php-format
-msgid "Product exported to Fyndiq."
+msgid "Products exported to Fyndiq."
 msgid_plural "%s products exported to Fyndiq."
 msgstr[0] ""
 msgstr[1] ""
