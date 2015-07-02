@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Fyndiq Woocommerce\n"
-"POT-Creation-Date: 2015-07-01 09:30+0100\n"
-"PO-Revision-Date: 2015-07-01 09:32+0100\n"
+"POT-Creation-Date: 2015-07-02 10:57+0100\n"
+"PO-Revision-Date: 2015-07-02 10:58+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en\n"
@@ -71,8 +71,8 @@ msgstr ""
 msgid "Fyndiq credentials was wrong, try again."
 msgstr ""
 
-#: woocommerce-fyndiq.php:260 woocommerce-fyndiq.php:393
-#: woocommerce-fyndiq.php:394
+#: woocommerce-fyndiq.php:260 woocommerce-fyndiq.php:398
+#: woocommerce-fyndiq.php:399
 msgid "Export to Fyndiq"
 msgstr ""
 
@@ -116,26 +116,36 @@ msgid ""
 "Country:"
 msgstr ""
 
-#: woocommerce-fyndiq.php:395 woocommerce-fyndiq.php:396
+#: woocommerce-fyndiq.php:319
+msgid "Fyndiq Credentials"
+msgstr ""
+
+#: woocommerce-fyndiq.php:319
+msgid ""
+"You need to set Fyndiq Credentials to make it work. Do it in Woocommerce "
+"Settings > Products > Fyndiq."
+msgstr ""
+
+#: woocommerce-fyndiq.php:400 woocommerce-fyndiq.php:401
 msgid "Remove from Fyndiq"
 msgstr ""
 
-#: woocommerce-fyndiq.php:405 woocommerce-fyndiq.php:406
+#: woocommerce-fyndiq.php:410 woocommerce-fyndiq.php:411
 msgid "Get Fyndiq Delivery Note"
 msgstr ""
 
-#: woocommerce-fyndiq.php:407
+#: woocommerce-fyndiq.php:412
 msgid "Import From Fyndiq"
 msgstr ""
 
-#: woocommerce-fyndiq.php:460
+#: woocommerce-fyndiq.php:465
 #, php-format
 msgid "Product removed from Fyndiq."
 msgid_plural "%s products removed from Fyndiq."
 msgstr[0] ""
 msgstr[1] ""
 
-#: woocommerce-fyndiq.php:464
+#: woocommerce-fyndiq.php:469
 #, php-format
 msgid "Product exported to Fyndiq."
 msgid_plural "%s products exported to Fyndiq."
