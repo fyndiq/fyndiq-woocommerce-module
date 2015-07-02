@@ -314,6 +314,11 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                    <p><Storng>Wrong Country</Storng>: Fyndiq only works in Sweden and Germany. change to correct country. Current Country: '.WC()->countries->get_base_country().'</p>
                 </div>';
                 }
+                if($this->checkCredentials()) {
+                    echo '<div class="error">
+                   <p><strong>' . __("Fyndiq Credentials") . '</strong>: ' . __("You need to set Fyndiq Credentials to make it work. Do it in Woocommerce Settings > Products > Fyndiq.") . '</p>
+                </div>';
+                }
             }
 
 
@@ -817,6 +822,9 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
             }
             function checkCountry() {
                 return (WC()->countries->get_base_country() != "SE" && WC()->countries->get_base_country() != "DE");
+            }
+            function checkCredentials() {
+                return (is_null(get_option('wcfyndiq_username')) || get_option('wcfyndiq_username') == "") || (is_null(get_option('wcfyndiq_apitoken')) || get_option('wcfyndiq_apitoken') == "");
             }
         }
 
