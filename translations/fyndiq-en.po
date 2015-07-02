@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Fyndiq Woocommerce\n"
-"POT-Creation-Date: 2015-07-02 10:49+0100\n"
-"PO-Revision-Date: 2015-07-02 10:50+0100\n"
+"POT-Creation-Date: 2015-07-02 10:57+0100\n"
+"PO-Revision-Date: 2015-07-02 10:58+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en\n"
@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.7.6\n"
-"X-Poedit-Basepath: .\n"
+"X-Poedit-Basepath: ..\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
 "esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;"
@@ -80,6 +80,42 @@ msgstr ""
 msgid "mark this as true if you want to export to Fyndiq"
 msgstr ""
 
+#: woocommerce-fyndiq.php:268
+msgid "Can't export this product to Fyndiq"
+msgstr ""
+
+#: woocommerce-fyndiq.php:280
+msgid "Fyndiq Exported"
+msgstr ""
+
+#: woocommerce-fyndiq.php:295
+msgid "Not exported"
+msgstr ""
+
+#: woocommerce-fyndiq.php:299
+msgid "Can't be exported"
+msgstr ""
+
+#: woocommerce-fyndiq.php:309
+msgid "Wrong Currency"
+msgstr ""
+
+#: woocommerce-fyndiq.php:309
+msgid ""
+"Fyndiq only works in EUR and SEK. change to correct currency. Current "
+"Currency:"
+msgstr ""
+
+#: woocommerce-fyndiq.php:314
+msgid "Wrong Country"
+msgstr ""
+
+#: woocommerce-fyndiq.php:314
+msgid ""
+"Fyndiq only works in Sweden and Germany. change to correct country. Current "
+"Country:"
+msgstr ""
+
 #: woocommerce-fyndiq.php:319
 msgid "Fyndiq Credentials"
 msgstr ""
@@ -96,6 +132,10 @@ msgstr ""
 
 #: woocommerce-fyndiq.php:410 woocommerce-fyndiq.php:411
 msgid "Get Fyndiq Delivery Note"
+msgstr ""
+
+#: woocommerce-fyndiq.php:412
+msgid "Import From Fyndiq"
 msgstr ""
 
 #: woocommerce-fyndiq.php:465
