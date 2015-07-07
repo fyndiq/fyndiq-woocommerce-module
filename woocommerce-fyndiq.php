@@ -273,11 +273,14 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                             'description' => __('mark this as true if you want to export to Fyndiq', 'fyndiq'),
                             'required' => false,
                         ), $value );
+                    $discount = get_option('wcfyndiq_price_percentage');
+                    $product_price = get_post_meta( $product->id, '_regular_price');
+                    $price = FyndiqUtils::getFyndiqPrice($product_price[0], $discount);
 
-                    echo '</div>';
+                    echo '<p>Fyndiq Price with set Discount percentage: '.$price.' '.get_woocommerce_currency().'</p></div>';
                 }
                 else {
-                    echo '<div class="options_group">' . __('Can\'t export this product to Fyndiq') . '</div>';
+                    echo '<div class="options_group"><p>' . __('Can\'t export this product to Fyndiq') . '</p></div>';
                 }
             }
 
