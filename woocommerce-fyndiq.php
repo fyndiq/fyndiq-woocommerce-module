@@ -187,6 +187,17 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
                     );
 
+                    //Price Percentage
+                    $settings_slider[] = array(
+
+                        'name' => __('Global Price Percentage', 'fyndiq'),
+                        'desc_tip' => __('The percentage that will be removed from the price when sending to fyndiq.', 'fyndiq'),
+                        'id' => 'wcfyndiq_price_percentage',
+                        'type' => 'text',
+                        'desc' => __('Can be 0 if the price should be the same as in your shop.', 'fyndiq'),
+
+                    );
+
                     // Add order status setting
                     $settings_slider[] = array(
 
