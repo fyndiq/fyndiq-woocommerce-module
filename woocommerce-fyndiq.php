@@ -194,6 +194,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                         'desc_tip' => __('The percentage that will be removed from the price when sending to fyndiq.', 'fyndiq'),
                         'id' => 'wcfyndiq_price_percentage',
                         'type' => 'text',
+                        'default'  => '10',
                         'desc' => __('Can be 0 if the price should be the same as in your shop.', 'fyndiq'),
 
                     );
@@ -608,7 +609,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 $feedProduct['product-title'] = $product->post->post_title;
                 $feedProduct['product-description'] = $product->post->post_content;
 
-                $discount = 10;
+                $discount = get_option('wcfyndiq_price_percentage');
                 $product_price = get_post_meta( $product->id, '_regular_price');
                 $price = FyndiqUtils::getFyndiqPrice($product_price[0], $discount);
                 $_tax = new WC_Tax();//looking for appropriate vat for specific product
@@ -670,7 +671,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     $feedProduct['product-title'] = $product->post->post_title;
                     $feedProduct['product-description'] = $product->post->post_content;
 
-                    $discount = 10;
+                    $discount = get_option('wcfyndiq_price_percentage');
                     $product_price = get_post_meta( $product->id, '_regular_price');
                     $price = FyndiqUtils::getFyndiqPrice($product_price[0], $discount);
                     $_tax = new WC_Tax();//looking for appropriate vat for specific product
