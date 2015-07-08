@@ -824,7 +824,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
             {
                 if (isset($_GET['event'])) {
                     $event = $_GET['event'];
-                    $eventName = $event ? $event : false;
+                    $eventName = $event ? "notice_".$event : false;
                     if ($eventName) {
                         if ($eventName[0] != '_' && method_exists($this, $eventName)) {
                             return $this->$eventName();
@@ -835,7 +835,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 die('400 Bad Request');
             }
 
-            public function order_created()
+            public function notice_order_created()
             {
                 $order_id = $_GET['order_id'];
                 $orderId = is_numeric($order_id) ? intval($order_id) : 0;
@@ -859,7 +859,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 }
             }
 
-            public function ping()
+            public function notice_ping()
             {
                 $pingToken = get_option("wcfyndiq_ping_token");
 
