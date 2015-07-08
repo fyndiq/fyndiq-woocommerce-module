@@ -293,8 +293,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     else {
                         $discount = $this->getDiscount(get_option('wcfyndiq_price_percentage'));
                     }
-                    $product_price = get_post_meta( $product->id, '_regular_price');
-                    $price = FyndiqUtils::getFyndiqPrice($product_price[0], $discount);
+                    $price = FyndiqUtils::getFyndiqPrice($product->price, $discount);
 
                     echo '<p>' . __('Fyndiq Price with set Discount percentage: ', 'fyndiq').$price.' '.get_woocommerce_currency().'</p></div>';
                 }
