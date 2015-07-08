@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Fyndiq Woocommerce\n"
-"POT-Creation-Date: 2015-07-02 10:57+0100\n"
-"PO-Revision-Date: 2015-07-02 10:58+0100\n"
+"POT-Creation-Date: 2015-07-08 11:09+0100\n"
+"PO-Revision-Date: 2015-07-08 11:10+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en\n"
@@ -56,96 +56,113 @@ msgid "Must be API v2 token"
 msgstr ""
 
 #: woocommerce-fyndiq.php:193
-msgid "Order Status"
+msgid "Global Price Percentage"
 msgstr ""
 
 #: woocommerce-fyndiq.php:194
-msgid "When a order is imported from fyndiq, this status will be applied."
+msgid ""
+"The percentage that will be removed from the price when sending to fyndiq."
 msgstr ""
 
 #: woocommerce-fyndiq.php:198
+msgid "Can be 0 if the price should be the same as in your shop."
+msgstr ""
+
+#: woocommerce-fyndiq.php:205
+msgid "Order Status"
+msgstr ""
+
+#: woocommerce-fyndiq.php:206
+msgid "When a order is imported from fyndiq, this status will be applied."
+msgstr ""
+
+#: woocommerce-fyndiq.php:210
 msgid "This must be picked accurate"
 msgstr ""
 
-#: woocommerce-fyndiq.php:227
+#: woocommerce-fyndiq.php:239
 msgid "Fyndiq credentials was wrong, try again."
 msgstr ""
 
-#: woocommerce-fyndiq.php:260 woocommerce-fyndiq.php:398
-#: woocommerce-fyndiq.php:399
+#: woocommerce-fyndiq.php:272 woocommerce-fyndiq.php:413
+#: woocommerce-fyndiq.php:414
 msgid "Export to Fyndiq"
 msgstr ""
 
-#: woocommerce-fyndiq.php:261
+#: woocommerce-fyndiq.php:273
 msgid "mark this as true if you want to export to Fyndiq"
 msgstr ""
 
-#: woocommerce-fyndiq.php:268
+#: woocommerce-fyndiq.php:280
+msgid "Fyndiq Price with set Discount percentage: "
+msgstr ""
+
+#: woocommerce-fyndiq.php:283
 msgid "Can't export this product to Fyndiq"
 msgstr ""
 
-#: woocommerce-fyndiq.php:280
+#: woocommerce-fyndiq.php:295
 msgid "Fyndiq Exported"
 msgstr ""
 
-#: woocommerce-fyndiq.php:295
+#: woocommerce-fyndiq.php:310
 msgid "Not exported"
 msgstr ""
 
-#: woocommerce-fyndiq.php:299
+#: woocommerce-fyndiq.php:314
 msgid "Can't be exported"
 msgstr ""
 
-#: woocommerce-fyndiq.php:309
+#: woocommerce-fyndiq.php:324
 msgid "Wrong Currency"
 msgstr ""
 
-#: woocommerce-fyndiq.php:309
+#: woocommerce-fyndiq.php:324
 msgid ""
 "Fyndiq only works in EUR and SEK. change to correct currency. Current "
 "Currency:"
 msgstr ""
 
-#: woocommerce-fyndiq.php:314
+#: woocommerce-fyndiq.php:329
 msgid "Wrong Country"
 msgstr ""
 
-#: woocommerce-fyndiq.php:314
+#: woocommerce-fyndiq.php:329
 msgid ""
 "Fyndiq only works in Sweden and Germany. change to correct country. Current "
 "Country:"
 msgstr ""
 
-#: woocommerce-fyndiq.php:319
+#: woocommerce-fyndiq.php:334
 msgid "Fyndiq Credentials"
 msgstr ""
 
-#: woocommerce-fyndiq.php:319
+#: woocommerce-fyndiq.php:334
 msgid ""
 "You need to set Fyndiq Credentials to make it work. Do it in Woocommerce "
 "Settings > Products > Fyndiq."
 msgstr ""
 
-#: woocommerce-fyndiq.php:400 woocommerce-fyndiq.php:401
+#: woocommerce-fyndiq.php:415 woocommerce-fyndiq.php:416
 msgid "Remove from Fyndiq"
 msgstr ""
 
-#: woocommerce-fyndiq.php:410 woocommerce-fyndiq.php:411
+#: woocommerce-fyndiq.php:425 woocommerce-fyndiq.php:426
 msgid "Get Fyndiq Delivery Note"
 msgstr ""
 
-#: woocommerce-fyndiq.php:412
+#: woocommerce-fyndiq.php:427
 msgid "Import From Fyndiq"
 msgstr ""
 
-#: woocommerce-fyndiq.php:465
+#: woocommerce-fyndiq.php:480
 #, php-format
 msgid "Product removed from Fyndiq."
 msgid_plural "%s products removed from Fyndiq."
 msgstr[0] ""
 msgstr[1] ""
 
-#: woocommerce-fyndiq.php:469
+#: woocommerce-fyndiq.php:484
 #, php-format
 msgid "Product exported to Fyndiq."
 msgid_plural "%s products exported to Fyndiq."

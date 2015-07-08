@@ -140,7 +140,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
             function fyndiq_settings_action($sections)
             {
 
-                $sections['wcfyndiq'] = __('Fyndiq', 'text-domain');
+                $sections['wcfyndiq'] = __('Fyndiq', 'fyndiq');
 
                 return $sections;
 
@@ -159,43 +159,55 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
                     // Add Title to the Settings
                     $settings_slider[] = array(
-                        'name' => __('Fyndiq Settings', 'text-domain'),
+                        'name' => __('Fyndiq Settings', 'fyndiq'),
                         'type' => 'title',
-                        'desc' => __('The following options are used to configure Fyndiq', 'text-domain'),
+                        'desc' => __('The following options are used to configure Fyndiq', 'fyndiq'),
                         'id' => 'wcfyndiq'
                     );
 
                     // Add second text field option
                     $settings_slider[] = array(
 
-                        'name' => __('Username', 'text-domain'),
-                        'desc_tip' => __('This is the username you use for login on Fyndiq Merchant', 'text-domain'),
+                        'name' => __('Username', 'fyndiq'),
+                        'desc_tip' => __('This is the username you use for login on Fyndiq Merchant', 'fyndiq'),
                         'id' => 'wcfyndiq_username',
                         'type' => 'text',
-                        'desc' => __('Must be your username', 'text-domain'),
+                        'desc' => __('Must be your username', 'fyndiq'),
 
                     );
 
                     // Add second text field option
                     $settings_slider[] = array(
 
-                        'name' => __('API-token', 'text-domain'),
-                        'desc_tip' => __('This is the API V2 Token on Fyndiq', 'text-domain'),
+                        'name' => __('API-token', 'fyndiq'),
+                        'desc_tip' => __('This is the API V2 Token on Fyndiq', 'fyndiq'),
                         'id' => 'wcfyndiq_apitoken',
                         'type' => 'text',
-                        'desc' => __('Must be API v2 token', 'text-domain'),
+                        'desc' => __('Must be API v2 token', 'fyndiq'),
+
+                    );
+
+                    //Price Percentage
+                    $settings_slider[] = array(
+
+                        'name' => __('Global Price Percentage', 'fyndiq'),
+                        'desc_tip' => __('The percentage that will be removed from the price when sending to fyndiq.', 'fyndiq'),
+                        'id' => 'wcfyndiq_price_percentage',
+                        'type' => 'text',
+                        'default'  => '10',
+                        'desc' => __('Can be 0 if the price should be the same as in your shop.', 'fyndiq'),
 
                     );
 
                     // Add order status setting
                     $settings_slider[] = array(
 
-                        'name' => __('Order Status', 'text-domain'),
-                        'desc_tip' => __('When a order is imported from fyndiq, this status will be applied.', 'text-domain'),
+                        'name' => __('Order Status', 'fyndiq'),
+                        'desc_tip' => __('When a order is imported from fyndiq, this status will be applied.', 'fyndiq'),
                         'id' => 'wcfyndiq_create_order_status',
                         'type' => 'select',
                         'options' => array('completed' => 'completed', 'processing' => 'processing', 'pending' => 'pending', 'on-hold' => 'on-hold'),
-                        'desc' => __('This must be picked accurate', 'text-domain'),
+                        'desc' => __('This must be picked accurate', 'fyndiq'),
 
                     );
 
@@ -257,15 +269,18 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     woocommerce_form_field( '_fyndiq_export', array(
                             'type' => 'checkbox',
                             'class' => array('input-checkbox'),
-                            'label' => __('Export to Fyndiq', 'woocommerce'),
-                            'description' => __('mark this as true if you want to export to Fyndiq', 'woocommerce'),
+                            'label' => __('Export to Fyndiq', 'fyndiq'),
+                            'description' => __('mark this as true if you want to export to Fyndiq', 'fyndiq'),
                             'required' => false,
                         ), $value );
+                    $discount = $this->getDiscount(get_option('wcfyndiq_price_percentage'));
+                    $product_price = get_post_meta( $product->id, '_regular_price');
+                    $price = FyndiqUtils::getFyndiqPrice($product_price[0], $discount);
 
-                    echo '</div>';
+                    echo '<p>' . __('Fyndiq Price with set Discount percentage: ', 'fyndiq').$price.' '.get_woocommerce_currency().'</p></div>';
                 }
                 else {
-                    echo '<div class="options_group">' . __('Can\'t export this product to Fyndiq') . '</div>';
+                    echo '<div class="options_group"><p>' . __('Can\'t export this product to Fyndiq', 'fyndiq') . '</p></div>';
                 }
             }
 
@@ -597,7 +612,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 $feedProduct['product-title'] = $product->post->post_title;
                 $feedProduct['product-description'] = $product->post->post_content;
 
-                $discount = 10;
+                $discount = $this->getDiscount(get_option('wcfyndiq_price_percentage'));
                 $product_price = get_post_meta( $product->id, '_regular_price');
                 $price = FyndiqUtils::getFyndiqPrice($product_price[0], $discount);
                 $_tax = new WC_Tax();//looking for appropriate vat for specific product
@@ -659,7 +674,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     $feedProduct['product-title'] = $product->post->post_title;
                     $feedProduct['product-description'] = $product->post->post_content;
 
-                    $discount = 10;
+                    $discount = $this->getDiscount(get_option('wcfyndiq_price_percentage'));
                     $product_price = get_post_meta( $product->id, '_regular_price');
                     $price = FyndiqUtils::getFyndiqPrice($product_price[0], $discount);
                     $_tax = new WC_Tax();//looking for appropriate vat for specific product
@@ -825,6 +840,16 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
             }
             function checkCredentials() {
                 return empty(get_option('wcfyndiq_username')) || empty(get_option('wcfyndiq_apitoken'));
+            }
+
+            private function getDiscount($discount) {
+                if($discount > 100) {
+                    $discount = 100;
+                }
+                elseif($discount < 0) {
+                    $discount = 0;
+                }
+                return $discount;
             }
         }
 
