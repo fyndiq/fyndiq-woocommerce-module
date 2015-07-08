@@ -865,6 +865,10 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 return isset($_POST['_fyndiq_export']) ? 'exported' : 'not exported';
             }
 
+            function getPricePercentage() {
+                return $_POST['_fyndiq_price_percentage'];
+            }
+
             function checkCurrency() {
                 return (get_woocommerce_currency() != "SEK" && get_woocommerce_currency() != "EUR");
             }
