@@ -673,10 +673,12 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
             private function feed_write($filePath)
             {
-                $productmodel = new FmProduct();
-                $posts_array = $productmodel->getExportedProducts();
+
 
                 if (get_option('wcfyndiq_username') != '' && get_option('wcfyndiq_apitoken') != '') {
+
+                    $productmodel = new FmProduct();
+                    $posts_array = $productmodel->getExportedProducts();
 
                     $fileExistsAndFresh = file_exists($filePath) && filemtime($filePath) > strtotime('-1 hour');
                     if (!$fileExistsAndFresh) {
