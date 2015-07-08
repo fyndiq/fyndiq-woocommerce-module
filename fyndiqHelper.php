@@ -34,7 +34,7 @@ class FmHelpers
         $username = get_option('wcfyndiq_username');
         $apiToken = get_option('wcfyndiq_apitoken');
 
-        $userAgent = self::getUserAgent();
+        $userAgent = self::get_user_agent();
 
         return FyndiqAPICall::callApiRaw(
             $userAgent,
@@ -68,6 +68,10 @@ class FmHelpers
         }
     }
 
+    static function get_version_label() {
+        return FyndiqUtils::getVersionLabel(self::get_plugin_version(), self::COMMIT);
+    }
+
     static function get_plugin_version()
     {
         $plugin_folder = get_plugins('/' . 'woocommerce-fyndiq');
@@ -83,7 +87,7 @@ class FmHelpers
         return $plugin_version;
     }
 
-    public static function getUserAgent()
+    public static function get_user_agent()
     {
         return FyndiqUtils::getUserAgentString(
             "Woocommerce",

@@ -870,7 +870,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 define('DOING_AJAX', true);
                 define('FYNDIQ_DEBUG', true);
                 FyndiqUtils::debugStart();
-                FyndiqUtils::debug('USER AGENT', FmHelpers::getUserAgent());
+                FyndiqUtils::debug('USER AGENT', FmHelpers::get_user_agent());
                 FyndiqUtils::debug('MEMORY LIMIT', ini_get('memory_limit'));
                 FyndiqUtils::debug('PHP VERSION', phpversion());
                 $languageId = WC()->countries->get_base_country();
