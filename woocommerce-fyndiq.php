@@ -623,6 +623,8 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 require_once('include/shared/src/init.php');
                 require_once('models/order.php');
                 require_once('models/orderFetch.php');
+                require_once('models/product.php');
+                require_once('models/productFetch.php');
             }
 
             public function generate_feed()
@@ -641,18 +643,9 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
             private function feed_write($filePath)
             {
-                $paged = get_query_var('paged');
-                $args = array(
-                    'numberposts' => -1,
-                    'orderby' => 'post_date',
-                    'order' => 'DESC',
-                    'post_type' => 'product',
-                    'post_status' => 'publish',
-                    'suppress_filters' => true,
-                    'meta_key' => '_fyndiq_export',
-                    'meta_value' => 'exported'
-                );
-                $posts_array = get_posts($args);
+                $productmodel = new FmProduct();
+                $posts_array = $productmodel->getExportedProducts();
+
                 if (get_option('wcfyndiq_username') != '' && get_option('wcfyndiq_apitoken') != '') {
 
                     $fileExistsAndFresh = file_exists($filePath) && filemtime($filePath) > strtotime('-1 hour');

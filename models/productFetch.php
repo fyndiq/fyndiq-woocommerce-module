@@ -2,8 +2,12 @@
 
 class FmProductFetch extends FyndiqPaginatedFetch
 {
-    const STATUS_PENDING = 'PENDING';
-    const STATUS_FOR_SALE = 'FOR_SALE';
+    private $productmodel = null;
+
+
+    public function __construct() {
+        $this->productmodel = new FmProduct();
+    }
 
     public function getInitialPath()
     {
@@ -38,17 +42,14 @@ class FmProductFetch extends FyndiqPaginatedFetch
     {
         $result = true;
         foreach ($data as $statusRow) {
-            $result &= update_post_meta($statusRow->product_id, '_fyndiq_status', $statusRow->for_sale);
+            $result &= $this->productmodel->updateStatus($statusRow->product_id, $statusRow->for_sale);
         }
         return $result;
     }
 
     public function getAll()
     {
-        $this->fmModel->updateAllProductStatus(FmModel::STATUS_PENDING);
-        foreach ($data as $statusRow) {
-            $result &= update_post_meta($statusRow->product_id, '_fyndiq_status', self::STATUS_PENDING);
-        }
+        $this->productmodel->updateStatusAllProducts(FmProduct::STATUS_PENDING);
         return parent::getAll();
     }
 
