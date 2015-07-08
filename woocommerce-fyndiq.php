@@ -94,6 +94,9 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 if (isset($_GET['fyndiq_orders'])) {
                     $this->generate_orders();
                 }
+                if (isset($_GET['fyndiq_products'])) {
+                    $this->update_product_info();
+                }
                 if (isset($_GET['fyndiq_notification'])) {
                     $this->notification_handle();
                     die();
@@ -135,6 +138,8 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     var wordpressurl = '<?php echo get_site_url(); ?>';
                 </script>
                 <script src="<?php echo plugins_url('/stylesheet/order-import.js', __FILE__); ?>"
+                        type="text/javascript"></script>
+                <script src="<?php echo plugins_url('/stylesheet/product-update.js', __FILE__); ?>"
                         type="text/javascript"></script>
             <?php
             }
@@ -340,6 +345,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
             function fyndiq_product_add_column($defaults)
             {
                 $defaults['fyndiq_export'] = __('Fyndiq Exported');
+                $defaults['fyndiq_status'] = __('Fyndiq Status');
 
                 return $defaults;
             }
@@ -359,6 +365,21 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     } else {
                         _e("Can't be exported");
                     }
+                }
+                if ($column == 'fyndiq_status') {
+                        $status = get_post_meta($postid, '_fyndiq_status', true);
+                        $exported = get_post_meta($postid, '_fyndiq_export', true);
+
+                        if ($exported != "" && $status != "") {
+                            if($status == FmProduct::STATUS_PENDING) {
+                                _e('Pending');
+                            }
+                            elseif($status == FmProduct::STATUS_FOR_SALE) {
+                                _e('For Sale');
+                            }
+                        } else {
+                            _e("-");
+                        }
                 }
             }
 
@@ -434,7 +455,8 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
             function fyndiq_product_column_sort()
             {
                 return array(
-                    'fyndiq_export' => 'fyndiq_export'
+                    'fyndiq_export' => 'fyndiq_export',
+                    'fyndiq_status' => 'fyndiq_status'
                 );
             }
 
@@ -446,7 +468,11 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 $orderby = $query->get('orderby');
                 if ('fyndiq_export' == $orderby) {
                     $query->set('meta_key', '_fyndiq_export');
-                    $query->set('orderby', 'meta_value_boolean');
+                    $query->set('orderby', 'meta_value');
+                }
+                if ('fyndiq_status' == $orderby) {
+                    $query->set('meta_key', '_fyndiq_status');
+                    $query->set('orderby', 'meta_value');
                 }
             }
 
@@ -462,6 +488,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                             jQuery('<option>').val('fyndiq_export').text('<?php _e('Export to Fyndiq')?>').appendTo("select[name='action2']");
                             jQuery('<option>').val('fyndiq_no_export').text('<?php _e('Remove from Fyndiq')?>').appendTo("select[name='action']");
                             jQuery('<option>').val('fyndiq_no_export').text('<?php _e('Remove from Fyndiq')?>').appendTo("select[name='action2']");
+                            jQuery(jQuery(".wrap h2")[0]).append("<a href='#' id='fyndiq-product-update' class='add-new-h2'><?php _e("Update Fyndiq Status"); ?></a>");
                         });
                     </script>
                 <?php
@@ -604,6 +631,9 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
             {
                 if (!update_post_meta($post_id, '_fyndiq_export', 'exported')) {
                     add_post_meta($post_id, '_fyndiq_export', 'exported', true);
+                };
+                if (!update_post_meta($post_id, '_fyndiq_status', FmProduct::PENDING)) {
+                    add_post_meta($post_id, '_fyndiq_status', FmProduct::PENDING, true);
                 };
             }
 
@@ -874,10 +904,13 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 wp_die();
             }
 
-            private function _update_product_info()
+            public function update_product_info()
             {
-                $productInfo = new FmProductInfo($this->model, $this->apiModel);
-                $productInfo->getAll();
+                define('DOING_AJAX', true);
+                $productFetch = new FmProductFetch();
+                $productFetch->getAll();
+                echo json_encode(array('status' => 'ok'));
+                wp_die();
             }
 
             function getAction($table)
