@@ -273,7 +273,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                             'description' => __('mark this as true if you want to export to Fyndiq', 'fyndiq'),
                             'required' => false,
                         ), $value );
-                    $discount = $this->getDiscount();
+                    $discount = $this->getDiscount(get_option('wcfyndiq_price_percentage'));
                     $product_price = get_post_meta( $product->id, '_regular_price');
                     $price = FyndiqUtils::getFyndiqPrice($product_price[0], $discount);
 
@@ -612,7 +612,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 $feedProduct['product-title'] = $product->post->post_title;
                 $feedProduct['product-description'] = $product->post->post_content;
 
-                $discount = $this->getDiscount();
+                $discount = $this->getDiscount(get_option('wcfyndiq_price_percentage'));
                 $product_price = get_post_meta( $product->id, '_regular_price');
                 $price = FyndiqUtils::getFyndiqPrice($product_price[0], $discount);
                 $_tax = new WC_Tax();//looking for appropriate vat for specific product
@@ -674,7 +674,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     $feedProduct['product-title'] = $product->post->post_title;
                     $feedProduct['product-description'] = $product->post->post_content;
 
-                    $discount = $this->getDiscount();
+                    $discount = $this->getDiscount(get_option('wcfyndiq_price_percentage'));
                     $product_price = get_post_meta( $product->id, '_regular_price');
                     $price = FyndiqUtils::getFyndiqPrice($product_price[0], $discount);
                     $_tax = new WC_Tax();//looking for appropriate vat for specific product
@@ -842,8 +842,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 return empty(get_option('wcfyndiq_username')) || empty(get_option('wcfyndiq_apitoken'));
             }
 
-            private function getDiscount() {
-                $discount = get_option('wcfyndiq_price_percentage');
+            private function getDiscount($discount) {
                 if($discount > 100) {
                     $discount = 100;
                 }
