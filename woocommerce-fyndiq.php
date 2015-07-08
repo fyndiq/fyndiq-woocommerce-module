@@ -20,6 +20,9 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
         class WC_Fyndiq
         {
+
+            private $filepath = null;
+
             public function __construct()
             {
                 // called only after woocommerce has finished loading
@@ -27,6 +30,8 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
                 // called after all plugins have loaded
                 add_action('plugins_loaded', array(&$this, 'plugins_loaded'));
+
+                $this->filepath = plugin_dir_path(__FILE__) . 'files/feed.csv';
 
                 // indicates we are running the admin
                 if (is_admin()) {
@@ -660,10 +665,9 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
             public function generate_feed()
             {
 
-                $filePath = plugin_dir_path(__FILE__) . 'files/feed.csv';
-                $return = $this->feed_write($filePath);
+                $return = $this->feed_write($this->filepath);
                 if ($return) {
-                    $result = file_get_contents($filePath);
+                    $result = file_get_contents($this->filepath);
 
                     return $this->returnAndDie($result);
                 } else {
@@ -893,6 +897,12 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 if (!$locked) {
                     update_option('wcfyndiq_ping_time', time());
                     $filePath = plugin_dir_path(__FILE__) . 'files/feed.csv';
+                    try {
+                        $this->feed_write($filePath);
+                        $this->update_product_info();
+                    } catch (Exception $e) {
+                        error_log($e->getMessage());
+                    }
                     $this->feed_write($filePath);
                 }
             }
@@ -906,7 +916,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 wp_die();
             }
 
-            public function update_product_info()
+            private function update_product_info()
             {
                 define('DOING_AJAX', true);
                 $productFetch = new FmProductFetch();
