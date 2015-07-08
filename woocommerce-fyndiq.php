@@ -270,7 +270,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
                     woocommerce_form_field( '_fyndiq_export', array(
                             'type' => 'checkbox',
-                            'class' => array('forum-field input-checkbox'),
+                            'class' => array('form-field input-checkbox'),
                             'label' => __('Export to Fyndiq', 'fyndiq'),
                             'description' => __('mark this as true if you want to export to Fyndiq', 'fyndiq'),
                             'required' => false,
