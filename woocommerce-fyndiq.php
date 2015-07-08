@@ -841,7 +841,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 die('400 Bad Request');
             }
 
-            public function notice_order_created()
+            private function notice_order_created()
             {
                 $order_id = $_GET['order_id'];
                 $orderId = is_numeric($order_id) ? intval($order_id) : 0;
@@ -865,7 +865,24 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 }
             }
 
-            public function notice_ping()
+            private function notice_debug()
+            {
+                define('DOING_AJAX', true);
+                define('FYNDIQ_DEBUG', true);
+                FyndiqUtils::debugStart();
+                FyndiqUtils::debug('USER AGENT', FmHelpers::getUserAgent());
+                FyndiqUtils::debug('MEMORY LIMIT', ini_get('memory_limit'));
+                FyndiqUtils::debug('PHP VERSION', phpversion());
+                $languageId = WC()->countries->get_base_country();
+                FyndiqUtils::debug('language', $languageId);
+                $return = $this->feed_write($this->filepath);
+                $result = file_get_contents($this->filepath);
+                FyndiqUtils::debug('$result', $result, true);
+                FyndiqUtils::debugStop();
+                wp_die();
+            }
+
+            private function notice_ping()
             {
                 $pingToken = get_option("wcfyndiq_ping_token");
 
