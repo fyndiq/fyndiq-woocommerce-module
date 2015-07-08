@@ -613,8 +613,8 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 $feedProduct['product-description'] = $product->post->post_content;
 
                 $discount = $this->getDiscount(get_option('wcfyndiq_price_percentage'));
-                $product_price = get_post_meta( $product->id, '_regular_price');
-                $price = FyndiqUtils::getFyndiqPrice($product_price[0], $discount);
+                $product_price = $product->price;
+                $price = FyndiqUtils::getFyndiqPrice($product_price, $discount);
                 $_tax = new WC_Tax();//looking for appropriate vat for specific product
                 $rates = $_tax->get_rates( $product->get_tax_class() );
 
@@ -675,8 +675,8 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     $feedProduct['product-description'] = $product->post->post_content;
 
                     $discount = $this->getDiscount(get_option('wcfyndiq_price_percentage'));
-                    $product_price = get_post_meta( $product->id, '_regular_price');
-                    $price = FyndiqUtils::getFyndiqPrice($product_price[0], $discount);
+                    $product_price = $product->price;
+                    $price = FyndiqUtils::getFyndiqPrice($product_price, $discount);
                     $_tax = new WC_Tax();//looking for appropriate vat for specific product
                     $rates = $_tax->get_rates( $product->get_tax_class() );
 
