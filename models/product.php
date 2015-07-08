@@ -32,7 +32,7 @@ class FmProduct
     function updateStatusAllProducts($status) {
         $posts_array = $this->getExportedProducts();
         foreach ($posts_array as $product) {
-            $this->updateStatus($product->ID, self::STATUS_PENDING);
+            $this->updateStatus($product->ID, $status);
         }
     }
 }
