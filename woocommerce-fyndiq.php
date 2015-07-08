@@ -264,6 +264,8 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 if(!$product->is_downloadable()) {
 
                     echo '<div class="options_group">';
+
+                    // Checkbox for exporting to fyndiq
                     $value = (get_post_meta(get_the_ID(), '_fyndiq_export', true) == "exported") ? 1 : 0;
 
                     woocommerce_form_field( '_fyndiq_export', array(
