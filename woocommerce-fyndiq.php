@@ -270,7 +270,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
                     woocommerce_form_field( '_fyndiq_export', array(
                             'type' => 'checkbox',
-                            'class' => array('form-field input-checkbox'),
+                            'class' => array('form-field','input-checkbox'),
                             'label' => __('Export to Fyndiq', 'fyndiq'),
                             'description' => __('mark this as true if you want to export to Fyndiq', 'fyndiq'),
                             'required' => false,
@@ -281,7 +281,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
                     woocommerce_form_field( '_fyndiq_price_percentage', array(
                             'type' => 'text',
-                            'class' => array('form-field short'),
+                            'class' => array('form-field', 'short'),
                             'label' => __('Fyndiq Discount Percentage', 'fyndiq'),
                             'description' => __('The percentage specific for this product, it will override the globel percentage for this product.', 'fyndiq'),
                             'required' => false,
