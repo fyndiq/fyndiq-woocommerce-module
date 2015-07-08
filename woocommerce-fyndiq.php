@@ -881,6 +881,12 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 wp_die();
             }
 
+            private function _update_product_info()
+            {
+                $productInfo = new FmProductInfo($this->model, $this->apiModel);
+                $productInfo->getAll();
+            }
+
             function getAction($table)
             {
                 $wp_list_table = _get_list_table($table);
