@@ -942,10 +942,10 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
             {
                 $percentage = get_post_meta($product_id, '_fyndiq_price_percentage', true);
 
+                $discount = $this->getDiscount(get_option('wcfyndiq_price_percentage'));
+
                 if (isset($percentage)) {
                     $discount = $this->getDiscount($percentage);
-                } else {
-                    $discount = $this->getDiscount(get_option('wcfyndiq_price_percentage'));
                 }
 
                 return FyndiqUtils::getFyndiqPrice($product_price, $discount);
