@@ -263,14 +263,14 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
                 if(!$product->is_downloadable()) {
 
-                    echo '<div class="options_group">';
+                    echo '<div class="options_group"><p>'.__('Fyndiq Product Settings').'</p>';
 
                     // Checkbox for exporting to fyndiq
                     $value = (get_post_meta(get_the_ID(), '_fyndiq_export', true) == "exported") ? 1 : 0;
 
                     woocommerce_form_field( '_fyndiq_export', array(
                             'type' => 'checkbox',
-                            'class' => array('input-checkbox'),
+                            'class' => array('forum-field input-checkbox'),
                             'label' => __('Export to Fyndiq', 'fyndiq'),
                             'description' => __('mark this as true if you want to export to Fyndiq', 'fyndiq'),
                             'required' => false,
@@ -281,7 +281,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
                     woocommerce_form_field( '_fyndiq_price_percentage', array(
                             'type' => 'text',
-                            'class' => array('short'),
+                            'class' => array('form-field short'),
                             'label' => __('Fyndiq Discount Percentage', 'fyndiq'),
                             'description' => __('The percentage specific for this product, it will override the globel percentage for this product.', 'fyndiq'),
                             'required' => false,
