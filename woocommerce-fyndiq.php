@@ -432,7 +432,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
             function fyndiq_order_add_column($defaults)
             {
-                $defaults['fyndiq_order'] = 'Fyndiq Order';
+                $defaults['fyndiq_order'] = __('Fyndiq Order');
 
                 return $defaults;
             }
