@@ -273,7 +273,24 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                             'description' => __('mark this as true if you want to export to Fyndiq', 'fyndiq'),
                             'required' => false,
                         ), $value );
-                    $discount = $this->getDiscount(get_option('wcfyndiq_price_percentage'));
+
+                    //The price percentage for fyndiq for this specific product.
+                    $percentage = get_post_meta(get_the_ID(), '_fyndiq_price_percentage', true);
+
+                    woocommerce_form_field( '_fyndiq_price_percentage', array(
+                            'type' => 'text',
+                            'class' => array('short'),
+                            'label' => __('Fyndiq Discount Percentage', 'fyndiq'),
+                            'description' => __('The percentage specific for this product, it will override the globel percentage for this product.', 'fyndiq'),
+                            'required' => false,
+                        ), $percentage );
+
+                    if(isset($percentage)) {
+                        $discount = $this->getDiscount($percentage);
+                    }
+                    else {
+                        $discount = $this->getDiscount(get_option('wcfyndiq_price_percentage'));
+                    }
                     $product_price = get_post_meta( $product->id, '_regular_price');
                     $price = FyndiqUtils::getFyndiqPrice($product_price[0], $discount);
 
@@ -287,7 +304,9 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
             function fyndiq_product_save($post_id)
             {
                 $woocommerce_checkbox = $this->getExportState();
+                $woocommerce_pricepercentage = $this->getPricePercentage();
                 update_post_meta($post_id, '_fyndiq_export', $woocommerce_checkbox);
+                update_post_meta($post_id, '_fyndiq_price_percentage', $woocommerce_pricepercentage);
             }
 
             function fyndiq_product_add_column($defaults)
