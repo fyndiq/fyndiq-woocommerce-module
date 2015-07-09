@@ -375,7 +375,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                         $status = get_post_meta($postid, '_fyndiq_status', true);
                         $exported = get_post_meta($postid, '_fyndiq_export', true);
 
-                        if ($exported != "" && $status != "") {
+                        if ($exported != '' && $status != '') {
                             if($status == FmProduct::STATUS_PENDING) {
                                 _e('Pending');
                             }
@@ -830,7 +830,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
             {
                 if (isset($_GET['event'])) {
                     $event = $_GET['event'];
-                    $eventName = $event ? "notice_".$event : false;
+                    $eventName = $event ? 'notice_'.$event : false;
                     if ($eventName) {
                         if ($eventName[0] != '_' && method_exists($this, $eventName)) {
                             return $this->$eventName();
@@ -868,7 +868,6 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
             private function notice_debug()
             {
                 define('DOING_AJAX', true);
-                define('FYNDIQ_DEBUG', true);
                 FyndiqUtils::debugStart();
                 FyndiqUtils::debug('USER AGENT', FmHelpers::get_user_agent());
                 FyndiqUtils::debug('MEMORY LIMIT', ini_get('memory_limit'));
@@ -986,12 +985,12 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
             function checkCurrency()
             {
-                return (get_woocommerce_currency() != "SEK" && get_woocommerce_currency() != "EUR");
+                return (get_woocommerce_currency() != 'SEK' && get_woocommerce_currency() != 'EUR');
             }
 
             function checkCountry()
             {
-                return (WC()->countries->get_base_country() != "SE" && WC()->countries->get_base_country() != "DE");
+                return (WC()->countries->get_base_country() != 'SE' && WC()->countries->get_base_country() != 'DE');
             }
 
             function checkCredentials()

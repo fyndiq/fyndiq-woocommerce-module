@@ -90,9 +90,9 @@ class FmHelpers
     public static function get_user_agent()
     {
         return FyndiqUtils::getUserAgentString(
-            "Woocommerce",
+            'Woocommerce',
             self::get_woocommerce_version(),
-            "module",
+            'module',
             self::get_plugin_version(),
             self::COMMIT
         );
