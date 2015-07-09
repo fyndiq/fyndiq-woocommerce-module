@@ -20,6 +20,9 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
         class WC_Fyndiq
         {
+
+            private $filepath = null;
+
             public function __construct()
             {
                 // called only after woocommerce has finished loading
@@ -27,6 +30,8 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
                 // called after all plugins have loaded
                 add_action('plugins_loaded', array(&$this, 'plugins_loaded'));
+
+                $this->filepath = plugin_dir_path(__FILE__) . 'files/feed.csv';
 
                 // indicates we are running the admin
                 if (is_admin()) {
@@ -94,6 +99,9 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 if (isset($_GET['fyndiq_orders'])) {
                     $this->generate_orders();
                 }
+                if (isset($_GET['fyndiq_products'])) {
+                    $this->update_product_info();
+                }
                 if (isset($_GET['fyndiq_notification'])) {
                     $this->notification_handle();
                     die();
@@ -135,6 +143,8 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     var wordpressurl = '<?php echo get_site_url(); ?>';
                 </script>
                 <script src="<?php echo plugins_url('/stylesheet/order-import.js', __FILE__); ?>"
+                        type="text/javascript"></script>
+                <script src="<?php echo plugins_url('/stylesheet/product-update.js', __FILE__); ?>"
                         type="text/javascript"></script>
             <?php
             }
@@ -242,16 +252,17 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
             function update_settings()
             {
-                woocommerce_update_options($this->fyndiq_all_settings(array(), "wcfyndiq"));
+                woocommerce_update_options($this->fyndiq_all_settings(array(), 'wcfyndiq'));
                 try {
                     $this->updateUrls();
                 } catch (Exception $e) {
-                    if ($e->getMessage() == "Unauthorized") {
+                    if ($e->getMessage() == 'Unauthorized') {
                         //echo "Wrong api-token or username to Fyndiq.";
                         ?>
                         <div class="error">
                         <p><?php _e('Fyndiq credentials was wrong, try again.', 'fyndiq_username'); ?></p>
-                        </div><?php
+                        </div>
+                    <?php
                     }
                     //die();
                 }
@@ -261,7 +272,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
             {
                 //Generate pingtoken
                 $pingToken = md5(uniqid());
-                update_option("wcfyndiq_ping_token", $pingToken);
+                update_option('wcfyndiq_ping_token', $pingToken);
 
                 $data = array(
                     FyndiqUtils::NAME_PRODUCT_FEED_URL => get_site_url() . '/?fyndiq_feed',
@@ -283,7 +294,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     echo '<div class="options_group"><p>' . __('Fyndiq Product Settings') . '</p>';
 
                     // Checkbox for exporting to fyndiq
-                    $value = (get_post_meta(get_the_ID(), '_fyndiq_export', true) == "exported") ? 1 : 0;
+                    $value = (get_post_meta(get_the_ID(), '_fyndiq_export', true) == 'exported') ? 1 : 0;
 
                     woocommerce_form_field(
                         '_fyndiq_export',
@@ -340,6 +351,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
             function fyndiq_product_add_column($defaults)
             {
                 $defaults['fyndiq_export'] = __('Fyndiq Exported');
+                $defaults['fyndiq_status'] = __('Fyndiq Status');
 
                 return $defaults;
             }
@@ -350,14 +362,28 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 if ($column == 'fyndiq_export') {
                     if (!$product->is_downloadable()) {
                         $exported = get_post_meta($postid, '_fyndiq_export', true);
-                        if ($exported != "") {
+                        if ($exported != '') {
                             _e($exported);
                         } else {
                             update_post_meta($postid, '_fyndiq_export', 'not exported');
-                            _e("Not exported");
+                            _e('Not exported');
                         }
                     } else {
-                        _e("Can't be exported");
+                        _e('Can't be exported'');
+                    }
+                }
+                if ($column == 'fyndiq_status') {
+                    $status = get_post_meta($postid, '_fyndiq_status', true);
+                    $exported = get_post_meta($postid, '_fyndiq_export', true);
+
+                    if ($exported != '' && $status != '') {
+                        if ($status == FmProduct::STATUS_PENDING) {
+                            _e('Pending');
+                        } elseif ($status == FmProduct::STATUS_FOR_SALE) {
+                            _e('For Sale');
+                        }
+                    } else {
+                        _e('-');
                     }
                 }
             }
@@ -411,7 +437,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
             function fyndiq_order_add_column($defaults)
             {
-                $defaults['fyndiq_order'] = 'Fyndiq Order';
+                $defaults['fyndiq_order'] = __('Fyndiq Order');
 
                 return $defaults;
             }
@@ -421,11 +447,11 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 $product = new WC_Order($postid);
                 if ($column == 'fyndiq_order') {
                     $fyndiq_order = get_post_meta($postid, 'fyndiq_id', true);
-                    if ($fyndiq_order != "") {
+                    if ($fyndiq_order != '') {
                         echo $fyndiq_order;
                     } else {
                         update_post_meta($postid, 'fyndiq_id', '-');
-                        echo "-";
+                        echo '-';
                     }
                 }
             }
@@ -434,7 +460,8 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
             function fyndiq_product_column_sort()
             {
                 return array(
-                    'fyndiq_export' => 'fyndiq_export'
+                    'fyndiq_export' => 'fyndiq_export',
+                    'fyndiq_status' => 'fyndiq_status'
                 );
             }
 
@@ -446,7 +473,11 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 $orderby = $query->get('orderby');
                 if ('fyndiq_export' == $orderby) {
                     $query->set('meta_key', '_fyndiq_export');
-                    $query->set('orderby', 'meta_value_boolean');
+                    $query->set('orderby', 'meta_value');
+                }
+                if ('fyndiq_status' == $orderby) {
+                    $query->set('meta_key', '_fyndiq_status');
+                    $query->set('orderby', 'meta_value');
                 }
             }
 
@@ -462,6 +493,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                             jQuery('<option>').val('fyndiq_export').text('<?php _e('Export to Fyndiq')?>').appendTo("select[name='action2']");
                             jQuery('<option>').val('fyndiq_no_export').text('<?php _e('Remove from Fyndiq')?>').appendTo("select[name='action']");
                             jQuery('<option>').val('fyndiq_no_export').text('<?php _e('Remove from Fyndiq')?>').appendTo("select[name='action2']");
+                            jQuery(jQuery(".wrap h2")[0]).append("<a href='#' id='fyndiq-product-update' class='add-new-h2'><?php _e('Update Fyndiq Status'); ?></a>");
                         });
                     </script>
                 <?php
@@ -472,7 +504,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                             jQuery(document).ready(function () {
                                 jQuery('<option>').val('fyndiq_delivery').text('<?php _e('Get Fyndiq Delivery Note')?>').appendTo("select[name='action']");
                                 jQuery('<option>').val('fyndiq_delivery').text('<?php _e('Get Fyndiq Delivery Note')?>').appendTo("select[name='action2']");
-                                jQuery(jQuery(".wrap h2")[0]).append("<a href='#' id='fyndiq-order-import' class='add-new-h2'><?php _e("Import From Fyndiq"); ?></a>");
+                                jQuery(jQuery(".wrap h2")[0]).append("<a href='#' id='fyndiq-order-import' class='add-new-h2'><?php _e('Import From Fyndiq'); ?></a>");
                             });
                         </script>
                     <?php
@@ -535,7 +567,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                         ),
                         number_format_i18n($_REQUEST['fyndiq_removed'])
                     );
-                    echo "<div class=\"updated\"><p>{$message}</p></div>";
+                    echo '<div class="updated"><p>{$message}</p></div>';
                 }
                 if ($pagenow == 'edit.php' && isset($_REQUEST['fyndiq_exported']) && (int)$_REQUEST['fyndiq_exported']) {
                     $message = sprintf(
@@ -546,7 +578,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                         ),
                         number_format_i18n($_REQUEST['fyndiq_exported'])
                     );
-                    echo "<div class=\"updated\"><p>{$message}</p></div>";
+                    echo '<div class="updated"><p>{$message}</p></div>';
                 }
             }
 
@@ -570,8 +602,9 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 }
                 foreach ($_REQUEST['post'] as $order) {
                     $meta = get_post_custom($order);
-                    if (isset($meta['fyndiq_id']) && isset($meta['fyndiq_id'][0]) && $meta['fyndiq_id'][0] != "")
+                    if (isset($meta['fyndiq_id']) && isset($meta['fyndiq_id'][0]) && $meta['fyndiq_id'][0] != '') {
                         $orders['orders'][] = array('order' => intval($meta['fyndiq_id'][0]));
+                    }
                 }
 
                 $ret = FmHelpers::callApi('POST', 'delivery_notes/', $orders, true);
@@ -605,6 +638,9 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 if (!update_post_meta($post_id, '_fyndiq_export', 'exported')) {
                     add_post_meta($post_id, '_fyndiq_export', 'exported', true);
                 };
+                if (!update_post_meta($post_id, '_fyndiq_status', FmProduct::PENDING)) {
+                    add_post_meta($post_id, '_fyndiq_status', FmProduct::PENDING, true);
+                };
             }
 
             private function perform_no_export($post_id)
@@ -623,37 +659,31 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 require_once('include/shared/src/init.php');
                 require_once('models/order.php');
                 require_once('models/orderFetch.php');
+                require_once('models/product.php');
+                require_once('models/productFetch.php');
             }
 
             public function generate_feed()
             {
 
-                $filePath = plugin_dir_path(__FILE__) . 'files/feed.csv';
-                $return = $this->feed_write($filePath);
+                $return = $this->feed_write($this->filepath);
                 if ($return) {
-                    $result = file_get_contents($filePath);
+                    $result = file_get_contents($this->filepath);
 
                     return $this->returnAndDie($result);
                 } else {
-                    return $this->returnAndDie("");
+                    return $this->returnAndDie('');
                 }
             }
 
             private function feed_write($filePath)
             {
-                $paged = get_query_var('paged');
-                $args = array(
-                    'numberposts' => -1,
-                    'orderby' => 'post_date',
-                    'order' => 'DESC',
-                    'post_type' => 'product',
-                    'post_status' => 'publish',
-                    'suppress_filters' => true,
-                    'meta_key' => '_fyndiq_export',
-                    'meta_value' => 'exported'
-                );
-                $posts_array = get_posts($args);
+
+
                 if (get_option('wcfyndiq_username') != '' && get_option('wcfyndiq_apitoken') != '') {
+
+                    $productmodel = new FmProduct();
+                    $posts_array = $productmodel->getExportedProducts();
 
                     $fileExistsAndFresh = file_exists($filePath) && filemtime($filePath) > strtotime('-1 hour');
                     if (!$fileExistsAndFresh) {
@@ -717,7 +747,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
                 $variations = $product->get_available_variations();
                 foreach ($variations as $variation) {
-                    if ($variation['image_src'] != "") {
+                    if ($variation['image_src'] != '') {
                         $feedProduct['product-image-' . $imageId . '-url'] = $variation['image_src'];
                         $feedProduct['product-image-' . $imageId . '-identifier'] = substr(
                             md5($variation['image_src']),
@@ -784,10 +814,10 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     $feedProduct['article-quantity'] = intval($stock[0]);
 
                     $feedProduct['article-location'] = 'unknown';
-                    if ($variation['sku'] != "") {
+                    if ($variation['sku'] != '') {
                         $sku = $variation['sku'];
                     } else {
-                        $sku = $product->id . "-" . $variation['variation_id'];
+                        $sku = $product->id . '-' . $variation['variation_id'];
                     }
                     $feedProduct['article-sku'] = $sku;
                     $tag_values = array_values($variation['attributes']);
@@ -801,7 +831,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
             {
                 if (isset($_GET['event'])) {
                     $event = $_GET['event'];
-                    $eventName = $event ? $event : false;
+                    $eventName = $event ? 'notice_' . $event : false;
                     if ($eventName) {
                         if ($eventName[0] != '_' && method_exists($this, $eventName)) {
                             return $this->$eventName();
@@ -812,7 +842,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 die('400 Bad Request');
             }
 
-            public function order_created()
+            private function notice_order_created()
             {
                 $order_id = $_GET['order_id'];
                 $orderId = is_numeric($order_id) ? intval($order_id) : 0;
@@ -836,9 +866,25 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 }
             }
 
-            public function ping()
+            private function notice_debug()
             {
-                $pingToken = get_option("wcfyndiq_ping_token");
+                define('DOING_AJAX', true);
+                FyndiqUtils::debugStart();
+                FyndiqUtils::debug('USER AGENT', FmHelpers::get_user_agent());
+                FyndiqUtils::debug('MEMORY LIMIT', ini_get('memory_limit'));
+                FyndiqUtils::debug('PHP VERSION', phpversion());
+                $languageId = WC()->countries->get_base_country();
+                FyndiqUtils::debug('language', $languageId);
+                $return = $this->feed_write($this->filepath);
+                $result = file_get_contents($this->filepath);
+                FyndiqUtils::debug('$result', $result, true);
+                FyndiqUtils::debugStop();
+                wp_die();
+            }
+
+            private function notice_ping()
+            {
+                $pingToken = get_option('wcfyndiq_ping_token');
 
                 $token = $_GET['token'];
 
@@ -868,6 +914,12 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 if (!$locked) {
                     update_option('wcfyndiq_ping_time', time());
                     $filePath = plugin_dir_path(__FILE__) . 'files/feed.csv';
+                    try {
+                        $this->feed_write($filePath);
+                        $this->update_product_info();
+                    } catch (Exception $e) {
+                        error_log($e->getMessage());
+                    }
                     $this->feed_write($filePath);
                 }
             }
@@ -878,6 +930,15 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 $orderFetch = new FmOrderFetch(false);
                 $return = $orderFetch->getAll();
                 echo json_encode($return);
+                wp_die();
+            }
+
+            private function update_product_info()
+            {
+                define('DOING_AJAX', true);
+                $productFetch = new FmProductFetch();
+                $productFetch->getAll();
+                echo json_encode(array('status' => 'ok'));
                 wp_die();
             }
 
@@ -925,12 +986,12 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
             function checkCurrency()
             {
-                return (get_woocommerce_currency() != "SEK" && get_woocommerce_currency() != "EUR");
+                return (get_woocommerce_currency() != 'SEK' && get_woocommerce_currency() != 'EUR');
             }
 
             function checkCountry()
             {
-                return (WC()->countries->get_base_country() != "SE" && WC()->countries->get_base_country() != "DE");
+                return (WC()->countries->get_base_country() != 'SE' && WC()->countries->get_base_country() != 'DE');
             }
 
             function checkCredentials()
