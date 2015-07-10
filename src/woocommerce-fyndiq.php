@@ -11,7 +11,6 @@
 
 if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
     if (!class_exists('WC_Fyndiq')) {
-
         // Localization
         load_plugin_textdomain('fyndiq', false, dirname(plugin_basename(__FILE__)) . '/translations/');
 

@@ -5,7 +5,8 @@ class FmProductFetch extends FyndiqPaginatedFetch
     private $productmodel = null;
 
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->productmodel = new FmProduct();
     }
 
@@ -52,5 +53,4 @@ class FmProductFetch extends FyndiqPaginatedFetch
         $this->productmodel->updateStatusAllProducts(FmProduct::STATUS_PENDING);
         return parent::getAll();
     }
-
 }

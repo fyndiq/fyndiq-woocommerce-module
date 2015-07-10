@@ -68,7 +68,8 @@ class FmHelpers
         }
     }
 
-    static function get_version_label() {
+    static function get_version_label()
+    {
         return FyndiqUtils::getVersionLabel(self::get_plugin_version(), self::COMMIT);
     }
 

@@ -41,7 +41,7 @@ sniff:
 
 sniff-fix:
 	$(BIN_DIR)/phpcbf --standard=PSR2 --extensions=php --ignore=include $(SRC_DIR)
-	$(BIN_DIR)/phpcbf --standard=PSR2 --extensions=php $(TESTS_DIR)
+	#$(BIN_DIR)/phpcbf --standard=PSR2 --extensions=php $(TESTS_DIR)
 
 compatinfo:
 	$(BIN_DIR)/phpcompatinfo analyser:run $(SRC_DIR)

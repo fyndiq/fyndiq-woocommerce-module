@@ -17,7 +17,6 @@ class WC_Fyndiq
 
         // indicates we are running the admin
         if (!is_admin()) {
-
         }
     }
 
@@ -141,7 +140,6 @@ class WC_Fyndiq
          **/
 
         if ($current_section == 'wcfyndiq') {
-
             $settings_slider = array();
 
             // Add Title to the Settings
@@ -219,7 +217,6 @@ class WC_Fyndiq
              **/
 
         } else {
-
             return $settings;
 
         }
@@ -253,7 +250,7 @@ class WC_Fyndiq
             FyndiqUtils::NAME_PRODUCT_FEED_URL => get_site_url() . '/?fyndiq_feed',
             FyndiqUtils::NAME_NOTIFICATION_URL => get_site_url() . '/?fyndiq_notification',
             FyndiqUtils::NAME_PING_URL => get_site_url(
-                ) . '/?fyndiq_notification&event=ping&pingToken=' . $pingToken
+            ) . '/?fyndiq_notification&event=ping&pingToken=' . $pingToken
         );
 
         return FmHelpers::callApi('PATCH', 'settings/', $data);
@@ -265,7 +262,6 @@ class WC_Fyndiq
         $product = get_product($this->getProductId());
 
         if (!$product->is_downloadable()) {
-
             echo '<div class="options_group"><p>' . __('Fyndiq Product Settings') . '</p>';
 
             // Checkbox for exporting to fyndiq
@@ -303,15 +299,17 @@ class WC_Fyndiq
 
             $price = $this->getPrice($product->id, $product->price);
 
-            echo '<p>' . __(
-                    'Fyndiq Price with set Discount percentage: ',
-                    'fyndiq'
-                ) . $price . ' ' . get_woocommerce_currency() . '</p></div>';
+            printf(
+                '<p>%s%s %s</p></div>',
+                __('Fyndiq Price with set Discount percentage: ', 'fyndiq'),
+                $price,
+                get_woocommerce_currency()
+            );
         } else {
-            echo '<div class="options_group"><p>' . __(
-                    'Can\'t export this product to Fyndiq',
-                    'fyndiq'
-                ) . '</p></div>';
+            printf(
+                '<div class="options_group"><p>%s</p></div>',
+                __('Can\'t export this product to Fyndiq', 'fyndiq')
+            );
         }
     }
 
@@ -366,25 +364,27 @@ class WC_Fyndiq
     public function my_admin_notice()
     {
         if ($this->checkCurrency()) {
-            echo '<div class="error">
-           <p><strong>' . __("Wrong Currency") . '</strong>: ' . __(
-                    "Fyndiq only works in EUR and SEK. change to correct currency. Current Currency:"
-                ) . ' ' . get_woocommerce_currency() . '</p>
-        </div>';
+            printf(
+                '<div class="error"><p><strong>%s</strong>: %s $s</p></div>',
+                __('Wrong Currency'),
+                __('Fyndiq only works in EUR and SEK. change to correct currency. Current Currency:'),
+                get_woocommerce_currency()
+            );
         }
         if ($this->checkCountry()) {
-            echo '<div class="error">
-           <p><strong>' . __("Wrong Country") . '</strong>: ' . __(
-                    "Fyndiq only works in Sweden and Germany. change to correct country. Current Country:"
-                ) . ' ' . WC()->countries->get_base_country() . '</p>
-        </div>';
+            printf(
+                '<div class="error"><p><strong>%s</strong>: %s %s</p></div>',
+                __('Wrong Country'),
+                __('Fyndiq only works in Sweden and Germany. change to correct country. Current Country:'),
+                WC()->countries->get_base_country()
+            );
         }
         if ($this->checkCredentials()) {
-            echo '<div class="error">
-           <p><strong>' . __("Fyndiq Credentials") . '</strong>: ' . __(
-                    "You need to set Fyndiq Credentials to make it work. Do it in Woocommerce Settings > Products > Fyndiq."
-                ) . '</p>
-        </div>';
+            printf(
+                '<div class="error"><p><strong>%s</strong>: %s</p></div>',
+                __('Fyndiq Credentials'),
+                __('You need to set Fyndiq Credentials to make it work. Do it in Woocommerce Settings > Products > Fyndiq.')
+            );
         }
     }
 
@@ -460,29 +460,33 @@ class WC_Fyndiq
         global $post_type;
 
         if ($post_type == 'product') {
-            ?>
-            <script type="text/javascript">
-                jQuery(document).ready(function () {
-                    jQuery('<option>').val('fyndiq_export').text('<?php _e('Export to Fyndiq')?>').appendTo("select[name='action']");
-                    jQuery('<option>').val('fyndiq_export').text('<?php _e('Export to Fyndiq')?>').appendTo("select[name='action2']");
-                    jQuery('<option>').val('fyndiq_no_export').text('<?php _e('Remove from Fyndiq')?>').appendTo("select[name='action']");
-                    jQuery('<option>').val('fyndiq_no_export').text('<?php _e('Remove from Fyndiq')?>').appendTo("select[name='action2']");
-                    jQuery(jQuery(".wrap h2")[0]).append("<a href='#' id='fyndiq-product-update' class='add-new-h2'><?php _e('Update Fyndiq Status'); ?></a>");
-                });
-            </script>
-        <?php
-        } else {
-            if ($post_type == 'shop_order') {
-                ?>
-                <script type="text/javascript">
-                    jQuery(document).ready(function () {
-                        jQuery('<option>').val('fyndiq_delivery').text('<?php _e('Get Fyndiq Delivery Note')?>').appendTo("select[name='action']");
-                        jQuery('<option>').val('fyndiq_delivery').text('<?php _e('Get Fyndiq Delivery Note')?>').appendTo("select[name='action2']");
-                        jQuery(jQuery(".wrap h2")[0]).append("<a href='#' id='fyndiq-order-import' class='add-new-h2'><?php _e('Import From Fyndiq'); ?></a>");
-                    });
-                </script>
-            <?php
-            }
+            $exportToFyndiq = __('Export to Fyndiq');
+            $removeFromFyndiq = __('Remove from Fyndiq');
+            $updateFyndiqStatus = __('Update Fyndiq Status');
+            echo <<<EOS
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        jQuery('<option>').val('fyndiq_export').text('$exportToFyndiq').appendTo("select[name='action']");
+        jQuery('<option>').val('fyndiq_export').text('$exportToFyndiq').appendTo("select[name='action2']");
+        jQuery('<option>').val('fyndiq_no_export').text('$removeFromFyndiq').appendTo("select[name='action']");
+        jQuery('<option>').val('fyndiq_no_export').text('$removeFromFyndiq').appendTo("select[name='action2']");
+        jQuery(jQuery(".wrap h2")[0]).append("<a href='#' id='fyndiq-product-update' class='add-new-h2'>$updateFyndiqStatus</a>");
+    });
+</script>
+EOS;
+        }
+        if ($post_type == 'shop_order') {
+            $getFyndiqDeliveryNote =  __('Get Fyndiq Delivery Note');
+            $importFromFyndiq = __('Import From Fyndiq');
+            echo  <<<EOS
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        jQuery('<option>').val('fyndiq_delivery').text('$getFyndiqDeliveryNote').appendTo("select[name='action']");
+        jQuery('<option>').val('fyndiq_delivery').text('$getFyndiqDeliveryNote').appendTo("select[name='action2']");
+        jQuery(jQuery(".wrap h2")[0]).append("<a href='#' id='fyndiq-order-import' class='add-new-h2'>$importFromFyndiq</a>");
+    });
+</script>
+EOS;
         }
     }
 
@@ -655,7 +659,6 @@ class WC_Fyndiq
 
 
         if (get_option('wcfyndiq_username') != '' && get_option('wcfyndiq_apitoken') != '') {
-
             $productmodel = new FmProduct();
             $posts_array = $productmodel->getExportedProducts();
 
