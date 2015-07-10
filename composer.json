@@ -2,11 +2,11 @@
     "name": "fyndiq/woocommerce-module",
     "description": "WooCommerce integration module",
     "authors": [],
-    "require": {},
     "require-dev": {
         "phpmd/phpmd" : "@stable",
         "phpunit/phpunit": "4.6.*",
         "squizlabs/php_codesniffer": "2.*",
-        "bartlett/php-compatinfo": "4.1.0"
+        "bartlett/php-compatinfo": "4.1.0",
+        "frozzare/wp-test-suite": "^1.0"
     }
 }

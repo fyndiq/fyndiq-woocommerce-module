@@ -369,7 +369,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                             _e('Not exported');
                         }
                     } else {
-                        _e('Can't be exported'');
+                        _e('Can\'t be exported');
                     }
                 }
                 if ($column == 'fyndiq_status') {

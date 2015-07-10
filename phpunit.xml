@@ -1,27 +1,17 @@
 <phpunit
-	bootstrap="tests/tests/bootstrap.php"
-	backupGlobals="false"
-	colors="true"
-	convertErrorsToExceptions="true"
-	convertNoticesToExceptions="true"
-	convertWarningsToExceptions="true"
-	>
-	<testsuites>
-		<testsuite>
-			<directory prefix="test-" suffix=".php">./tests/tests/</directory>
-		</testsuite>
-	</testsuites>
-    <filter>
-        <whitelist>
-            <directory suffix=".php">./models</directory>
-            <file>woocommerce-fyndiq.php</file>
-            <file>fyndiqHelper.php</file>
-        </whitelist>
-        <blacklist>
-            <directory>./api</directory>
-            <directory>./bin</directory>
-            <directory>./phpunit</directory>
-            <directory>./shared</directory>
-        </blacklist>
-    </filter>
+  bootstrap="vendor/frozzare/wp-test-suite/bootstrap.php"
+  backupGlobals="false"
+  colors="true"
+  convertErrorsToExceptions="true"
+  convertNoticesToExceptions="true"
+  convertWarningsToExceptions="true"
+  >
+  <php>
+    <const name="WTB_PLUGIN_FILE_NAME" value="woocommerce-fyndiq.php" />
+  </php>
+  <testsuites>
+    <testsuite name="Fyndiq Woocommerce Test Suite">
+      <directory suffix=".php">./tests/</directory>
+    </testsuite>
+  </testsuites>
 </phpunit>
