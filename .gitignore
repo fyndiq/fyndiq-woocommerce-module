@@ -1,4 +1,11 @@
 .idea
-files/feed.csv
-.vagrant
-
+/src/files/*
+/build/*
+/coverage/
+/vendor/
+/assets/*
+.sass-cache/
+composer.lock
+*.sublime-project
+*.sublime-workspace
+.vagrant/
