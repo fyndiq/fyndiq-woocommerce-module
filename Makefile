@@ -8,6 +8,8 @@ COVERAGE_DIR = $(BASE)/coverage
 BIN_DIR = $(BASE)/vendor/bin
 COMMIT = $(shell git remove-destinationparse --short HEAD)
 MODULE_VERSION = $(shell grep -Po "Version\: \K[^$]*" src/woocommerce-fyndiq.php)
+WP_VERSION = latest
+
 
 build: clean
 	rsync -a --exclude='.*' $(SRC_DIR) $(BUILD_DIR)
