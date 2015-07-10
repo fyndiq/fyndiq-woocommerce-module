@@ -55,7 +55,7 @@ if [ ! -f "$WC_PATH/index.php" ]; then
     sudo -u vagrant -i -- wp plugin install --path=$WC_PATH woocommerce --activate
 
     ## Install woocommerce-fyndiq
-    ln -s /opt/fyndiq-woocommerce-module/ $WC_PATH/wp-content/plugins/woocommerce-fyndiq
+    ln -s /opt/fyndiq-woocommerce-module/src $WC_PATH/wp-content/plugins/woocommerce-fyndiq
     sudo -u vagrant -i -- wp plugin activate --path=$WC_PATH woocommerce-fyndiq
 
 
