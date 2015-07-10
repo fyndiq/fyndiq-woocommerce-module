@@ -17,7 +17,7 @@ class WC_Fyndiq
 
         // indicates we are running the admin
         if (!is_admin()) {
-            die('Access denied');
+
         }
     }
 
@@ -85,7 +85,7 @@ class WC_Fyndiq
     }
 
 
-    function fyndiq_order_meta_boxes()
+    public function fyndiq_order_meta_boxes()
     {
         global $post;
         $post_id = $post->ID;
@@ -102,7 +102,7 @@ class WC_Fyndiq
         }
     }
 
-    function order_meta_box_delivery_note()
+    public function order_meta_box_delivery_note()
     {
         global $post;
         $post_id = $post->ID;
@@ -111,7 +111,7 @@ class WC_Fyndiq
         echo '<a href="' . $meta['fyndiq_delivery_note'][0] . '" class="button button-primary">Get Fyndiq Delivery Note</a>';
     }
 
-    function get_url()
+    public function get_url()
     {
         ?>
         <script type="text/javascript">
@@ -124,7 +124,7 @@ class WC_Fyndiq
     <?php
     }
 
-    function fyndiq_settings_action($sections)
+    public function fyndiq_settings_action($sections)
     {
 
         $sections['wcfyndiq'] = __('Fyndiq', 'fyndiq');
@@ -133,7 +133,7 @@ class WC_Fyndiq
 
     }
 
-    function fyndiq_all_settings($settings, $current_section)
+    public function fyndiq_all_settings($settings, $current_section)
     {
 
         /**
@@ -225,7 +225,7 @@ class WC_Fyndiq
         }
     }
 
-    function update_settings()
+    public function update_settings()
     {
         woocommerce_update_options($this->fyndiq_all_settings(array(), 'wcfyndiq'));
         try {
@@ -243,7 +243,7 @@ class WC_Fyndiq
         }
     }
 
-    function updateUrls()
+    public function updateUrls()
     {
         //Generate pingtoken
         $pingToken = md5(uniqid());
@@ -260,7 +260,7 @@ class WC_Fyndiq
     }
 
 
-    function fyndiq_add_product_field()
+    public function fyndiq_add_product_field()
     {
         $product = get_product($this->getProductId());
 
@@ -315,7 +315,7 @@ class WC_Fyndiq
         }
     }
 
-    function fyndiq_product_save($post_id)
+    public function fyndiq_product_save($post_id)
     {
         $woocommerce_checkbox = $this->getExportState();
         $woocommerce_pricepercentage = $this->getPricePercentage();
@@ -323,7 +323,7 @@ class WC_Fyndiq
         update_post_meta($post_id, '_fyndiq_price_percentage', $woocommerce_pricepercentage);
     }
 
-    function fyndiq_product_add_column($defaults)
+    public function fyndiq_product_add_column($defaults)
     {
         $defaults['fyndiq_export'] = __('Fyndiq Exported');
         $defaults['fyndiq_status'] = __('Fyndiq Status');
@@ -331,7 +331,7 @@ class WC_Fyndiq
         return $defaults;
     }
 
-    function fyndiq_product_column_export($column, $postid)
+    public function fyndiq_product_column_export($column, $postid)
     {
         $product = new WC_Product($postid);
         if ($column == 'fyndiq_export') {
@@ -363,8 +363,7 @@ class WC_Fyndiq
         }
     }
 
-
-    function my_admin_notice()
+    public function my_admin_notice()
     {
         if ($this->checkCurrency()) {
             echo '<div class="error">
@@ -390,14 +389,14 @@ class WC_Fyndiq
     }
 
 
-    function fyndiq_order_column_sort()
+    public function fyndiq_order_column_sort()
     {
         return array(
             'fyndiq_order' => 'fyndiq_order'
         );
     }
 
-    function fyndiq_order_column_sort_by($query)
+    public function fyndiq_order_column_sort_by($query)
     {
         if (!is_admin()) {
             return;
@@ -410,14 +409,14 @@ class WC_Fyndiq
     }
 
 
-    function fyndiq_order_add_column($defaults)
+    public function fyndiq_order_add_column($defaults)
     {
         $defaults['fyndiq_order'] = __('Fyndiq Order');
 
         return $defaults;
     }
 
-    function fyndiq_order_column($column, $postid)
+    public function fyndiq_order_column($column, $postid)
     {
         $product = new WC_Order($postid);
         if ($column == 'fyndiq_order') {
@@ -432,7 +431,7 @@ class WC_Fyndiq
     }
 
 
-    function fyndiq_product_column_sort()
+    public function fyndiq_product_column_sort()
     {
         return array(
             'fyndiq_export' => 'fyndiq_export',
@@ -440,7 +439,7 @@ class WC_Fyndiq
         );
     }
 
-    function fyndiq_product_column_sort_by($query)
+    public function fyndiq_product_column_sort_by($query)
     {
         if (!is_admin()) {
             return;
@@ -456,7 +455,7 @@ class WC_Fyndiq
         }
     }
 
-    function fyndiq_product_add_bulk_action()
+    public function fyndiq_product_add_bulk_action()
     {
         global $post_type;
 
@@ -487,7 +486,7 @@ class WC_Fyndiq
         }
     }
 
-    function fyndiq_product_export_bulk_action()
+    public function fyndiq_product_export_bulk_action()
     {
         $action = $this->getAction('WP_Posts_List_Table');
 
@@ -529,7 +528,7 @@ class WC_Fyndiq
         return $this->bulkRedirect($report_action, $changed, $post_ids);
     }
 
-    function fyndiq_bulk_notices()
+    public function fyndiq_bulk_notices()
     {
         global $post_type, $pagenow;
 
@@ -557,7 +556,7 @@ class WC_Fyndiq
         }
     }
 
-    function fyndiq_order_delivery_note_bulk_action()
+    public function fyndiq_order_delivery_note_bulk_action()
     {
         $wp_list_table = _get_list_table('WP_Posts_List_Table');
         $action = $wp_list_table->current_action();
@@ -917,24 +916,24 @@ class WC_Fyndiq
         wp_die();
     }
 
-    function getAction($table)
+    public function getAction($table)
     {
         $wp_list_table = _get_list_table($table);
 
         return $wp_list_table->current_action();
     }
 
-    function getRequestPost()
+    public function getRequestPost()
     {
         return $_REQUEST['post'];
     }
 
-    function returnAndDie($return)
+    public function returnAndDie($return)
     {
         die($return);
     }
 
-    function bulkRedirect($report_action, $changed, $post_ids)
+    public function bulkRedirect($report_action, $changed, $post_ids)
     {
         $sendback = add_query_arg(
             array('post_type' => 'product', $report_action => $changed, 'ids' => join(',', $post_ids)),
@@ -944,32 +943,32 @@ class WC_Fyndiq
         exit();
     }
 
-    function getProductId()
+    public function getProductId()
     {
         return get_the_ID();
     }
 
-    function getExportState()
+    public function getExportState()
     {
         return isset($_POST['_fyndiq_export']) ? 'exported' : 'not exported';
     }
 
-    function getPricePercentage()
+    public function getPricePercentage()
     {
         return $_POST['_fyndiq_price_percentage'];
     }
 
-    function checkCurrency()
+    public function checkCurrency()
     {
         return (get_woocommerce_currency() != 'SEK' && get_woocommerce_currency() != 'EUR');
     }
 
-    function checkCountry()
+    public function checkCountry()
     {
         return (WC()->countries->get_base_country() != 'SE' && WC()->countries->get_base_country() != 'DE');
     }
 
-    function checkCredentials()
+    public function checkCredentials()
     {
         return empty(get_option('wcfyndiq_username')) || empty(get_option('wcfyndiq_apitoken'));
     }
