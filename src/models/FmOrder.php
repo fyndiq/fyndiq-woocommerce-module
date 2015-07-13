@@ -17,7 +17,7 @@ class FmOrder
 
     public function createOrder($order)
     {
-// build order data
+        // build order data
         $order_data = array(
             'post_name' => 'order-' . date_format(new DateTime($order->created), 'M-d-Y-hi-a'), //'order-jun-19-2014-0648-pm'
             'post_type' => 'shop_order',
@@ -31,7 +31,7 @@ class FmOrder
             'comment_status' => 'open'
         );
 
-// create order
+        // create order
         $order_id = wp_insert_post($order_data, true);
 
         if (is_wp_error($order_id)) {
@@ -44,7 +44,7 @@ class FmOrder
             foreach ($order->order_rows as $order_rows) {
                 $order_total += ($order_rows->unit_price_amount*$order_rows->quantity);
             }
-// add a bunch of meta data
+            // add a bunch of meta data
             add_post_meta($order_id, 'fyndiq_id', $order->id, true);
             add_post_meta($order_id, 'fyndiq_delivery_note', 'https://fyndiq.se' . $order->delivery_note, true);
             add_post_meta($order_id, '_payment_method_title', 'Import', true);
@@ -109,7 +109,8 @@ class FmOrder
         }
 
     }
-    function get_product_by_sku($sku)
+
+    public function get_product_by_sku($sku)
     {
 
         global $wpdb;

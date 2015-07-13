@@ -11,7 +11,7 @@ class FmProduct
     const STATUS_PENDING = 'PENDING';
     const STATUS_FOR_SALE = 'FOR_SALE';
 
-    function getExportedProducts()
+    public function getExportedProducts()
     {
         $args = array(
             'numberposts' => -1,
@@ -26,12 +26,12 @@ class FmProduct
         return get_posts($args);
     }
 
-    function updateStatus($product_id, $status)
+    public function updateStatus($product_id, $status)
     {
         return update_post_meta($product_id, '_fyndiq_status', $status);
     }
 
-    function updateStatusAllProducts($status)
+    public function updateStatusAllProducts($status)
     {
         $posts_array = $this->getExportedProducts();
         foreach ($posts_array as $product) {

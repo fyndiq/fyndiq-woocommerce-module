@@ -633,12 +633,12 @@ EOS;
      */
     public function plugins_loaded()
     {
-        include_once('fyndiqHelper.php');
+        include_once('FmHelpers.php');
         require_once('include/shared/src/init.php');
-        require_once('models/order.php');
-        require_once('models/orderFetch.php');
-        require_once('models/product.php');
-        require_once('models/productFetch.php');
+        require_once('models/FmOrder.php');
+        require_once('models/FmOrderFetch.php');
+        require_once('models/FmProduct.php');
+        require_once('models/FmProductFetch.php');
     }
 
     public function generate_feed()
