@@ -10,7 +10,7 @@ class WC_Fyndiq
         // called only after woocommerce has finished loading
         add_action('woocommerce_init', array(&$this, 'woocommerce_loaded'));
 
-        // called after all plugins have loaded
+        // called after all plug-ins have loaded
         add_action('plugins_loaded', array(&$this, 'plugins_loaded'));
 
         $this->filepath = plugin_dir_path(__FILE__) . 'files/feed.csv';
@@ -80,7 +80,6 @@ class WC_Fyndiq
             $this->notification_handle();
             die();
         }
-
     }
 
 
@@ -112,29 +111,28 @@ class WC_Fyndiq
 
     public function get_url()
     {
-        ?>
+        $script = <<<EOS
         <script type="text/javascript">
-            var wordpressurl = '<?php echo get_site_url(); ?>';
+            var wordpressurl = '%s';
         </script>
-        <script src="<?php echo plugins_url('/js/order-import.js', __FILE__); ?>"
-                type="text/javascript"></script>
-        <script src="<?php echo plugins_url('/js/product-update.js', __FILE__); ?>"
-                type="text/javascript"></script>
-    <?php
+        <script src="%s" type="text/javascript"></script>
+        <script src="%s" type="text/javascript"></script>
+EOS;
+        printf($script,
+            get_site_url(),
+            plugins_url('/js/order-import.js', __FILE__),
+            plugins_url('/js/product-update.js', __FILE__)
+        );
     }
 
     public function fyndiq_settings_action($sections)
     {
-
         $sections['wcfyndiq'] = __('Fyndiq', 'fyndiq');
-
         return $sections;
-
     }
 
     public function fyndiq_all_settings($settings, $current_section)
     {
-
         /**
          * Check the current section is what we want
          **/
@@ -211,14 +209,11 @@ class WC_Fyndiq
             $settings_slider[] = array('type' => 'sectionend', 'id' => 'wcfyndiq');
 
             return $settings_slider;
-
+        } else {
             /**
              * If not, return the standard settings
              **/
-
-        } else {
             return $settings;
-
         }
     }
 
@@ -230,11 +225,9 @@ class WC_Fyndiq
         } catch (Exception $e) {
             if ($e->getMessage() == 'Unauthorized') {
                 //echo "Wrong api-token or username to Fyndiq.";
-                ?>
-                <div class="error">
-                <p><?php _e('Fyndiq credentials was wrong, try again.', 'fyndiq_username'); ?></p>
-                </div>
-            <?php
+                echo '<div class="error">';
+                printf('<p>%s</p>',  __('Fyndiq credentials was wrong, try again.', 'fyndiq_username'));
+                echo '</div>';
             }
             //die();
         }
@@ -248,9 +241,9 @@ class WC_Fyndiq
 
         $data = array(
             FyndiqUtils::NAME_PRODUCT_FEED_URL => get_site_url() . '/?fyndiq_feed',
-            FyndiqUtils::NAME_NOTIFICATION_URL => get_site_url() . '/?fyndiq_notification',
-            FyndiqUtils::NAME_PING_URL => get_site_url(
-            ) . '/?fyndiq_notification&event=ping&pingToken=' . $pingToken
+            FyndiqUtils::NAME_NOTIFICATION_URL => get_site_url() . '/?fyndiq_notification&event=order_created',
+            FyndiqUtils::NAME_PING_URL => get_site_url() .
+                '/?fyndiq_notification&event=ping&pingToken=' . $pingToken
         );
 
         return FmHelpers::callApi('PATCH', 'settings/', $data);
