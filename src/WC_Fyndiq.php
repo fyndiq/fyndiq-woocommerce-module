@@ -118,7 +118,8 @@ class WC_Fyndiq
         <script src="%s" type="text/javascript"></script>
         <script src="%s" type="text/javascript"></script>
 EOS;
-        printf($script,
+        printf(
+            $script,
             get_site_url(),
             plugins_url('/js/order-import.js', __FILE__),
             plugins_url('/js/product-update.js', __FILE__)
@@ -226,7 +227,7 @@ EOS;
             if ($e->getMessage() == 'Unauthorized') {
                 //echo "Wrong api-token or username to Fyndiq.";
                 echo '<div class="error">';
-                printf('<p>%s</p>',  __('Fyndiq credentials was wrong, try again.', 'fyndiq_username'));
+                printf('<p>%s</p>', __('Fyndiq credentials was wrong, try again.', 'fyndiq_username'));
                 echo '</div>';
             }
             //die();
