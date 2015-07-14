@@ -359,7 +359,7 @@ EOS;
     {
         if ($this->checkCurrency()) {
             printf(
-                '<div class="error"><p><strong>%s</strong>: %s $s</p></div>',
+                '<div class="error"><p><strong>%s</strong>: %s %s</p></div>',
                 __('Wrong Currency'),
                 __('Fyndiq only works in EUR and SEK. change to correct currency. Current Currency:'),
                 get_woocommerce_currency()
@@ -610,8 +610,8 @@ EOS;
         if (!update_post_meta($post_id, '_fyndiq_export', 'exported')) {
             add_post_meta($post_id, '_fyndiq_export', 'exported', true);
         };
-        if (!update_post_meta($post_id, '_fyndiq_status', FmProduct::PENDING)) {
-            add_post_meta($post_id, '_fyndiq_status', FmProduct::PENDING, true);
+        if (!update_post_meta($post_id, '_fyndiq_status', FmProduct::STATUS_PENDING)) {
+            add_post_meta($post_id, '_fyndiq_status', FmProduct::STATUS_PENDING, true);
         };
     }
 

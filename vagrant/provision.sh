@@ -63,6 +63,8 @@ if [ ! -f "$WC_PATH/index.php" ]; then
     ln -s /opt/fyndiq-woocommerce-module/src $WC_PATH/wp-content/plugins/woocommerce-fyndiq
     sudo -u vagrant -i -- wp plugin activate --path=$WC_PATH woocommerce-fyndiq
 
+    ## Directly install plug-ins (no FTP)
+    echo "define('FS_METHOD', 'direct');" >> $WC_PATH/wp-config.php
 
     ## Add hosts to file
     echo "192.168.13.37  fyndiq.local" >> /etc/hosts
