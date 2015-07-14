@@ -13,7 +13,8 @@ class WC_Fyndiq
         // called after all plug-ins have loaded
         add_action('plugins_loaded', array(&$this, 'plugins_loaded'));
 
-        $this->filepath = plugin_dir_path(__FILE__) . 'files/feed.csv';
+        $upload_dir = wp_upload_dir();
+        $this->filepath = $upload_dir['basedir'] . '/fyndiq-feed.csv';
 
         // indicates we are running the admin
         if (!is_admin()) {
@@ -246,7 +247,6 @@ EOS;
             FyndiqUtils::NAME_PING_URL => get_site_url() .
                 '/?fyndiq_notification&event=ping&pingToken=' . $pingToken
         );
-
         return FmHelpers::callApi('PATCH', 'settings/', $data);
     }
 
@@ -550,7 +550,7 @@ EOS;
                 ),
                 number_format_i18n($_REQUEST['fyndiq_exported'])
             );
-            echo '<div class="updated"><p>{$message}</p></div>';
+            echo '<div class="updated"><p>' . $message . '</p></div>';
         }
     }
 

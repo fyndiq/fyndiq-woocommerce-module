@@ -40,8 +40,6 @@ fi
 
 if [ ! -f "$WC_PATH/index.php" ]; then
     mkdir -p $WC_PATH
-    chown -R vagrant:www-data $WC_PATH
-    chmod -R 775 $WC_PATH
 
     ## Create database
     mysql -uroot -p123 -e 'create database woocommerce'
@@ -66,7 +64,10 @@ if [ ! -f "$WC_PATH/index.php" ]; then
     ## Directly install plug-ins (no FTP)
     echo "define('FS_METHOD', 'direct');" >> $WC_PATH/wp-config.php
 
+    chown -R vagrant:www-data $WC_PATH
+    chmod -R 775 $WC_PATH
+
     ## Add hosts to file
-    echo "192.168.13.37  fyndiq.local" >> /etc/hosts
+    echo "192.168.44.44  fyndiq.local" >> /etc/hosts
     echo "127.0.0.1  woocommerce.local" >> /etc/hosts
 fi
