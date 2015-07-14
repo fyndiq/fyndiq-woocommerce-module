@@ -623,45 +623,55 @@ EOS;
 
     public function generate_feed()
     {
-        $return = $this->feed_write($this->filepath);
-        if ($return) {
-            $lastModified = filemtime($this->filepath);
-            $file = fopen($this->filepath, 'r');
-            $this->fmOutput->header('Last-Modified: ' . date('r', $lastModified));
-            $this->fmOutput->streamFile($file, 'feed.csv', 'text/csv', filesize($this->filepath));
-            fclose($file);
-            return $this->returnAndDie('');
+        if (get_option('wcfyndiq_username') != '' && get_option('wcfyndiq_apitoken') != '') {
+            if (FyndiqUtils::mustRegenerateFile($filePath)) {
+                $return = $this->feed_write($this->filepath);
+                if ($return) {
+                    $lastModified = filemtime($this->filepath);
+                    $file = fopen($this->filepath, 'r');
+                    $this->fmOutput->header('Last-Modified: ' . date('r', $lastModified));
+                    $this->fmOutput->streamFile($file, 'feed.csv', 'text/csv', filesize($this->filepath));
+                    fclose($file);
+                    return $this->returnAndDie('');
+                }
+            }
         }
         return $this->fmOutput->showError(500, 'Internal Server Error',
             sprintf('Error generating feed to %s', $this->filepath));
     }
 
-    private function feed_write($filePath)
+    private function mustRegenerateFile($filePath)
     {
-        if (get_option('wcfyndiq_username') != '' && get_option('wcfyndiq_apitoken') != '') {
-            $productmodel = new FmProduct();
-            $posts_array = $productmodel->getExportedProducts();
-
-            $fileExistsAndFresh = file_exists($filePath) && filemtime($filePath) > strtotime('-1 hour');
-            if (!$fileExistsAndFresh) {
-                $file = fopen($filePath, 'w+');
-                $feedWriter = new FyndiqCSVFeedWriter($file);
-                foreach ($posts_array as $product) {
-                    FyndiqUtils::debug('$product', $product);
-                    $product = new WC_Product_Variable($product->ID);
-                    $exportProduct = $this->getProduct($product);
-                    FyndiqUtils::debug('$exportProduct', $exportProduct);
-                    $feedWriter->addProduct($exportProduct);
-                    $variations = $product->get_available_variations();
-                    foreach ($variations as $variation) {
-                        $feedWriter->addProduct($this->getVariation($product, $variation));
-                    }
-                }
-                $feedWriter->write();
-            }
+        if (getenv('FYNDIQ_DEBUG') == 1) {
             return true;
         }
-        return false;
+        if (file_exists($filePath) && filemtime($filePath) > strtotime('-1 hour')) {
+            return false;
+        }
+        return true;
+    }
+
+    private function feed_write($filePath)
+    {
+        $file = fopen($filePath, 'w+');
+        $feedWriter = new FyndiqCSVFeedWriter($file);
+        $productmodel = new FmProduct();
+        $posts_array = $productmodel->getExportedProducts();
+        foreach ($posts_array as $product) {
+            FyndiqUtils::debug('$product', $product);
+            $product = new WC_Product_Variable($product->ID);
+            $exportProduct = $this->getProduct($product);
+            FyndiqUtils::debug('$exportProduct', $exportProduct);
+            $feedWriter->addProduct($exportProduct);
+            $variations = $product->get_available_variations();
+            foreach ($variations as $variation) {
+                $exportVariation = $this->getVariation($product, $variation);
+                FyndiqUtils::debug('$exportVariation', $exportVariation);
+                $feedWriter->addProduct($exportVariation);
+            }
+        }
+        $feedWriter->write();
+        return true;
     }
 
     private function getProduct($product)
