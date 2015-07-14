@@ -4,8 +4,9 @@ class WC_Fyndiq
 {
 
     private $filepath = null;
+    private $fmOutput = null;
 
-    public function __construct()
+    public function __construct($fmOutput)
     {
         // called only after woocommerce has finished loading
         add_action('woocommerce_init', array(&$this, 'woocommerce_loaded'));
@@ -15,6 +16,8 @@ class WC_Fyndiq
 
         $upload_dir = wp_upload_dir();
         $this->filepath = $upload_dir['basedir'] . '/fyndiq-feed.csv';
+
+        $this->fmOutput = $fmOutput;
 
         // indicates we are running the admin
         if (!is_admin()) {
@@ -107,7 +110,7 @@ class WC_Fyndiq
         $post_id = $post->ID;
         $meta = get_post_custom($post_id);
 
-        echo '<a href="' . $meta['fyndiq_delivery_note'][0] . '" class="button button-primary">Get Fyndiq Delivery Note</a>';
+        $this->fmOutput->output('<a href="' . $meta['fyndiq_delivery_note'][0] . '" class="button button-primary">Get Fyndiq Delivery Note</a>');
     }
 
     public function get_url()
@@ -226,10 +229,8 @@ EOS;
             $this->updateUrls();
         } catch (Exception $e) {
             if ($e->getMessage() == 'Unauthorized') {
-                //echo "Wrong api-token or username to Fyndiq.";
-                echo '<div class="error">';
-                printf('<p>%s</p>', __('Fyndiq credentials was wrong, try again.', 'fyndiq_username'));
-                echo '</div>';
+                $this->fmOutput->output(sprintf('<div class="error"><p>%s</p></div>',
+                    __('Fyndiq credentials was wrong, try again.', 'fyndiq_username')));
             }
             //die();
         }
@@ -256,7 +257,7 @@ EOS;
         $product = get_product($this->getProductId());
 
         if (!$product->is_downloadable()) {
-            echo '<div class="options_group"><p>' . __('Fyndiq Product Settings') . '</p>';
+            $this->fmOutput->output('<div class="options_group"><p>' . __('Fyndiq Product Settings') . '</p>');
 
             // Checkbox for exporting to fyndiq
             $value = (get_post_meta(get_the_ID(), '_fyndiq_export', true) == 'exported') ? 1 : 0;
@@ -293,17 +294,17 @@ EOS;
 
             $price = $this->getPrice($product->id, $product->price);
 
-            printf(
+            $this->fmOutput->output(sprintf(
                 '<p>%s%s %s</p></div>',
                 __('Fyndiq Price with set Discount percentage: ', 'fyndiq'),
                 $price,
                 get_woocommerce_currency()
-            );
+            ));
         } else {
-            printf(
+            $this->fmOutput->output(sprintf(
                 '<div class="options_group"><p>%s</p></div>',
                 __('Can\'t export this product to Fyndiq', 'fyndiq')
-            );
+            ));
         }
     }
 
@@ -416,10 +417,10 @@ EOS;
         if ($column == 'fyndiq_order') {
             $fyndiq_order = get_post_meta($postid, 'fyndiq_id', true);
             if ($fyndiq_order != '') {
-                echo $fyndiq_order;
+                $this->fmOutput->output($fyndiq_order);
             } else {
                 update_post_meta($postid, 'fyndiq_id', '-');
-                echo '-';
+                $this->fmOutput->output('-');
             }
         }
     }
@@ -457,7 +458,7 @@ EOS;
             $exportToFyndiq = __('Export to Fyndiq');
             $removeFromFyndiq = __('Remove from Fyndiq');
             $updateFyndiqStatus = __('Update Fyndiq Status');
-            echo <<<EOS
+            $script = <<<EOS
 <script type="text/javascript">
     jQuery(document).ready(function () {
         jQuery('<option>').val('fyndiq_export').text('$exportToFyndiq').appendTo("select[name='action']");
@@ -468,11 +469,12 @@ EOS;
     });
 </script>
 EOS;
+            $this->fmOutput->output($script);
         }
         if ($post_type == 'shop_order') {
             $getFyndiqDeliveryNote =  __('Get Fyndiq Delivery Note');
             $importFromFyndiq = __('Import From Fyndiq');
-            echo  <<<EOS
+            $script =  <<<EOS
 <script type="text/javascript">
     jQuery(document).ready(function () {
         jQuery('<option>').val('fyndiq_delivery').text('$getFyndiqDeliveryNote').appendTo("select[name='action']");
@@ -481,6 +483,7 @@ EOS;
     });
 </script>
 EOS;
+            $this->fmOutput->output($script);
         }
     }
 
@@ -539,7 +542,7 @@ EOS;
                 ),
                 number_format_i18n($_REQUEST['fyndiq_removed'])
             );
-            echo '<div class="updated"><p>{$message}</p></div>';
+            $this->fmOutput->output('<div class="updated"><p>' . $message . '</p></div>');
         }
         if ($pagenow == 'edit.php' && isset($_REQUEST['fyndiq_exported']) && (int)$_REQUEST['fyndiq_exported']) {
             $message = sprintf(
@@ -550,7 +553,7 @@ EOS;
                 ),
                 number_format_i18n($_REQUEST['fyndiq_exported'])
             );
-            echo '<div class="updated"><p>' . $message . '</p></div>';
+            $this->fmOutput->output('<div class="updated"><p>' . $message . '</p></div>');
         }
     }
 
@@ -605,6 +608,10 @@ EOS;
         exit();
     }
 
+    public function plugins_loaded() {
+        // noop
+    }
+
     private function perform_export($post_id)
     {
         if (!update_post_meta($post_id, '_fyndiq_export', 'exported')) {
@@ -622,30 +629,19 @@ EOS;
         };
     }
 
-    /**
-     * Take care of anything that needs all plugins to be loaded
-     */
-    public function plugins_loaded()
-    {
-        include_once('FmHelpers.php');
-        require_once('include/shared/src/init.php');
-        require_once('models/FmOrder.php');
-        require_once('models/FmOrderFetch.php');
-        require_once('models/FmProduct.php');
-        require_once('models/FmProductFetch.php');
-    }
-
     public function generate_feed()
     {
-
         $return = $this->feed_write($this->filepath);
         if ($return) {
-            $result = file_get_contents($this->filepath);
-
-            return $this->returnAndDie($result);
-        } else {
+            $lastModified = filemtime($this->filepath);
+            $file = fopen($this->filepath, 'r');
+            $this->fmOutput->header('Last-Modified: ' . date('r', $lastModified));
+            $this->fmOutput->streamFile($file, 'feed.csv', 'text/csv', filesize($this->filepath));
+            fclose($file);
             return $this->returnAndDie('');
         }
+        return $this->fmOutput->showError(500, 'Internal Server Error',
+            sprintf('Error generating feed to %s', $this->filepath));
     }
 
     private function feed_write($filePath)
@@ -829,8 +825,8 @@ EOS;
                     $orderModel->createOrder($fyndiqOrder);
                 }
             } catch (Exception $e) {
-                header('HTTP/1.0 500 Internal Server Error');
-                die('500 Internal Server Error');
+                $this->fmOutput->showError(500 , 'Internal Server Error', '500 Internal Server Error');
+                die();
             }
 
             return true;
@@ -842,8 +838,6 @@ EOS;
         define('DOING_AJAX', true);
         FyndiqUtils::debugStart();
         FyndiqUtils::debug('USER AGENT', FmHelpers::get_user_agent());
-        FyndiqUtils::debug('MEMORY LIMIT', ini_get('memory_limit'));
-        FyndiqUtils::debug('PHP VERSION', phpversion());
         $languageId = WC()->countries->get_base_country();
         FyndiqUtils::debug('language', $languageId);
         $return = $this->feed_write($this->filepath);
@@ -860,21 +854,11 @@ EOS;
         $token = $_GET['token'];
 
         if (is_null($token) || $token != $pingToken) {
-            header('HTTP/1.0 400 Bad Request');
-
-            return die('400 Bad Request');
+            $this->fmOutput->showError(400, 'Bad Request', '400 Bad Request');
+            die();
         }
 
-        // http://stackoverflow.com/questions/138374/close-a-connection-early
-        ob_end_clean();
-        header('Connection: close');
-        ignore_user_abort(true); // just to be safe
-        ob_start();
-        echo 'OK';
-        $size = ob_get_length();
-        header('Content-Length: ' . $size);
-        ob_end_flush(); // Strange behaviour, will not work
-        flush(); // Unless both are called !
+        $this->fmOutput->flushHeader('OK');
 
         $locked = false;
         $lastPing = get_option("wcfyndiq_ping_time");
@@ -884,14 +868,13 @@ EOS;
         }
         if (!$locked) {
             update_option('wcfyndiq_ping_time', time());
-            $filePath = plugin_dir_path(__FILE__) . 'files/feed.csv';
             try {
-                $this->feed_write($filePath);
+                $this->feed_write($this->filepath);
                 $this->update_product_info();
             } catch (Exception $e) {
                 error_log($e->getMessage());
             }
-            $this->feed_write($filePath);
+            $this->feed_write($this->filepath);
         }
     }
 
@@ -899,8 +882,8 @@ EOS;
     {
         define('DOING_AJAX', true);
         $orderFetch = new FmOrderFetch(false);
-        $return = $orderFetch->getAll();
-        echo json_encode($return);
+        $result = $orderFetch->getAll();
+        $this->fmOutput->outputJSON($result);
         wp_die();
     }
 
@@ -909,7 +892,7 @@ EOS;
         define('DOING_AJAX', true);
         $productFetch = new FmProductFetch();
         $productFetch->getAll();
-        echo json_encode(array('status' => 'ok'));
+        $this->fmOutput->outputJSON(array('status' => 'ok'));
         wp_die();
     }
 
