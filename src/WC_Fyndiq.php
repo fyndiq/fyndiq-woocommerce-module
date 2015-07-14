@@ -49,14 +49,14 @@ class WC_Fyndiq
         //product list
         add_filter('manage_edit-product_columns', array(&$this, 'fyndiq_product_add_column'));
         add_action('manage_product_posts_custom_column', array(&$this, 'fyndiq_product_column_export'), 5, 2);
-        add_filter("manage_edit-product_sortable_columns", array(&$this, 'fyndiq_product_column_sort'));
+        add_filter('manage_edit-product_sortable_columns', array(&$this, 'fyndiq_product_column_sort'));
         add_action('pre_get_posts', array(&$this, 'fyndiq_product_column_sort_by'));
         add_action('admin_notices', array(&$this, 'fyndiq_bulk_notices'));
 
         //order list
         add_filter('manage_edit-shop_order_columns', array(&$this, 'fyndiq_order_add_column'));
         add_action('manage_shop_order_posts_custom_column', array(&$this, 'fyndiq_order_column'), 5, 2);
-        add_filter("manage_edit-shop_order_sortable_columns", array(&$this, 'fyndiq_order_column_sort'));
+        add_filter('manage_edit-shop_order_sortable_columns', array(&$this, 'fyndiq_order_column_sort'));
 
 
         //bulk action
@@ -92,7 +92,7 @@ class WC_Fyndiq
         global $post;
         $post_id = $post->ID;
         $meta = get_post_custom($post_id);
-        if (isset($meta['fyndiq_delivery_note']) && isset($meta['fyndiq_delivery_note'][0]) && $meta['fyndiq_delivery_note'][0] != "") {
+        if (isset($meta['fyndiq_delivery_note']) && isset($meta['fyndiq_delivery_note'][0]) && $meta['fyndiq_delivery_note'][0] != '') {
             add_meta_box(
                 'woocommerce-order-fyndiq-delivery-note',
                 __('Fyndiq'),
@@ -586,18 +586,10 @@ EOS;
 
         if ($ret['status'] == 200) {
             $fileName = 'delivery_notes-' . implode('-', $_REQUEST['post']) . '.pdf';
-
-            header('Content-Type: application/pdf');
-            header('Content-Disposition: attachment; filename="' . $fileName . '"');
-            header('Content-Transfer-Encoding: binary');
-            header('Content-Length: ' . strlen($ret['data']));
-            header('Expires: 0');
-            $handler = fopen('php://temp', 'wb+');
-            // Saving data to file
-            fputs($handler, $ret['data']);
-            rewind($handler);
-            fpassthru($handler);
-            fclose($handler);
+            $file = fopen('php://temp', 'wb+');
+            fputs($file, $ret['data']);
+            $this->fmOutput->streamFile($file, $fileName, 'application/pdf', strlen($ret['data']));
+            fclose($file);
         } else {
             $sendback = add_query_arg(
                 array('post_type' => 'shop_order', $report_action => $changed, 'ids' => join(',', $post_ids)),
@@ -646,8 +638,6 @@ EOS;
 
     private function feed_write($filePath)
     {
-
-
         if (get_option('wcfyndiq_username') != '' && get_option('wcfyndiq_apitoken') != '') {
             $productmodel = new FmProduct();
             $posts_array = $productmodel->getExportedProducts();
@@ -657,8 +647,11 @@ EOS;
                 $file = fopen($filePath, 'w+');
                 $feedWriter = new FyndiqCSVFeedWriter($file);
                 foreach ($posts_array as $product) {
+                    FyndiqUtils::debug('$product', $product);
                     $product = new WC_Product_Variable($product->ID);
-                    $feedWriter->addProduct($this->getProduct($product));
+                    $exportProduct = $this->getProduct($product);
+                    FyndiqUtils::debug('$exportProduct', $exportProduct);
+                    $feedWriter->addProduct($exportProduct);
                     $variations = $product->get_available_variations();
                     foreach ($variations as $variation) {
                         $feedWriter->addProduct($this->getVariation($product, $variation));
@@ -666,10 +659,8 @@ EOS;
                 }
                 $feedWriter->write();
             }
-
             return true;
         }
-
         return false;
     }
 
@@ -805,8 +796,8 @@ EOS;
                 }
             }
         }
-        header('HTTP/1.0 400 Bad Request');
-        die('400 Bad Request');
+        $this->fmOutput->showError(400, 'Bad Request', '400 Bad Request');
+        die();
     }
 
     private function notice_order_created()
@@ -861,11 +852,9 @@ EOS;
         $this->fmOutput->flushHeader('OK');
 
         $locked = false;
-        $lastPing = get_option("wcfyndiq_ping_time");
+        $lastPing = get_option('wcfyndiq_ping_time');
         $lastPing = $lastPing ? unserialize($lastPing) : false;
-        if ($lastPing && $lastPing > strtotime('15 minutes ago')) {
-            $locked = true;
-        }
+        $locked = $lastPing && $lastPing > strtotime('15 minutes ago');
         if (!$locked) {
             update_option('wcfyndiq_ping_time', time());
             try {
