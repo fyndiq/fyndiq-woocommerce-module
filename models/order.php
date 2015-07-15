@@ -41,15 +41,11 @@ class FmOrder
 
             $order->imported = true;
 
-            $order_total = 0;
-            foreach($order->order_rows as $order_rows) {
-                $order_total += ($order_rows->unit_price_amount*$order_rows->quantity);
-            }
-// add a bunch of meta data
+            // add a bunch of meta data
             add_post_meta($order_id, 'fyndiq_id', $order->id, true);
             add_post_meta($order_id, 'fyndiq_delivery_note', 'https://fyndiq.se' . $order->delivery_note, true);
             add_post_meta($order_id, '_payment_method_title', 'Import', true);
-            add_post_meta($order_id, '_order_total', $order_total, true);
+
             add_post_meta($order_id, '_customer_user', 0, true);
             add_post_meta($order_id, '_completed_date', date_format(new DateTime($order->created), 'Y-m-d H:i:s e'), true);
             add_post_meta($order_id, '_order_currency', $order->order_rows[0]->unit_price_currency, true);
@@ -64,13 +60,13 @@ class FmOrder
             add_post_meta($order_id, '_shipping_last_name', $order->delivery_lastname, true);
             add_post_meta($order_id, '_shipping_phone', $order->delivery_phone, true);
 
-
+            $order_total = 0;
             foreach($order->order_rows as $order_row) {
                 // get product by item_id
                 $product = $this->get_product_by_sku($order_row->sku);
 
                 $product_total = ($order_row->unit_price_amount*$order_row->quantity);
-
+                $order_total += $product_total;
                 if ($product) {
 
                     // add item
@@ -103,6 +99,7 @@ class FmOrder
                     echo 'Product SKU (' . $order_row->sku . ') not found.';
                 }
             }
+            add_post_meta($order_id, '_order_total', $order_total, true);
 
             $wc_order = new WC_Order($order_id);
 
