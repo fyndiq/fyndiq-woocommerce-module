@@ -89,7 +89,7 @@ class FmOrder
                         wc_add_order_item_meta($item_id, '_tax_class', $product->get_tax_class());
                         wc_add_order_item_meta($item_id, '_product_id', $product->ID);
                         wc_add_order_item_meta($item_id, '_variation_id', '');
-                        wc_add_order_item_meta($item_id, '_line_subtotal', wc_format_decimal(intval($product_total)));
+                        wc_add_order_item_meta($item_id, '_line_subtotal', wc_format_decimal(intval($order_row->unit_price_amount)));
                         wc_add_order_item_meta($item_id, '_line_total', wc_format_decimal(intval($product_total)));
 
                     }
