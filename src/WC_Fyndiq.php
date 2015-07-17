@@ -229,8 +229,10 @@ EOS;
             $this->updateUrls();
         } catch (Exception $e) {
             if ($e->getMessage() == 'Unauthorized') {
-                $this->fmOutput->output(sprintf('<div class="error"><p>%s</p></div>',
-                    __('Fyndiq credentials was wrong, try again.', 'fyndiq_username')));
+                $this->fmOutput->output(sprintf(
+                    '<div class="error"><p>%s</p></div>',
+                    __('Fyndiq credentials was wrong, try again.', 'fyndiq_username')
+                ));
             }
             //die();
         }
@@ -600,7 +602,8 @@ EOS;
         exit();
     }
 
-    public function plugins_loaded() {
+    public function plugins_loaded()
+    {
         // noop
     }
 
@@ -636,8 +639,11 @@ EOS;
                 }
             }
         }
-        return $this->fmOutput->showError(500, 'Internal Server Error',
-            sprintf('Error generating feed to %s', $this->filepath));
+        return $this->fmOutput->showError(
+            500,
+            'Internal Server Error',
+            sprintf('Error generating feed to %s', $this->filepath)
+        );
     }
 
     private function mustRegenerateFile($filePath)
@@ -826,7 +832,7 @@ EOS;
                     $orderModel->createOrder($fyndiqOrder);
                 }
             } catch (Exception $e) {
-                $this->fmOutput->showError(500 , 'Internal Server Error', '500 Internal Server Error');
+                $this->fmOutput->showError(500, 'Internal Server Error', '500 Internal Server Error');
                 die();
             }
 
