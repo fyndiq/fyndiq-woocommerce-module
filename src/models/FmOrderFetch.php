@@ -1,13 +1,14 @@
 <?php
+
 class FmOrderFetch extends FyndiqPaginatedFetch
 {
-    function __construct($settingExists = false)
+    public function __construct($settingExists = false)
     {
         $this->storeId = 0;
         $this->settingExists = $settingExists;
     }
 
-    function getInitialPath()
+    public function getInitialPath()
     {
         $date = false;
         if ($this->settingExists) {
@@ -18,14 +19,14 @@ class FmOrderFetch extends FyndiqPaginatedFetch
         return $url;
     }
 
-    function getPageData($path)
+    public function getPageData($path)
     {
         $ret = FmHelpers::callApi('GET', $path);
 
         return $ret['data'];
     }
 
-    function processData($data)
+    public function processData($data)
     {
         $orderModel = new FmOrder();
         foreach ($data as $order) {
@@ -37,7 +38,7 @@ class FmOrderFetch extends FyndiqPaginatedFetch
         return true;
     }
 
-    function getSleepIntervalSeconds()
+    public function getSleepIntervalSeconds()
     {
         return 1 / self::THROTTLE_ORDER_RPS;
     }

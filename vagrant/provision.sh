@@ -18,7 +18,7 @@ dpkg-reconfigure locales
 echo "mysql-server-5.5 mysql-server/root_password password 123" | sudo debconf-set-selections
 echo "mysql-server-5.5 mysql-server/root_password_again password 123" | sudo debconf-set-selections
 apt-get install -y mysql-server
-apt-get install -y apache2 php5 php5-mysql php5-gd php5-mcrypt php5-curl
+apt-get install -y apache2 php5 php5-mysql php5-gd php5-mcrypt php5-curl php5-xdebug
 
 ## COMPOSER
 if [ ! -e '/usr/local/bin/composer' ]; then
@@ -33,10 +33,13 @@ if [ ! -e '/usr/bin/wp' ]; then
     sudo ln -s /usr/share/wp-cli/bin/wp /usr/bin/wp
 fi
 
+## PHP error_log
+if [ ! -f '/etc/php5/apache2/conf.d/30-error_log.ini' ]; then
+    echo 'error_log=/tmp/php_error.log' > /etc/php5/apache2/conf.d/30-error_log.ini
+fi
+
 if [ ! -f "$WC_PATH/index.php" ]; then
     mkdir -p $WC_PATH
-    chown -R vagrant:www-data $WC_PATH
-    chmod -R 775 $WC_PATH
 
     ## Create database
     mysql -uroot -p123 -e 'create database woocommerce'
@@ -55,11 +58,16 @@ if [ ! -f "$WC_PATH/index.php" ]; then
     sudo -u vagrant -i -- wp plugin install --path=$WC_PATH woocommerce --activate
 
     ## Install woocommerce-fyndiq
-    ln -s /opt/fyndiq-woocommerce-module/ $WC_PATH/wp-content/plugins/woocommerce-fyndiq
+    ln -s /opt/fyndiq-woocommerce-module/src $WC_PATH/wp-content/plugins/woocommerce-fyndiq
     sudo -u vagrant -i -- wp plugin activate --path=$WC_PATH woocommerce-fyndiq
 
+    ## Directly install plug-ins (no FTP)
+    echo "define('FS_METHOD', 'direct');" >> $WC_PATH/wp-config.php
+
+    chown -R vagrant:www-data $WC_PATH
+    chmod -R 775 $WC_PATH
 
     ## Add hosts to file
-    echo "192.168.13.37  fyndiq.local" >> /etc/hosts
+    echo "192.168.44.44  fyndiq.local" >> /etc/hosts
     echo "127.0.0.1  woocommerce.local" >> /etc/hosts
 fi

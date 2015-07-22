@@ -2,13 +2,14 @@
 
 class FmOrder
 {
-    public function orderExists($fyndiq_id) {
+    public function orderExists($fyndiq_id)
+    {
         $args = array(
             'meta_key' => '',
             'meta_value' => $fyndiq_id,
             'post_type' => 'shop_order',
             'posts_per_page' => -1,
-            'post_status' => array_keys( wc_get_order_statuses() )
+            'post_status' => array_keys(wc_get_order_statuses())
         );
         $posts = get_posts($args);
         return count($posts) > 0;
@@ -16,7 +17,7 @@ class FmOrder
 
     public function createOrder($order)
     {
-// build order data
+        // build order data
         $order_data = array(
             'post_name' => 'order-' . date_format(new DateTime($order->created), 'M-d-Y-hi-a'), //'order-jun-19-2014-0648-pm'
             'post_type' => 'shop_order',
@@ -30,17 +31,19 @@ class FmOrder
             'comment_status' => 'open'
         );
 
-// create order
+        // create order
         $order_id = wp_insert_post($order_data, true);
 
         if (is_wp_error($order_id)) {
-
             $order->errors = $order_id;
 
         } else {
-
             $order->imported = true;
 
+            $order_total = 0;
+            foreach ($order->order_rows as $order_rows) {
+                $order_total += ($order_rows->unit_price_amount*$order_rows->quantity);
+            }
             // add a bunch of meta data
             add_post_meta($order_id, 'fyndiq_id', $order->id, true);
             add_post_meta($order_id, 'fyndiq_delivery_note', 'https://fyndiq.se' . $order->delivery_note, true);
@@ -61,14 +64,13 @@ class FmOrder
             add_post_meta($order_id, '_shipping_phone', $order->delivery_phone, true);
 
             $order_total = 0;
-            foreach($order->order_rows as $order_row) {
+            foreach ($order->order_rows as $order_row) {
                 // get product by item_id
                 $product = $this->get_product_by_sku($order_row->sku);
 
                 $product_total = ($order_row->unit_price_amount*$order_row->quantity);
                 $order_total += $product_total;
                 if ($product) {
-
                     // add item
                     $item_id = wc_add_order_item(
                         $order_id,
@@ -79,7 +81,6 @@ class FmOrder
                     );
 
                     if ($item_id) {
-
                         // add item meta data
                         wc_add_order_item_meta($item_id, '_qty', $order_row->quantity);
                         wc_add_order_item_meta($item_id, '_tax_class', $product->get_tax_class());
@@ -109,15 +110,17 @@ class FmOrder
         }
 
     }
-    function get_product_by_sku( $sku ) {
+
+    public function get_product_by_sku($sku)
+    {
 
         global $wpdb;
 
+        $product_id = $wpdb->get_var($wpdb->prepare("SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_sku' AND meta_value='%s' LIMIT 1", $sku));
 
-
-        $product_id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_sku' AND meta_value='%s' LIMIT 1", $sku ) );
-
-        if ( $product_id ) return new WC_Product( $product_id );
+        if ($product_id) {
+            return new WC_Product($product_id);
+        }
 
         return null;
 
