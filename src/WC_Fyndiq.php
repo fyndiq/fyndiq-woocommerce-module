@@ -2,7 +2,6 @@
 
 class WC_Fyndiq
 {
-
     private $filepath = null;
     private $fmOutput = null;
 
@@ -754,7 +753,7 @@ EOS;
 
     private function getVariation($product, $variation)
     {
-        if ($variation['is_purchasable'] && $variation['is_in_stock'] && !$variation['is_downloadable'] && !$variation['is_virtual']) {
+        if (!$variation['is_downloadable'] && !$variation['is_virtual']) {
             //Initialize models here so it saves memory.
             $feedProduct['product-id'] = $product->id;
             $feedProduct['product-title'] = $product->post->post_title;
@@ -792,8 +791,13 @@ EOS;
             }
 
 
-            $stock = get_post_meta($product->id, '_stock');
-            $feedProduct['article-quantity'] = intval($stock[0]);
+
+            if ($variation['is_purchasable'] && $variation['is_in_stock']) {
+                $stock = get_post_meta($product->id, '_stock');
+                $feedProduct['article-quantity'] = intval($stock[0]);
+            } else {
+                $feedProduct['article-quantity'] = intval($stock[0]);
+            }
 
             $feedProduct['article-location'] = 'unknown';
             if ($variation['sku'] != '') {
