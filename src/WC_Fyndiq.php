@@ -832,7 +832,7 @@ EOS;
                 $stock = get_post_meta($product->id, '_stock');
                 $feedProduct['article-quantity'] = intval($stock[0]);
             } else {
-                $feedProduct['article-quantity'] = intval($stock[0]);
+                $feedProduct['article-quantity'] = intval(0);
             }
 
             $feedProduct['article-location'] = 'unknown';
