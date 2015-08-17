@@ -702,6 +702,7 @@ EOS;
 
         $_tax = new WC_Tax(); //looking for appropriate vat for specific product
         $rates = $_tax->get_rates($product->get_tax_class());
+        $rates = array_shift($rates);
 
 
         $feedProduct['product-price'] = FyndiqUtils::formatPrice($price);
@@ -766,6 +767,7 @@ EOS;
             $price = $this->getPrice($product->id, $product->price);
             $_tax = new WC_Tax(); //looking for appropriate vat for specific product
             $rates = $_tax->get_rates($product->get_tax_class());
+            $rates = array_shift($rates);
 
 
             $feedProduct['product-price'] = FyndiqUtils::formatPrice($variation['display_price']);
