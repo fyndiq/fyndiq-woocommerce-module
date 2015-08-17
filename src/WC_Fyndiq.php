@@ -672,18 +672,36 @@ EOS;
         $productmodel = new FmProduct();
         $posts_array = $productmodel->getExportedProducts();
         foreach ($posts_array as $product) {
+            $exportedarticles = array();
             FyndiqUtils::debug('$product', $product);
             $product = new WC_Product_Variable($product->ID);
             $exportProduct = $this->getProduct($product);
             FyndiqUtils::debug('$exportProduct', $exportProduct);
-            $feedWriter->addProduct($exportProduct);
-            FyndiqUtils::debug('Validation product error', $feedWriter->getLastPriductErrors());
+            $exportedarticles[] = $exportProduct;
             $variations = $product->get_available_variations();
+            $prices = array();
+
             foreach ($variations as $variation) {
-                $exportVariation = $this->getVariation($product, $variation);
-                FyndiqUtils::debug('$exportVariation', $exportVariation);
-                $feedWriter->addProduct($exportVariation);
-                FyndiqUtils::debug('Validation variation error', $feedWriter->getLastPriductErrors());
+                $exportvariation = $this->getVariation($product, $variation);
+                $prices[] = $exportvariation['product-price'];
+                FyndiqUtils::debug('$exportVariation', $exportvariation);
+                $exportedarticles[] = $exportvariation;
+            }
+
+            $samePrice = count(array_unique($prices)) > 1;
+            FyndiqUtils::debug('$samePrice', $samePrice);
+
+            foreach ($exportedarticles as $articleId => $article) {
+                if (!$samePrice) {
+                    // All prices are the same, create articles
+                    $result &= $feedWriter->addProduct($article);
+                    continue;
+                }
+
+              // Prices differ, create products
+              $article['product-id'] = $article['product-id'] . '-' . $articleId;
+                $result &= $feedWriter->addProduct($article);
+                FyndiqUtils::debug('Any Validation Errors', $feedWriter->getLastPriductErrors());
             }
         }
         $feedWriter->write();
@@ -697,12 +715,15 @@ EOS;
         $feedProduct['product-title'] = $product->post->post_title;
         $feedProduct['product-description'] = $product->post->post_content;
 
-        $product_price = $product->price;
+        $product_price = $product->get_price();
         $price = $this->getPrice($product->id, $product->price);
 
         $_tax = new WC_Tax(); //looking for appropriate vat for specific product
+        FyndiqUtils::debug('tax class', $product->get_tax_class());
+
         $rates = $_tax->get_rates($product->get_tax_class());
         $rates = array_shift($rates);
+        FyndiqUtils::debug('tax rate', $rates);
 
 
         $feedProduct['product-price'] = FyndiqUtils::formatPrice($price);
@@ -763,14 +784,14 @@ EOS;
             $feedProduct['product-title'] = $product->post->post_title;
             $feedProduct['product-description'] = $product->post->post_content;
 
-            $product_price = $product->price;
-            $price = $this->getPrice($product->id, $product->price);
+            $product_price = $variation['display_price'];
+            $price = $this->getPrice($product->id, $product_price);
             $_tax = new WC_Tax(); //looking for appropriate vat for specific product
             $rates = $_tax->get_rates($product->get_tax_class());
             $rates = array_shift($rates);
 
 
-            $feedProduct['product-price'] = FyndiqUtils::formatPrice($variation['display_price']);
+            $feedProduct['product-price'] = FyndiqUtils::formatPrice($price);
             $feedProduct['product-vat-percent'] = !empty($rates['rate']) ? $rates['rate'] : 0;
             $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($product_price);
             $feedProduct['product-market'] = WC()->countries->get_base_country();
