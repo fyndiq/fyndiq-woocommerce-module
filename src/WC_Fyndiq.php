@@ -694,13 +694,13 @@ EOS;
             foreach ($exportedarticles as $articleId => $article) {
                 if (!$samePrice) {
                     // All prices are the same, create articles
-                    $result &= $feedWriter->addProduct($article);
+                    $feedWriter->addProduct($article);
                     continue;
                 }
 
               // Prices differ, create products
               $article['product-id'] = $article['product-id'] . '-' . $articleId;
-                $result &= $feedWriter->addProduct($article);
+                $feedWriter->addProduct($article);
                 FyndiqUtils::debug('Any Validation Errors', $feedWriter->getLastPriductErrors());
             }
         }
