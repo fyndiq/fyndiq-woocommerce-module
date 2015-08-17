@@ -677,11 +677,13 @@ EOS;
             $exportProduct = $this->getProduct($product);
             FyndiqUtils::debug('$exportProduct', $exportProduct);
             $feedWriter->addProduct($exportProduct);
+            FyndiqUtils::debug('Validation product error', $feedWriter->getLastPriductErrors());
             $variations = $product->get_available_variations();
             foreach ($variations as $variation) {
                 $exportVariation = $this->getVariation($product, $variation);
                 FyndiqUtils::debug('$exportVariation', $exportVariation);
                 $feedWriter->addProduct($exportVariation);
+                FyndiqUtils::debug('Validation variation error', $feedWriter->getLastPriductErrors());
             }
         }
         $feedWriter->write();
