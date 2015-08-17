@@ -748,7 +748,6 @@ EOS;
         $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($productPrice);
         $feedProduct['product-market'] = WC()->countries->get_base_country();
         $feedProduct['product-currency'] = get_woocommerce_currency();
-        $feedProduct['product-brand'] = 'UNKNOWN';
 
         $terms = get_the_terms($product->id, 'product_cat');
         if ($terms && !is_wp_error($terms)) {
@@ -806,7 +805,6 @@ EOS;
             $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($productPrice);
             $feedProduct['product-market'] = WC()->countries->get_base_country();
             $feedProduct['product-currency'] = get_woocommerce_currency();
-            $feedProduct['product-brand'] = 'UNKNOWN';
 
 
 
