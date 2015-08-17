@@ -704,14 +704,14 @@ EOS;
 
             foreach ($exportedArticles as $articleId => $article) {
                 if (!$differentPrice) {
-                    // All prices are the same, create articles
+                    // All prices are NOT different, create articles
                     $images = $this->getImagesFromArray();
                     $article = array_merge($article, $images);
                     $feedWriter->addProduct($article);
                     continue;
                 }
 
-              // Prices differ, create products
+                // Prices differ, create products
                 $id = count($article['article-sku']) > 0 ? $article['article-sku'] : null;
                 FyndiqUtils::debug('$id', $id);
                 $images = $this->getImagesFromArray($id);
@@ -732,8 +732,8 @@ EOS;
         $feedProduct['product-title'] = $product->post->post_title;
         $feedProduct['product-description'] = $product->post->post_content;
 
-        $product_price = $product->get_price();
-        $price = $this->getPrice($product->id, $product_price);
+        $productPrice = $product->get_price();
+        $price = $this->getPrice($product->id, $productPrice);
 
         $_tax = new WC_Tax(); //looking for appropriate vat for specific product
         FyndiqUtils::debug('tax class', $product->get_tax_class());
@@ -745,7 +745,7 @@ EOS;
 
         $feedProduct['product-price'] = FyndiqUtils::formatPrice($price);
         $feedProduct['product-vat-percent'] = !empty($rates['rate']) ? $rates['rate'] : 0;
-        $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($product_price);
+        $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($productPrice);
         $feedProduct['product-market'] = WC()->countries->get_base_country();
         $feedProduct['product-currency'] = get_woocommerce_currency();
         $feedProduct['product-brand'] = 'UNKNOWN';
@@ -796,8 +796,8 @@ EOS;
             $feedProduct['product-title'] = $product->post->post_title;
             $feedProduct['product-description'] = $product->post->post_content;
 
-            $product_price = $variation['display_price'];
-            $price = $this->getPrice($product->id, $product_price);
+            $productPrice = $variation['display_price'];
+            $price = $this->getPrice($product->id, $productPrice);
             $_tax = new WC_Tax(); //looking for appropriate vat for specific product
             $rates = $_tax->get_rates($product->get_tax_class());
             $rates = array_shift($rates);
@@ -805,7 +805,7 @@ EOS;
 
             $feedProduct['product-price'] = FyndiqUtils::formatPrice($price);
             $feedProduct['product-vat-percent'] = !empty($rates['rate']) ? $rates['rate'] : 0;
-            $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($product_price);
+            $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($productPrice);
             $feedProduct['product-market'] = WC()->countries->get_base_country();
             $feedProduct['product-currency'] = get_woocommerce_currency();
             $feedProduct['product-brand'] = 'UNKNOWN';
