@@ -676,7 +676,7 @@ EOS;
             $this->productImages = array();
             $this->productImages['product'] = array();
             $this->productImages['articles'] = array();
-            $exportedarticles = array();
+            $exportedArticles = array();
             FyndiqUtils::debug('$product', $product);
             $product = new WC_Product_Variable($product->ID);
             $exportProduct = $this->getProduct($product);
@@ -685,10 +685,10 @@ EOS;
             $prices = array();
 
             foreach ($variations as $variation) {
-                $exportvariation = $this->getVariation($product, $variation);
-                $prices[] = $exportvariation['product-price'];
-                FyndiqUtils::debug('$exportVariation', $exportvariation);
-                $exportedarticles[] = $exportvariation;
+                $exportVariation = $this->getVariation($product, $variation);
+                $prices[] = $exportVariation['product-price'];
+                FyndiqUtils::debug('$exportVariation', $exportVariation);
+                $exportedArticles[] = $exportVariation;
             }
 
             $differentPrice = count(array_unique($prices)) > 1;
@@ -702,7 +702,7 @@ EOS;
             $feedWriter->addProduct($exportProduct);
             FyndiqUtils::debug('Product Validation Errors', $feedWriter->getLastPriductErrors());
 
-            foreach ($exportedarticles as $articleId => $article) {
+            foreach ($exportedArticles as $articleId => $article) {
                 if (!$differentPrice) {
                     // All prices are the same, create articles
                     $images = $this->getImagesFromArray();
