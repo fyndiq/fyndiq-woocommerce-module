@@ -828,11 +828,11 @@ EOS;
             $VariationImages[] = $variation['image_src'];
             $this->productImages['articles'][$sku] = $VariationImages;
 
+            $feedProduct['article-quantity'] = intval(0);
+
             if ($variation['is_purchasable'] && $variation['is_in_stock']) {
                 $stock = get_post_meta($product->id, '_stock');
                 $feedProduct['article-quantity'] = intval($stock[0]);
-            } else {
-                $feedProduct['article-quantity'] = intval(0);
             }
 
             $feedProduct['article-location'] = 'unknown';
