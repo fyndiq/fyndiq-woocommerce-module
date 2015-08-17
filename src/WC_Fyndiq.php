@@ -626,8 +626,10 @@ EOS;
 
     public function generate_feed()
     {
-        if (get_option('wcfyndiq_username') != '' && get_option('wcfyndiq_apitoken') != '') {
-            if (FyndiqUtils::mustRegenerateFile($filePath)) {
+        $username = get_option('wcfyndiq_username');
+        $token = get_option('wcfyndiq_apitoken');
+        if (isset($username) && isset($token)) {
+            if (FyndiqUtils::mustRegenerateFile($this->filepath)) {
                 $return = $this->feed_write($this->filepath);
                 if ($return) {
                     $lastModified = filemtime($this->filepath);
@@ -638,6 +640,12 @@ EOS;
                     return $this->returnAndDie('');
                 }
             }
+            $lastModified = filemtime($this->filepath);
+
+            $file = fopen($this->filepath, 'r');
+            $this->fmOutput->header('Last-Modified: ' . date('r', $lastModified));
+            $this->fmOutput->streamFile($file, 'feed.csv', 'text/csv', filesize($this->filepath));
+            return fclose($file);
         }
         return $this->fmOutput->showError(
             500,
