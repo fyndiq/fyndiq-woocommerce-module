@@ -700,6 +700,7 @@ EOS;
             $images = $this->getImagesFromArray();
             $exportProduct = array_merge($exportProduct, $images);
             $feedWriter->addProduct($exportProduct);
+            FyndiqUtils::debug('Product Validation Errors', $feedWriter->getLastPriductErrors());
 
             foreach ($exportedarticles as $articleId => $article) {
                 if (!$differentPrice) {
