@@ -644,7 +644,8 @@ EOS;
             $file = fopen($this->filepath, 'r');
             $this->fmOutput->header('Last-Modified: ' . date('r', $lastModified));
             $this->fmOutput->streamFile($file, 'feed.csv', 'text/csv', filesize($this->filepath));
-            return fclose($file);
+            fclose($file);
+            return $this->returnAndDie('');
         }
         return $this->fmOutput->showError(
             500,
