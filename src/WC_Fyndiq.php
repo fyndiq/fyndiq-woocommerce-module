@@ -835,7 +835,6 @@ EOS;
                 $feedProduct['article-quantity'] = intval($stock[0]);
             }
 
-            $feedProduct['article-location'] = 'unknown';
             $tag_values = array_values($variation['attributes']);
             $feedProduct['article-name'] = array_shift($tag_values);
 
