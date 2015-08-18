@@ -2,9 +2,9 @@
 
 class WC_Fyndiq
 {
-
     private $filepath = null;
     private $fmOutput = null;
+    private $productImages = null;
 
     public function __construct($fmOutput)
     {
@@ -626,8 +626,10 @@ EOS;
 
     public function generate_feed()
     {
-        if (get_option('wcfyndiq_username') != '' && get_option('wcfyndiq_apitoken') != '') {
-            if (FyndiqUtils::mustRegenerateFile($filePath)) {
+        $username = get_option('wcfyndiq_username');
+        $token = get_option('wcfyndiq_apitoken');
+        if (isset($username) && isset($token)) {
+            if (FyndiqUtils::mustRegenerateFile($this->filepath)) {
                 $return = $this->feed_write($this->filepath);
                 if ($return) {
                     $lastModified = filemtime($this->filepath);
@@ -638,6 +640,13 @@ EOS;
                     return $this->returnAndDie('');
                 }
             }
+            $lastModified = filemtime($this->filepath);
+
+            $file = fopen($this->filepath, 'r');
+            $this->fmOutput->header('Last-Modified: ' . date('r', $lastModified));
+            $this->fmOutput->streamFile($file, 'feed.csv', 'text/csv', filesize($this->filepath));
+            fclose($file);
+            return $this->returnAndDie('');
         }
         return $this->fmOutput->showError(
             500,
@@ -664,16 +673,52 @@ EOS;
         $productmodel = new FmProduct();
         $posts_array = $productmodel->getExportedProducts();
         foreach ($posts_array as $product) {
+            $this->productImages = array();
+            $this->productImages['product'] = array();
+            $this->productImages['articles'] = array();
+            $exportedArticles = array();
             FyndiqUtils::debug('$product', $product);
             $product = new WC_Product_Variable($product->ID);
             $exportProduct = $this->getProduct($product);
             FyndiqUtils::debug('$exportProduct', $exportProduct);
-            $feedWriter->addProduct($exportProduct);
             $variations = $product->get_available_variations();
+            $prices = array();
+
             foreach ($variations as $variation) {
                 $exportVariation = $this->getVariation($product, $variation);
+                $prices[] = $exportVariation['product-price'];
                 FyndiqUtils::debug('$exportVariation', $exportVariation);
-                $feedWriter->addProduct($exportVariation);
+                $exportedArticles[] = $exportVariation;
+            }
+
+            $differentPrice = count(array_unique($prices)) > 1;
+            FyndiqUtils::debug('$differentPrice', $differentPrice);
+
+            FyndiqUtils::debug('productImages', $this->productImages);
+
+            //Add the product to the feed
+            $images = $this->getImagesFromArray();
+            $exportProduct = array_merge($exportProduct, $images);
+            $feedWriter->addProduct($exportProduct);
+            FyndiqUtils::debug('Product Validation Errors', $feedWriter->getLastProductErrors());
+
+            foreach ($exportedArticles as $articleId => $article) {
+                if (!$differentPrice) {
+                    // All prices are NOT different, create articles
+                    $images = $this->getImagesFromArray();
+                    $article = array_merge($article, $images);
+                    $feedWriter->addProduct($article);
+                    continue;
+                }
+
+                // Prices differ, create products
+                $id = count($article['article-sku']) > 0 ? $article['article-sku'] : null;
+                FyndiqUtils::debug('$id', $id);
+                $images = $this->getImagesFromArray($id);
+                $article = array_merge($article, $images);
+                $article['product-id'] = $article['product-id'] . '-' . $articleId;
+                $feedWriter->addProduct($article);
+                FyndiqUtils::debug('Any Validation Errors', $feedWriter->getLastProductErrors());
             }
         }
         $feedWriter->write();
@@ -687,19 +732,22 @@ EOS;
         $feedProduct['product-title'] = $product->post->post_title;
         $feedProduct['product-description'] = $product->post->post_content;
 
-        $product_price = $product->price;
-        $price = $this->getPrice($product->id, $product->price);
+        $productPrice = $product->get_price();
+        $price = $this->getPrice($product->id, $productPrice);
 
         $_tax = new WC_Tax(); //looking for appropriate vat for specific product
+        FyndiqUtils::debug('tax class', $product->get_tax_class());
+
         $rates = $_tax->get_rates($product->get_tax_class());
+        $rates = array_shift($rates);
+        FyndiqUtils::debug('tax rate', $rates);
 
 
         $feedProduct['product-price'] = FyndiqUtils::formatPrice($price);
         $feedProduct['product-vat-percent'] = !empty($rates['rate']) ? $rates['rate'] : 0;
-        $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($product_price);
+        $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($productPrice);
         $feedProduct['product-market'] = WC()->countries->get_base_country();
         $feedProduct['product-currency'] = get_woocommerce_currency();
-        $feedProduct['product-brand'] = 'UNKNOWN';
 
         $terms = get_the_terms($product->id, 'product_cat');
         if ($terms && !is_wp_error($terms)) {
@@ -711,33 +759,28 @@ EOS;
         }
 
         $attachment_ids = $product->get_gallery_attachment_ids();
-        $imageId = 1;
+
         foreach ($attachment_ids as $attachment_id) {
             $image_link = wp_get_attachment_url($attachment_id);
-            $feedProduct['product-image-' . $imageId . '-url'] = $image_link;
-            $feedProduct['product-image-' . $imageId . '-identifier'] = substr(md5($image_link), 0, 10);
-            $imageId++;
+            $this->productImages['product'][] = $image_link;
         }
 
-        $variations = $product->get_available_variations();
-        foreach ($variations as $variation) {
-            if ($variation['image_src'] != '') {
-                $feedProduct['product-image-' . $imageId . '-url'] = $variation['image_src'];
-                $feedProduct['product-image-' . $imageId . '-identifier'] = substr(
-                    md5($variation['image_src']),
-                    0,
-                    10
-                );
-                $imageId++;
-            }
+        $feedProduct['article-quantity'] = intval(0);
+        if ($product->is_in_stock()) {
+            $stock = $product->get_stock_quantity();
+            FyndiqUtils::debug('$stock product', $stock);
+            $feedProduct['article-quantity'] = intval($stock);
         }
 
-        $stock = get_post_meta($product->id, '_stock');
-        $feedProduct['article-quantity'] = intval($stock[0]);
-
-        $feedProduct['article-location'] = 'unknown';
         $sku = get_post_meta($product->id, '_sku');
-        $feedProduct['article-sku'] = $sku[0];
+        $sku = array_shift($sku);
+        FyndiqUtils::debug('$sku before', $sku);
+        if (empty($sku)) {
+            $sku = $product->id;
+        }
+        FyndiqUtils::debug('$sku after', strval($sku));
+        $feedProduct['article-sku'] = strval($sku);
+
         $feedProduct['article-name'] = $product->post->post_title;
 
         return $feedProduct;
@@ -746,24 +789,28 @@ EOS;
 
     private function getVariation($product, $variation)
     {
-        if ($variation['is_purchasable'] && $variation['is_in_stock'] && !$variation['is_downloadable'] && !$variation['is_virtual']) {
+        FyndiqUtils::debug('$variation', $variation);
+        if (!$variation['is_downloadable'] && !$variation['is_virtual']) {
+            $variationModel = new WC_Product_Variation($variation['variation_id'], array('parent_id' => $product->id, 'parent' => $product));
             //Initialize models here so it saves memory.
             $feedProduct['product-id'] = $product->id;
             $feedProduct['product-title'] = $product->post->post_title;
             $feedProduct['product-description'] = $product->post->post_content;
 
-            $product_price = $product->price;
-            $price = $this->getPrice($product->id, $product->price);
+            $productPrice = $variation['display_price'];
+            $price = $this->getPrice($product->id, $productPrice);
             $_tax = new WC_Tax(); //looking for appropriate vat for specific product
             $rates = $_tax->get_rates($product->get_tax_class());
+            $rates = array_shift($rates);
 
 
-            $feedProduct['product-price'] = FyndiqUtils::formatPrice($variation['display_price']);
+            $feedProduct['product-price'] = FyndiqUtils::formatPrice($price);
             $feedProduct['product-vat-percent'] = !empty($rates['rate']) ? $rates['rate'] : 0;
-            $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($product_price);
+            $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($productPrice);
             $feedProduct['product-market'] = WC()->countries->get_base_country();
             $feedProduct['product-currency'] = get_woocommerce_currency();
-            $feedProduct['product-brand'] = 'UNKNOWN';
+
+
 
             $terms = get_the_terms($product->id, 'product_cat');
             if ($terms && !is_wp_error($terms)) {
@@ -773,32 +820,74 @@ EOS;
                     break;
                 }
             }
+            $sku = $product->id . '-' . $variation['variation_id'];
 
-            $attachment_ids = $product->get_gallery_attachment_ids();
-            $imageId = 1;
-            foreach ($attachment_ids as $attachment_id) {
-                $image_link = wp_get_attachment_url($attachment_id);
-                $feedProduct['product-image-' . $imageId . '-url'] = $image_link;
-                $feedProduct['product-image-' . $imageId . '-identifier'] = substr(md5($image_link), 0, 10);
-                $imageId++;
-            }
-
-
-            $stock = get_post_meta($product->id, '_stock');
-            $feedProduct['article-quantity'] = intval($stock[0]);
-
-            $feedProduct['article-location'] = 'unknown';
             if ($variation['sku'] != '') {
                 $sku = $variation['sku'];
-            } else {
-                $sku = $product->id . '-' . $variation['variation_id'];
             }
-            $feedProduct['article-sku'] = $sku;
-            $tag_values = array_values($variation['attributes']);
-            $feedProduct['article-name'] = array_shift($tag_values);
+
+            $feedProduct['article-sku'] = strval($sku);
+
+            $VariationImages = array();
+            $VariationImages[] = $variation['image_src'];
+            $this->productImages['articles'][$sku] = $VariationImages;
+
+            $feedProduct['article-quantity'] = intval(0);
+
+            if ($variation['is_purchasable'] && $variation['is_in_stock']) {
+                $stock = $variationModel->get_stock_quantity();
+                $feedProduct['article-quantity'] = intval($stock);
+            }
+
+
+            $feedProduct['article-name'] = $product->post->post_title;
+            $tag_values = $variationModel->get_variation_attributes();
+            if (!empty($tag_values)) {
+                FyndiqUtils::debug('$tag_values', $tag_values);
+                $feedProduct['article-name'] = array_shift($tag_values);
+            }
 
             return $feedProduct;
         }
+    }
+
+    private function getImagesFromArray($articleId = null)
+    {
+        $product = array();
+        $imageId = 1;
+        //If we don't want to add a specific article, add all of them.
+        if (!isset($articleId)) {
+            foreach ($this->productImages['product'] as $url) {
+                if (!in_array($url, $product)) {
+                    $product['product-image-' . $imageId . '-url'] = $url;
+                    $product['product-image-' . $imageId . '-identifier'] = substr(md5($url), 0, 10);
+                    $imageId++;
+                }
+            }
+            foreach ($this->productImages['articles'] as $article) {
+                foreach ($article as $url) {
+                    if (!in_array($url, $product)) {
+                        $product['product-image-' . $imageId . '-url'] = $url;
+                        $product['product-image-' . $imageId . '-identifier'] = substr(md5($url), 0, 10);
+                        $imageId++;
+                    }
+                }
+            }
+        // If we want to add just the product images and the article's images - run this.
+        } else {
+            foreach ($this->productImages['articles'][$articleId] as $url) {
+                $product['product-image-' . $imageId . '-url'] = $url;
+                $product['product-image-' . $imageId . '-identifier'] = substr(md5($url), 0, 10);
+                $imageId++;
+            }
+
+            foreach ($this->productImages['product'] as $url) {
+                $product['product-image-' . $imageId . '-url'] = $url;
+                $product['product-image-' . $imageId . '-identifier'] = substr(md5($url), 0, 10);
+                $imageId++;
+            }
+        }
+        return $product;
     }
 
     public function notification_handle()
