@@ -765,10 +765,12 @@ EOS;
             $this->productImages['product'][] = $image_link;
         }
 
-        $stock = get_post_meta($product->id, '_stock');
-        $feedProduct['article-quantity'] = intval($stock[0]);
-
-        $feedProduct['article-location'] = 'unknown';
+        $feedProduct['article-quantity'] = intval(0);
+        if ($product->is_in_stock()) {
+            $stock = $product->get_stock_quantity();
+            FyndiqUtils::debug('$stock product', $stock);
+            $feedProduct['article-quantity'] = intval($stock);
+        }
 
         $sku = get_post_meta($product->id, '_sku');
         $sku = array_shift($sku);
@@ -787,7 +789,9 @@ EOS;
 
     private function getVariation($product, $variation)
     {
+        FyndiqUtils::debug('$variation', $variation);
         if (!$variation['is_downloadable'] && !$variation['is_virtual']) {
+            $variationModel = new WC_Product_Variation($variation['variation_id'], array('parent_id' => $product->id, 'parent' => $product));
             //Initialize models here so it saves memory.
             $feedProduct['product-id'] = $product->id;
             $feedProduct['product-title'] = $product->post->post_title;
@@ -831,8 +835,8 @@ EOS;
             $feedProduct['article-quantity'] = intval(0);
 
             if ($variation['is_purchasable'] && $variation['is_in_stock']) {
-                $stock = get_post_meta($product->id, '_stock');
-                $feedProduct['article-quantity'] = intval($stock[0]);
+                $stock = $variationModel->get_stock_quantity();
+                $feedProduct['article-quantity'] = intval($stock);
             }
 
             $tag_values = array_values($variation['attributes']);
