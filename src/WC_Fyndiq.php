@@ -839,8 +839,13 @@ EOS;
                 $feedProduct['article-quantity'] = intval($stock);
             }
 
-            $tag_values = array_values($variation['attributes']);
-            $feedProduct['article-name'] = array_shift($tag_values);
+
+            $feedProduct['article-name'] = $product->post->post_title;
+            $tag_values = $variationModel->get_variation_attributes();
+            if (!empty($tag_values)) {
+                FyndiqUtils::debug('$tag_values', $tag_values);
+                $feedProduct['article-name'] = array_shift($tag_values);
+            }
 
             return $feedProduct;
         }
