@@ -59,9 +59,11 @@ class FmOrder
                     wp_die("ERROR - product is downloadable.");
                 }
                 // add item
-                $args = array();
-                $args['totals'] = array();
-                $args['totals']['taxdata'] = array();
+                $args = array(
+                  'totals' => array(
+                    'taxdata' => array()
+                  )
+                );
                 $args['totals']['subtotal'] = intval($order_row->unit_price_amount);
                 $args['totals']['total'] = intval($order_row->unit_price_amount);
                 $args['totals']['taxdata']['total']  = (intval($product_total)*((100+intval($row->vat_percent)) / 100));
