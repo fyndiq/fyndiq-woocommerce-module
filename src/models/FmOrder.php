@@ -67,7 +67,7 @@ class FmOrder
                 $args['totals']['taxdata']['total']  = (intval($product_total)*((100+intval($row->vat_percent)) / 100));
                 $args['totals']['taxdata']['subtotal'] = (intval($order_row->unit_price_amount)*((100+intval($row->vat_percent)) / 100));
 
-                $wc_order->add_product($product, $order_row->quantity, $args)
+                $wc_order->add_product($product, $order_row->quantity, $args);
             } else {
                 echo 'Product SKU (' . $order_row->sku . ') not found.';
             }
@@ -81,7 +81,6 @@ class FmOrder
 
     public function get_product_by_sku($sku)
     {
-
         global $wpdb;
 
         $product_id = $wpdb->get_var($wpdb->prepare("SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_sku' AND meta_value='%s' LIMIT 1", $sku));
@@ -91,6 +90,5 @@ class FmOrder
         }
 
         return null;
-
     }
 }
