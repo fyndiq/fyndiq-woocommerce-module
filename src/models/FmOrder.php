@@ -5,11 +5,11 @@ class FmOrder
     public function orderExists($fyndiq_id)
     {
         $args = array(
-        'meta_key' => '',
-        'meta_value' => $fyndiq_id,
-        'post_type' => 'shop_order',
-        'posts_per_page' => -1,
-        'post_status' => array_keys(wc_get_order_statuses())
+          'meta_key' => '',
+          'meta_value' => $fyndiq_id,
+          'post_type' => 'shop_order',
+          'posts_per_page' => -1,
+          'post_status' => array_keys(wc_get_order_statuses())
         );
         $posts = get_posts($args);
         return count($posts) > 0;
@@ -24,17 +24,17 @@ class FmOrder
         }
 
         $address = array(
-        'first_name' => $order->delivery_firstname,
-        'last_name'  => $order->delivery_lastname,
-        'company'    => '',
-        'email'      => '',
-        'phone'      => $order->delivery_phone,
-        'address_1'  => $order->delivery_address,
-        'address_2'  => '',
-        'city'       => $order->delivery_city,
-        'state'      => '',
-        'postcode'   => $order->delivery_postalcode,
-        'country'    => $order->delivery_country_code
+          'first_name' => $order->delivery_firstname,
+          'last_name'  => $order->delivery_lastname,
+          'company'    => '',
+          'email'      => '',
+          'phone'      => $order->delivery_phone,
+          'address_1'  => $order->delivery_address,
+          'address_2'  => '',
+          'city'       => $order->delivery_city,
+          'state'      => '',
+          'postcode'   => $order->delivery_postalcode,
+          'country'    => $order->delivery_country_code
         );
         // add a bunch of meta data
         add_post_meta($wc_order->id, 'fyndiq_id', $order->id, true);
