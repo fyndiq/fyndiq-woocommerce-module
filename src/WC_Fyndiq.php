@@ -677,48 +677,50 @@ EOS;
             $this->productImages['product'] = array();
             $this->productImages['articles'] = array();
             $exportedArticles = array();
+            $product = new WC_Product_Variable($product);
             FyndiqUtils::debug('$product', $product);
-            $product = new WC_Product_Variable($product->ID);
-            $exportProduct = $this->getProduct($product);
-            FyndiqUtils::debug('$exportProduct', $exportProduct);
             $variations = $product->get_available_variations();
-            $prices = array();
+            if (count($variations) > 0) {
+                $prices = array();
 
-            foreach ($variations as $variation) {
-                $exportVariation = $this->getVariation($product, $variation);
-                $prices[] = $exportVariation['product-price'];
-                FyndiqUtils::debug('$exportVariation', $exportVariation);
-                $exportedArticles[] = $exportVariation;
-            }
-
-            $differentPrice = count(array_unique($prices)) > 1;
-            FyndiqUtils::debug('$differentPrice', $differentPrice);
-
-            FyndiqUtils::debug('productImages', $this->productImages);
-
-            //Add the product to the feed
-            $images = $this->getImagesFromArray();
-            $exportProduct = array_merge($exportProduct, $images);
-            $feedWriter->addProduct($exportProduct);
-            FyndiqUtils::debug('Product Validation Errors', $feedWriter->getLastProductErrors());
-
-            foreach ($exportedArticles as $articleId => $article) {
-                if (!$differentPrice) {
-                    // All prices are NOT different, create articles
-                    $images = $this->getImagesFromArray();
-                    $article = array_merge($article, $images);
-                    $feedWriter->addProduct($article);
-                    continue;
+                foreach ($variations as $variation) {
+                    $exportVariation = $this->getVariation($product, $variation);
+                    $prices[] = $exportVariation['product-price'];
+                    FyndiqUtils::debug('$exportVariation', $exportVariation);
+                    $exportedArticles[] = $exportVariation;
                 }
 
-                // Prices differ, create products
-                $id = count($article['article-sku']) > 0 ? $article['article-sku'] : null;
-                FyndiqUtils::debug('$id', $id);
-                $images = $this->getImagesFromArray($id);
-                $article = array_merge($article, $images);
-                $article['product-id'] = $article['product-id'] . '-' . $articleId;
-                $feedWriter->addProduct($article);
-                FyndiqUtils::debug('Any Validation Errors', $feedWriter->getLastProductErrors());
+                $differentPrice = count(array_unique($prices)) > 1;
+                FyndiqUtils::debug('$differentPrice', $differentPrice);
+
+                FyndiqUtils::debug('productImages', $this->productImages);
+
+                foreach ($exportedArticles as $articleId => $article) {
+                    if (!$differentPrice) {
+                        // All prices are NOT different, create articles
+                        $images = $this->getImagesFromArray();
+                        $article = array_merge($article, $images);
+                        $feedWriter->addProduct($article);
+                        FyndiqUtils::debug('Any sameprice Errors', $feedWriter->getLastProductErrors());
+                        continue;
+                    }
+
+                    // Prices differ, create products
+                    $id = count($article['article-sku']) > 0 ? $article['article-sku'] : null;
+                    FyndiqUtils::debug('$id', $id);
+                    $images = $this->getImagesFromArray($id);
+                    $article = array_merge($article, $images);
+                    $article['product-id'] = $article['product-id'] . '-' . $articleId;
+                    $feedWriter->addProduct($article);
+                    FyndiqUtils::debug('Any Validation Errors', $feedWriter->getLastProductErrors());
+                }
+            } else {
+                $product = new WC_Product($product);
+                $exportProduct = $this->getProduct($product);
+                $images = $this->getImagesFromArray();
+                $exportProduct = array_merge($exportProduct, $images);
+                $feedWriter->addProduct($exportProduct);
+                FyndiqUtils::debug('Product Validation Errors', $feedWriter->getLastProductErrors());
             }
         }
         $feedWriter->write();
