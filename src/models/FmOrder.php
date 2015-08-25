@@ -38,7 +38,7 @@ class FmOrder
         );
         // add a bunch of meta data
         add_post_meta($wc_order->id, 'fyndiq_id', $order->id, true);
-        add_post_meta($wc_order->id, 'fyndiq_delivery_note', 'https://fyndiq.se' . $order->delivery_note, true);
+        add_post_meta($wc_order->id, 'fyndiq_delivery_note', $order->delivery_note, true);
         add_post_meta($wc_order->id, '_payment_method_title', 'Import', true);
 
         add_post_meta($wc_order->id, '_customer_user', 0, true);
