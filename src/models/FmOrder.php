@@ -17,8 +17,54 @@ class FmOrder
 
     public function createOrder($order)
     {
-        $wc_order = wc_create_order();
+        $status = get_option('wcfyndiq_create_order_status');
 
+        $settings = array(
+            'status'        => $status,
+            'created_via'   => 'fyndiq'
+        );
+
+        $order_type = wc_get_order_type('shop_order');
+        if (!$order_type) {
+            wc_register_order_type(
+                'shop_order',
+                apply_filters('woocommerce_register_post_type_shop_order',
+                    array(
+                        'labels'              => array(
+                                'name'               => __('Orders', 'woocommerce'),
+                                'singular_name'      => __('Order', 'woocommerce'),
+                                'add_new'            => __('Add Order', 'woocommerce'),
+                                'add_new_item'       => __('Add New Order', 'woocommerce'),
+                                'edit'               => __('Edit', 'woocommerce'),
+                                'edit_item'          => __('Edit Order', 'woocommerce'),
+                                'new_item'           => __('New Order', 'woocommerce'),
+                                'view'               => __('View Order', 'woocommerce'),
+                                'view_item'          => __('View Order', 'woocommerce'),
+                                'search_items'       => __('Search Orders', 'woocommerce'),
+                                'not_found'          => __('No Orders found', 'woocommerce'),
+                                'not_found_in_trash' => __('No Orders found in trash', 'woocommerce'),
+                                'parent'             => __('Parent Orders', 'woocommerce'),
+                                'menu_name'          => _x('Orders', 'Admin menu name', 'woocommerce')
+                            ),
+                        'description'         => __('This is where store orders are stored.', 'woocommerce'),
+                        'public'              => false,
+                        'show_ui'             => true,
+                        'capability_type'     => 'shop_order',
+                        'map_meta_cap'        => true,
+                        'publicly_queryable'  => false,
+                        'exclude_from_search' => true,
+                        'show_in_menu'        => current_user_can('manage_woocommerce') ? 'woocommerce' : true,
+                        'hierarchical'        => false,
+                        'show_in_nav_menus'   => false,
+                        'rewrite'             => false,
+                        'query_var'           => false,
+                        'supports'            => array( 'title', 'comments', 'custom-fields' ),
+                        'has_archive'         => false,
+                    )
+                )
+            );
+        }
+        $wc_order = wc_create_order($settings);
         if (is_wp_error($wc_order)) {
             wp_die("ERROR - Couldn't create order");
         }
@@ -65,9 +111,9 @@ class FmOrder
                   )
                 );
                 $args['totals']['subtotal'] = intval($order_row->unit_price_amount);
-                $args['totals']['total'] = intval($order_row->unit_price_amount);
-                $args['totals']['taxdata']['total']  = (intval($product_total)*((100+intval($row->vat_percent)) / 100));
-                $args['totals']['taxdata']['subtotal'] = (intval($order_row->unit_price_amount)*((100+intval($row->vat_percent)) / 100));
+                $args['totals']['total'] = intval($product_total);
+                $args['totals']['taxdata']['total']  = intval($product_total);
+                $args['totals']['taxdata']['subtotal'] = intval($order_row->unit_price_amount);
 
                 $wc_order->add_product($product, $order_row->quantity, $args);
             } else {
@@ -75,10 +121,6 @@ class FmOrder
             }
         }
         $wc_order->calculate_totals();
-
-        // set order status as completed
-        $order_status = get_option('wcfyndiq_create_order_status');
-        $wc_order->update_status($order_status);
     }
 
     public function get_product_by_sku($sku)
