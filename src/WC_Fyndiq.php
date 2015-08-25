@@ -715,7 +715,6 @@ EOS;
                     FyndiqUtils::debug('Any Validation Errors', $feedWriter->getLastProductErrors());
                 }
             } else {
-                $product = new WC_Product($product);
                 $exportProduct = $this->getProduct($product);
                 $images = $this->getImagesFromArray();
                 $exportProduct = array_merge($exportProduct, $images);
