@@ -759,7 +759,11 @@ EOS;
         }
 
         $attachment_ids = $product->get_gallery_attachment_ids();
-
+        $feat_image = wp_get_attachment_url(get_post_thumbnail_id($product->id));
+        FyndiqUtils::debug('$feat_image', $feat_image);
+        if (isset($feat_image) && $feat_image != false) {
+            $this->productImages['product'][] = $feat_image;
+        }
         foreach ($attachment_ids as $attachment_id) {
             $image_link = wp_get_attachment_url($attachment_id);
             $this->productImages['product'][] = $image_link;
