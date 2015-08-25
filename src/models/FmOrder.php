@@ -24,6 +24,14 @@ class FmOrder
             'created_via'   => 'fyndiq'
         );
 
+        foreach ($order->order_rows as $order_row) {
+            // get product by item_id
+            $product = $this->get_product_by_sku($order_row->sku);
+            if (!isset($product)) {
+                wpdie('Product SKU (' . $order_row->sku . ') not found.');
+            }
+        }
+
         $order_type = wc_get_order_type('shop_order');
         if (!$order_type) {
             wc_register_order_type(
@@ -99,7 +107,7 @@ class FmOrder
             $product = $this->get_product_by_sku($order_row->sku);
 
             $product_total = ($order_row->unit_price_amount*$order_row->quantity);
-            if ($product) {
+            if (isset($product)) {
                 // if downloadable
                 if ($product->is_downloadable()) {
                     wp_die("ERROR - product is downloadable.");
@@ -117,7 +125,7 @@ class FmOrder
 
                 $wc_order->add_product($product, $order_row->quantity, $args);
             } else {
-                echo 'Product SKU (' . $order_row->sku . ') not found.';
+                wpdie('Product SKU (' . $order_row->sku . ') not found.');
             }
         }
         $wc_order->calculate_totals();
