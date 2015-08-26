@@ -785,11 +785,6 @@ EOS;
 
         $sku = get_post_meta($product->id, '_sku');
         $sku = array_shift($sku);
-        FyndiqUtils::debug('$sku before', $sku);
-        if (empty($sku)) {
-            $sku = $product->id;
-        }
-        FyndiqUtils::debug('$sku after', strval($sku));
         $feedProduct['article-sku'] = strval($sku);
 
         $feedProduct['article-name'] = $product->post->post_title;
@@ -831,11 +826,7 @@ EOS;
                     break;
                 }
             }
-            $sku = $product->id . '-' . $variation['variation_id'];
-
-            if ($variation['sku'] != '') {
-                $sku = $variation['sku'];
-            }
+            $sku = $variation['sku'];
 
             $feedProduct['article-sku'] = strval($sku);
 
