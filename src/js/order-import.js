@@ -1,12 +1,18 @@
 jQuery(document).on('click', '#fyndiq-order-import', function(){
     var button = jQuery(this);
-    button.text('Loading...');
+    var beforetext = button.text();
+    button.text(trans_loading);
     jQuery.ajax({
        url: wordpressurl + '/?fyndiq_orders'
-    }).done(function() {
-       button.text('Done').delay(1400).queue(function(nxt) {
-           jQuery(this).text('Import From Fyndiq');
-           nxt();
+   }).success(function() {
+       button.text(trans_done).delay(1400).queue(function(nxt) {
+           jQuery(this).text(beforetext);
+           location.reload();
        });
+    }).fail(function() {
+        button.text(trans_error).delay(1400).queue(function(nxt) {
+            jQuery(this).text(beforetext);
+            nxt();
+        });
     });
 });

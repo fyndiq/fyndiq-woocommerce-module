@@ -118,6 +118,9 @@ class WC_Fyndiq
         $script = <<<EOS
         <script type="text/javascript">
             var wordpressurl = '%s';
+            var trans_error = '%s';
+            var trans_loading = '%s';
+            var trans_done = '%s';
         </script>
         <script src="%s" type="text/javascript"></script>
         <script src="%s" type="text/javascript"></script>
@@ -125,6 +128,9 @@ EOS;
         printf(
             $script,
             get_site_url(),
+            __('Error!'),
+            __('Loading') . '...',
+            __('Done'),
             plugins_url('/js/order-import.js', __FILE__),
             plugins_url('/js/product-update.js', __FILE__)
         );
