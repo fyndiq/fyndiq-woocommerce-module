@@ -124,6 +124,7 @@ class FmOrder
                 $args['totals']['taxdata']['subtotal'] = intval($order_row->unit_price_amount);
 
                 $wc_order->add_product($product, $order_row->quantity, $args);
+                $product->set_stock($order_row->quantity, 'subtract');
             } else {
                 wpdie(sprintf(__('Product SKU ( %s ) not found.', 'fyndiq'), $order_row->sku));
             }
