@@ -41,6 +41,9 @@ fi
 if [ ! -f "$WC_PATH/index.php" ]; then
     mkdir -p $WC_PATH
 
+    chown -R vagrant:www-data $WC_PATH
+    chmod -R 775 $WC_PATH
+
     ## Create database
     mysql -uroot -p123 -e 'create database woocommerce'
 
