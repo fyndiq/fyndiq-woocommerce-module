@@ -28,7 +28,7 @@ class FmOrder
             // get product by item_id
             $product = $this->get_product_by_sku($order_row->sku);
             if (!isset($product)) {
-                wpdie(sprintf( __('Product SKU ( %s ) not found.', 'fyndiq'), $order_row->sku ));
+                wpdie(sprintf(__('Product SKU ( %s ) not found.', 'fyndiq'), $order_row->sku));
             }
         }
 
@@ -125,7 +125,7 @@ class FmOrder
 
                 $wc_order->add_product($product, $order_row->quantity, $args);
             } else {
-                wpdie((sprintf( __('Product SKU ( %s ) not found.', 'fyndiq'), $order_row->sku ));
+                wpdie(sprintf(__('Product SKU ( %s ) not found.', 'fyndiq'), $order_row->sku));
             }
         }
         $wc_order->calculate_totals();
