@@ -826,11 +826,7 @@ EOS;
                     break;
                 }
             }
-            $sku = '';
-
-            if ($variation['sku'] != '') {
-                $sku = $variation['sku'];
-            }
+            $sku = $variation['sku'];
 
             $feedProduct['article-sku'] = strval($sku);
 
