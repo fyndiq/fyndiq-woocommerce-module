@@ -28,7 +28,7 @@ class FmOrder
             // get product by item_id
             $product = $this->get_product_by_sku($order_row->sku);
             if (!isset($product)) {
-                wpdie('Product SKU (' . $order_row->sku . ') not found.');
+                wpdie(printf( __('Product SKU ( %s ) not found.', 'fyndiq'), $order_row->sku ));
             }
         }
 
@@ -74,7 +74,7 @@ class FmOrder
         }
         $wc_order = wc_create_order($settings);
         if (is_wp_error($wc_order)) {
-            wp_die("ERROR - Couldn't create order");
+            wp_die(__('ERROR - Could not create order', 'fyndiq'));
         }
 
         $address = array(
@@ -110,7 +110,7 @@ class FmOrder
             if (isset($product)) {
                 // if downloadable
                 if ($product->is_downloadable()) {
-                    wp_die("ERROR - product is downloadable.");
+                    wp_die(__('ERROR - product is downloadable.', 'fyndiq'));
                 }
                 // add item
                 $args = array(
@@ -125,7 +125,7 @@ class FmOrder
 
                 $wc_order->add_product($product, $order_row->quantity, $args);
             } else {
-                wpdie('Product SKU (' . $order_row->sku . ') not found.');
+                wpdie((printf( __('Product SKU ( %s ) not found.', 'fyndiq'), $order_row->sku ));
             }
         }
         $wc_order->calculate_totals();
