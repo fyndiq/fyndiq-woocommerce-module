@@ -4,8 +4,13 @@ jQuery(document).on('click', '#fyndiq-product-update', function(){
     button.text('Loading..');
     jQuery.ajax({
         url: wordpressurl + "/?fyndiq_products"
-    }).done(function() {
+    }).success(function() {
         button.text("Done").delay(1400).queue(function(nxt) {
+            jQuery(this).text(beforetext);
+            location.reload();
+        });
+    }).fail(function() {
+        button.text('Error!').delay(1400).queue(function(nxt) {
             jQuery(this).text(beforetext);
             nxt();
         });
