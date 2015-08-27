@@ -716,6 +716,9 @@ EOS;
                         // All prices are NOT different, create articles
                         $images = $this->getImagesFromArray();
                         $article = array_merge($article, $images);
+                        if (empty($article['article-sku'])) {
+                            FyndiqUtils::debug('EMPTY ARTICLE SKU');
+                        }
                         $feedWriter->addProduct($article);
                         FyndiqUtils::debug('Any sameprice Errors', $feedWriter->getLastProductErrors());
                         continue;
@@ -727,6 +730,9 @@ EOS;
                     $images = $this->getImagesFromArray($id);
                     $article = array_merge($article, $images);
                     $article['product-id'] = $article['product-id'] . '-' . $articleId;
+                    if (empty($article['article-sku'])) {
+                        FyndiqUtils::debug('EMPTY ARTICLE SKU');
+                    }
                     $feedWriter->addProduct($article);
                     FyndiqUtils::debug('Any Validation Errors', $feedWriter->getLastProductErrors());
                 }
@@ -734,6 +740,9 @@ EOS;
                 $exportProduct = $this->getProduct($product);
                 $images = $this->getImagesFromArray();
                 $exportProduct = array_merge($exportProduct, $images);
+                if (empty($exportProduct['article-sku'])) {
+                    FyndiqUtils::debug('EMPTY PRODUCT SKU');
+                }
                 $feedWriter->addProduct($exportProduct);
                 FyndiqUtils::debug('Product Validation Errors', $feedWriter->getLastProductErrors());
             }

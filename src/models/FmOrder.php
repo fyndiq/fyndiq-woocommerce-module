@@ -36,7 +36,8 @@ class FmOrder
         if (!$order_type) {
             wc_register_order_type(
                 'shop_order',
-                apply_filters('woocommerce_register_post_type_shop_order',
+                apply_filters(
+                    'woocommerce_register_post_type_shop_order',
                     array(
                         'labels'              => array(
                                 'name'               => __('Orders', 'woocommerce'),
