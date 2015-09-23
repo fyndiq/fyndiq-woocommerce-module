@@ -659,7 +659,7 @@ EOS;
             $lastModified = filemtime($this->filepath);
 
             $file = fopen($this->filepath, 'r');
-            $this->fmOutput->header('Last-Modified: ' . date('r', $lastModified));
+            $this->fmOutput->header('Last-Modified: ' . gmdate('D, d M Y H:i:s T', $lastModified));
             $this->fmOutput->streamFile($file, 'feed.csv', 'text/csv', filesize($this->filepath));
             fclose($file);
             return $this->returnAndDie('');
