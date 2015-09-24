@@ -222,7 +222,7 @@ EOS;
 
                 'name' => __('minimum quantity limit', 'fyndiq'),
                 'desc_tip' => __(
-                    'this quantity will be reserved by you and will be removed from the quantity that is set to Fyndiq.',
+                    'this quantity will be reserved by you and will be removed from the quantity that is sent to Fyndiq.',
                     'fyndiq'
                 ),
                 'id' => 'wcfyndiq_quantity_minimum',
