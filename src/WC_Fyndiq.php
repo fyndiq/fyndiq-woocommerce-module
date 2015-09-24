@@ -82,7 +82,6 @@ class WC_Fyndiq
         }
         if (isset($_GET['fyndiq_notification'])) {
             $this->notification_handle();
-            die();
         }
     }
 
@@ -944,6 +943,7 @@ EOS;
 
     public function notification_handle()
     {
+        define('DOING_AJAX', true);
         if (isset($_GET['event'])) {
             $event = $_GET['event'];
             $eventName = $event ? 'notice_' . $event : false;
@@ -954,7 +954,7 @@ EOS;
             }
         }
         $this->fmOutput->showError(400, 'Bad Request', '400 Bad Request');
-        die();
+        wp_die();
     }
 
     private function notice_order_created()
@@ -973,17 +973,15 @@ EOS;
                     $orderModel->createOrder($fyndiqOrder);
                 }
             } catch (Exception $e) {
-                $this->fmOutput->showError(500, 'Internal Server Error', '500 Internal Server Error');
-                die();
+                $this->fmOutput->showError(500, 'Internal Server Error', $e);
             }
 
-            return true;
+            wp_die();
         }
     }
 
     private function notice_debug()
     {
-        define('DOING_AJAX', true);
         FyndiqUtils::debugStart();
         FyndiqUtils::debug('USER AGENT', FmHelpers::get_user_agent());
         $languageId = WC()->countries->get_base_country();
@@ -1003,7 +1001,7 @@ EOS;
 
         if (is_null($token) || $token != $pingToken) {
             $this->fmOutput->showError(400, 'Bad Request', '400 Bad Request');
-            die();
+            wp_die();
         }
 
         $this->fmOutput->flushHeader('OK');
