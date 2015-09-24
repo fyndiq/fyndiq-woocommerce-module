@@ -217,6 +217,21 @@ EOS;
             );
 
 
+            //Price Percentage
+            $settings_slider[] = array(
+
+                'name' => __('minimum quantity limit', 'fyndiq'),
+                'desc_tip' => __(
+                    'this quantity will be reserved by you and will be removed from the quantity that is set to Fyndiq.',
+                    'fyndiq'
+                ),
+                'id' => 'wcfyndiq_quantity_minimum',
+                'type' => 'text',
+                'default' => '0',
+                'desc' => __('Stay on 0 if you want to send all stock to Fyndiq.', 'fyndiq'),
+
+            );
+
             $settings_slider[] = array('type' => 'sectionend', 'id' => 'wcfyndiq');
 
             return $settings_slider;
