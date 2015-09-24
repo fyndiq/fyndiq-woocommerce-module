@@ -15,7 +15,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
         load_plugin_textdomain('fyndiq', false, dirname(plugin_basename(__FILE__)) . '/translations/');
 
 
-        include_once('FmHelpers.php');
+        require_once('FmHelpers.php');
         require_once('include/shared/src/init.php');
         require_once('models/FmOrder.php');
         require_once('models/FmOrderFetch.php');
