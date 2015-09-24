@@ -666,8 +666,8 @@ EOS;
                 // Something wrong happened, clean the file
                 FyndiqUtils::deleteFile($tempFileName);
             }
-            if (file_exists($filePath)) {
-                $lastModified = filemtime($filePath);
+            if (file_exists($this->filepath)) {
+                $lastModified = filemtime($this->filepath);
             }
 
             $file = fopen($this->filepath, 'r');
