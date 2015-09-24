@@ -659,7 +659,7 @@ EOS;
     {
         $username = get_option('wcfyndiq_username');
         $token = get_option('wcfyndiq_apitoken');
-        FyndiqUtils::debug('quantity minmum', get_option('wcfyndiq_quantity_minimum'));
+
         if (isset($username) && isset($token)) {
             if (FyndiqUtils::mustRegenerateFile($this->filepath)) {
                 $return = $this->feed_write($this->filepath);
@@ -704,6 +704,7 @@ EOS;
         $feedWriter = new FyndiqCSVFeedWriter($file);
         $productmodel = new FmProduct();
         $posts_array = $productmodel->getExportedProducts();
+        FyndiqUtils::debug('quantity minmum', get_option('wcfyndiq_quantity_minimum'));
         foreach ($posts_array as $product) {
             $this->productImages = array();
             $this->productImages['product'] = array();
