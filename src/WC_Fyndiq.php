@@ -815,8 +815,9 @@ EOS;
         $feedProduct['article-quantity'] = intval(0);
         if ($product->is_in_stock()) {
             $stock = $product->get_stock_quantity();
-            if(get_option('wcfyndiq_quantity_minimum') > 0) {
-                $stock = $stock - get_option('wcfyndiq_quantity_minimum');
+            $minimumQuantity = get_option('wcfyndiq_quantity_minimum');
+            if($minimumQuantity > 0) {
+                $stock = $stock - $minimumQuantity;
             }
             FyndiqUtils::debug('$stock product', $stock);
             $feedProduct['article-quantity'] = intval($stock);
@@ -877,8 +878,9 @@ EOS;
 
             if ($variation['is_purchasable'] && $variation['is_in_stock']) {
                 $stock = intval($variationModel->get_stock_quantity());
-                if(get_option('wcfyndiq_quantity_minimum') > 0) {
-                    $stock = $stock - get_option('wcfyndiq_quantity_minimum');
+                $minimumQuantity = get_option('wcfyndiq_quantity_minimum');
+                if($minimumQuantity > 0) {
+                    $stock = $stock - $minimumQuantity;
                 }
                 $feedProduct['article-quantity'] = $stock;
             }
