@@ -217,6 +217,21 @@ EOS;
             );
 
 
+            //Price Percentage
+            $settings_slider[] = array(
+
+                'name' => __('Minimum Quantity Limit', 'fyndiq'),
+                'desc_tip' => __(
+                    'this quantity will be reserved by you and will be removed from the quantity that is sent to Fyndiq.',
+                    'fyndiq'
+                ),
+                'id' => 'wcfyndiq_quantity_minimum',
+                'type' => 'text',
+                'default' => '0',
+                'desc' => __('Stay on 0 if you want to send all stock to Fyndiq.', 'fyndiq'),
+
+            );
+
             $settings_slider[] = array('type' => 'sectionend', 'id' => 'wcfyndiq');
 
             return $settings_slider;
@@ -644,6 +659,7 @@ EOS;
     {
         $username = get_option('wcfyndiq_username');
         $token = get_option('wcfyndiq_apitoken');
+
         if (isset($username) && isset($token)) {
             if (FyndiqUtils::mustRegenerateFile($this->filepath)) {
                 $this->feedFileHandling();
@@ -693,6 +709,7 @@ EOS;
     {
         $productmodel = new FmProduct();
         $posts_array = $productmodel->getExportedProducts();
+        FyndiqUtils::debug('quantity minmum', get_option('wcfyndiq_quantity_minimum'));
         foreach ($posts_array as $product) {
             $this->productImages = array();
             $this->productImages['product'] = array();
@@ -803,6 +820,10 @@ EOS;
         $feedProduct['article-quantity'] = intval(0);
         if ($product->is_in_stock()) {
             $stock = $product->get_stock_quantity();
+            $minimumQuantity = get_option('wcfyndiq_quantity_minimum');
+            if($minimumQuantity > 0) {
+                $stock = $stock - $minimumQuantity;
+            }
             FyndiqUtils::debug('$stock product', $stock);
             $feedProduct['article-quantity'] = intval($stock);
         }
@@ -861,8 +882,12 @@ EOS;
             $feedProduct['article-quantity'] = intval(0);
 
             if ($variation['is_purchasable'] && $variation['is_in_stock']) {
-                $stock = $variationModel->get_stock_quantity();
-                $feedProduct['article-quantity'] = intval($stock);
+                $stock = intval($variationModel->get_stock_quantity());
+                $minimumQuantity = get_option('wcfyndiq_quantity_minimum');
+                if($minimumQuantity > 0) {
+                    $stock = $stock - $minimumQuantity;
+                }
+                $feedProduct['article-quantity'] = $stock;
             }
 
 
