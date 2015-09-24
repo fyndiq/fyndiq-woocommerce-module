@@ -220,7 +220,7 @@ EOS;
             //Price Percentage
             $settings_slider[] = array(
 
-                'name' => __('minimum quantity limit', 'fyndiq'),
+                'name' => __('Minimum Quantity Limit', 'fyndiq'),
                 'desc_tip' => __(
                     'this quantity will be reserved by you and will be removed from the quantity that is sent to Fyndiq.',
                     'fyndiq'
