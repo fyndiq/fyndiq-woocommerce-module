@@ -659,6 +659,7 @@ EOS;
     {
         $username = get_option('wcfyndiq_username');
         $token = get_option('wcfyndiq_apitoken');
+        FyndiqUtils::debug('quantity minmum', get_option('wcfyndiq_quantity_minimum'));
         if (isset($username) && isset($token)) {
             if (FyndiqUtils::mustRegenerateFile($this->filepath)) {
                 $return = $this->feed_write($this->filepath);
@@ -813,6 +814,9 @@ EOS;
         $feedProduct['article-quantity'] = intval(0);
         if ($product->is_in_stock()) {
             $stock = $product->get_stock_quantity();
+            if(get_option('wcfyndiq_quantity_minimum') > 0) {
+                $stock = $stock - get_option('wcfyndiq_quantity_minimum');
+            }
             FyndiqUtils::debug('$stock product', $stock);
             $feedProduct['article-quantity'] = intval($stock);
         }
@@ -871,8 +875,11 @@ EOS;
             $feedProduct['article-quantity'] = intval(0);
 
             if ($variation['is_purchasable'] && $variation['is_in_stock']) {
-                $stock = $variationModel->get_stock_quantity();
-                $feedProduct['article-quantity'] = intval($stock);
+                $stock = intval($variationModel->get_stock_quantity());
+                if(get_option('wcfyndiq_quantity_minimum') > 0) {
+                    $stock = $stock - get_option('wcfyndiq_quantity_minimum');
+                }
+                $feedProduct['article-quantity'] = $stock;
             }
 
 
