@@ -646,7 +646,7 @@ EOS;
         $token = get_option('wcfyndiq_apitoken');
         $tempFileName = FyndiqUtils::getTempFilename(dirname($this->filepath));
         if (isset($username) && isset($token)) {
-            if (FyndiqUtils::mustRegenerateFile($filePath)) {
+            if (FyndiqUtils::mustRegenerateFile($this->filepath)) {
                 FyndiqUtils::debug('$fileName', $this->filepath);
                 FyndiqUtils::debug('$tempFileName', $tempFileName);
 
@@ -682,17 +682,6 @@ EOS;
             'Internal Server Error',
             sprintf('Error generating feed to %s', $this->filepath)
         );
-    }
-
-    private function mustRegenerateFile($filePath)
-    {
-        if (getenv('FYNDIQ_DEBUG') == 1) {
-            return true;
-        }
-        if (file_exists($filePath) && filemtime($filePath) > strtotime('-1 hour')) {
-            return false;
-        }
-        return true;
     }
 
     private function feed_write($feedWriter)
@@ -968,7 +957,7 @@ EOS;
         FyndiqUtils::debug('USER AGENT', FmHelpers::get_user_agent());
         $languageId = WC()->countries->get_base_country();
         FyndiqUtils::debug('language', $languageId);
-        $return = $this->feed_write($this->filepath);
+        $return = $this->generate_feed($this->filepath);
         $result = file_get_contents($this->filepath);
         FyndiqUtils::debug('$result', $result, true);
         FyndiqUtils::debugStop();
