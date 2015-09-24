@@ -661,19 +661,18 @@ EOS;
                 fclose($file);
                 if ($exportResult) {
                     // File successfully generated
-                    return FyndiqUtils::moveFile($tempFileName, $this->filepath);
+                    FyndiqUtils::moveFile($tempFileName, $this->filepath);
                 }
                 // Something wrong happened, clean the file
                 FyndiqUtils::deleteFile($tempFileName);
             }
             if (file_exists($this->filepath)) {
                 $lastModified = filemtime($this->filepath);
+                $file = fopen($this->filepath, 'r');
+                $this->fmOutput->header('Last-Modified: ' . gmdate('D, d M Y H:i:s T', $lastModified));
+                $this->fmOutput->streamFile($file, 'feed.csv', 'text/csv', filesize($this->filepath));
+                fclose($file);
             }
-
-            $file = fopen($this->filepath, 'r');
-            $this->fmOutput->header('Last-Modified: ' . gmdate('D, d M Y H:i:s T', $lastModified));
-            $this->fmOutput->streamFile($file, 'feed.csv', 'text/csv', filesize($this->filepath));
-            fclose($file);
 
             return $this->returnAndDie('');
         }
