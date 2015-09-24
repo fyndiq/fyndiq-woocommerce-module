@@ -646,22 +646,16 @@ EOS;
         $token = get_option('wcfyndiq_apitoken');
         if (isset($username) && isset($token)) {
             if (FyndiqUtils::mustRegenerateFile($this->filepath)) {
-                $return = $this->feed_write($this->filepath);
-                if ($return) {
-                    $lastModified = filemtime($this->filepath);
-                    $file = fopen($this->filepath, 'r');
-                    $this->fmOutput->header('Last-Modified: ' . date('r', $lastModified));
-                    $this->fmOutput->streamFile($file, 'feed.csv', 'text/csv', filesize($this->filepath));
-                    fclose($file);
-                    return $this->returnAndDie('');
-                }
+                $this->feedFileHandling();
             }
-            $lastModified = filemtime($this->filepath);
+            if (file_exists($this->filepath)) {
+                $lastModified = filemtime($this->filepath);
+                $file = fopen($this->filepath, 'r');
+                $this->fmOutput->header('Last-Modified: ' . gmdate('D, d M Y H:i:s T', $lastModified));
+                $this->fmOutput->streamFile($file, 'feed.csv', 'text/csv', filesize($this->filepath));
+                fclose($file);
+            }
 
-            $file = fopen($this->filepath, 'r');
-            $this->fmOutput->header('Last-Modified: ' . gmdate('D, d M Y H:i:s T', $lastModified));
-            $this->fmOutput->streamFile($file, 'feed.csv', 'text/csv', filesize($this->filepath));
-            fclose($file);
             return $this->returnAndDie('');
         }
         return $this->fmOutput->showError(
@@ -671,21 +665,32 @@ EOS;
         );
     }
 
-    private function mustRegenerateFile($filePath)
+    public function feedFileHandling()
     {
-        if (getenv('FYNDIQ_DEBUG') == 1) {
-            return true;
-        }
-        if (file_exists($filePath) && filemtime($filePath) > strtotime('-1 hour')) {
+        $tempFileName = FyndiqUtils::getTempFilename(dirname($this->filepath));
+        FyndiqUtils::debug('$fileName', $this->filepath);
+        FyndiqUtils::debug('$tempFileName', $tempFileName);
+
+        $file = fopen($tempFileName, 'w+');
+        if (!$file) {
+            FyndiqUtils::debug('Cannot create file: ' . $fileName);
             return false;
         }
-        return true;
-    }
 
-    private function feed_write($filePath)
-    {
-        $file = fopen($filePath, 'w+');
         $feedWriter = new FyndiqCSVFeedWriter($file);
+        $exportResult = $this->feed_write($feedWriter);
+        fclose($file);
+        if ($exportResult) {
+            // File successfully generated
+            FyndiqUtils::moveFile($tempFileName, $this->filepath);
+        }
+        else {
+            // Something wrong happened, clean the file
+            FyndiqUtils::deleteFile($tempFileName);
+        }
+    }
+    private function feed_write($feedWriter)
+    {
         $productmodel = new FmProduct();
         $posts_array = $productmodel->getExportedProducts();
         foreach ($posts_array as $product) {
@@ -958,7 +963,7 @@ EOS;
         FyndiqUtils::debug('USER AGENT', FmHelpers::get_user_agent());
         $languageId = WC()->countries->get_base_country();
         FyndiqUtils::debug('language', $languageId);
-        $return = $this->feed_write($this->filepath);
+        $return = $this->feedFileHandling();
         $result = file_get_contents($this->filepath);
         FyndiqUtils::debug('$result', $result, true);
         FyndiqUtils::debugStop();
