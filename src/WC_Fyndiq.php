@@ -943,7 +943,6 @@ EOS;
                 }
             } catch (Exception $e) {
                 $this->fmOutput->showError(500, 'Internal Server Error', $e);
-                wp_die();
             }
 
             wp_die();
