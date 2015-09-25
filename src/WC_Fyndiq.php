@@ -698,8 +698,7 @@ EOS;
         if ($exportResult) {
             // File successfully generated
             FyndiqUtils::moveFile($tempFileName, $this->filepath);
-        }
-        else {
+        } else {
             // Something wrong happened, clean the file
             FyndiqUtils::deleteFile($tempFileName);
         }
@@ -717,13 +716,13 @@ EOS;
             $exportedArticles = array();
             $product = new WC_Product_Variable($product);
             FyndiqUtils::debug('$product', $product);
-            $tag_values = get_post_meta($product->id,'_product_attributes',true);
+            $tag_values = get_post_meta($product->id, '_product_attributes', true);
             FyndiqUtils::debug('$tag_values', $tag_values);
             $this->tag_values_fixed = array();
-            foreach($tag_values as $value) {
+            foreach ($tag_values as $value) {
                 FyndiqUtils::debug('$value[\'name\']', $value['name']);
                 $name = str_replace('pa_', '', $value['name']);
-                $label = $wpdb->get_var( $wpdb->prepare( "SELECT attribute_label FROM {$wpdb->prefix}woocommerce_attribute_taxonomies WHERE attribute_name = %s;", $name ) );
+                $label = $wpdb->get_var($wpdb->prepare("SELECT attribute_label FROM {$wpdb->prefix}woocommerce_attribute_taxonomies WHERE attribute_name = %s;", $name));
                 $this->tag_values_fixed[$value['name']] =  $label;
             }
             FyndiqUtils::debug('$tag_values_fixed', $this->tag_values_fixed);
@@ -831,7 +830,7 @@ EOS;
         if ($product->is_in_stock()) {
             $stock = $product->get_stock_quantity();
             $minimumQuantity = get_option('wcfyndiq_quantity_minimum');
-            if($minimumQuantity > 0) {
+            if ($minimumQuantity > 0) {
                 $stock = $stock - $minimumQuantity;
             }
             FyndiqUtils::debug('$stock product', $stock);
@@ -894,7 +893,7 @@ EOS;
             if ($variation['is_purchasable'] && $variation['is_in_stock']) {
                 $stock = intval($variationModel->get_stock_quantity());
                 $minimumQuantity = get_option('wcfyndiq_quantity_minimum');
-                if($minimumQuantity > 0) {
+                if ($minimumQuantity > 0) {
                     $stock = $stock - $minimumQuantity;
                 }
                 $feedProduct['article-quantity'] = $stock;
@@ -903,11 +902,12 @@ EOS;
 
             $feedProduct['article-name'] = $product->post->post_title;
             $tag_values = $variationModel->get_variation_attributes();
+
             if (!empty($tag_values)) {
                 FyndiqUtils::debug('$tag_values', $tag_values);
                 $propertyId = 1;
                 $tags = array();
-                foreach($tag_values as $key => $value) {
+                foreach ($tag_values as $key => $value) {
                     $key = str_replace('attribute_', '', $key);
                     $feedProduct['article-property-'.$propertyId.'-name'] = $this->tag_values_fixed[$key];
                     $feedProduct['article-property-'.$propertyId.'-value'] = $value;
@@ -917,6 +917,8 @@ EOS;
 
                 $feedProduct['article-name'] = implode(', ', $tags);
             }
+
+
 
             return $feedProduct;
         }
