@@ -706,6 +706,7 @@ EOS;
     }
     private function feed_write($feedWriter)
     {
+        global $wpdb;
         $productmodel = new FmProduct();
         $posts_array = $productmodel->getExportedProducts();
         FyndiqUtils::debug('quantity minmum', get_option('wcfyndiq_quantity_minimum'));
@@ -716,6 +717,16 @@ EOS;
             $exportedArticles = array();
             $product = new WC_Product_Variable($product);
             FyndiqUtils::debug('$product', $product);
+            $tag_values = get_post_meta($product->id,'_product_attributes',true);
+            FyndiqUtils::debug('$tag_values', $tag_values);
+            $this->tag_values_fixed = array();
+            foreach($tag_values as $value) {
+                FyndiqUtils::debug('$value[\'name\']', $value['name']);
+                $name = str_replace('pa_', '', $value['name']);
+                $label = $wpdb->get_var( $wpdb->prepare( "SELECT attribute_label FROM {$wpdb->prefix}woocommerce_attribute_taxonomies WHERE attribute_name = %s;", $name ) );
+                $this->tag_values_fixed[$value['name']] =  $label;
+            }
+            FyndiqUtils::debug('$tag_values_fixed', $this->tag_values_fixed);
             $variations = $product->get_available_variations();
             if (count($variations) > 0) {
                 $prices = array();
@@ -894,7 +905,17 @@ EOS;
             $tag_values = $variationModel->get_variation_attributes();
             if (!empty($tag_values)) {
                 FyndiqUtils::debug('$tag_values', $tag_values);
-                $feedProduct['article-name'] = array_shift($tag_values);
+                $propertyId = 1;
+                $tags = array();
+                foreach($tag_values as $key => $value) {
+                    $key = str_replace('attribute_', '', $key);
+                    $feedProduct['article-property-'.$propertyId.'-name'] = $this->tag_values_fixed[$key];
+                    $feedProduct['article-property-'.$propertyId.'-value'] = $value;
+                    $tags[] = $this->tag_values_fixed[$key] . ': ' . $value;
+                    $propertyId++;
+                }
+
+                $feedProduct['article-name'] = implode(', ', $tags);
             }
 
             return $feedProduct;
