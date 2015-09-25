@@ -1099,13 +1099,7 @@ EOS;
 
     private function getPrice($product_id, $product_price)
     {
-        $percentage = get_post_meta($product_id, '_fyndiq_price_percentage', true);
-
         $discount = $this->getDiscount(get_option('wcfyndiq_price_percentage'));
-
-        if (isset($percentage)) {
-            $discount = $this->getDiscount($percentage);
-        }
 
         return FyndiqUtils::getFyndiqPrice($product_price, $discount);
     }
