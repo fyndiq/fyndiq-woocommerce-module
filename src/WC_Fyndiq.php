@@ -266,9 +266,9 @@ EOS;
 
         $data = array(
             FyndiqUtils::NAME_PRODUCT_FEED_URL => get_site_url() . '/?fyndiq_feed',
-            FyndiqUtils::NAME_NOTIFICATION_URL => get_site_url() . '/?fyndiq_notification&event=order_created',
+            FyndiqUtils::NAME_NOTIFICATION_URL => get_site_url() . '/?fyndiq_notification=1&event=order_created',
             FyndiqUtils::NAME_PING_URL => get_site_url() .
-                '/?fyndiq_notification&event=ping&pingToken=' . $pingToken
+                '/?fyndiq_notification=1&event=ping&pingToken=' . $pingToken
         );
         return FmHelpers::callApi('PATCH', 'settings/', $data);
     }
