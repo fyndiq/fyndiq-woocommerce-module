@@ -26,9 +26,9 @@ class FmOrder
 
         foreach ($order->order_rows as $order_row) {
             // get product by item_id
-            $product = $this->get_product_by_sku($order_row->sku);
+            $product = $this->getProductBySku($order_row->sku);
             if (!isset($product)) {
-                wpdie(sprintf(__('Product SKU ( %s ) not found.', 'fyndiq'), $order_row->sku));
+                wp_die(sprintf(__('Product SKU ( %s ) not found.', 'fyndiq'), $order_row->sku));
             }
         }
 
@@ -105,7 +105,7 @@ class FmOrder
 
         foreach ($order->order_rows as $order_row) {
             // get product by item_id
-            $product = $this->get_product_by_sku($order_row->sku);
+            $product = $this->getProductBySku($order_row->sku);
 
             $product_total = ($order_row->unit_price_amount*$order_row->quantity);
             if (isset($product)) {
@@ -133,7 +133,7 @@ class FmOrder
         $wc_order->calculate_totals();
     }
 
-    public function get_product_by_sku($sku)
+    public function getProductBySku($sku)
     {
         global $wpdb;
 

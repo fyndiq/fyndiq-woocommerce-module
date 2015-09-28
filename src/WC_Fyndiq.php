@@ -722,7 +722,7 @@ EOS;
             foreach ($tag_values as $value) {
                 FyndiqUtils::debug('$value[\'name\']', $value['name']);
                 $name = str_replace('pa_', '', $value['name']);
-                if(!isset($this->tag_values_fixed[$value['name']])) {
+                if (!isset($this->tag_values_fixed[$value['name']])) {
                     $label = $wpdb->get_var($wpdb->prepare("SELECT attribute_label FROM {$wpdb->prefix}woocommerce_attribute_taxonomies WHERE attribute_name = %s;", $name));
                     $this->tag_values_fixed[$value['name']] =  $label;
                 }
