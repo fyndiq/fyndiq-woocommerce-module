@@ -1102,7 +1102,7 @@ EOS;
         $percentage = get_post_meta($product_id, '_fyndiq_price_percentage', true);
 
         if (isset($percentage) && $percentage > 0) {
-            $discount = $this->getDiscount($percentage);
+            $discount = $this->getDiscount(intval($percentage));
         }
 
         return FyndiqUtils::getFyndiqPrice($product_price, $discount);
