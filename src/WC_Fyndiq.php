@@ -698,8 +698,7 @@ EOS;
         if ($exportResult) {
             // File successfully generated
             FyndiqUtils::moveFile($tempFileName, $this->filepath);
-        }
-        else {
+        } else {
             // Something wrong happened, clean the file
             FyndiqUtils::deleteFile($tempFileName);
         }
@@ -820,7 +819,7 @@ EOS;
         if ($product->is_in_stock()) {
             $stock = $product->get_stock_quantity();
             $minimumQuantity = get_option('wcfyndiq_quantity_minimum');
-            if($minimumQuantity > 0) {
+            if ($minimumQuantity > 0) {
                 $stock = $stock - $minimumQuantity;
             }
             FyndiqUtils::debug('$stock product', $stock);
@@ -883,7 +882,7 @@ EOS;
             if ($variation['is_purchasable'] && $variation['is_in_stock']) {
                 $stock = intval($variationModel->get_stock_quantity());
                 $minimumQuantity = get_option('wcfyndiq_quantity_minimum');
-                if($minimumQuantity > 0) {
+                if ($minimumQuantity > 0) {
                     $stock = $stock - $minimumQuantity;
                 }
                 $feedProduct['article-quantity'] = $stock;
@@ -1099,12 +1098,11 @@ EOS;
 
     private function getPrice($product_id, $product_price)
     {
+        $discount = $this->getDiscount(get_option('wcfyndiq_price_percentage'));
         $percentage = get_post_meta($product_id, '_fyndiq_price_percentage', true);
 
-        $discount = $this->getDiscount(get_option('wcfyndiq_price_percentage'));
-
-        if (isset($percentage)) {
-            $discount = $this->getDiscount($percentage);
+        if (isset($percentage) && $percentage > 0) {
+            $discount = $this->getDiscount(intval($percentage));
         }
 
         return FyndiqUtils::getFyndiqPrice($product_price, $discount);
