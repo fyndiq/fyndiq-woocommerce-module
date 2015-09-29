@@ -864,16 +864,11 @@ EOS;
             $rates = $_tax->get_rates($product->get_tax_class());
             $rates = array_shift($rates);
 
-
-
-
             $feedProduct['product-price'] = FyndiqUtils::formatPrice($price);
             $feedProduct['product-vat-percent'] = !empty($rates['rate']) ? $rates['rate'] : 0;
             $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($productPrice);
             $feedProduct['product-market'] = WC()->countries->get_base_country();
             $feedProduct['product-currency'] = get_woocommerce_currency();
-
-
 
             $terms = get_the_terms($product->id, 'product_cat');
             if ($terms && !is_wp_error($terms)) {
