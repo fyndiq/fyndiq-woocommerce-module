@@ -1,5 +1,4 @@
 <?php
-
 class WC_Fyndiq
 {
     private $filepath = null;
@@ -728,7 +727,7 @@ EOS;
                 }
             }
             FyndiqUtils::debug('$tag_values_fixed', $this->tag_values_fixed);
-            $variations = $product->get_available_variations();
+            $variations = $this->getAllVariations($product);
             if (count($variations) > 0) {
                 $prices = array();
 
@@ -865,14 +864,11 @@ EOS;
             $rates = $_tax->get_rates($product->get_tax_class());
             $rates = array_shift($rates);
 
-
             $feedProduct['product-price'] = FyndiqUtils::formatPrice($price);
             $feedProduct['product-vat-percent'] = !empty($rates['rate']) ? $rates['rate'] : 0;
             $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($productPrice);
             $feedProduct['product-market'] = WC()->countries->get_base_country();
             $feedProduct['product-currency'] = get_woocommerce_currency();
-
-
 
             $terms = get_the_terms($product->id, 'product_cat');
             if ($terms && !is_wp_error($terms)) {
@@ -1143,5 +1139,65 @@ EOS;
         }
 
         return $discount;
+    }
+
+    private function getAllVariations($product)
+    {
+
+        $available_variations = array();
+
+        foreach ($product->get_children() as $child_id) {
+            $variation = $product->get_child($child_id);
+
+            $variation_attributes = $variation->get_variation_attributes();
+            $availability         = $variation->get_availability();
+            $availability_html    = empty($availability['availability']) ? '' : '<p class="stock ' . esc_attr($availability['class']) . '">' . wp_kses_post($availability['availability']) . '</p>';
+            $availability_html    = apply_filters('woocommerce_stock_html', $availability_html, $availability['availability'], $variation);
+
+            if (has_post_thumbnail($variation->get_variation_id())) {
+                $attachment_id = get_post_thumbnail_id($variation->get_variation_id());
+
+                $attachment    = wp_get_attachment_image_src($attachment_id, apply_filters('single_product_large_thumbnail_size', 'shop_single'));
+                $image         = $attachment ? current($attachment) : '';
+
+                $attachment    = wp_get_attachment_image_src($attachment_id, 'full');
+                $image_link    = $attachment ? current($attachment) : '';
+
+                $image_title   = get_the_title($attachment_id);
+                $image_alt     = get_post_meta($attachment_id, '_wp_attachment_image_alt', true);
+            } else {
+                $image = $image_link = $image_title = $image_alt = '';
+            }
+
+            $available_variations[] = apply_filters('woocommerce_available_variation', array(
+            'variation_id'          => $child_id,
+            'variation_is_visible'  => $variation->variation_is_visible(),
+            'variation_is_active'   => $variation->variation_is_active(),
+            'is_purchasable'        => $variation->is_purchasable(),
+            'display_price'         => $variation->get_display_price(),
+            'display_regular_price' => $variation->get_display_price($variation->get_regular_price()),
+            'attributes'            => $variation_attributes,
+            'image_src'             => $image,
+            'image_link'            => $image_link,
+            'image_title'           => $image_title,
+            'image_alt'             => $image_alt,
+            'price_html'            => $variation->get_price() === "" || $product->get_variation_price('min') !== $product->get_variation_price('max') ? '<span class="price">' . $variation->get_price_html() . '</span>' : '',
+            'availability_html'     => $availability_html,
+            'sku'                   => $variation->get_sku(),
+            'weight'                => $variation->get_weight() . ' ' . esc_attr(get_option('woocommerce_weight_unit')),
+            'dimensions'            => $variation->get_dimensions(),
+            'min_qty'               => 1,
+            'max_qty'               => $variation->backorders_allowed() ? '' : $variation->get_stock_quantity(),
+            'backorders_allowed'    => $variation->backorders_allowed(),
+            'is_in_stock'           => $variation->is_in_stock(),
+            'is_downloadable'       => $variation->is_downloadable() ,
+            'is_virtual'            => $variation->is_virtual(),
+            'is_sold_individually'  => $variation->is_sold_individually() ? 'yes' : 'no',
+            ), $product, $variation);
+        }
+
+        FyndiqUtils::debug('$available_variations', $available_variations);
+
+        return $available_variations;
     }
 }
