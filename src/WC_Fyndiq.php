@@ -733,11 +733,9 @@ EOS;
 
                 foreach ($variations as $variation) {
                     $exportVariation = $this->getVariation($product, $variation);
-                    if (isset($exportVariation) && is_array($exportVariation)) {
-                        $prices[] = $exportVariation['product-price'];
-                        FyndiqUtils::debug('$exportVariation', $exportVariation);
-                        $exportedArticles[] = $exportVariation;
-                    }
+                    $prices[] = $exportVariation['product-price'];
+                    FyndiqUtils::debug('$exportVariation', $exportVariation);
+                    $exportedArticles[] = $exportVariation;
                 }
 
                 $differentPrice = count(array_unique($prices)) > 1;
@@ -861,10 +859,6 @@ EOS;
             $feedProduct['product-description'] = $product->post->post_content;
 
             $productPrice = $variation['display_price'];
-            if ($productPrice == 0.00) {
-                FyndiqUtils::debug('Variation has zero as price, skipped.');
-                return false;
-            }
             $price = $this->getPrice($product->id, $productPrice);
             $_tax = new WC_Tax(); //looking for appropriate vat for specific product
             $rates = $_tax->get_rates($product->get_tax_class());
