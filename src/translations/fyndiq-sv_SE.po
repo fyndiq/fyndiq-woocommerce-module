@@ -1,11 +1,11 @@
-# 
+# Translators:
 # Translators:
 # Håkan Nylén <confacted@gmail.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: Fyndiq Modules: Woocommerce\n"
 "POT-Creation-Date: 2015-09-30 10:40+0100\n"
-"PO-Revision-Date: 2015-09-30 09:05+0000\n"
+"PO-Revision-Date: 2015-09-30 09:51+0000\n"
 "Last-Translator: Håkan Nylén <confacted@gmail.com>\n"
 "Language-Team: Swedish (http://www.transifex.com/fyndiq/fyndiq-modules-woocommerce/language/sv/)\n"
 "MIME-Version: 1.0\n"
@@ -148,6 +148,10 @@ msgstr "Fyndiq Exporterad"
 #: WC_Fyndiq.php:351
 msgid "Fyndiq Status"
 msgstr "Fyndiq Status"
+
+#: WC_Fyndiq.php:364
+msgid "Exported"
+msgstr "Exporterad"
 
 #: WC_Fyndiq.php:366
 msgid "Not exported"

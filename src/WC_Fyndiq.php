@@ -361,13 +361,13 @@ EOS;
             if (!$product->is_downloadable()) {
                 $exported = get_post_meta($postid, '_fyndiq_export', true);
                 if ($exported != '') {
-                    _e($exported);
+                    _e($exported, 'fyndiq');
                 } else {
                     update_post_meta($postid, '_fyndiq_export', 'not exported');
-                    _e('Not exported');
+                    _e('Not exported', 'fyndiq');
                 }
             } else {
-                _e('Can\'t be exported');
+                _e('Can\'t be exported', 'fyndiq');
             }
         }
         if ($column == 'fyndiq_status') {
@@ -376,12 +376,12 @@ EOS;
 
             if ($exported != '' && $status != '') {
                 if ($status == FmProduct::STATUS_PENDING) {
-                    _e('Pending');
+                    _e('Pending', 'fyndiq');
                 } elseif ($status == FmProduct::STATUS_FOR_SALE) {
-                    _e('For Sale');
+                    _e('For Sale', 'fyndiq');
                 }
             } else {
-                _e('-');
+                _e('-', 'fyndiq');
             }
         }
     }
@@ -1107,7 +1107,7 @@ EOS;
 
     public function getExportState()
     {
-        return isset($_POST['_fyndiq_export']) ? 'exported' : 'not exported';
+        return isset($_POST['_fyndiq_export']) ? 'Exported' : 'Not Exported';
     }
 
     public function getPricePercentage()
