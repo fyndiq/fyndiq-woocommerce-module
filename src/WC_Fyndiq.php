@@ -8,6 +8,8 @@ class WC_Fyndiq
 
     public function __construct($fmOutput)
     {
+        //Load locale in init
+        add_action('init', array(&$this, 'locale_load'));
         // called only after woocommerce has finished loading
         add_action('woocommerce_init', array(&$this, 'woocommerce_loaded'));
 
@@ -22,6 +24,12 @@ class WC_Fyndiq
         // indicates we are running the admin
         if (!is_admin()) {
         }
+    }
+
+    public function locale_load()
+    {
+        // Localization
+        load_plugin_textdomain('fyndiq', false, dirname(plugin_basename(__FILE__)) . '/translations/');
     }
 
     /**
@@ -94,7 +102,7 @@ class WC_Fyndiq
         if (isset($meta['fyndiq_delivery_note']) && isset($meta['fyndiq_delivery_note'][0]) && $meta['fyndiq_delivery_note'][0] != '') {
             add_meta_box(
                 'woocommerce-order-fyndiq-delivery-note',
-                __('Fyndiq'),
+                __('Fyndiq', 'fyndiq'),
                 array(&$this, 'order_meta_box_delivery_note'),
                 'shop_order',
                 'side',
@@ -127,9 +135,9 @@ EOS;
         printf(
             $script,
             get_site_url(),
-            __('Error!'),
-            __('Loading') . '...',
-            __('Done'),
+            __('Error!', 'fyndiq'),
+            __('Loading', 'fyndiq') . '...',
+            __('Done', 'fyndiq'),
             plugins_url('/js/order-import.js', __FILE__),
             plugins_url('/js/product-update.js', __FILE__)
         );
@@ -251,7 +259,7 @@ EOS;
             if ($e->getMessage() == 'Unauthorized') {
                 $this->fmOutput->output(sprintf(
                     '<div class="error"><p>%s</p></div>',
-                    __('Fyndiq credentials was wrong, try again.', 'fyndiq_username')
+                    __('Fyndiq credentials was wrong, try again.', 'fyndiq')
                 ));
             }
             //die();
@@ -279,7 +287,7 @@ EOS;
         $product = get_product($this->getProductId());
 
         if (!$product->is_downloadable()) {
-            $this->fmOutput->output('<div class="options_group"><p>' . __('Fyndiq Product Settings') . '</p>');
+            $this->fmOutput->output('<div class="options_group"><p>' . __('Fyndiq Product Settings', 'fyndiq') . '</p>');
 
             // Checkbox for exporting to fyndiq
             $value = (get_post_meta(get_the_ID(), '_fyndiq_export', true) == 'exported') ? 1 : 0;
@@ -340,8 +348,8 @@ EOS;
 
     public function fyndiq_product_add_column($defaults)
     {
-        $defaults['fyndiq_export'] = __('Fyndiq Exported');
-        $defaults['fyndiq_status'] = __('Fyndiq Status');
+        $defaults['fyndiq_export'] = __('Fyndiq Exported', 'fyndiq');
+        $defaults['fyndiq_status'] = __('Fyndiq Status', 'fyndiq');
 
         return $defaults;
     }
@@ -383,24 +391,24 @@ EOS;
         if ($this->checkCurrency()) {
             printf(
                 '<div class="error"><p><strong>%s</strong>: %s %s</p></div>',
-                __('Wrong Currency'),
-                __('Fyndiq only works in EUR and SEK. change to correct currency. Current Currency:'),
+                __('Wrong Currency', 'fyndiq'),
+                __('Fyndiq only works in EUR and SEK. change to correct currency. Current Currency:', 'fyndiq'),
                 get_woocommerce_currency()
             );
         }
         if ($this->checkCountry()) {
             printf(
                 '<div class="error"><p><strong>%s</strong>: %s %s</p></div>',
-                __('Wrong Country'),
-                __('Fyndiq only works in Sweden and Germany. change to correct country. Current Country:'),
+                __('Wrong Country', 'fyndiq'),
+                __('Fyndiq only works in Sweden and Germany. change to correct country. Current Country:', 'fyndiq'),
                 WC()->countries->get_base_country()
             );
         }
         if ($this->checkCredentials()) {
             printf(
                 '<div class="error"><p><strong>%s</strong>: %s</p></div>',
-                __('Fyndiq Credentials'),
-                __('You need to set Fyndiq Credentials to make it work. Do it in Woocommerce Settings > Products > Fyndiq.')
+                __('Fyndiq Credentials', 'fyndiq'),
+                __('You need to set Fyndiq Credentials to make it work. Do it in Woocommerce Settings > Products > Fyndiq.', 'fyndiq')
             );
         }
     }
@@ -428,7 +436,7 @@ EOS;
 
     public function fyndiq_order_add_column($defaults)
     {
-        $defaults['fyndiq_order'] = __('Fyndiq Order');
+        $defaults['fyndiq_order'] = __('Fyndiq Order', 'fyndiq');
 
         return $defaults;
     }
@@ -477,9 +485,9 @@ EOS;
         global $post_type;
 
         if ($post_type == 'product') {
-            $exportToFyndiq = __('Export to Fyndiq');
-            $removeFromFyndiq = __('Remove from Fyndiq');
-            $updateFyndiqStatus = __('Update Fyndiq Status');
+            $exportToFyndiq = __('Export to Fyndiq', 'fyndiq');
+            $removeFromFyndiq = __('Remove from Fyndiq', 'fyndiq');
+            $updateFyndiqStatus = __('Update Fyndiq Status', 'fyndiq');
             $script = <<<EOS
 <script type="text/javascript">
     jQuery(document).ready(function () {
@@ -499,8 +507,8 @@ EOS;
             $this->fmOutput->output($script);
         }
         if ($post_type == 'shop_order') {
-            $getFyndiqDeliveryNote =  __('Get Fyndiq Delivery Note');
-            $importFromFyndiq = __('Import From Fyndiq');
+            $getFyndiqDeliveryNote =  __('Get Fyndiq Delivery Note', 'fyndiq');
+            $importFromFyndiq = __('Import From Fyndiq', 'fyndiq');
             $script =  <<<EOS
 <script type="text/javascript">
     jQuery(document).ready(function () {
