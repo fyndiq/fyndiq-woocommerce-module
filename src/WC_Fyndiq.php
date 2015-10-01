@@ -8,7 +8,6 @@ class WC_Fyndiq
 
     const EXPORTED = 'exported';
     const NOT_EXPORTED = 'not exported';
-    const CANT_BE_EXPORTED = 'can\'t be exported';
 
     public function __construct($fmOutput)
     {
