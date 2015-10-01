@@ -6,6 +6,10 @@ class WC_Fyndiq
     private $fmOutput = null;
     private $productImages = null;
 
+    const EXPORTED = 'exported';
+    const NOT_EXPORTED = 'not exported';
+    const CANT_BE_EXPORTED = 'can\'t be exported';
+
     public function __construct($fmOutput)
     {
         //Load locale in init
@@ -290,7 +294,7 @@ EOS;
             $this->fmOutput->output('<div class="options_group"><p>' . __('Fyndiq Product Settings', 'fyndiq') . '</p>');
 
             // Checkbox for exporting to fyndiq
-            $value = (get_post_meta(get_the_ID(), '_fyndiq_export', true) == 'exported') ? 1 : 0;
+            $value = (get_post_meta(get_the_ID(), '_fyndiq_export', true) == self::EXPORTED) ? 1 : 0;
 
             woocommerce_form_field(
                 '_fyndiq_export',
@@ -361,9 +365,14 @@ EOS;
             if (!$product->is_downloadable()) {
                 $exported = get_post_meta($postid, '_fyndiq_export', true);
                 if ($exported != '') {
-                    _e($exported, 'fyndiq');
+                    if($exported == self::EXPORTED) {
+                        _e('Exported', 'fyndiq');
+                    }
+                    else {
+                        _e('Not exported', 'fyndiq');
+                    }
                 } else {
-                    update_post_meta($postid, '_fyndiq_export', 'not exported');
+                    update_post_meta($postid, '_fyndiq_export', self::NOT_EXPORTED);
                     _e('Not exported', 'fyndiq');
                 }
             } else {
@@ -647,8 +656,8 @@ EOS;
 
     private function perform_export($post_id)
     {
-        if (!update_post_meta($post_id, '_fyndiq_export', 'exported')) {
-            add_post_meta($post_id, '_fyndiq_export', 'exported', true);
+        if (!update_post_meta($post_id, '_fyndiq_export', self::EXPORTED)) {
+            add_post_meta($post_id, '_fyndiq_export', self::EXPORTED, true);
         };
         if (!update_post_meta($post_id, '_fyndiq_status', FmProduct::STATUS_PENDING)) {
             add_post_meta($post_id, '_fyndiq_status', FmProduct::STATUS_PENDING, true);
@@ -657,8 +666,8 @@ EOS;
 
     private function perform_no_export($post_id)
     {
-        if (!update_post_meta($post_id, '_fyndiq_export', 'not exported')) {
-            add_post_meta($post_id, '_fyndiq_export', 'not exported', true);
+        if (!update_post_meta($post_id, '_fyndiq_export', self::NOT_EXPORTED)) {
+            add_post_meta($post_id, '_fyndiq_export', self::NOT_EXPORTED, true);
         };
     }
 
@@ -1107,7 +1116,7 @@ EOS;
 
     public function getExportState()
     {
-        return isset($_POST['_fyndiq_export']) ? 'Exported' : 'Not Exported';
+        return isset($_POST['_fyndiq_export']) ? self::EXPORTED : self::NOT_EXPORTED;
     }
 
     public function getPricePercentage()
