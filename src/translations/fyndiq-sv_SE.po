@@ -1,24 +1,24 @@
-#
 # Translators:
+# Translators:
+# Håkan Nylén <confacted@gmail.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: Fyndiq Modules: Woocommerce\n"
 "POT-Creation-Date: 2015-09-30 10:40+0100\n"
-"PO-Revision-Date: 2015-09-30 11:48+0100\n"
+"PO-Revision-Date: 2015-09-30 09:51+0000\n"
 "Last-Translator: Håkan Nylén <confacted@gmail.com>\n"
-"Language-Team: English (http://www.transifex.com/fyndiq/fyndiq-modules-woocommerce/language/en/)\n"
+"Language-Team: Swedish (http://www.transifex.com/fyndiq/fyndiq-modules-woocommerce/language/sv/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: en\n"
+"Language: sv\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.7.6\n"
 "X-Poedit-Basepath: ..\n"
-"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;esc_attr_e;esc_attr_x:1,2c;"
-"esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
-"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
+"X-Poedit-SourceCharset: UTF-8\n"
 
 #: WC_Fyndiq.php:104 WC_Fyndiq.php:147
 msgid "Fyndiq"
@@ -26,35 +26,35 @@ msgstr "Fyndiq"
 
 #: WC_Fyndiq.php:137
 msgid "Error!"
-msgstr "Error!"
+msgstr "Fel!"
 
 #: WC_Fyndiq.php:138
 msgid "Loading"
-msgstr "Loading"
+msgstr "Laddar"
 
 #: WC_Fyndiq.php:139
 msgid "Done"
-msgstr "Done"
+msgstr "Klar"
 
 #: WC_Fyndiq.php:162
 msgid "Fyndiq Settings"
-msgstr "Fyndiq Settings"
+msgstr "Fyndiq Inställningar"
 
 #: WC_Fyndiq.php:164
 msgid "The following options are used to configure Fyndiq"
-msgstr "The following options are used to configure Fyndiq"
+msgstr "De följande inställningar är för att ställa in Fyndiq"
 
 #: WC_Fyndiq.php:171
 msgid "Username"
-msgstr "Username"
+msgstr "Användarnamn"
 
 #: WC_Fyndiq.php:172
 msgid "This is the username you use for login on Fyndiq Merchant"
-msgstr "This is the username you use for login on Fyndiq Merchant"
+msgstr "Detta är användarnmanet du använder för att logga in på Fyndiq Handlare"
 
 #: WC_Fyndiq.php:175
 msgid "Must be your username"
-msgstr "Must be your username"
+msgstr "Måste vara ditt användarnamn"
 
 #: WC_Fyndiq.php:182
 msgid "API-token"
@@ -62,23 +62,24 @@ msgstr "API-token"
 
 #: WC_Fyndiq.php:183
 msgid "This is the API V2 Token on Fyndiq"
-msgstr "This is the API V2 Token on Fyndiq"
+msgstr "Detta är API V2 Token på Fyndiq"
 
 #: WC_Fyndiq.php:186
 msgid "Must be API v2 token"
-msgstr "Must be API v2 token"
+msgstr "Måste vara API v2 token"
 
 #: WC_Fyndiq.php:193
 msgid "Global Price Percentage"
-msgstr "Global Price Percentage"
+msgstr "Global Pris Procentenhet"
 
 #: WC_Fyndiq.php:195
-msgid "The percentage that will be removed from the price when sending to fyndiq."
-msgstr "The percentage that will be removed from the price when sending to fyndiq."
+msgid ""
+"The percentage that will be removed from the price when sending to fyndiq."
+msgstr "Procenten som tas bort från priset när det skickas till Fyndiq."
 
 #: WC_Fyndiq.php:201
 msgid "Can be 0 if the price should be the same as in your shop."
-msgstr "Can be 0 if the price should be the same as in your shop."
+msgstr "Kan vara 0 om priset ska vara samma som i din butik."
 
 #: WC_Fyndiq.php:208
 msgid "Order Status"
@@ -86,59 +87,63 @@ msgstr "Order Status"
 
 #: WC_Fyndiq.php:210
 msgid "When a order is imported from fyndiq, this status will be applied."
-msgstr "When a order is imported from fyndiq, this status will be applied."
+msgstr "När en order importeras från Fyndiq, så sätts denna status på ordern."
 
 #: WC_Fyndiq.php:221
 msgid "This must be picked accurate"
-msgstr "This must be picked accurate"
+msgstr "Denna uppgift måste väljas korrekt."
 
 #: WC_Fyndiq.php:229
 msgid "Minimum Quantity Limit"
-msgstr "Minimum Quantity Limit"
+msgstr "Minsta kvantitet-gräns"
 
 #: WC_Fyndiq.php:231
-msgid "this quantity will be reserved by you and will be removed from the quantity that is sent to Fyndiq."
-msgstr "this quantity will be reserved by you and will be removed from the quantity that is sent to Fyndiq."
+msgid ""
+"this quantity will be reserved by you and will be removed from the quantity "
+"that is sent to Fyndiq."
+msgstr "Denna kvantitet blir reserverad av dig och tas bort från kvantitet som skickas till Fyndiq."
 
 #: WC_Fyndiq.php:237
 msgid "Stay on 0 if you want to send all stock to Fyndiq."
-msgstr "Stay on 0 if you want to send all stock to Fyndiq."
+msgstr "Låt den vara 0 om du vill att all kvantitet ska skickas till Fyndiq."
 
 #: WC_Fyndiq.php:261
 msgid "Fyndiq credentials was wrong, try again."
-msgstr "Fyndiq credentials was wrong, try again."
+msgstr "Fyndiq användaruppgifterna var fel, testa igen."
 
 #: WC_Fyndiq.php:289
 msgid "Fyndiq Product Settings"
-msgstr "Fyndiq Product Settings"
+msgstr "Fyndiq Produkt Inställningar"
 
 #: WC_Fyndiq.php:299 WC_Fyndiq.php:487
 msgid "Export to Fyndiq"
-msgstr "Export to Fyndiq"
+msgstr "Exportera till Fyndiq"
 
 #: WC_Fyndiq.php:300
 msgid "mark this as true if you want to export to Fyndiq"
-msgstr "mark this as true if you want to export to Fyndiq"
+msgstr "Markera detta om du vill exportera denna produkt till Fyndiq"
 
 #: WC_Fyndiq.php:314
 msgid "Fyndiq Discount Percentage"
-msgstr "Fyndiq Discount Percentage"
+msgstr "Fyndiq rabatt procentenhet."
 
 #: WC_Fyndiq.php:316
-msgid "The percentage specific for this product, it will override the globel percentage for this product."
-msgstr "The percentage specific for this product, it will override the globel percentage for this product."
+msgid ""
+"The percentage specific for this product, it will override the globel "
+"percentage for this product."
+msgstr "Denna procent är specific för denna produkt, den skriver över den globala procenten för denna produkt."
 
 #: WC_Fyndiq.php:328
 msgid "Fyndiq Price with set Discount percentage: "
-msgstr "Fyndiq Price with set Discount percentage: "
+msgstr "Fyndiq-pris med rabatt-procenten"
 
 #: WC_Fyndiq.php:335
 msgid "Can't export this product to Fyndiq"
-msgstr "Can't export this product to Fyndiq"
+msgstr "Kan inte exportera denna produkt till Fyndiq"
 
 #: WC_Fyndiq.php:350
 msgid "Fyndiq Exported"
-msgstr "Fyndiq Exported"
+msgstr "Fyndiq Exporterad"
 
 #: WC_Fyndiq.php:351
 msgid "Fyndiq Status"
@@ -146,23 +151,23 @@ msgstr "Fyndiq Status"
 
 #: WC_Fyndiq.php:364
 msgid "Exported"
-msgstr "Exported"
+msgstr "Exporterad"
 
 #: WC_Fyndiq.php:366
 msgid "Not exported"
-msgstr "Not exported"
+msgstr "Inte Exporterad"
 
 #: WC_Fyndiq.php:369
 msgid "Can't be exported"
-msgstr "Can't be exported"
+msgstr "Kan inte exporteras"
 
 #: WC_Fyndiq.php:378
 msgid "Pending"
-msgstr "Pending"
+msgstr "Avvaktar"
 
 #: WC_Fyndiq.php:380
 msgid "For Sale"
-msgstr "For Sale"
+msgstr "Säljes"
 
 #: WC_Fyndiq.php:383
 msgid "-"
@@ -170,27 +175,33 @@ msgstr "-"
 
 #: WC_Fyndiq.php:393
 msgid "Wrong Currency"
-msgstr "Wrong Currency"
+msgstr "Fel Valuta"
 
 #: WC_Fyndiq.php:394
-msgid "Fyndiq only works in EUR and SEK. change to correct currency. Current Currency:"
-msgstr "Fyndiq only works in EUR and SEK. change to correct currency. Current Currency:"
+msgid ""
+"Fyndiq only works in EUR and SEK. change to correct currency. Current "
+"Currency:"
+msgstr "Fyndiq funkar bara i EUR och SEK. Ändra till korrekt valuta. Nuvarande valuta:"
 
 #: WC_Fyndiq.php:401
 msgid "Wrong Country"
-msgstr "Wrong Country"
+msgstr "Fel Land"
 
 #: WC_Fyndiq.php:402
-msgid "Fyndiq only works in Sweden and Germany. change to correct country. Current Country:"
-msgstr "Fyndiq only works in Sweden and Germany. change to correct country. Current Country:"
+msgid ""
+"Fyndiq only works in Sweden and Germany. change to correct country. Current "
+"Country:"
+msgstr "Fyndiq funkar bara i Sverige och i Tyskland. Ändra till korrekt land. Nuvarande Land:"
 
 #: WC_Fyndiq.php:409
 msgid "Fyndiq Credentials"
-msgstr "Fyndiq Credentials"
+msgstr "Fyndiq Konto-uppgifter"
 
 #: WC_Fyndiq.php:410
-msgid "You need to set Fyndiq Credentials to make it work. Do it in Woocommerce Settings > Products > Fyndiq."
-msgstr "You need to set Fyndiq Credentials to make it work. Do it in Woocommerce Settings > Products > Fyndiq."
+msgid ""
+"You need to set Fyndiq Credentials to make it work. Do it in Woocommerce "
+"Settings > Products > Fyndiq."
+msgstr "Du måste ställa in Fyndiq konto-uppgifterna för att det ska funka. Det gör du i Woocommerce Inställningar > Produkter > Fyndiq"
 
 #: WC_Fyndiq.php:438
 msgid "Fyndiq Order"
@@ -198,43 +209,43 @@ msgstr "Fyndiq Order"
 
 #: WC_Fyndiq.php:488
 msgid "Remove from Fyndiq"
-msgstr "Remove from Fyndiq"
+msgstr "Ta bort från Fyndiq"
 
 #: WC_Fyndiq.php:489
 msgid "Update Fyndiq Status"
-msgstr "Update Fyndiq Status"
+msgstr "Uppdatera Fyndiq Status"
 
 #: WC_Fyndiq.php:509
 msgid "Get Fyndiq Delivery Note"
-msgstr "Get Fyndiq Delivery Note"
+msgstr "Hämta Fyndiq Följesedel"
 
 #: WC_Fyndiq.php:510
 msgid "Import From Fyndiq"
-msgstr "Import From Fyndiq"
+msgstr "Importera från Fyndiq"
 
 #: WC_Fyndiq.php:578
 #, php-format
 msgid "Products removed from Fyndiq."
 msgid_plural "%s products removed from Fyndiq."
-msgstr[0] "Products removed from Fyndiq."
-msgstr[1] "%s products removed from Fyndiq."
+msgstr[0] "Produkten togs bort från Fyndiq"
+msgstr[1] "%s produkter togs bort från Fyndiq."
 
 #: WC_Fyndiq.php:589
 #, php-format
 msgid "Products exported to Fyndiq."
 msgid_plural "%s products exported to Fyndiq."
-msgstr[0] "Products exported to Fyndiq."
-msgstr[1] "%s products exported to Fyndiq."
+msgstr[0] "Produkten exporterades till Fyndiq"
+msgstr[1] "%s produkter exporterades till Fyndiq."
 
 #: models/FmOrder.php:31 models/FmOrder.php:130
 #, php-format
 msgid "Product SKU ( %s ) not found."
-msgstr "Product SKU ( %s ) not found."
+msgstr "Produkt SKU:n ( %s ) hittades inte."
 
 #: models/FmOrder.php:78
 msgid "ERROR - Could not create order"
-msgstr "ERROR - Could not create order"
+msgstr "FEL - Kunde inte skapa order"
 
 #: models/FmOrder.php:114
 msgid "ERROR - product is downloadable."
-msgstr "ERROR - product is downloadable."
+msgstr "FEL - Produkten är nedladdningsbar."
