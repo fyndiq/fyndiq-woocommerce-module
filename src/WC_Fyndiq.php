@@ -290,8 +290,16 @@ EOS;
         $version = FmHelpers::get_woocommerce_version();
         $price = $this->getPrice($product->id, $product->price);
         $percentage = get_post_meta($product->id, '_fyndiq_price_percentage', true);
+
+        if ($product->is_downloadable()) {
+            $this->fmOutput->output(sprintf(
+                '<div class="options_group"><p>%s</p></div>',
+                __('Can\'t export this product to Fyndiq', 'fyndiq')
+            ));
+            return;
+        }
+
         if (version_compare($version, '2.2.11') > 0) {
-            if (!$product->is_downloadable()) {
                 $this->fmOutput->output('<div class="options_group"><p>' . __('Fyndiq Product Settings', 'fyndiq') . '</p>');
 
                 // Checkbox for exporting to fyndiq
@@ -331,16 +339,9 @@ EOS;
                     $price,
                     get_woocommerce_currency()
                 ));
-            } else {
-                $this->fmOutput->output(sprintf(
-                    '<div class="options_group"><p>%s</p></div>',
-                    __('Can\'t export this product to Fyndiq', 'fyndiq')
-                ));
-            }
         } else {
             // If the woocommerce is older or the same as 2.2.11 it needs to
             // use raw html becuase woocommerce_form_field doesn't exist
-            if (!$product->is_downloadable()) {
                 $this->fmOutput->output('<div class="options_group"><p>' . __('Fyndiq Product Settings', 'fyndiq') . '</p>');
 
                 $exported = (get_post_meta($product->id, '_fyndiq_export', true) == self::EXPORTED) ? ' checked' : '';
@@ -376,12 +377,6 @@ EOS;
                     $price,
                     get_woocommerce_currency()
                 ));
-            } else {
-                $this->fmOutput->output(sprintf(
-                    '<div class="options_group"><p>%s</p></div>',
-                    __('Can\'t export this product to Fyndiq', 'fyndiq')
-                ));
-            }
         }
     }
 
