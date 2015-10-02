@@ -298,10 +298,8 @@ EOS;
             ));
             return;
         }
-
+        $this->fmOutput->output('<div class="options_group"><p>' . __('Fyndiq Product Settings', 'fyndiq') . '</p>');
         if (version_compare($version, '2.2.11') > 0) {
-                $this->fmOutput->output('<div class="options_group"><p>' . __('Fyndiq Product Settings', 'fyndiq') . '</p>');
-
                 // Checkbox for exporting to fyndiq
                 $value = (get_post_meta($product->id, '_fyndiq_export', true) == self::EXPORTED) ? 1 : 0;
 
@@ -332,17 +330,9 @@ EOS;
                     ),
                     $percentage
                 );
-
-                $this->fmOutput->output(sprintf(
-                    '<p>%s %s %s</p></div>',
-                    __('Fyndiq Price with set Discount percentage: ', 'fyndiq'),
-                    $price,
-                    get_woocommerce_currency()
-                ));
         } else {
             // If the woocommerce is older or the same as 2.2.11 it needs to
             // use raw html becuase woocommerce_form_field doesn't exist
-                $this->fmOutput->output('<div class="options_group"><p>' . __('Fyndiq Product Settings', 'fyndiq') . '</p>');
 
                 $exported = (get_post_meta($product->id, '_fyndiq_export', true) == self::EXPORTED) ? ' checked' : '';
 
@@ -370,14 +360,14 @@ EOS;
                         'fyndiq'
                     )
                 ));
-
-                $this->fmOutput->output(sprintf(
-                    '<p>%s %s %s</p></div>',
-                    __('Fyndiq Price with set Discount percentage: ', 'fyndiq'),
-                    $price,
-                    get_woocommerce_currency()
-                ));
         }
+
+                        $this->fmOutput->output(sprintf(
+                            '<p>%s %s %s</p></div>',
+                            __('Fyndiq Price with set Discount percentage: ', 'fyndiq'),
+                            $price,
+                            get_woocommerce_currency()
+                        ));
     }
 
     public function fyndiq_product_save($post_id)
