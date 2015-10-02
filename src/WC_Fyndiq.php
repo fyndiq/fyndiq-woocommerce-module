@@ -345,6 +345,15 @@ EOS;
         $woocommerce_checkbox = $this->getExportState();
         $woocommerce_pricepercentage = $this->getPricePercentage();
         update_post_meta($post_id, '_fyndiq_export', $woocommerce_checkbox);
+
+
+        if ($woocommerce_checkbox == self::EXPORTED && !update_post_meta($post_id, '_fyndiq_status', FmProduct::STATUS_PENDING)) {
+            add_post_meta($post_id, '_fyndiq_status', FmProduct::STATUS_PENDING, true);
+        }
+        elseif($woocommerce_checkbox == self::NOT_EXPORTED && !update_post_meta($post_id, '_fyndiq_status', '')){
+            add_post_meta($post_id, '_fyndiq_status', '', true);
+        }
+
         update_post_meta($post_id, '_fyndiq_price_percentage', $woocommerce_pricepercentage);
     }
 
@@ -665,6 +674,9 @@ EOS;
     {
         if (!update_post_meta($post_id, '_fyndiq_export', self::NOT_EXPORTED)) {
             add_post_meta($post_id, '_fyndiq_export', self::NOT_EXPORTED, true);
+        };
+        if (!update_post_meta($post_id, '_fyndiq_status', '')) {
+            add_post_meta($post_id, '_fyndiq_status', '', true);
         };
     }
 
