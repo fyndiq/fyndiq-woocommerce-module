@@ -287,56 +287,95 @@ EOS;
     public function fyndiq_add_product_field()
     {
         $product = get_product($this->getProductId());
+        $version = FmHelpers::get_woocommerce_version();
+        $price = $this->getPrice($product->id, $product->price);
+        $percentage = get_post_meta($product->id, '_fyndiq_price_percentage', true);
+        if(version_compare($version, '2.2.11') > 0) {
+            if (!$product->is_downloadable()) {
+                $this->fmOutput->output('<div class="options_group"><p>' . __('Fyndiq Product Settings', 'fyndiq') . '</p>');
 
-        if (!$product->is_downloadable()) {
-            $this->fmOutput->output('<div class="options_group"><p>' . __('Fyndiq Product Settings', 'fyndiq') . '</p>');
+                // Checkbox for exporting to fyndiq
+                $value = (get_post_meta($product->id, '_fyndiq_export', true) == self::EXPORTED) ? 1 : 0;
 
-            // Checkbox for exporting to fyndiq
-            $value = (get_post_meta(get_the_ID(), '_fyndiq_export', true) == self::EXPORTED) ? 1 : 0;
-
-            woocommerce_form_field(
-                '_fyndiq_export',
-                array(
-                    'type' => 'checkbox',
-                    'class' => array('form-field', 'input-checkbox'),
-                    'label' => __('Export to Fyndiq', 'fyndiq'),
-                    'description' => __('mark this as true if you want to export to Fyndiq', 'fyndiq'),
-                    'required' => false,
-                ),
-                $value
-            );
-
-            //The price percentage for fyndiq for this specific product.
-            $percentage = get_post_meta(get_the_ID(), '_fyndiq_price_percentage', true);
-
-            woocommerce_form_field(
-                '_fyndiq_price_percentage',
-                array(
-                    'type' => 'text',
-                    'class' => array('form-field', 'short'),
-                    'label' => __('Fyndiq Discount Percentage', 'fyndiq'),
-                    'description' => __(
-                        'The percentage specific for this product, it will override the globel percentage for this product.',
-                        'fyndiq'
+                woocommerce_form_field(
+                    '_fyndiq_export',
+                    array(
+                        'type' => 'checkbox',
+                        'class' => array('form-field', 'input-checkbox'),
+                        'label' => __('Export to Fyndiq', 'fyndiq'),
+                        'description' => __('mark this as true if you want to export to Fyndiq', 'fyndiq'),
+                        'required' => false,
                     ),
-                    'required' => false,
-                ),
-                $percentage
-            );
+                    $value
+                );
 
-            $price = $this->getPrice($product->id, $product->price);
+                //The price percentage for fyndiq for this specific product.
+                woocommerce_form_field(
+                    '_fyndiq_price_percentage',
+                    array(
+                        'type' => 'text',
+                        'class' => array('form-field', 'short'),
+                        'label' => __('Fyndiq Discount Percentage', 'fyndiq'),
+                        'description' => __(
+                            'The percentage specific for this product, it will override the globel percentage for this product.',
+                            'fyndiq'
+                        ),
+                        'required' => false,
+                    ),
+                    $percentage
+                );
 
-            $this->fmOutput->output(sprintf(
-                '<p>%s%s %s</p></div>',
-                __('Fyndiq Price with set Discount percentage: ', 'fyndiq'),
-                $price,
-                get_woocommerce_currency()
-            ));
-        } else {
-            $this->fmOutput->output(sprintf(
-                '<div class="options_group"><p>%s</p></div>',
-                __('Can\'t export this product to Fyndiq', 'fyndiq')
-            ));
+                $this->fmOutput->output(sprintf(
+                    '<p>%s %s %s</p></div>',
+                    __('Fyndiq Price with set Discount percentage: ', 'fyndiq'),
+                    $price,
+                    get_woocommerce_currency()
+                ));
+            } else {
+                $this->fmOutput->output(sprintf(
+                    '<div class="options_group"><p>%s</p></div>',
+                    __('Can\'t export this product to Fyndiq', 'fyndiq')
+                ));
+            }
+        }
+        else {
+            // If the woocommerce is older or the same as 2.2.11 it needs to
+            // use raw html becuase woocommerce_form_field doesn't exist
+            if (!$product->is_downloadable()) {
+                $this->fmOutput->output('<div class="options_group"><p>' . __('Fyndiq Product Settings', 'fyndiq') . '</p>');
+
+                $exported = (get_post_meta($product->id, '_fyndiq_export', true) == self::EXPORTED) ? ' checked' : '';
+
+                // Checkbox for exporting to fyndiq
+                $this->fmOutput->output(sprintf('<p class="form-field" id="_fyndiq_export_field">
+                    <label for="_fyndiq_export"> %s</label>
+					<input type="checkbox" class="input-checkbox " name="_fyndiq_export" id="_fyndiq_export" value="1"%s>
+                    <span class="description">%s</span></p>',
+                    __('Export to Fyndiq', 'fyndiq'), $exported,__('mark this as true if you want to export to Fyndiq', 'fyndiq')));
+
+                //The price percentage for fyndiq for this specific product.
+                $this->fmOutput->output(sprintf('<p class="form-row form-row form-field short" id="_fyndiq_price_percentage_field">
+                <label for="_fyndiq_price_percentage" class="">%s</label>
+                <input type="text" class="short wc_input_price" name="_fyndiq_price_percentage" id="_fyndiq_price_percentage" placeholder="" value="%s">
+                <span class="description">%s</span></p>',
+                __('Fyndiq Discount Percentage', 'fyndiq'),$percentage, __(
+                    'The percentage specific for this product, it will override the globel percentage for this product.',
+                    'fyndiq'
+                )));
+
+                $this->fmOutput->output(sprintf(
+                    '<p>%s %s %s</p></div>',
+                    __('Fyndiq Price with set Discount percentage: ', 'fyndiq'),
+                    $price,
+                    get_woocommerce_currency()
+                ));
+            }
+            else {
+                $this->fmOutput->output(sprintf(
+                    '<div class="options_group"><p>%s</p></div>',
+                    __('Can\'t export this product to Fyndiq', 'fyndiq')
+                ));
+            }
         }
     }
 
