@@ -746,6 +746,16 @@ EOS;
             if (count($variations) > 0) {
                 $prices = array();
 
+                $attachment_ids = $product->get_gallery_attachment_ids();
+                $feat_image = wp_get_attachment_url(get_post_thumbnail_id($product->id));
+                if (!empty($feat_image)) {
+                    $this->productImages['product'][] = $feat_image;
+                }
+                foreach ($attachment_ids as $attachment_id) {
+                    $image_link = wp_get_attachment_url($attachment_id);
+                    $this->productImages['product'][] = $image_link;
+                }
+
                 foreach ($variations as $variation) {
                     $exportVariation = $this->getVariation($product, $variation);
                     $prices[] = $exportVariation['product-price'];
