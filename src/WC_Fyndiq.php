@@ -290,7 +290,7 @@ EOS;
         $version = FmHelpers::get_woocommerce_version();
         $price = $this->getPrice($product->id, $product->price);
         $percentage = get_post_meta($product->id, '_fyndiq_price_percentage', true);
-        if(version_compare($version, '2.2.11') > 0) {
+        if (version_compare($version, '2.2.11') > 0) {
             if (!$product->is_downloadable()) {
                 $this->fmOutput->output('<div class="options_group"><p>' . __('Fyndiq Product Settings', 'fyndiq') . '</p>');
 
@@ -337,8 +337,7 @@ EOS;
                     __('Can\'t export this product to Fyndiq', 'fyndiq')
                 ));
             }
-        }
-        else {
+        } else {
             // If the woocommerce is older or the same as 2.2.11 it needs to
             // use raw html becuase woocommerce_form_field doesn't exist
             if (!$product->is_downloadable()) {
@@ -347,21 +346,29 @@ EOS;
                 $exported = (get_post_meta($product->id, '_fyndiq_export', true) == self::EXPORTED) ? ' checked' : '';
 
                 // Checkbox for exporting to fyndiq
-                $this->fmOutput->output(sprintf('<p class="form-field" id="_fyndiq_export_field">
+                $this->fmOutput->output(sprintf(
+                    '<p class="form-field" id="_fyndiq_export_field">
                     <label for="_fyndiq_export"> %s</label>
 					<input type="checkbox" class="input-checkbox " name="_fyndiq_export" id="_fyndiq_export" value="1"%s>
                     <span class="description">%s</span></p>',
-                    __('Export to Fyndiq', 'fyndiq'), $exported,__('mark this as true if you want to export to Fyndiq', 'fyndiq')));
+                    __('Export to Fyndiq', 'fyndiq'),
+                    $exported,
+                    __('mark this as true if you want to export to Fyndiq', 'fyndiq')
+                ));
 
                 //The price percentage for fyndiq for this specific product.
-                $this->fmOutput->output(sprintf('<p class="form-row form-row form-field short" id="_fyndiq_price_percentage_field">
+                $this->fmOutput->output(sprintf(
+                    '<p class="form-row form-row form-field short" id="_fyndiq_price_percentage_field">
                 <label for="_fyndiq_price_percentage" class="">%s</label>
                 <input type="text" class="short wc_input_price" name="_fyndiq_price_percentage" id="_fyndiq_price_percentage" placeholder="" value="%s">
                 <span class="description">%s</span></p>',
-                __('Fyndiq Discount Percentage', 'fyndiq'),$percentage, __(
-                    'The percentage specific for this product, it will override the globel percentage for this product.',
-                    'fyndiq'
-                )));
+                    __('Fyndiq Discount Percentage', 'fyndiq'),
+                    $percentage,
+                    __(
+                        'The percentage specific for this product, it will override the globel percentage for this product.',
+                        'fyndiq'
+                    )
+                ));
 
                 $this->fmOutput->output(sprintf(
                     '<p>%s %s %s</p></div>',
@@ -369,8 +376,7 @@ EOS;
                     $price,
                     get_woocommerce_currency()
                 ));
-            }
-            else {
+            } else {
                 $this->fmOutput->output(sprintf(
                     '<div class="options_group"><p>%s</p></div>',
                     __('Can\'t export this product to Fyndiq', 'fyndiq')
