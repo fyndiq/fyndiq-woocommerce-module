@@ -379,8 +379,7 @@ EOS;
 
         if ($woocommerce_checkbox == self::EXPORTED && !update_post_meta($post_id, '_fyndiq_status', FmProduct::STATUS_PENDING)) {
             add_post_meta($post_id, '_fyndiq_status', FmProduct::STATUS_PENDING, true);
-        }
-        elseif($woocommerce_checkbox == self::NOT_EXPORTED && !update_post_meta($post_id, '_fyndiq_status', '')){
+        } elseif ($woocommerce_checkbox == self::NOT_EXPORTED && !update_post_meta($post_id, '_fyndiq_status', '')) {
             add_post_meta($post_id, '_fyndiq_status', '', true);
         }
 
@@ -1264,22 +1263,20 @@ EOS;
                 $filters['variation_is_active'] = $variation->variation_is_active();
                 $filters['display_price'] = $variation->get_display_price();
                 $filters['display_regular_price'] = $variation->get_display_price($variation->get_regular_price());
-            }
-            else {
-                $tax_display_mode      = get_option( 'woocommerce_tax_display_shop' );
-        		$display_price         = $tax_display_mode == 'incl' ? $variation->get_price_including_tax() : $variation->get_price_excluding_tax();
-        		$display_regular_price = $tax_display_mode == 'incl' ? $variation->get_price_including_tax( 1, $variation->get_regular_price() ) : $variation->get_price_excluding_tax( 1, $variation->get_regular_price() );
-        		$display_sale_price    = $tax_display_mode == 'incl' ? $variation->get_price_including_tax( 1, $variation->get_sale_price() ) : $variation->get_price_excluding_tax( 1, $variation->get_sale_price() );
+            } else {
+                $tax_display_mode      = get_option('woocommerce_tax_display_shop');
+                $display_price         = $tax_display_mode == 'incl' ? $variation->get_price_including_tax() : $variation->get_price_excluding_tax();
+                $display_regular_price = $tax_display_mode == 'incl' ? $variation->get_price_including_tax(1, $variation->get_regular_price()) : $variation->get_price_excluding_tax(1, $variation->get_regular_price());
+                $display_sale_price    = $tax_display_mode == 'incl' ? $variation->get_price_including_tax(1, $variation->get_sale_price()) : $variation->get_price_excluding_tax(1, $variation->get_sale_price());
 
                 $price = $display_price;
-                if(isset($display_sale_price)) {
+                if (isset($display_sale_price)) {
                     $price = $display_sale_price;
                 }
 
                 $filters['display_price'] = $price;
                 $filters['display_regular_price'] = $display_regular_price;
             }
-
 
             $available_variations[] = apply_filters('woocommerce_available_variation', $filters, $product, $variation);
         }
