@@ -379,8 +379,7 @@ EOS;
 
         if ($woocommerce_checkbox == self::EXPORTED && !update_post_meta($post_id, '_fyndiq_status', FmProduct::STATUS_PENDING)) {
             add_post_meta($post_id, '_fyndiq_status', FmProduct::STATUS_PENDING, true);
-        }
-        elseif($woocommerce_checkbox == self::NOT_EXPORTED && !update_post_meta($post_id, '_fyndiq_status', '')){
+        } elseif ($woocommerce_checkbox == self::NOT_EXPORTED && !update_post_meta($post_id, '_fyndiq_status', '')) {
             add_post_meta($post_id, '_fyndiq_status', '', true);
         }
 
@@ -787,6 +786,16 @@ EOS;
             $variations = $this->getAllVariations($product);
             if (count($variations) > 0) {
                 $prices = array();
+
+                $attachment_ids = $product->get_gallery_attachment_ids();
+                $feat_image = wp_get_attachment_url(get_post_thumbnail_id($product->id));
+                if (!empty($feat_image)) {
+                    $this->productImages['product'][] = $feat_image;
+                }
+                foreach ($attachment_ids as $attachment_id) {
+                    $image_link = wp_get_attachment_url($attachment_id);
+                    $this->productImages['product'][] = $image_link;
+                }
 
                 foreach ($variations as $variation) {
                     $exportVariation = $this->getVariation($product, $variation);
@@ -1226,31 +1235,50 @@ EOS;
                 $image = $image_link = $image_title = $image_alt = '';
             }
 
-            $available_variations[] = apply_filters('woocommerce_available_variation', array(
-            'variation_id'          => $child_id,
-            'variation_is_visible'  => $variation->variation_is_visible(),
-            'variation_is_active'   => $variation->variation_is_active(),
-            'is_purchasable'        => $variation->is_purchasable(),
-            'display_price'         => $variation->get_display_price(),
-            'display_regular_price' => $variation->get_display_price($variation->get_regular_price()),
-            'attributes'            => $variation_attributes,
-            'image_src'             => $image,
-            'image_link'            => $image_link,
-            'image_title'           => $image_title,
-            'image_alt'             => $image_alt,
-            'price_html'            => $variation->get_price() === "" || $product->get_variation_price('min') !== $product->get_variation_price('max') ? '<span class="price">' . $variation->get_price_html() . '</span>' : '',
-            'availability_html'     => $availability_html,
-            'sku'                   => $variation->get_sku(),
-            'weight'                => $variation->get_weight() . ' ' . esc_attr(get_option('woocommerce_weight_unit')),
-            'dimensions'            => $variation->get_dimensions(),
-            'min_qty'               => 1,
-            'max_qty'               => $variation->backorders_allowed() ? '' : $variation->get_stock_quantity(),
-            'backorders_allowed'    => $variation->backorders_allowed(),
-            'is_in_stock'           => $variation->is_in_stock(),
-            'is_downloadable'       => $variation->is_downloadable() ,
-            'is_virtual'            => $variation->is_virtual(),
-            'is_sold_individually'  => $variation->is_sold_individually() ? 'yes' : 'no',
-            ), $product, $variation);
+            $filters = array(
+                'variation_id'          => $child_id,
+                'variation_is_visible'  => $variation->variation_is_visible(),
+                'is_purchasable'        => $variation->is_purchasable(),
+                'attributes'            => $variation_attributes,
+                'image_src'             => $image,
+                'image_link'            => $image_link,
+                'image_title'           => $image_title,
+                'image_alt'             => $image_alt,
+                'price_html'            => $variation->get_price() === "" || $product->get_variation_price('min') !== $product->get_variation_price('max') ? '<span class="price">' . $variation->get_price_html() . '</span>' : '',
+                'availability_html'     => $availability_html,
+                'sku'                   => $variation->get_sku(),
+                'weight'                => $variation->get_weight() . ' ' . esc_attr(get_option('woocommerce_weight_unit')),
+                'dimensions'            => $variation->get_dimensions(),
+                'min_qty'               => 1,
+                'max_qty'               => $variation->backorders_allowed() ? '' : $variation->get_stock_quantity(),
+                'backorders_allowed'    => $variation->backorders_allowed(),
+                'is_in_stock'           => $variation->is_in_stock(),
+                'is_downloadable'       => $variation->is_downloadable() ,
+                'is_virtual'            => $variation->is_virtual(),
+                'is_sold_individually'  => $variation->is_sold_individually() ? 'yes' : 'no',
+            );
+
+            $version = FmHelpers::get_woocommerce_version();
+            if (version_compare($version, '2.2.11') > 0) {
+                $filters['variation_is_active'] = $variation->variation_is_active();
+                $filters['display_price'] = $variation->get_display_price();
+                $filters['display_regular_price'] = $variation->get_display_price($variation->get_regular_price());
+            } else {
+                $tax_display_mode      = get_option('woocommerce_tax_display_shop');
+                $display_price         = $tax_display_mode == 'incl' ? $variation->get_price_including_tax() : $variation->get_price_excluding_tax();
+                $display_regular_price = $tax_display_mode == 'incl' ? $variation->get_price_including_tax(1, $variation->get_regular_price()) : $variation->get_price_excluding_tax(1, $variation->get_regular_price());
+                $display_sale_price    = $tax_display_mode == 'incl' ? $variation->get_price_including_tax(1, $variation->get_sale_price()) : $variation->get_price_excluding_tax(1, $variation->get_sale_price());
+
+                $price = $display_price;
+                if (isset($display_sale_price)) {
+                    $price = $display_sale_price;
+                }
+
+                $filters['display_price'] = $price;
+                $filters['display_regular_price'] = $display_regular_price;
+            }
+
+            $available_variations[] = apply_filters('woocommerce_available_variation', $filters, $product, $variation);
         }
 
         FyndiqUtils::debug('$available_variations', $available_variations);
