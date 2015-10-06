@@ -107,7 +107,6 @@ class FmOrder
             // get product by item_id
             $product = $this->getProductBySku($order_row->sku);
 
-            $product_total = ($order_row->unit_price_amount*$order_row->quantity);
             if (isset($product)) {
                 // if downloadable
                 if ($product->is_downloadable()) {
@@ -119,15 +118,19 @@ class FmOrder
                     'taxdata' => array()
                   )
                 );
-                $args['totals']['subtotal'] = intval($order_row->unit_price_amount);
-                $args['totals']['total'] = intval($product_total);
-                $args['totals']['taxdata']['total']  = intval($product_total);
-                $args['totals']['taxdata']['subtotal'] = intval($order_row->unit_price_amount);
+
+                $product_total = ($order_row->unit_price_amount*$order_row->quantity);
+
+                if(wc_prices_include_tax()) {
+                    $product_total = ($order_row->unit_price_amount * $order_row->quantity)  / ((100+intval($order_row->vat_percent)) / 100);
+                }
+
+                $args['totals']['total'] = $product_total;
 
                 $wc_order->add_product($product, $order_row->quantity, $args);
                 $product->set_stock($order_row->quantity, 'subtract');
             } else {
-                wpdie(sprintf(__('Product SKU ( %s ) not found.', 'fyndiq'), $order_row->sku));
+                wp_die(sprintf(__('Product SKU ( %s ) not found.', 'fyndiq'), $order_row->sku));
             }
         }
         $wc_order->calculate_totals();
