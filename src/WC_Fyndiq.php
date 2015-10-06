@@ -949,7 +949,9 @@ EOS;
             $feedProduct['article-sku'] = strval($sku);
 
             $VariationImages = array();
-            $VariationImages[] = $variation['image_src'];
+            if(!empty($variation['image_src'])) {
+                $VariationImages[] = $variation['image_src'];
+            }
             $this->productImages['articles'][$sku] = $VariationImages;
 
             $feedProduct['article-quantity'] = intval(0);
