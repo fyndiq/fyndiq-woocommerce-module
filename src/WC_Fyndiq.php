@@ -948,13 +948,13 @@ EOS;
 
             $feedProduct['article-sku'] = strval($sku);
 
-            $VariationImages = array();
-            if(!empty($variation['image_src'])) {
-                $VariationImages[] = $variation['image_src'];
+            $variationImages = array();
+            if (!empty($variation['image_src'])) {
+                $variationImages[] = $variation['image_src'];
             }
-            $this->productImages['articles'][$sku] = $VariationImages;
+            $this->productImages['articles'][$sku] = $variationImages;
 
-            $feedProduct['article-quantity'] = intval(0);
+            $feedProduct['article-quantity'] = 0;
 
             if ($variation['is_purchasable'] && $variation['is_in_stock']) {
                 $stock = intval($variationModel->get_stock_quantity());
