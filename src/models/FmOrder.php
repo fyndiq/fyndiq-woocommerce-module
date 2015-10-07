@@ -119,7 +119,6 @@ class FmOrder
                   )
                 );
 
-
                 $product_total = ($order_row->unit_price_amount*$order_row->quantity);
 
                 if(wc_tax_enabled() && wc_prices_include_tax()) {
