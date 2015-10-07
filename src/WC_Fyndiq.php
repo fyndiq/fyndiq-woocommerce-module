@@ -857,6 +857,9 @@ EOS;
         $feedProduct['product-description'] = $product->post->post_content;
 
         $productPrice = $product->get_price();
+        if(wc_tax_enabled()) {
+            $productPrice = $product->get_price_including_tax();
+        }
         $price = $this->getPrice($product->id, $productPrice);
 
         $_tax = new WC_Tax(); //looking for appropriate vat for specific product
@@ -1263,8 +1266,13 @@ EOS;
             $version = FmHelpers::get_woocommerce_version();
             if (version_compare($version, '2.2.11') > 0) {
                 $filters['variation_is_active'] = $variation->variation_is_active();
-                $filters['display_price'] = $variation->get_display_price();
                 $filters['display_regular_price'] = $variation->get_display_price($variation->get_regular_price());
+
+                $filters['display_price'] = $variation->get_display_price();
+                if(wc_tax_enabled()) {
+                    $filters['display_price'] = $variation->get_price_including_tax();
+                }
+
             } else {
                 $tax_display_mode      = get_option('woocommerce_tax_display_shop');
                 $display_price         = $tax_display_mode == 'incl' ? $variation->get_price_including_tax() : $variation->get_price_excluding_tax();
