@@ -15,9 +15,6 @@ class WC_Fyndiq
         // called only after woocommerce has finished loading
         add_action('woocommerce_init', array(&$this, 'woocommerce_loaded'));
 
-        // called after all plug-ins have loaded
-        add_action('plugins_loaded', array(&$this, 'plugins_loaded'));
-
         $upload_dir = wp_upload_dir();
         $this->filepath = $upload_dir['basedir'] . '/fyndiq-feed.csv';
 
@@ -682,11 +679,6 @@ EOS;
             wp_redirect($sendback);
         }
         exit();
-    }
-
-    public function plugins_loaded()
-    {
-        // noop
     }
 
     private function perform_export($post_id)
