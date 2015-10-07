@@ -119,13 +119,10 @@ class FmOrder
                   )
                 );
 
-                $product_total = ($order_row->unit_price_amount*$order_row->quantity);
+                $product_total = ($order_row->unit_price_amount * $order_row->quantity)  / ((100+intval($order_row->vat_percent)) / 100);
 
-                if(wc_tax_enabled() && wc_prices_include_tax()) {
-                    $product_total = ($order_row->unit_price_amount * $order_row->quantity)  / ((100+intval($order_row->vat_percent)) / 100);
-                }
-                elseif(!wc_tax_enabled()) {
-                    $product_total = ($order_row->unit_price_amount * $order_row->quantity)  / ((100+intval($order_row->vat_percent)) / 100);
+                if(wc_tax_enabled() && !wc_prices_include_tax()) {
+                    $product_total = ($order_row->unit_price_amount*$order_row->quantity);
                 }
 
                 $args['totals']['total'] = $product_total;
