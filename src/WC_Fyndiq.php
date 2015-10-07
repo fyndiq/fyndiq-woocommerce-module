@@ -1159,7 +1159,7 @@ EOS;
 
     public function getPricePercentage()
     {
-        return $_POST['_fyndiq_price_percentage'];
+        return isset($_POST['_fyndiq_price_percentage']) ? $_POST['_fyndiq_price_percentage'] : '';
     }
 
     public function checkCurrency()
