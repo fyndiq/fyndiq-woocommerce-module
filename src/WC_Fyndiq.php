@@ -1264,8 +1264,9 @@ EOS;
             $version = FmHelpers::get_woocommerce_version();
             if (version_compare($version, '2.2.11') > 0) {
                 $filters['variation_is_active'] = $variation->variation_is_active();
-                $filters['display_price'] = $variation->get_display_price();
                 $filters['display_regular_price'] = $variation->get_display_price($variation->get_regular_price());
+
+                $filters['display_price'] = $variation->get_display_price();
                 if(wc_tax_enabled()) {
                     $filters['display_price'] = $variation->get_price_including_tax();
                 }
