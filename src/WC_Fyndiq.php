@@ -288,7 +288,7 @@ EOS;
         $price = $this->getPrice($product->id, $product->price);
         $percentage = get_post_meta($product->id, '_fyndiq_price_percentage', true);
 
-        if ($product->is_downloadable()) {
+        if ($product->is_downloadable() || $product->is_virtual() || $product->is_type( 'external' ) || $product->is_type( 'grouped' )) {
             $this->fmOutput->output(sprintf(
                 '<div class="options_group"><p>%s</p></div>',
                 __('Can\'t export this product to Fyndiq', 'fyndiq')
@@ -393,9 +393,10 @@ EOS;
 
     public function fyndiq_product_column_export($column, $postid)
     {
-        $product = new WC_Product($postid);
+        $product = get_product( $postid );
+
         if ($column == 'fyndiq_export') {
-            if (!$product->is_downloadable()) {
+            if (!$product->is_downloadable() && !$product->is_virtual() && !$product->is_type( 'external' ) && !$product->is_type( 'grouped' )) {
                 $exported = get_post_meta($postid, '_fyndiq_export', true);
                 if ($exported != '') {
                     if ($exported == self::EXPORTED) {
@@ -589,8 +590,8 @@ EOS;
         $post_ids = array();
         if ($exporting) {
             foreach ($this->getRequestPost() as $post_id) {
-                $product = new WC_Product($post_id);
-                if (!$product->is_downloadable()) {
+                $product = get_product($post_id);
+                if (!$product->is_downloadable() && !$product->is_virtual() && !$product->is_type( 'external' ) && !$product->is_type( 'grouped' )) {
                     $this->perform_export($post_id);
                     $post_ids[] = $post_id;
                     $changed++;
@@ -598,8 +599,8 @@ EOS;
             }
         } else {
             foreach ($this->getRequestPost() as $post_id) {
-                $product = new WC_Product($post_id);
-                if (!$product->is_downloadable()) {
+                $product = get_product($post_id);
+                if (!$product->is_downloadable() && !$product->is_virtual() && !$product->is_type( 'external' ) && !$product->is_type( 'grouped' )) {
                     $this->perform_no_export($post_id);
                     $post_ids[] = $post_id;
                     $changed++;
