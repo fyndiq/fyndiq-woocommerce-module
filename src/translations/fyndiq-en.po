@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Fyndiq Modules: Woocommerce\n"
 "POT-Creation-Date: 2015-09-30 10:40+0100\n"
-"PO-Revision-Date: 2015-09-30 11:48+0100\n"
+"PO-Revision-Date: 2015-10-08 14:18+0100\n"
 "Last-Translator: Håkan Nylén <confacted@gmail.com>\n"
 "Language-Team: English (http://www.transifex.com/fyndiq/fyndiq-modules-woocommerce/language/en/)\n"
 "MIME-Version: 1.0\n"
@@ -188,9 +188,13 @@ msgstr "Fyndiq only works in Sweden and Germany. change to correct country. Curr
 msgid "Fyndiq Credentials"
 msgstr "Fyndiq Credentials"
 
-#: WC_Fyndiq.php:410
-msgid "You need to set Fyndiq Credentials to make it work. Do it in Woocommerce Settings > Products > Fyndiq."
-msgstr "You need to set Fyndiq Credentials to make it work. Do it in Woocommerce Settings > Products > Fyndiq."
+#: WC_Fyndiq.php:456
+msgid "You need to set Fyndiq Credentials to make it work. Do it in "
+msgstr "You need to set Fyndiq Credentials to make it work. Do it in "
+
+#: WC_Fyndiq.php:458
+msgid "Woocommerce Settings > Products > Fyndiq"
+msgstr "Woocommerce Settings > Products > Fyndiq"
 
 #: WC_Fyndiq.php:438
 msgid "Fyndiq Order"

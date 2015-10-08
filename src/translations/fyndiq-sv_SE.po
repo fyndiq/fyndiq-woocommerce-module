@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Fyndiq Modules: Woocommerce\n"
 "POT-Creation-Date: 2015-09-30 10:40+0100\n"
-"PO-Revision-Date: 2015-09-30 09:51+0000\n"
+"PO-Revision-Date: 2015-10-08 14:22+0100\n"
 "Last-Translator: Håkan Nylén <confacted@gmail.com>\n"
 "Language-Team: Swedish (http://www.transifex.com/fyndiq/fyndiq-modules-woocommerce/language/sv/)\n"
 "MIME-Version: 1.0\n"
@@ -15,10 +15,11 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.7.6\n"
 "X-Poedit-Basepath: ..\n"
-"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;esc_attr_e;esc_attr_x:1,2c;"
+"esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
-"X-Poedit-SourceCharset: UTF-8\n"
 
 #: WC_Fyndiq.php:104 WC_Fyndiq.php:147
 msgid "Fyndiq"
@@ -73,8 +74,7 @@ msgid "Global Price Percentage"
 msgstr "Global Pris Procentenhet"
 
 #: WC_Fyndiq.php:195
-msgid ""
-"The percentage that will be removed from the price when sending to fyndiq."
+msgid "The percentage that will be removed from the price when sending to fyndiq."
 msgstr "Procenten som tas bort från priset när det skickas till Fyndiq."
 
 #: WC_Fyndiq.php:201
@@ -98,9 +98,7 @@ msgid "Minimum Quantity Limit"
 msgstr "Minsta kvantitet-gräns"
 
 #: WC_Fyndiq.php:231
-msgid ""
-"this quantity will be reserved by you and will be removed from the quantity "
-"that is sent to Fyndiq."
+msgid "this quantity will be reserved by you and will be removed from the quantity that is sent to Fyndiq."
 msgstr "Denna kvantitet blir reserverad av dig och tas bort från kvantitet som skickas till Fyndiq."
 
 #: WC_Fyndiq.php:237
@@ -128,9 +126,7 @@ msgid "Fyndiq Discount Percentage"
 msgstr "Fyndiq rabatt procentenhet."
 
 #: WC_Fyndiq.php:316
-msgid ""
-"The percentage specific for this product, it will override the globel "
-"percentage for this product."
+msgid "The percentage specific for this product, it will override the globel percentage for this product."
 msgstr "Denna procent är specific för denna produkt, den skriver över den globala procenten för denna produkt."
 
 #: WC_Fyndiq.php:328
@@ -178,9 +174,7 @@ msgid "Wrong Currency"
 msgstr "Fel Valuta"
 
 #: WC_Fyndiq.php:394
-msgid ""
-"Fyndiq only works in EUR and SEK. change to correct currency. Current "
-"Currency:"
+msgid "Fyndiq only works in EUR and SEK. change to correct currency. Current Currency:"
 msgstr "Fyndiq funkar bara i EUR och SEK. Ändra till korrekt valuta. Nuvarande valuta:"
 
 #: WC_Fyndiq.php:401
@@ -188,20 +182,20 @@ msgid "Wrong Country"
 msgstr "Fel Land"
 
 #: WC_Fyndiq.php:402
-msgid ""
-"Fyndiq only works in Sweden and Germany. change to correct country. Current "
-"Country:"
+msgid "Fyndiq only works in Sweden and Germany. change to correct country. Current Country:"
 msgstr "Fyndiq funkar bara i Sverige och i Tyskland. Ändra till korrekt land. Nuvarande Land:"
 
 #: WC_Fyndiq.php:409
 msgid "Fyndiq Credentials"
 msgstr "Fyndiq Konto-uppgifter"
 
-#: WC_Fyndiq.php:410
-msgid ""
-"You need to set Fyndiq Credentials to make it work. Do it in Woocommerce "
-"Settings > Products > Fyndiq."
-msgstr "Du måste ställa in Fyndiq konto-uppgifterna för att det ska funka. Det gör du i Woocommerce Inställningar > Produkter > Fyndiq"
+#: WC_Fyndiq.php:456
+msgid "You need to set Fyndiq Credentials to make it work. Do it in "
+msgstr "Du måste ställa in Fyndiq konto-uppgifterna för att det ska funka. Det gör du i "
+
+#: WC_Fyndiq.php:458
+msgid "Woocommerce Settings > Products > Fyndiq"
+msgstr "Woocommerce Inställningar > Produkter > Fyndiq"
 
 #: WC_Fyndiq.php:438
 msgid "Fyndiq Order"
