@@ -14,7 +14,7 @@ build: clean
 	rsync -a --exclude='.*' $(SRC_DIR) $(BUILD_DIR)
 	#cp $(DOCS)/* $(BUILD_DIR)/fyndiqmerchant
 	cp LICENSE $(BUILD_DIR)/src
-	sed -i'' 's/XXXXXX/$(COMMIT)/g' $(BUILD_DIR)/src/FmHelpers.php
+	sed -i'' -e 's/XXXXXX/$(COMMIT)/g' $(BUILD_DIR)/src/FmHelpers.php
 	cd $(BUILD_DIR)/src; zip -r -X ../fyndiq-woocommerce-module-v$(MODULE_VERSION)-$(COMMIT).zip .
 	rm -rf $(BUILD_DIR)/src
 
