@@ -7,7 +7,7 @@ BUILD_DIR = $(BASE)/build
 COVERAGE_DIR = $(BASE)/coverage
 BIN_DIR = $(BASE)/vendor/bin
 COMMIT = $(shell git rev-parse --short HEAD)
-MODULE_VERSION = $(shell cat src/woocommerce-fyndiq.php| perl -lne "print $& if /Version: \K([\d.]+)/")
+MODULE_VERSION = $(shell perl -nle 'print $$& if /Version: \K([\d.]+)/' src/woocommerce-fyndiq.php)
 WP_VERSION = latest
 
 build: clean
