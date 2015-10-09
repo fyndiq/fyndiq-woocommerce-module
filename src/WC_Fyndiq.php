@@ -13,7 +13,7 @@ class WC_Fyndiq
         //Load locale in init
         add_action('init', array(&$this, 'locale_load'));
         // called only after woocommerce has finished loading
-        add_action('woocommerce_init', array(&$this, 'woocommerce_loaded'));
+        add_action('init', array(&$this, 'woocommerce_loaded'), 250);
 
         $upload_dir = wp_upload_dir();
         $this->filepath = $upload_dir['basedir'] . '/fyndiq-feed.csv';
@@ -869,7 +869,8 @@ EOS;
         $feedProduct['product-market'] = WC()->countries->get_base_country();
         $feedProduct['product-currency'] = get_woocommerce_currency();
 
-        $terms = get_the_terms($product->id, 'product_cat');
+        $terms = wc_get_product_terms( $product->id, 'product_cat' );
+        FyndiqUtils::debug('$terms', $terms);
         if ($terms && !is_wp_error($terms)) {
             foreach ($terms as $term) {
                 $feedProduct['product-category-id'] = $term->term_id;
@@ -932,7 +933,8 @@ EOS;
             $feedProduct['product-market'] = WC()->countries->get_base_country();
             $feedProduct['product-currency'] = get_woocommerce_currency();
 
-            $terms = get_the_terms($product->id, 'product_cat');
+            $terms = wc_get_product_terms( $product->id, 'product_cat' );
+            FyndiqUtils::debug('$terms', $terms);
             if ($terms && !is_wp_error($terms)) {
                 foreach ($terms as $term) {
                     $feedProduct['product-category-id'] = $term->term_id;
