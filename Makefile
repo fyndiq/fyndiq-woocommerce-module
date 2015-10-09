@@ -15,8 +15,9 @@ build: clean
 	#cp $(DOCS)/* $(BUILD_DIR)/fyndiqmerchant
 	cp LICENSE $(BUILD_DIR)/src
 	sed -i'' -e 's/XXXXXX/$(COMMIT)/g' $(BUILD_DIR)/src/FmHelpers.php
-	cd $(BUILD_DIR)/src; zip -r -X ../fyndiq-woocommerce-module-v$(MODULE_VERSION)-$(COMMIT).zip .
-	rm -rf $(BUILD_DIR)/src
+	mv -f $(BUILD_DIR)/src $(BUILD_DIR)/woocommerce-fyndiq/
+	cd $(BUILD_DIR); zip -r -X fyndiq-woocommerce-module-v$(MODULE_VERSION)-$(COMMIT).zip .
+	rm -rf $(BUILD_DIR)/woocommerce-fyndiq
 
 clean:
 	rm -rf $(BUILD_DIR)/*
