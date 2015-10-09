@@ -876,21 +876,16 @@ EOS;
         $feedProduct['product-currency'] = get_woocommerce_currency();
 
         $terms = wc_get_product_terms( $product->id, 'product_cat' );
-
+        FyndiqUtils::debug('product $terms', $terms);
         if ($terms && !is_wp_error($terms)) {
-            if(empty($terms)) {
-                FyndiqUtils::debug('Product have no categories set');
-                return array();
-            }
             foreach ($terms as $term) {
-                FyndiqUtils::debug('product $terms', $terms);
                 $feedProduct['product-category-id'] = $term->term_id;
                 $feedProduct['product-category-name'] = $term->name;
                 break;
             }
         }
         else {
-            FyndiqUtils::debug('Product have no categories set');
+            FyndiqUtils::debug('Product have no categories set - skipped');
             return array();
         }
 
@@ -952,11 +947,6 @@ EOS;
             $terms = wc_get_product_terms( $product->id, 'product_cat' );
             FyndiqUtils::debug('$terms', $terms);
             if ($terms && !is_wp_error($terms)) {
-                FyndiqUtils::debug('$terms', $terms);
-                if(empty($terms)) {
-                    FyndiqUtils::debug('Variation have no categories set');
-                    return array();
-                }
                 foreach ($terms as $term) {
                     $feedProduct['product-category-id'] = $term->term_id;
                     $feedProduct['product-category-name'] = $term->name;
@@ -964,7 +954,7 @@ EOS;
                 }
             }
             else {
-                FyndiqUtils::debug('Variation have no categories set');
+                FyndiqUtils::debug('Variation have no categories set - skipped');
                 return array();
             }
             $sku = $variation['sku'];
