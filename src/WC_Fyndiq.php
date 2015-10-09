@@ -393,7 +393,7 @@ EOS;
 
     public function fyndiq_product_column_export($column, $postid)
     {
-        $product = get_product( $postid );
+        $product = get_product($postid);
 
         if ($column == 'fyndiq_export') {
             if ($this->isProductExportable($product)) {
@@ -799,9 +799,11 @@ EOS;
 
                 foreach ($variations as $variation) {
                     $exportVariation = $this->getVariation($product, $variation);
-                    $prices[] = $exportVariation['product-price'];
-                    FyndiqUtils::debug('$exportVariation', $exportVariation);
-                    $exportedArticles[] = $exportVariation;
+                    if (!empty($exportVariation)) {
+                        $prices[] = $exportVariation['product-price'];
+                        FyndiqUtils::debug('$exportVariation', $exportVariation);
+                        $exportedArticles[] = $exportVariation;
+                    }
                 }
 
                 $differentPrice = count(array_unique($prices)) > 1;
@@ -836,13 +838,15 @@ EOS;
                 }
             } else {
                 $exportProduct = $this->getProduct($product);
-                $images = $this->getImagesFromArray();
-                $exportProduct = array_merge($exportProduct, $images);
-                if (empty($exportProduct['article-sku'])) {
-                    FyndiqUtils::debug('EMPTY PRODUCT SKU');
+                if (!empty($exportProduct)) {
+                    $images = $this->getImagesFromArray();
+                    $exportProduct = array_merge($exportProduct, $images);
+                    if (empty($exportProduct['article-sku'])) {
+                        FyndiqUtils::debug('EMPTY PRODUCT SKU');
+                    }
+                    $feedWriter->addProduct($exportProduct);
+                    FyndiqUtils::debug('Product Validation Errors', $feedWriter->getLastProductErrors());
                 }
-                $feedWriter->addProduct($exportProduct);
-                FyndiqUtils::debug('Product Validation Errors', $feedWriter->getLastProductErrors());
             }
         }
         $feedWriter->write();
@@ -857,7 +861,7 @@ EOS;
         $feedProduct['product-description'] = $product->post->post_content;
 
         $productPrice = $product->get_price();
-        if(wc_tax_enabled()) {
+        if (wc_tax_enabled()) {
             $productPrice = $product->get_price_including_tax();
         }
         $price = $this->getPrice($product->id, $productPrice);
@@ -876,14 +880,17 @@ EOS;
         $feedProduct['product-market'] = WC()->countries->get_base_country();
         $feedProduct['product-currency'] = get_woocommerce_currency();
 
-        $terms = wc_get_product_terms( $product->id, 'product_cat' );
-        FyndiqUtils::debug('$terms', $terms);
+        $terms = wc_get_product_terms($product->id, 'product_cat');
+        FyndiqUtils::debug('product $terms', $terms);
         if ($terms && !is_wp_error($terms)) {
             foreach ($terms as $term) {
                 $feedProduct['product-category-id'] = $term->term_id;
                 $feedProduct['product-category-name'] = $term->name;
                 break;
             }
+        } else {
+            FyndiqUtils::debug('Product have no categories set - skipped');
+            return array();
         }
 
         $attachment_ids = $product->get_gallery_attachment_ids();
@@ -914,6 +921,7 @@ EOS;
 
         $feedProduct['article-name'] = $product->post->post_title;
 
+        FyndiqUtils::debug('product without images', $feedProduct);
         return $feedProduct;
     }
 
@@ -940,7 +948,7 @@ EOS;
             $feedProduct['product-market'] = WC()->countries->get_base_country();
             $feedProduct['product-currency'] = get_woocommerce_currency();
 
-            $terms = wc_get_product_terms( $product->id, 'product_cat' );
+            $terms = wc_get_product_terms($product->id, 'product_cat');
             FyndiqUtils::debug('$terms', $terms);
             if ($terms && !is_wp_error($terms)) {
                 foreach ($terms as $term) {
@@ -948,6 +956,9 @@ EOS;
                     $feedProduct['product-category-name'] = $term->name;
                     break;
                 }
+            } else {
+                FyndiqUtils::debug('Variation have no categories set - skipped');
+                return array();
             }
             $sku = $variation['sku'];
 
@@ -989,7 +1000,7 @@ EOS;
                 $feedProduct['article-name'] = implode(', ', $tags);
             }
 
-
+            FyndiqUtils::debug('variation without images', $feedProduct);
 
             return $feedProduct;
         }
@@ -1212,7 +1223,7 @@ EOS;
 
     private function isProductExportable($product)
     {
-        return (!$product->is_downloadable() && !$product->is_virtual() && !$product->is_type( 'external' ) && !$product->is_type( 'grouped' ));
+        return (!$product->is_downloadable() && !$product->is_virtual() && !$product->is_type('external') && !$product->is_type('grouped'));
     }
 
     private function getAllVariations($product)
@@ -1272,7 +1283,7 @@ EOS;
                 $filters['display_regular_price'] = $variation->get_display_price($variation->get_regular_price());
 
                 $filters['display_price'] = $variation->get_display_price();
-                if(wc_tax_enabled()) {
+                if (wc_tax_enabled()) {
                     $filters['display_price'] = $variation->get_price_including_tax();
                 }
 
