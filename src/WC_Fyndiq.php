@@ -19,10 +19,6 @@ class WC_Fyndiq
         $this->filepath = $upload_dir['basedir'] . '/fyndiq-feed.csv';
 
         $this->fmOutput = $fmOutput;
-
-        // indicates we are running the admin
-        if (!is_admin()) {
-        }
     }
 
     public function locale_load()
