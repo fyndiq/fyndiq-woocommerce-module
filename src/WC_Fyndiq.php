@@ -10,18 +10,15 @@ class WC_Fyndiq
 
     public function __construct($fmOutput)
     {
-        if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) )
-        {
-            //Load locale in init
-            add_action('init', array(&$this, 'locale_load'));
-            // called only after woocommerce has finished loading
-            add_action('init', array(&$this, 'woocommerce_loaded'), 250);
+        //Load locale in init
+        add_action('init', array(&$this, 'locale_load'));
+        // called only after woocommerce has finished loading
+        add_action('init', array(&$this, 'woocommerce_loaded'), 250);
 
-            $upload_dir = wp_upload_dir();
-            $this->filepath = $upload_dir['basedir'] . '/fyndiq-feed.csv';
+        $upload_dir = wp_upload_dir();
+        $this->filepath = $upload_dir['basedir'] . '/fyndiq-feed.csv';
 
-            $this->fmOutput = $fmOutput;
-        }
+        $this->fmOutput = $fmOutput;
     }
 
     public function locale_load()
