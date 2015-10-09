@@ -794,9 +794,11 @@ EOS;
 
                 foreach ($variations as $variation) {
                     $exportVariation = $this->getVariation($product, $variation);
-                    $prices[] = $exportVariation['product-price'];
-                    FyndiqUtils::debug('$exportVariation', $exportVariation);
-                    $exportedArticles[] = $exportVariation;
+                    if(!empty($exportVariation)) {
+                        $prices[] = $exportVariation['product-price'];
+                        FyndiqUtils::debug('$exportVariation', $exportVariation);
+                        $exportedArticles[] = $exportVariation;
+                    }
                 }
 
                 $differentPrice = count(array_unique($prices)) > 1;
@@ -831,13 +833,15 @@ EOS;
                 }
             } else {
                 $exportProduct = $this->getProduct($product);
-                $images = $this->getImagesFromArray();
-                $exportProduct = array_merge($exportProduct, $images);
-                if (empty($exportProduct['article-sku'])) {
-                    FyndiqUtils::debug('EMPTY PRODUCT SKU');
+                if(!empty($exportProduct)) {
+                    $images = $this->getImagesFromArray();
+                    $exportProduct = array_merge($exportProduct, $images);
+                    if (empty($exportProduct['article-sku'])) {
+                        FyndiqUtils::debug('EMPTY PRODUCT SKU');
+                    }
+                    $feedWriter->addProduct($exportProduct);
+                    FyndiqUtils::debug('Product Validation Errors', $feedWriter->getLastProductErrors());
                 }
-                $feedWriter->addProduct($exportProduct);
-                FyndiqUtils::debug('Product Validation Errors', $feedWriter->getLastProductErrors());
             }
         }
         $feedWriter->write();
@@ -872,13 +876,22 @@ EOS;
         $feedProduct['product-currency'] = get_woocommerce_currency();
 
         $terms = wc_get_product_terms( $product->id, 'product_cat' );
-        FyndiqUtils::debug('$terms', $terms);
+
         if ($terms && !is_wp_error($terms)) {
+            if(empty($terms)) {
+                FyndiqUtils::debug('Product have no categories set');
+                return array();
+            }
             foreach ($terms as $term) {
+                FyndiqUtils::debug('product $terms', $terms);
                 $feedProduct['product-category-id'] = $term->term_id;
                 $feedProduct['product-category-name'] = $term->name;
                 break;
             }
+        }
+        else {
+            FyndiqUtils::debug('Product have no categories set');
+            return array();
         }
 
         $attachment_ids = $product->get_gallery_attachment_ids();
@@ -909,6 +922,7 @@ EOS;
 
         $feedProduct['article-name'] = $product->post->post_title;
 
+        FyndiqUtils::debug('product without images', $feedProduct);
         return $feedProduct;
     }
 
@@ -938,11 +952,20 @@ EOS;
             $terms = wc_get_product_terms( $product->id, 'product_cat' );
             FyndiqUtils::debug('$terms', $terms);
             if ($terms && !is_wp_error($terms)) {
+                FyndiqUtils::debug('$terms', $terms);
+                if(empty($terms)) {
+                    FyndiqUtils::debug('Variation have no categories set');
+                    return array();
+                }
                 foreach ($terms as $term) {
                     $feedProduct['product-category-id'] = $term->term_id;
                     $feedProduct['product-category-name'] = $term->name;
                     break;
                 }
+            }
+            else {
+                FyndiqUtils::debug('Variation have no categories set');
+                return array();
             }
             $sku = $variation['sku'];
 
@@ -984,7 +1007,7 @@ EOS;
                 $feedProduct['article-name'] = implode(', ', $tags);
             }
 
-
+            FyndiqUtils::debug('variation without images', $feedProduct);
 
             return $feedProduct;
         }
