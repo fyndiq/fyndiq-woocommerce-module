@@ -372,13 +372,13 @@ EOS;
 
         if ($woocommerce_checkbox == self::EXPORTED && !update_post_meta($post_id, '_fyndiq_status', FmProduct::STATUS_PENDING)) {
             add_post_meta($post_id, '_fyndiq_status', FmProduct::STATUS_PENDING, true);
-            if(empty($woocommerce_pricepercentage)) {
+            if (empty($woocommerce_pricepercentage)) {
                 update_post_meta($post_id, '_fyndiq_price_percentage', get_option('wcfyndiq_price_percentage'));
             }
         } elseif ($woocommerce_checkbox == self::NOT_EXPORTED && !update_post_meta($post_id, '_fyndiq_status', '')) {
             add_post_meta($post_id, '_fyndiq_status', '', true);
         }
-        if(!empty($woocommerce_pricepercentage)) {
+        if (!empty($woocommerce_pricepercentage)) {
             update_post_meta($post_id, '_fyndiq_price_percentage', $woocommerce_pricepercentage);
         }
     }
@@ -694,7 +694,7 @@ EOS;
             add_post_meta($post_id, '_fyndiq_status', FmProduct::STATUS_PENDING, true);
         };
         $percentage = get_post_meta($post_id, '_fyndiq_price_percentage', true);
-        if(empty($percentage)) {
+        if (empty($percentage)) {
             update_post_meta($post_id, '_fyndiq_price_percentage', get_option('wcfyndiq_price_percentage'));
         }
     }
