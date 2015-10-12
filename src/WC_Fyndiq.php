@@ -861,10 +861,7 @@ EOS;
         $feedProduct['product-description'] = $product->post->post_content;
 
         $productPrice = $product->get_price();
-        if (function_exists('wc_tax_enabled') && wc_tax_enabled()) {
-            $productPrice = $product->get_price_including_tax();
-        }
-        else if(!function_exists('wc_tax_enabled') && FmHelpers::fyndiq_wc_tax_enabled()) {
+        if ((function_exists('wc_tax_enabled') && wc_tax_enabled()) || (!function_exists('wc_tax_enabled') && FmHelpers::fyndiq_wc_tax_enabled())) {
             $productPrice = $product->get_price_including_tax();
         }
         $price = $this->getPrice($product->id, $productPrice);
