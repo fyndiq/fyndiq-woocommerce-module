@@ -864,7 +864,7 @@ EOS;
         if (function_exists('wc_tax_enabled') && wc_tax_enabled()) {
             $productPrice = $product->get_price_including_tax();
         }
-        else if(!function_exists('wc_tax_enabled') && $this->fyndiq_wc_tax_enabled()) {
+        else if(!function_exists('wc_tax_enabled') && FmHelpers::fyndiq_wc_tax_enabled()) {
             $productPrice = $product->get_price_including_tax();
         }
         $price = $this->getPrice($product->id, $productPrice);
@@ -1312,8 +1312,4 @@ EOS;
 
         return $available_variations;
     }
-
-    private function fyndiq_wc_tax_enabled() {
-		return apply_filters( 'wc_tax_enabled', get_option( 'woocommerce_calc_taxes' ) === 'yes' );
-	}
 }

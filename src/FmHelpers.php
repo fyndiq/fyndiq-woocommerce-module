@@ -98,4 +98,13 @@ class FmHelpers
             self::COMMIT
         );
     }
+
+
+    static function fyndiq_wc_tax_enabled() {
+    	return apply_filters( 'wc_tax_enabled', get_option( 'woocommerce_calc_taxes' ) === 'yes' );
+    }
+
+    static function fyndiq_wc_prices_include_tax() {
+        return self::fyndiq_wc_tax_enabled() && get_option( 'woocommerce_prices_include_tax' ) === 'yes';
+    }
 }
