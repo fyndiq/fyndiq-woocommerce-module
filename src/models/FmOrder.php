@@ -121,7 +121,10 @@ class FmOrder
 
                 $product_total = ($order_row->unit_price_amount * $order_row->quantity)  / ((100+intval($order_row->vat_percent)) / 100);
 
-                if(wc_tax_enabled() && !wc_prices_include_tax()) {
+                if (function_exists('wc_tax_enabled') && wc_tax_enabled() && !wc_prices_include_tax()) {
+                    $product_total = ($order_row->unit_price_amount*$order_row->quantity);
+                }
+                else if(!function_exists('wc_tax_enabled') && $this->fyndiq_wc_tax_enabled() && !$this->fyndiq_wc_prices_include_tax()) {
                     $product_total = ($order_row->unit_price_amount*$order_row->quantity);
                 }
 
@@ -148,4 +151,12 @@ class FmOrder
 
         return null;
     }
+
+    private function fyndiq_wc_tax_enabled() {
+		return apply_filters( 'wc_tax_enabled', get_option( 'woocommerce_calc_taxes' ) === 'yes' );
+	}
+
+    private function fyndiq_wc_prices_include_tax() {
+		return $this->fyndiq_wc_tax_enabled() && get_option( 'woocommerce_prices_include_tax' ) === 'yes';
+	}
 }
