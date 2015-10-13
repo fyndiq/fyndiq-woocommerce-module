@@ -46,7 +46,7 @@ class FmProductFetch extends FyndiqPaginatedFetch
             $status = FmProduct::STATUS_FOR_SALE;
             if($statusRow->for_sale == 'NOT_FOR_SALE')
             {
-                $status = FmProduct::PENDING;
+                $status = FmProduct::STATUS_PENDING;
             }
 
             $result &= $this->fmProduct->updateStatus($statusRow->product_id, $status);
