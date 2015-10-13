@@ -863,8 +863,10 @@ EOS;
         $feedProduct['product-description'] = $product->post->post_content;
 
         $productPrice = $product->get_price();
+        $regularPrice = $product->get_regular_price();
         if ((function_exists('wc_tax_enabled') && wc_tax_enabled()) || (!function_exists('wc_tax_enabled') && FmHelpers::fyndiq_wc_tax_enabled())) {
             $productPrice = $product->get_price_including_tax();
+            $regularPrice = $product->get_price_including_tax(1, $regularPrice);
         }
         $price = $this->getPrice($product->id, $productPrice);
 
@@ -878,7 +880,7 @@ EOS;
 
         $feedProduct['product-price'] = FyndiqUtils::formatPrice($price);
         $feedProduct['product-vat-percent'] = !empty($rates['rate']) ? $rates['rate'] : 0;
-        $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($productPrice);
+        $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($regularPrice);
         $feedProduct['product-market'] = WC()->countries->get_base_country();
         $feedProduct['product-currency'] = get_woocommerce_currency();
 
