@@ -4,7 +4,7 @@ require_once('include/api/fyndiqAPI.php');
 class FmHelpers
 {
 
-    const COMMIT = 'xxxxx';
+    const COMMIT = 'XXXXXX';
 
     public static function apiConnectionExists()
     {
