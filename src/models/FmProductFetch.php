@@ -43,7 +43,13 @@ class FmProductFetch extends FyndiqPaginatedFetch
     {
         $result = true;
         foreach ($data as $statusRow) {
-            $result &= $this->fmProduct->updateStatus($statusRow->product_id, $statusRow->for_sale);
+            $status = FmProduct::STATUS_FOR_SALE;
+            if($statusRow->for_sale == 'NOT_FOR_SALE')
+            {
+                $status = FmProduct::PENDING;
+            }
+
+            $result &= $this->fmProduct->updateStatus($statusRow->product_id, $status);
         }
         return $result;
     }
