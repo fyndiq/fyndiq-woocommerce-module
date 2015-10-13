@@ -864,7 +864,7 @@ EOS;
         $regularPrice = $product->get_regular_price();
         if ((function_exists('wc_tax_enabled') && wc_tax_enabled()) || (!function_exists('wc_tax_enabled') && FmHelpers::fyndiq_wc_tax_enabled())) {
             $productPrice = $product->get_price_including_tax();
-            $regularPrice = $product->get_price_including_tax(1,$regularPrice);
+            $regularPrice = $product->get_price_including_tax(1, $regularPrice);
         }
         $price = $this->getPrice($product->id, $productPrice);
 
