@@ -591,26 +591,28 @@ EOS;
 
         $changed = 0;
         $post_ids = array();
-        if ($exporting) {
-            foreach ($this->getRequestPost() as $post_id) {
-                $product = get_product($post_id);
-                if ($this->isProductExportable($product)) {
-                    $this->perform_export($post_id);
-                    $post_ids[] = $post_id;
-                    $changed++;
+        $posts = $this->getRequestPost();
+        if(!is_null($posts)) {
+            if ($exporting) {
+                foreach ($posts as $post_id) {
+                    $product = get_product($post_id);
+                    if ($this->isProductExportable($product)) {
+                        $this->perform_export($post_id);
+                        $post_ids[] = $post_id;
+                        $changed++;
+                    }
                 }
-            }
-        } else {
-            foreach ($this->getRequestPost() as $post_id) {
-                $product = get_product($post_id);
-                if ($this->isProductExportable($product)) {
-                    $this->perform_no_export($post_id);
-                    $post_ids[] = $post_id;
-                    $changed++;
+            } else {
+                foreach ($posts as $post_id) {
+                    $product = get_product($post_id);
+                    if ($this->isProductExportable($product)) {
+                        $this->perform_no_export($post_id);
+                        $post_ids[] = $post_id;
+                        $changed++;
+                    }
                 }
             }
         }
-
         return $this->bulkRedirect($report_action, $changed, $post_ids);
     }
 
@@ -1154,7 +1156,7 @@ EOS;
 
     public function getRequestPost()
     {
-        return $_REQUEST['post'];
+        return isset($_REQUEST['post']) ? $_REQUEST['post'] : null;
     }
 
     public function returnAndDie($return)
