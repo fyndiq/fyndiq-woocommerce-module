@@ -374,24 +374,46 @@ EOS;
             $postTitleLength = strlen($_POST['post_title']);
             if ($postTitleLength < FyndiqFeedWriter::$minLength[FyndiqFeedWriter::PRODUCT_TITLE] ||
             $postTitleLength > FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::PRODUCT_TITLE]) {
-                $this->add_fyndiq_notice(sprintf(__('Title needs to be between %s and %s in length, now it is: %s', 'fyndiq'), FyndiqFeedWriter::$minLength[FyndiqFeedWriter::PRODUCT_TITLE], FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::PRODUCT_TITLE],$postTitleLength), 'error');
+                $this->add_fyndiq_notice(
+                sprintf(
+                    __('Title needs to be between %s and %s in length, now it is: %s', 'fyndiq'), 
+                    FyndiqFeedWriter::$minLength[FyndiqFeedWriter::PRODUCT_TITLE],
+                    FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::PRODUCT_TITLE],
+                    $postTitleLength),
+                'error');
             }
 
             $postDescriptionLength = strlen($_POST['content']);
             if ($postDescriptionLength < FyndiqFeedWriter::$minLength[FyndiqFeedWriter::PRODUCT_DESCRIPTION] ||
             $postDescriptionLength > FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::PRODUCT_DESCRIPTION]) {
-                $this->add_fyndiq_notice(sprintf(__('Description needs to be between %s and %s in length, now it is: %s', 'fyndiq'), FyndiqFeedWriter::$minLength[FyndiqFeedWriter::PRODUCT_DESCRIPTION], FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::PRODUCT_DESCRIPTION], $postDescriptionLength), 'error');
+                $this->add_fyndiq_notice(
+                sprintf(
+                    __('Description needs to be between %s and %s in length, now it is: %s', 'fyndiq'),
+                    FyndiqFeedWriter::$minLength[FyndiqFeedWriter::PRODUCT_DESCRIPTION],
+                    FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::PRODUCT_DESCRIPTION],
+                    $postDescriptionLength),
+                'error');
             }
 
             $postSKULength = strlen($_POST['_sku']);
             if ($postSKULength < FyndiqFeedWriter::$minLength[FyndiqFeedWriter::ARTICLE_SKU] ||
             $postSKULength > FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::ARTICLE_SKU]) {
-                $this->add_fyndiq_notice(sprintf(__('SKU needs to be between %s and %s in length, now it is: %s', 'fyndiq'), FyndiqFeedWriter::$minLength[FyndiqFeedWriter::ARTICLE_SKU], FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::ARTICLE_SKU], $postSKULength), 'error');
+                $this->add_fyndiq_notice(
+                sprintf(
+                    __('SKU needs to be between %s and %s in length, now it is: %s', 'fyndiq'),
+                    FyndiqFeedWriter::$minLength[FyndiqFeedWriter::ARTICLE_SKU],
+                    FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::ARTICLE_SKU],
+                    $postSKULength),
+                'error');
             }
 
             $postRegularPrice = intval($_POST['_regular_price']);
             if ($postRegularPrice <= 0) {
-                $this->add_fyndiq_notice(sprintf(__('Regular Price needs to be set above 0, now it is: %s', 'fyndiq'), $postRegularPrice), 'error');
+                $this->add_fyndiq_notice(
+                sprintf(
+                    __('Regular Price needs to be set above 0, now it is: %s', 'fyndiq'),
+                    $postRegularPrice),
+                'error');
             }
         }
     }
