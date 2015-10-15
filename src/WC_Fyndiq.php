@@ -369,7 +369,7 @@ EOS;
     */
     public function fyndiq_product_validate()
     {
-        if($this->getExportState() == self::EXPORTED) {
+        if ($this->getExportState() == self::EXPORTED) {
             $postTitleLength = strlen($_POST['post_title']);
             if ($postTitleLength < 5 || $postTitleLength > 64) {
                 $this->add_fyndiq_notice(sprintf(__('Title needs to be between 5 and 64 in length, now it is: %s', 'fyndiq'), $postTitleLength), 'error');
@@ -487,22 +487,22 @@ EOS;
                 __('Woocommerce Settings > Products > Fyndiq', 'fyndiq')
             );
         }
-        if(isset($_SESSION['fyndiq_notices'])) {
+        if (isset($_SESSION['fyndiq_notices'])) {
             $notices = $_SESSION['fyndiq_notices'];
-                foreach (array( 'update', 'error' ) as $type) {
-                    if (count($notices[ $type ])) {
-                        $class = 'update' == $type ? 'updated' : 'error';
-                        echo '<div class="fn_message '.$class.'">';
-                        echo '<strong>'.__('Fyndiq Validations', 'fyndiq').'</strong>';
-                        echo '<ul>';
-                        foreach ($notices[ $type ] as $notice) :
-                            echo '<li>'.wp_kses($notice, wp_kses_allowed_html('post')).'</li>';
-                        endforeach;
-                        echo '</ul>';
-                        echo '<p>'.__('The product will not be exported to Fyndiq until these validations are fixed.', 'fyndiq') . '</p>';
-                        echo '</div>';
-                    }
+            foreach (array( 'update', 'error' ) as $type) {
+                if (count($notices[ $type ])) {
+                    $class = 'update' == $type ? 'updated' : 'error';
+                    echo '<div class="fn_message '.$class.'">';
+                    echo '<strong>'.__('Fyndiq Validations', 'fyndiq').'</strong>';
+                    echo '<ul>';
+                    foreach ($notices[ $type ] as $notice) :
+                        echo '<li>'.wp_kses($notice, wp_kses_allowed_html('post')).'</li>';
+                    endforeach;
+                    echo '</ul>';
+                    echo '<p>'.__('The product will not be exported to Fyndiq until these validations are fixed.', 'fyndiq') . '</p>';
+                    echo '</div>';
                 }
+            }
             unset($_SESSION['fyndiq_notices']);
         }
     }
@@ -1365,11 +1365,9 @@ EOS;
 
     function add_fyndiq_notice($message, $type = 'update')
     {
-        if(isset($_SESSION['fyndiq_notices']))
-        {
+        if (isset($_SESSION['fyndiq_notices'])) {
             $notices = $_SESSION['fyndiq_notices'];
-        }
-        else {
+        } else {
             $notices = array( 'update' => array(), 'error' => array() );
         }
 
