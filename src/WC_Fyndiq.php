@@ -1369,10 +1369,9 @@ EOS;
 
     function add_fyndiq_notice($message, $type = 'update')
     {
+        $notices = array( 'update' => array(), 'error' => array() );
         if (isset($_SESSION[self::NOTICES])) {
             $notices = $_SESSION[self::NOTICES];
-        } else {
-            $notices = array( 'update' => array(), 'error' => array() );
         }
 
         $notices[$type][] = $message;
