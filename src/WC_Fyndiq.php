@@ -372,18 +372,18 @@ EOS;
     {
         if ($this->getExportState() == self::EXPORTED) {
             $postTitleLength = strlen($_POST['post_title']);
-            if ($postTitleLength < 5 || $postTitleLength > 64) {
-                $this->add_fyndiq_notice(sprintf(__('Title needs to be between 5 and 64 in length, now it is: %s', 'fyndiq'), $postTitleLength), 'error');
+            if ($postTitleLength < FyndiqFeedWriter::$minLength[FyndiqFeedWriter::PRODUCT_TITLE] || $postTitleLength > FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::PRODUCT_TITLE]) {
+                $this->add_fyndiq_notice(sprintf(__('Title needs to be between %s and %s in length, now it is: %s', 'fyndiq'), FyndiqFeedWriter::$minLength[FyndiqFeedWriter::PRODUCT_TITLE], FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::PRODUCT_TITLE],$postTitleLength), 'error');
             }
 
             $postDescriptionLength = strlen($_POST['content']);
-            if ($postDescriptionLength < 10 || $postDescriptionLength > 4096) {
-                $this->add_fyndiq_notice(sprintf(__('Description needs to be between 10 and 4096 in length, now it is: %s', 'fyndiq'), $postDescriptionLength), 'error');
+            if ($postDescriptionLength < FyndiqFeedWriter::$minLength[FyndiqFeedWriter::PRODUCT_DESCRIPTION] || $postDescriptionLength > FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::PRODUCT_DESCRIPTION]) {
+                $this->add_fyndiq_notice(sprintf(__('Description needs to be between %s and %s in length, now it is: %s', 'fyndiq'), FyndiqFeedWriter::$minLength[FyndiqFeedWriter::PRODUCT_DESCRIPTION], FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::PRODUCT_DESCRIPTION], $postDescriptionLength), 'error');
             }
 
             $postSKULength = strlen($_POST['_sku']);
-            if ($postSKULength < 1 || $postSKULength > 32) {
-                $this->add_fyndiq_notice(sprintf(__('SKU needs to be between 1 and 32 in length, now it is: %s', 'fyndiq'), $postSKULength), 'error');
+            if ($postSKULength < FyndiqFeedWriter::$minLength[FyndiqFeedWriter::ARTICLE_SKU] || $postSKULength > FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::ARTICLE_SKU]) {
+                $this->add_fyndiq_notice(sprintf(__('SKU needs to be between %s and %s in length, now it is: %s', 'fyndiq'), FyndiqFeedWriter::$minLength[FyndiqFeedWriter::ARTICLE_SKU], FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::ARTICLE_SKU], $postSKULength), 'error');
             }
 
             $postRegularPrice = intval($_POST['_regular_price']);
