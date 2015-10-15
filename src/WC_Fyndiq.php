@@ -524,7 +524,7 @@ EOS;
         if (isset($_SESSION[self::NOTICES])) {
             $notices = $_SESSION[self::NOTICES];
             foreach ($notices as $type => $noticegroup) {
-                $class = 'update' == $type ? 'updated' : 'error';
+                $class = 'update' === $type ? 'updated' : $type;
                 echo '<div class="fn_message '.$class.'">';
                 echo '<strong>'.__('Fyndiq Validations', 'fyndiq').'</strong>';
                 echo '<ul>';
