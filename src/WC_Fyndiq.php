@@ -7,6 +7,7 @@ class WC_Fyndiq
 
     const EXPORTED = 'exported';
     const NOT_EXPORTED = 'not exported';
+    const NOTICES = 'fyndiq_notices';
 
     public function __construct($fmOutput)
     {
@@ -487,8 +488,8 @@ EOS;
                 __('Woocommerce Settings > Products > Fyndiq', 'fyndiq')
             );
         }
-        if (isset($_SESSION['fyndiq_notices'])) {
-            $notices = $_SESSION['fyndiq_notices'];
+        if (isset($_SESSION[self::NOTICES])) {
+            $notices = $_SESSION[self::NOTICES];
             foreach (array( 'update', 'error' ) as $type) {
                 if (count($notices[ $type ])) {
                     $class = 'update' == $type ? 'updated' : 'error';
@@ -503,7 +504,7 @@ EOS;
                     echo '</div>';
                 }
             }
-            unset($_SESSION['fyndiq_notices']);
+            unset($_SESSION[self::NOTICES]);
         }
     }
 
@@ -1365,14 +1366,14 @@ EOS;
 
     function add_fyndiq_notice($message, $type = 'update')
     {
-        if (isset($_SESSION['fyndiq_notices'])) {
-            $notices = $_SESSION['fyndiq_notices'];
+        if (isset($_SESSION[self::NOTICES])) {
+            $notices = $_SESSION[self::NOTICES];
         } else {
             $notices = array( 'update' => array(), 'error' => array() );
         }
 
         $notices[$type][] = $message;
 
-        $_SESSION['fyndiq_notices'] = $notices;
+        $_SESSION[self::NOTICES] = $notices;
     }
 }
