@@ -7,6 +7,7 @@ class WC_Fyndiq
 
     const EXPORTED = 'exported';
     const NOT_EXPORTED = 'not exported';
+    const NOTICES = 'fyndiq_notices';
 
     public function __construct($fmOutput)
     {
@@ -363,6 +364,68 @@ EOS;
         ));
     }
 
+    /**
+    * This is validating product data and show error if
+    * it is not following the fyndiq validations
+    */
+    public function fyndiq_product_validate()
+    {
+        if ($this->getExportState() == self::EXPORTED) {
+            $postTitleLength = strlen($_POST['post_title']);
+            if ($postTitleLength < FyndiqFeedWriter::$minLength[FyndiqFeedWriter::PRODUCT_TITLE] ||
+            $postTitleLength > FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::PRODUCT_TITLE]) {
+                $this->add_fyndiq_notice(
+                    sprintf(
+                        __('Title needs to be between %s and %s in length, now it is: %s', 'fyndiq'),
+                        FyndiqFeedWriter::$minLength[FyndiqFeedWriter::PRODUCT_TITLE],
+                        FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::PRODUCT_TITLE],
+                        $postTitleLength
+                    ),
+                    'error'
+                );
+            }
+
+            $postDescriptionLength = strlen($_POST['content']);
+            if ($postDescriptionLength < FyndiqFeedWriter::$minLength[FyndiqFeedWriter::PRODUCT_DESCRIPTION] ||
+            $postDescriptionLength > FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::PRODUCT_DESCRIPTION]) {
+                $this->add_fyndiq_notice(
+                    sprintf(
+                        __('Description needs to be between %s and %s in length, now it is: %s', 'fyndiq'),
+                        FyndiqFeedWriter::$minLength[FyndiqFeedWriter::PRODUCT_DESCRIPTION],
+                        FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::PRODUCT_DESCRIPTION],
+                        $postDescriptionLength
+                    ),
+                    'error'
+                );
+            }
+
+            $postSKULength = strlen($_POST['_sku']);
+            if ($postSKULength < FyndiqFeedWriter::$minLength[FyndiqFeedWriter::ARTICLE_SKU] ||
+            $postSKULength > FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::ARTICLE_SKU]) {
+                $this->add_fyndiq_notice(
+                    sprintf(
+                        __('SKU needs to be between %s and %s in length, now it is: %s', 'fyndiq'),
+                        FyndiqFeedWriter::$minLength[FyndiqFeedWriter::ARTICLE_SKU],
+                        FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::ARTICLE_SKU],
+                        $postSKULength
+                    ),
+                    'error'
+                );
+            }
+
+            $postRegularPrice = intval($_POST['_regular_price']);
+            if ($postRegularPrice <= 0) {
+                $this->add_fyndiq_notice(
+                    sprintf(
+                        __('Regular Price needs to be set above 0, now it is: %s', 'fyndiq'),
+                        $postRegularPrice
+                    ),
+                    'error'
+                );
+            }
+        }
+    }
+
     public function fyndiq_product_save($post_id)
     {
         $woocommerce_checkbox = $this->getExportState();
@@ -381,6 +444,8 @@ EOS;
         if (!empty($woocommerce_pricepercentage)) {
             update_post_meta($post_id, '_fyndiq_price_percentage', $woocommerce_pricepercentage);
         }
+
+        $this->fyndiq_product_validate();
     }
 
     public function fyndiq_product_add_column($defaults)
@@ -455,6 +520,22 @@ EOS;
                 $url,
                 __('Woocommerce Settings > Products > Fyndiq', 'fyndiq')
             );
+        }
+        if (isset($_SESSION[self::NOTICES])) {
+            $notices = $_SESSION[self::NOTICES];
+            foreach ($notices as $type => $noticegroup) {
+                $class = 'update' === $type ? 'updated' : $type;
+                echo '<div class="fn_message '.$class.'">';
+                echo '<strong>'.__('Fyndiq Validations', 'fyndiq').'</strong>';
+                echo '<ul>';
+                foreach ($noticegroup as $notice) :
+                    echo '<li>'.wp_kses($notice, wp_kses_allowed_html('post')).'</li>';
+                endforeach;
+                echo '</ul>';
+                echo '<p>'.__('The product will not be exported to Fyndiq until these validations are fixed.', 'fyndiq') . '</p>';
+                echo '</div>';
+            }
+            unset($_SESSION[self::NOTICES]);
         }
     }
 
@@ -592,7 +673,7 @@ EOS;
         $changed = 0;
         $post_ids = array();
         $posts = $this->getRequestPost();
-        if(!is_null($posts)) {
+        if (!is_null($posts)) {
             if ($exporting) {
                 foreach ($posts as $post_id) {
                     $product = get_product($post_id);
@@ -1312,5 +1393,21 @@ EOS;
         FyndiqUtils::debug('$available_variations', $available_variations);
 
         return $available_variations;
+    }
+
+    function add_fyndiq_notice($message, $type = 'update')
+    {
+        $notices = array();
+        if (isset($_SESSION[self::NOTICES])) {
+            $notices = $_SESSION[self::NOTICES];
+        }
+
+        if (!isset($notices[$type])) {
+            $notices[$type] = array();
+        }
+
+        $notices[$type][] = $message;
+
+        $_SESSION[self::NOTICES] = $notices;
     }
 }
