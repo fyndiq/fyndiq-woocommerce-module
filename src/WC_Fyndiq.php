@@ -524,16 +524,16 @@ EOS;
         if (isset($_SESSION[self::NOTICES])) {
             $notices = $_SESSION[self::NOTICES];
             foreach ($notices as $type => $noticegroup) {
-                    $class = 'update' == $type ? 'updated' : 'error';
-                    echo '<div class="fn_message '.$class.'">';
-                    echo '<strong>'.__('Fyndiq Validations', 'fyndiq').'</strong>';
-                    echo '<ul>';
+                $class = 'update' == $type ? 'updated' : 'error';
+                echo '<div class="fn_message '.$class.'">';
+                echo '<strong>'.__('Fyndiq Validations', 'fyndiq').'</strong>';
+                echo '<ul>';
                 foreach ($noticegroup as $notice) :
                     echo '<li>'.wp_kses($notice, wp_kses_allowed_html('post')).'</li>';
                 endforeach;
-                    echo '</ul>';
-                    echo '<p>'.__('The product will not be exported to Fyndiq until these validations are fixed.', 'fyndiq') . '</p>';
-                    echo '</div>';
+                echo '</ul>';
+                echo '<p>'.__('The product will not be exported to Fyndiq until these validations are fixed.', 'fyndiq') . '</p>';
+                echo '</div>';
             }
             unset($_SESSION[self::NOTICES]);
         }
