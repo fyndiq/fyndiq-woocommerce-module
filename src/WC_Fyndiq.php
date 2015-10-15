@@ -429,7 +429,7 @@ EOS;
                 $error = true;
             }
 
-            if($error) {
+            if ($error) {
                 update_post_meta($post_id, '_fyndiq_export', self::NOT_EXPORTED);
             }
         }
