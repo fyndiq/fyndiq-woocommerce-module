@@ -369,16 +369,26 @@ EOS;
     */
     public function fyndiq_product_validate()
     {
-        //var_dump($_POST);
-        $this->add_fyndiq_notice("TESTING OMG WOOT", 'error');
-        $postTitleLength = strlen($_POST['post_title']);
-        if ($postTitleLength < 5 || $postTitleLength > 64) {
-            $this->add_fyndiq_notice(sprintf(__('Title needs to be between 5 and 64 in length, now it is: %s', 'fyndiq'), $postTitleLength), 'error');
-        }
+        if($this->getExportState() == self::EXPORTED) {
+            $postTitleLength = strlen($_POST['post_title']);
+            if ($postTitleLength < 5 || $postTitleLength > 64) {
+                $this->add_fyndiq_notice(sprintf(__('Title needs to be between 5 and 64 in length, now it is: %s', 'fyndiq'), $postTitleLength), 'error');
+            }
 
-        $postDescriptionLength = strlen($_POST['content']);
-        if ($postDescriptionLength < 10 || $postDescriptionLength > 4096) {
-            $this->add_fyndiq_notice(sprintf(__('Description needs to be between 10 and 4096 in length, now it is: %s', 'fyndiq'), $postDescriptionLength), 'error');
+            $postDescriptionLength = strlen($_POST['content']);
+            if ($postDescriptionLength < 10 || $postDescriptionLength > 4096) {
+                $this->add_fyndiq_notice(sprintf(__('Description needs to be between 10 and 4096 in length, now it is: %s', 'fyndiq'), $postDescriptionLength), 'error');
+            }
+
+            $postSKULength = strlen($_POST['_sku']);
+            if ($postSKULength < 1 || $postSKULength > 32) {
+                $this->add_fyndiq_notice(sprintf(__('SKU needs to be between 1 and 32 in length, now it is: %s', 'fyndiq'), $postSKULength), 'error');
+            }
+
+            $postRegularPrice = intval($_POST['_regular_price']);
+            if (strlen($postRegularPrice) < 1 || $postRegularPrice <= 0) {
+                $this->add_fyndiq_notice(sprintf(__('Regular Price needs to be set above 0, now it is: %s', 'fyndiq'), $postRegularPrice), 'error');
+            }
         }
     }
 
@@ -400,6 +410,7 @@ EOS;
         if (!empty($woocommerce_pricepercentage)) {
             update_post_meta($post_id, '_fyndiq_price_percentage', $woocommerce_pricepercentage);
         }
+
         $this->fyndiq_product_validate();
     }
 
@@ -477,25 +488,22 @@ EOS;
             );
         }
         if(isset($_SESSION['fyndiq_notices'])) {
-            if(!isset($_SESSION['fyndiq_notices_count'])) {
-                $_SESSION['fyndiq_notices_count'] = 0;
-            }
             $notices = $_SESSION['fyndiq_notices'];
-            foreach (array( 'update', 'error' ) as $type) {
-                if (count($notices[ $type ])) {
-                    $class = 'update' == $type ? 'updated' : 'error';
-                    echo '<div class="fn_message '.$class.'">';
-                    foreach ($notices[ $type ] as $notice) :
-                        echo '<p>'.wp_kses($notice, wp_kses_allowed_html('post')).'</p>';
-                    endforeach;
-                    echo '</div>';
+                foreach (array( 'update', 'error' ) as $type) {
+                    if (count($notices[ $type ])) {
+                        $class = 'update' == $type ? 'updated' : 'error';
+                        echo '<div class="fn_message '.$class.'">';
+                        echo '<strong>'.__('Fyndiq Validations', 'fyndiq').'</strong>';
+                        echo '<ul>';
+                        foreach ($notices[ $type ] as $notice) :
+                            echo '<li>'.wp_kses($notice, wp_kses_allowed_html('post')).'</li>';
+                        endforeach;
+                        echo '</ul>';
+                        echo '<p>'.__('The product will not be exported to Fyndiq until these validations are fixed.', 'fyndiq') . '</p>';
+                        echo '</div>';
+                    }
                 }
-            }
-            $_SESSION['fyndiq_notices_count'] += 1;
-            if($_SESSION['fyndiq_notices_count'] > 2) {
-                unset($_SESSION['fyndiq_notices']);
-                unset($_SESSION['fyndiq_notices_count']);
-            }
+            unset($_SESSION['fyndiq_notices']);
         }
     }
 
