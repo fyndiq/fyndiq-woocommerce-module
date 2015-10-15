@@ -11,6 +11,7 @@
 
 if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
     if (!class_exists('WC_Fyndiq')) {
+        session_start();
         require_once('FmHelpers.php');
         require_once('include/shared/src/init.php');
         require_once('models/FmOrder.php');
