@@ -100,8 +100,8 @@ class WC_Fyndiq
     function fyndiq_action_links( $links ) {
         $checkUrl = esc_url( get_admin_url(null, 'admin.php?page=fyndiq-check'));
         $settingUrl = esc_url( get_admin_url(null, 'admin.php?page=wc-settings&tab=products&section=wcfyndiq'));
-        $links[] = '<a href="'.$settingUrl.'">Settings</a>';
-        $links[] = '<a href="'.$checkUrl.'">Fyndiq Check</a>';
+        $links[] = '<a href="'.$settingUrl.'">'.__('Settings', 'fyndiq').'</a>';
+        $links[] = '<a href="'.$checkUrl.'">'.__('Fyndiq Check', 'fyndiq').'</a>';
         return $links;
     }
 
@@ -1421,16 +1421,16 @@ EOS;
 
     function check_page()
     {
-        echo "<h1>Fyndiq Checker Page</h1>";
+        echo "<h1>".__('Fyndiq Checker Page', 'fyndiq')."</h1>";
         echo "<p>".__('This is a page to check all the important requirements to make the Fyndiq work.', 'fyndiq')."</p>";
 
-        echo "<h2>File Permission</h2>";
+        echo "<h2>".__('File Permission', 'fyndiq')."</h2>";
         echo $this->probe_file_permissions();
 
-        echo "<h2>Classes</h2>";
+        echo "<h2>".__('Classes', 'fyndiq')."</h2>";
         echo $this->probe_module_integrity();
 
-        echo "<h2>API Connection</h2>";
+        echo "<h2>".__('API Connection', 'fyndiq')."</h2>";
         echo $this->probe_connection();
     }
 
