@@ -86,7 +86,10 @@ class WC_Fyndiq
             $this->generate_orders();
         }
         if (isset($_GET['fyndiq_products'])) {
+            define('DOING_AJAX', true);
             $this->update_product_info();
+            $this->fmOutput->outputJSON(array('status' => 'ok'));
+            wp_die();
         }
         if (isset($_GET['fyndiq_notification'])) {
             $this->notification_handle();
@@ -1198,6 +1201,8 @@ EOS;
 
     private function notice_debug()
     {
+        $this->checkToken();
+
         FyndiqUtils::debugStart();
         FyndiqUtils::debug('USER AGENT', FmHelpers::get_user_agent());
         $languageId = WC()->countries->get_base_country();
@@ -1211,31 +1216,24 @@ EOS;
 
     private function notice_ping()
     {
-        $pingToken = get_option('wcfyndiq_ping_token');
-
-        $token = $_GET['token'];
-
-        if (is_null($token) || $token != $pingToken) {
-            $this->fmOutput->showError(400, 'Bad Request', '400 Bad Request');
-            wp_die();
-        }
+        $this->checkToken();
 
         $this->fmOutput->flushHeader('OK');
 
         $locked = false;
         $lastPing = get_option('wcfyndiq_ping_time');
-        $lastPing = $lastPing ? unserialize($lastPing) : false;
+        $lastPing = $lastPing ? $lastPing : false;
         $locked = $lastPing && $lastPing > strtotime('15 minutes ago');
         if (!$locked) {
             update_option('wcfyndiq_ping_time', time());
             try {
-                $this->feed_write($this->filepath);
+                $this->feedFileHandling();
                 $this->update_product_info();
             } catch (Exception $e) {
                 error_log($e->getMessage());
             }
-            $this->feed_write($this->filepath);
         }
+        wp_die();
     }
 
     public function generate_orders()
@@ -1249,11 +1247,8 @@ EOS;
 
     private function update_product_info()
     {
-        define('DOING_AJAX', true);
         $productFetch = new FmProductFetch();
         $productFetch->getAll();
-        $this->fmOutput->outputJSON(array('status' => 'ok'));
-        wp_die();
     }
 
     public function getAction($table)
@@ -1452,6 +1447,17 @@ EOS;
         $_SESSION[self::NOTICES] = $notices;
     }
 
+    private function checkToken()
+    {
+        $pingToken = get_option('wcfyndiq_ping_token');
+
+        $token = isset($_GET['pingToken']) ? $_GET['pingToken'] : null;
+
+        if (is_null($token) || $token != $pingToken) {
+            $this->fmOutput->showError(400, 'Bad Request', '400 Bad Request');
+            wp_die();
+        }
+    }
 
     protected function probe_file_permissions()
     {
