@@ -1,236 +1,380 @@
-#
-# Translators:
 msgid ""
 msgstr ""
-"Project-Id-Version: Fyndiq Modules: Woocommerce\n"
-"POT-Creation-Date: 2015-09-30 10:40+0100\n"
-"PO-Revision-Date: 2015-10-08 14:18+0100\n"
-"Last-Translator: Håkan Nylén <confacted@gmail.com>\n"
-"Language-Team: English (http://www.transifex.com/fyndiq/fyndiq-modules-woocommerce/language/en/)\n"
+"Project-Id-Version: Fyndiq Woocommerce\n"
+"POT-Creation-Date: 2015-10-16 10:31+0100\n"
+"PO-Revision-Date: 2015-10-16 10:32+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: en\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.7.6\n"
 "X-Poedit-Basepath: ..\n"
-"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;esc_attr_e;esc_attr_x:1,2c;"
-"esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
 "X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 
-#: WC_Fyndiq.php:104 WC_Fyndiq.php:147
+#: WC_Fyndiq.php:103
+msgid "Settings"
+msgstr "Settings"
+
+#: WC_Fyndiq.php:104
+msgid "Fyndiq Check"
+msgstr "Fyndiq Check"
+
+#: WC_Fyndiq.php:116 WC_Fyndiq.php:159
 msgid "Fyndiq"
 msgstr "Fyndiq"
 
-#: WC_Fyndiq.php:137
+#: WC_Fyndiq.php:149
 msgid "Error!"
 msgstr "Error!"
 
-#: WC_Fyndiq.php:138
+#: WC_Fyndiq.php:150
 msgid "Loading"
 msgstr "Loading"
 
-#: WC_Fyndiq.php:139
+#: WC_Fyndiq.php:151
 msgid "Done"
 msgstr "Done"
 
-#: WC_Fyndiq.php:162
+#: WC_Fyndiq.php:174
 msgid "Fyndiq Settings"
 msgstr "Fyndiq Settings"
 
-#: WC_Fyndiq.php:164
+#: WC_Fyndiq.php:176
 msgid "The following options are used to configure Fyndiq"
 msgstr "The following options are used to configure Fyndiq"
 
-#: WC_Fyndiq.php:171
+#: WC_Fyndiq.php:183
 msgid "Username"
 msgstr "Username"
 
-#: WC_Fyndiq.php:172
+#: WC_Fyndiq.php:184
 msgid "This is the username you use for login on Fyndiq Merchant"
 msgstr "This is the username you use for login on Fyndiq Merchant"
 
-#: WC_Fyndiq.php:175
+#: WC_Fyndiq.php:187
 msgid "Must be your username"
 msgstr "Must be your username"
 
-#: WC_Fyndiq.php:182
+#: WC_Fyndiq.php:194
 msgid "API-token"
 msgstr "API-token"
 
-#: WC_Fyndiq.php:183
+#: WC_Fyndiq.php:195
 msgid "This is the API V2 Token on Fyndiq"
 msgstr "This is the API V2 Token on Fyndiq"
 
-#: WC_Fyndiq.php:186
+#: WC_Fyndiq.php:198
 msgid "Must be API v2 token"
 msgstr "Must be API v2 token"
 
-#: WC_Fyndiq.php:193
+#: WC_Fyndiq.php:205
 msgid "Global Price Percentage"
 msgstr "Global Price Percentage"
 
-#: WC_Fyndiq.php:195
-msgid "The percentage that will be removed from the price when sending to fyndiq."
-msgstr "The percentage that will be removed from the price when sending to fyndiq."
+#: WC_Fyndiq.php:207
+msgid ""
+"The percentage that will be removed from the price when sending to fyndiq."
+msgstr ""
+"The percentage that will be removed from the price when sending to fyndiq."
 
-#: WC_Fyndiq.php:201
+#: WC_Fyndiq.php:213
 msgid "Can be 0 if the price should be the same as in your shop."
 msgstr "Can be 0 if the price should be the same as in your shop."
 
-#: WC_Fyndiq.php:208
+#: WC_Fyndiq.php:220
 msgid "Order Status"
 msgstr "Order Status"
 
-#: WC_Fyndiq.php:210
+#: WC_Fyndiq.php:222
 msgid "When a order is imported from fyndiq, this status will be applied."
 msgstr "When a order is imported from fyndiq, this status will be applied."
 
-#: WC_Fyndiq.php:221
+#: WC_Fyndiq.php:233
 msgid "This must be picked accurate"
 msgstr "This must be picked accurate"
 
-#: WC_Fyndiq.php:229
+#: WC_Fyndiq.php:241
 msgid "Minimum Quantity Limit"
 msgstr "Minimum Quantity Limit"
 
-#: WC_Fyndiq.php:231
-msgid "this quantity will be reserved by you and will be removed from the quantity that is sent to Fyndiq."
-msgstr "this quantity will be reserved by you and will be removed from the quantity that is sent to Fyndiq."
+#: WC_Fyndiq.php:243
+msgid ""
+"this quantity will be reserved by you and will be removed from the quantity "
+"that is sent to Fyndiq."
+msgstr ""
+"this quantity will be reserved by you and will be removed from the quantity "
+"that is sent to Fyndiq."
 
-#: WC_Fyndiq.php:237
+#: WC_Fyndiq.php:249
 msgid "Stay on 0 if you want to send all stock to Fyndiq."
 msgstr "Stay on 0 if you want to send all stock to Fyndiq."
 
-#: WC_Fyndiq.php:261
+#: WC_Fyndiq.php:273
 msgid "Fyndiq credentials was wrong, try again."
 msgstr "Fyndiq credentials was wrong, try again."
 
-#: WC_Fyndiq.php:289
-msgid "Fyndiq Product Settings"
-msgstr "Fyndiq Product Settings"
-
-#: WC_Fyndiq.php:299 WC_Fyndiq.php:487
-msgid "Export to Fyndiq"
-msgstr "Export to Fyndiq"
-
-#: WC_Fyndiq.php:300
-msgid "mark this as true if you want to export to Fyndiq"
-msgstr "mark this as true if you want to export to Fyndiq"
-
-#: WC_Fyndiq.php:314
-msgid "Fyndiq Discount Percentage"
-msgstr "Fyndiq Discount Percentage"
-
-#: WC_Fyndiq.php:316
-msgid "The percentage specific for this product, it will override the globel percentage for this product."
-msgstr "The percentage specific for this product, it will override the globel percentage for this product."
-
-#: WC_Fyndiq.php:328
-msgid "Fyndiq Price with set Discount percentage: "
-msgstr "Fyndiq Price with set Discount percentage: "
-
-#: WC_Fyndiq.php:335
+#: WC_Fyndiq.php:306
 msgid "Can't export this product to Fyndiq"
 msgstr "Can't export this product to Fyndiq"
 
-#: WC_Fyndiq.php:350
+#: WC_Fyndiq.php:310
+msgid "Fyndiq Product Settings"
+msgstr "Fyndiq Product Settings"
+
+#: WC_Fyndiq.php:320 WC_Fyndiq.php:354 WC_Fyndiq.php:638
+msgid "Export to Fyndiq"
+msgstr "Export to Fyndiq"
+
+#: WC_Fyndiq.php:321 WC_Fyndiq.php:356
+msgid "mark this as true if you want to export to Fyndiq"
+msgstr "mark this as true if you want to export to Fyndiq"
+
+#: WC_Fyndiq.php:333 WC_Fyndiq.php:365
+msgid "Fyndiq Discount Percentage"
+msgstr "Fyndiq Discount Percentage"
+
+#: WC_Fyndiq.php:335 WC_Fyndiq.php:368
+msgid ""
+"The percentage specific for this product, it will override the globel "
+"percentage for this product."
+msgstr ""
+"The percentage specific for this product, it will override the globel "
+"percentage for this product."
+
+#: WC_Fyndiq.php:376
+msgid "Fyndiq Price with set Discount percentage: "
+msgstr "Fyndiq Price with set Discount percentage: "
+
+#: WC_Fyndiq.php:395
+#, php-format
+msgid "Title needs to be between %s and %s in length, now it is: %s"
+msgstr "Title needs to be between %s and %s in length, now it is: %s"
+
+#: WC_Fyndiq.php:410
+#, php-format
+msgid "Description needs to be between %s and %s in length, now it is: %s"
+msgstr "Description needs to be between %s and %s in length, now it is: %s"
+
+#: WC_Fyndiq.php:425
+#, php-format
+msgid "SKU needs to be between %s and %s in length, now it is: %s"
+msgstr "SKU needs to be between %s and %s in length, now it is: %s"
+
+#: WC_Fyndiq.php:439
+#, php-format
+msgid "Regular Price needs to be set above 0, now it is: %s"
+msgstr "Regular Price needs to be set above 0, now it is: %s"
+
+#: WC_Fyndiq.php:477
 msgid "Fyndiq Exported"
 msgstr "Fyndiq Exported"
 
-#: WC_Fyndiq.php:351
+#: WC_Fyndiq.php:478
 msgid "Fyndiq Status"
 msgstr "Fyndiq Status"
 
-#: WC_Fyndiq.php:364
+#: WC_Fyndiq.php:492
 msgid "Exported"
 msgstr "Exported"
 
-#: WC_Fyndiq.php:366
+#: WC_Fyndiq.php:494 WC_Fyndiq.php:498
 msgid "Not exported"
 msgstr "Not exported"
 
-#: WC_Fyndiq.php:369
+#: WC_Fyndiq.php:501
 msgid "Can't be exported"
 msgstr "Can't be exported"
 
-#: WC_Fyndiq.php:378
+#: WC_Fyndiq.php:510
 msgid "Pending"
 msgstr "Pending"
 
-#: WC_Fyndiq.php:380
+#: WC_Fyndiq.php:512
 msgid "For Sale"
 msgstr "For Sale"
 
-#: WC_Fyndiq.php:383
+#: WC_Fyndiq.php:515
 msgid "-"
 msgstr "-"
 
-#: WC_Fyndiq.php:393
+#: WC_Fyndiq.php:525
 msgid "Wrong Currency"
 msgstr "Wrong Currency"
 
-#: WC_Fyndiq.php:394
-msgid "Fyndiq only works in EUR and SEK. change to correct currency. Current Currency:"
-msgstr "Fyndiq only works in EUR and SEK. change to correct currency. Current Currency:"
+#: WC_Fyndiq.php:526
+msgid ""
+"Fyndiq only works in EUR and SEK. change to correct currency. Current "
+"Currency:"
+msgstr ""
+"Fyndiq only works in EUR and SEK. change to correct currency. Current "
+"Currency:"
 
-#: WC_Fyndiq.php:401
+#: WC_Fyndiq.php:533
 msgid "Wrong Country"
 msgstr "Wrong Country"
 
-#: WC_Fyndiq.php:402
-msgid "Fyndiq only works in Sweden and Germany. change to correct country. Current Country:"
-msgstr "Fyndiq only works in Sweden and Germany. change to correct country. Current Country:"
+#: WC_Fyndiq.php:534
+msgid ""
+"Fyndiq only works in Sweden and Germany. change to correct country. Current "
+"Country:"
+msgstr ""
+"Fyndiq only works in Sweden and Germany. change to correct country. Current "
+"Country:"
 
-#: WC_Fyndiq.php:409
+#: WC_Fyndiq.php:542
 msgid "Fyndiq Credentials"
 msgstr "Fyndiq Credentials"
 
-#: WC_Fyndiq.php:456
+#: WC_Fyndiq.php:543
 msgid "You need to set Fyndiq Credentials to make it work. Do it in "
 msgstr "You need to set Fyndiq Credentials to make it work. Do it in "
 
-#: WC_Fyndiq.php:458
+#: WC_Fyndiq.php:545
 msgid "Woocommerce Settings > Products > Fyndiq"
 msgstr "Woocommerce Settings > Products > Fyndiq"
 
-#: WC_Fyndiq.php:438
+#: WC_Fyndiq.php:553
+msgid "Fyndiq Validations"
+msgstr "Fyndiq Validations"
+
+#: WC_Fyndiq.php:559
+msgid ""
+"The product will not be exported to Fyndiq until these validations are fixed."
+msgstr ""
+"The product will not be exported to Fyndiq until these validations are fixed."
+
+#: WC_Fyndiq.php:589
 msgid "Fyndiq Order"
 msgstr "Fyndiq Order"
 
-#: WC_Fyndiq.php:488
+#: WC_Fyndiq.php:639
 msgid "Remove from Fyndiq"
 msgstr "Remove from Fyndiq"
 
-#: WC_Fyndiq.php:489
+#: WC_Fyndiq.php:640
 msgid "Update Fyndiq Status"
 msgstr "Update Fyndiq Status"
 
-#: WC_Fyndiq.php:509
+#: WC_Fyndiq.php:660
 msgid "Get Fyndiq Delivery Note"
 msgstr "Get Fyndiq Delivery Note"
 
-#: WC_Fyndiq.php:510
+#: WC_Fyndiq.php:661
 msgid "Import From Fyndiq"
 msgstr "Import From Fyndiq"
 
-#: WC_Fyndiq.php:578
+#: WC_Fyndiq.php:731
 #, php-format
 msgid "Products removed from Fyndiq."
 msgid_plural "%s products removed from Fyndiq."
 msgstr[0] "Products removed from Fyndiq."
 msgstr[1] "%s products removed from Fyndiq."
 
-#: WC_Fyndiq.php:589
+#: WC_Fyndiq.php:742
 #, php-format
 msgid "Products exported to Fyndiq."
 msgid_plural "%s products exported to Fyndiq."
 msgstr[0] "Products exported to Fyndiq."
 msgstr[1] "%s products exported to Fyndiq."
 
-#: models/FmOrder.php:31 models/FmOrder.php:130
+#: WC_Fyndiq.php:1424
+msgid "Fyndiq Checker Page"
+msgstr "Fyndiq Checker Page"
+
+#: WC_Fyndiq.php:1425
+msgid ""
+"This is a page to check all the important requirements to make the Fyndiq "
+"work."
+msgstr ""
+"This is a page to check all the important requirements to make the Fyndiq "
+"work."
+
+#: WC_Fyndiq.php:1427
+msgid "File Permission"
+msgstr "File Permission"
+
+#: WC_Fyndiq.php:1430
+msgid "Classes"
+msgstr "Classes"
+
+#: WC_Fyndiq.php:1433
+msgid "API Connection"
+msgstr "API Connection"
+
+#: WC_Fyndiq.php:1461
+msgid "Exists"
+msgstr "Exists"
+
+#: WC_Fyndiq.php:1462
+msgid "does not exist"
+msgstr "does not exist"
+
+#: WC_Fyndiq.php:1463
+#, php-format
+msgid "Feed file name: `%s` (%s)"
+msgstr "Feed file name: `%s` (%s)"
+
+#: WC_Fyndiq.php:1467
+#, php-format
+msgid ""
+"Cannot create file. Please make sure that the server can create new files in "
+"`%s`"
+msgstr ""
+"Cannot create file. Please make sure that the server can create new files in "
+"`%s`"
+
+#: WC_Fyndiq.php:1471
+#, php-format
+msgid "Trying to create temporary file: `%s`"
+msgstr "Trying to create temporary file: `%s`"
+
+#: WC_Fyndiq.php:1474
+#, php-format
+msgid "Cannot create file: `%s`"
+msgstr "Cannot create file: `%s`"
+
+#: WC_Fyndiq.php:1480
+#, php-format
+msgid "File `%s` successfully read."
+msgstr "File `%s` successfully read."
+
+#: WC_Fyndiq.php:1483
+#, php-format
+msgid "Successfully deleted temp file `%s`"
+msgstr "Successfully deleted temp file `%s`"
+
+#: WC_Fyndiq.php:1508
+#, php-format
+msgid "Class `%s` is found."
+msgstr "Class `%s` is found."
+
+#: WC_Fyndiq.php:1511
+#, php-format
+msgid "Class `%s` is NOT found."
+msgstr "Class `%s` is NOT found."
+
+#: WC_Fyndiq.php:1515
+#, php-format
+msgid "Required classes `%s` are missing."
+msgstr "Required classes `%s` are missing."
+
+#: WC_Fyndiq.php:1532
+msgid "Module is not authorized."
+msgstr "Module is not authorized."
+
+#: WC_Fyndiq.php:1535
+msgid "Connection to Fyndiq successfully tested"
+msgstr "Connection to Fyndiq successfully tested"
+
+#: models/FmOrder.php:31 models/FmOrder.php:133
 #, php-format
 msgid "Product SKU ( %s ) not found."
 msgstr "Product SKU ( %s ) not found."
@@ -239,6 +383,6 @@ msgstr "Product SKU ( %s ) not found."
 msgid "ERROR - Could not create order"
 msgstr "ERROR - Could not create order"
 
-#: models/FmOrder.php:114
+#: models/FmOrder.php:113
 msgid "ERROR - product is downloadable."
 msgstr "ERROR - product is downloadable."
