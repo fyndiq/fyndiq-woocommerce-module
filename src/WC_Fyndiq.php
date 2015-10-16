@@ -1413,10 +1413,13 @@ EOS;
     function check_page()
     {
         echo "<h1>Fyndiq Checker Page</h1>";
-        echo "<p>Testing</p>";
+        echo "<p>This is a page to check all the important requirements to make the Fyndiq work.</p>";
+
+        echo "<h2>File Permission</h2>";
+        echo $this->probe_file_permissions();
     }
 
-    function add_fyndiq_notice($message, $type = 'update')
+    private function add_fyndiq_notice($message, $type = 'update')
     {
         $notices = array();
         if (isset($_SESSION[self::NOTICES])) {
@@ -1430,5 +1433,95 @@ EOS;
         $notices[$type][] = $message;
 
         $_SESSION[self::NOTICES] = $notices;
+    }
+
+
+    protected function probe_file_permissions()
+    {
+        $messages = array();
+        $testMessage = time();
+        try {
+            $fileName = $this->filepath;
+            $exists =  file_exists($fileName) ?
+                __('Exists', 'fyndiq') :
+                __('does not exist', 'fyndiq');
+            $messages[] = sprintf(__('Feed file name: `%s` (%s)', 'fyndiq'), $fileName, $exists);
+            $tempFileName = FyndiqUtils::getTempFilename(dirname($fileName));
+            if (dirname($tempFileName) !== dirname($fileName)) {
+                throw new Exception(sprintf(
+                    __('Cannot create file. Please make sure that the server can create new files in `%s`', 'fyndiq'),
+                    dirname($fileName)
+                ));
+            }
+            $messages[] = sprintf(__('Trying to create temporary file: `%s`', 'fyndiq'), $tempFileName);
+            $file = fopen($tempFileName, 'w+');
+            if (!$file) {
+                throw new Exception(sprintf(__('Cannot create file: `%s`', 'fyndiq'), $tempFileName));
+            }
+            fwrite($file, $testMessage);
+            fclose($file);
+            $content = file_get_contents($tempFileName);
+            if ($testMessage == file_get_contents($tempFileName)) {
+                $messages[] = sprintf(__('File `%s` successfully read.', 'fyndiq'), $tempFileName);
+            }
+            FyndiqUtils::deleteFile($tempFileName);
+            $messages[] = sprintf(__('Successfully deleted temp file `%s`', 'fyndiq'), $tempFileName);
+            return implode('<br />', $messages);
+        } catch (Exception $e) {
+            $messages[] = $e->getMessage();
+            return implode('<br />', $messages);
+        }
+    }
+
+    protected function probe_module_integrity()
+    {
+        $messages = array();
+        $missing = array();
+        $checkClasses = array(
+            'FyndiqAPI',
+            'FyndiqAPICall',
+            'FyndiqCSVFeedWriter',
+            'FyndiqFeedWriter',
+            'FyndiqOutput',
+            'FyndiqPaginatedFetch',
+            'FyndiqTranslation',
+            'FyndiqUtils',
+        );
+        try {
+            foreach ($checkClasses as $className) {
+                if (class_exists($className)) {
+                    $messages[] = sprintf(__('Class `%s` is found.', 'fyndiq'), $className);
+                    continue;
+                }
+                $messages[] = sprintf(__('Class `%s` is NOT found.', 'fyndiq'), $className);
+            }
+            if ($missing) {
+                throw new Exception(sprintf(
+                    __('Required classes `%s` are missing.', 'fyndiq'), implode(',', $missing)
+                ));
+            }
+            return implode('<br />', $messages);
+        } catch (Exception $e) {
+            $messages[] = $e->getMessage();
+            return implode('<br />', $messages);
+        }
+    }
+    protected function probe_connection()
+    {
+        $messages = array();
+        try {
+            try {
+                FmHelpers::callApi('GET', 'settings/');
+            } catch (Exception $e) {
+                if ($e instanceof FyndiqAPIAuthorizationFailed) {
+                    throw new Exception(__('Module is not authorized.', 'fyndiq'));
+                }
+            }
+            $messages[] = __('Connection to Fyndiq successfully tested', 'fyndiq');
+            return implode('<br />', $messages);
+        } catch (Exception $e) {
+            $messages[] = $e->getMessage();
+            return implode('<br />', $messages);
+        }
     }
 }
