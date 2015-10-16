@@ -1181,6 +1181,15 @@ EOS;
 
     private function notice_debug()
     {
+        $pingToken = get_option('wcfyndiq_ping_token');
+
+        $token = isset($_GET['pingToken']) ? $_GET['pingToken'] : null;
+
+        if (is_null($token) || $token != $pingToken) {
+            $this->fmOutput->showError(400, 'Bad Request', '400 Bad Request');
+            wp_die();
+        }
+
         FyndiqUtils::debugStart();
         FyndiqUtils::debug('USER AGENT', FmHelpers::get_user_agent());
         $languageId = WC()->countries->get_base_country();
@@ -1196,7 +1205,7 @@ EOS;
     {
         $pingToken = get_option('wcfyndiq_ping_token');
 
-        $token = $_GET['pingToken'];
+        $token = isset($_GET['pingToken']) ? $_GET['pingToken'] : null;
 
         if (is_null($token) || $token != $pingToken) {
             $this->fmOutput->showError(400, 'Bad Request', '400 Bad Request');
