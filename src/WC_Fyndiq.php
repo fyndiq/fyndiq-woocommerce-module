@@ -86,7 +86,10 @@ class WC_Fyndiq
             $this->generate_orders();
         }
         if (isset($_GET['fyndiq_products'])) {
+            define('DOING_AJAX', true);
             $this->update_product_info();
+            $this->fmOutput->outputJSON(array('status' => 'ok'));
+            wp_die();
         }
         if (isset($_GET['fyndiq_notification'])) {
             $this->notification_handle();
@@ -1225,6 +1228,7 @@ EOS;
             update_option('wcfyndiq_ping_time', time());
             try {
                 $this->feedFileHandling();
+                $this->update_product_info();
             } catch (Exception $e) {
                 error_log($e->getMessage());
             }
@@ -1243,11 +1247,8 @@ EOS;
 
     private function update_product_info()
     {
-        define('DOING_AJAX', true);
         $productFetch = new FmProductFetch();
         $productFetch->getAll();
-        $this->fmOutput->outputJSON(array('status' => 'ok'));
-        wp_die();
     }
 
     public function getAction($table)
