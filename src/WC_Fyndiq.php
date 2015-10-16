@@ -1219,18 +1219,17 @@ EOS;
 
         $locked = false;
         $lastPing = get_option('wcfyndiq_ping_time');
-        $lastPing = $lastPing ? unserialize($lastPing) : false;
+        $lastPing = $lastPing ? $lastPing : false;
         $locked = $lastPing && $lastPing > strtotime('15 minutes ago');
         if (!$locked) {
             update_option('wcfyndiq_ping_time', time());
             try {
-                $this->feed_write($this->filepath);
-                $this->update_product_info();
+                $this->feedFileHandling();
             } catch (Exception $e) {
                 error_log($e->getMessage());
             }
-            $this->feed_write($this->filepath);
         }
+        wp_die();
     }
 
     public function generate_orders()
