@@ -1196,7 +1196,7 @@ EOS;
     {
         $pingToken = get_option('wcfyndiq_ping_token');
 
-        $token = $_GET['token'];
+        $token = $_GET['pingToken'];
 
         if (is_null($token) || $token != $pingToken) {
             $this->fmOutput->showError(400, 'Bad Request', '400 Bad Request');
