@@ -1417,6 +1417,12 @@ EOS;
 
         echo "<h2>File Permission</h2>";
         echo $this->probe_file_permissions();
+
+        echo "<h2>Classes</h2>";
+        echo $this->probe_module_integrity();
+
+        echo "<h2>API Connection</h2>";
+        echo $this->probe_connection();
     }
 
     private function add_fyndiq_notice($message, $type = 'update')
@@ -1484,8 +1490,8 @@ EOS;
             'FyndiqFeedWriter',
             'FyndiqOutput',
             'FyndiqPaginatedFetch',
-            'FyndiqTranslation',
             'FyndiqUtils',
+            'FmHelpers'
         );
         try {
             foreach ($checkClasses as $className) {
