@@ -74,6 +74,10 @@ class WC_Fyndiq
         //notice for currency check
         add_action('admin_notices', array(&$this, 'my_admin_notice'));
 
+        //Checker Page
+        add_action('admin_menu', array(&$this, 'fyndiq_add_menu'));
+        add_filter( 'plugin_action_links_' . plugin_basename(dirname(__FILE__).'/woocommerce-fyndiq.php'), array(&$this, 'fyndiq_action_links') );
+
         //functions
         if (isset($_GET['fyndiq_feed'])) {
             $this->generate_feed();
@@ -89,6 +93,17 @@ class WC_Fyndiq
         }
     }
 
+    function fyndiq_add_menu(){
+        add_submenu_page( null, 'Fyndiq Checker Page', 'Fyndiq', 'manage_options', 'fyndiq-check', array(&$this, 'check_page') );
+    }
+
+    function fyndiq_action_links( $links ) {
+        $checkUrl = esc_url( get_admin_url(null, 'admin.php?page=fyndiq-check'));
+        $settingUrl = esc_url( get_admin_url(null, 'admin.php?page=wc-settings&tab=products&section=wcfyndiq'));
+        $links[] = '<a href="'.$settingUrl.'">Settings</a>';
+        $links[] = '<a href="'.$checkUrl.'">Fyndiq Check</a>';
+        return $links;
+    }
 
     public function fyndiq_order_meta_boxes()
     {
@@ -1393,6 +1408,12 @@ EOS;
         FyndiqUtils::debug('$available_variations', $available_variations);
 
         return $available_variations;
+    }
+
+    function check_page()
+    {
+        echo "<h1>Fyndiq Checker Page</h1>";
+        echo "<p>Testing</p>";
     }
 
     function add_fyndiq_notice($message, $type = 'update')
