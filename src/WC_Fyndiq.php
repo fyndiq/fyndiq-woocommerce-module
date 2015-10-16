@@ -1458,7 +1458,7 @@ EOS;
         try {
             $fileName = $this->filepath;
             $exists =  file_exists($fileName) ?
-                __('Exists', 'fyndiq') :
+                __('exists', 'fyndiq') :
                 __('does not exist', 'fyndiq');
             $messages[] = sprintf(__('Feed file name: `%s` (%s)', 'fyndiq'), $fileName, $exists);
             $tempFileName = FyndiqUtils::getTempFilename(dirname($fileName));
