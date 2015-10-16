@@ -76,7 +76,7 @@ class WC_Fyndiq
 
         //Checker Page
         add_action('admin_menu', array(&$this, 'fyndiq_add_menu'));
-        add_filter( 'plugin_action_links_' . plugin_basename(dirname(__FILE__).'/woocommerce-fyndiq.php'), array(&$this, 'fyndiq_action_links') );
+        add_filter('plugin_action_links_' . plugin_basename(dirname(__FILE__).'/woocommerce-fyndiq.php'), array(&$this, 'fyndiq_action_links'));
 
         //functions
         if (isset($_GET['fyndiq_feed'])) {
@@ -93,13 +93,15 @@ class WC_Fyndiq
         }
     }
 
-    function fyndiq_add_menu(){
-        add_submenu_page( null, 'Fyndiq Checker Page', 'Fyndiq', 'manage_options', 'fyndiq-check', array(&$this, 'check_page') );
+    function fyndiq_add_menu()
+    {
+        add_submenu_page(null, 'Fyndiq Checker Page', 'Fyndiq', 'manage_options', 'fyndiq-check', array(&$this, 'check_page'));
     }
 
-    function fyndiq_action_links( $links ) {
-        $checkUrl = esc_url( get_admin_url(null, 'admin.php?page=fyndiq-check'));
-        $settingUrl = esc_url( get_admin_url(null, 'admin.php?page=wc-settings&tab=products&section=wcfyndiq'));
+    function fyndiq_action_links($links)
+    {
+        $checkUrl = esc_url(get_admin_url(null, 'admin.php?page=fyndiq-check'));
+        $settingUrl = esc_url(get_admin_url(null, 'admin.php?page=wc-settings&tab=products&section=wcfyndiq'));
         $links[] = '<a href="'.$settingUrl.'">'.__('Settings', 'fyndiq').'</a>';
         $links[] = '<a href="'.$checkUrl.'">'.__('Fyndiq Check', 'fyndiq').'</a>';
         return $links;
@@ -1512,7 +1514,8 @@ EOS;
             }
             if ($missing) {
                 throw new Exception(sprintf(
-                    __('Required classes `%s` are missing.', 'fyndiq'), implode(',', $missing)
+                    __('Required classes `%s` are missing.', 'fyndiq'),
+                    implode(',', $missing)
                 ));
             }
             return implode('<br />', $messages);
