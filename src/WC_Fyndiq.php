@@ -1181,14 +1181,7 @@ EOS;
 
     private function notice_debug()
     {
-        $pingToken = get_option('wcfyndiq_ping_token');
-
-        $token = isset($_GET['pingToken']) ? $_GET['pingToken'] : null;
-
-        if (is_null($token) || $token != $pingToken) {
-            $this->fmOutput->showError(400, 'Bad Request', '400 Bad Request');
-            wp_die();
-        }
+        $this->checkToken();
 
         FyndiqUtils::debugStart();
         FyndiqUtils::debug('USER AGENT', FmHelpers::get_user_agent());
@@ -1203,14 +1196,7 @@ EOS;
 
     private function notice_ping()
     {
-        $pingToken = get_option('wcfyndiq_ping_token');
-
-        $token = isset($_GET['pingToken']) ? $_GET['pingToken'] : null;
-
-        if (is_null($token) || $token != $pingToken) {
-            $this->fmOutput->showError(400, 'Bad Request', '400 Bad Request');
-            wp_die();
-        }
+        $this->checkToken();
 
         $this->fmOutput->flushHeader('OK');
 
@@ -1427,5 +1413,17 @@ EOS;
         $notices[$type][] = $message;
 
         $_SESSION[self::NOTICES] = $notices;
+    }
+
+    private function checkToken()
+    {
+        $pingToken = get_option('wcfyndiq_ping_token');
+
+        $token = isset($_GET['pingToken']) ? $_GET['pingToken'] : null;
+
+        if (is_null($token) || $token != $pingToken) {
+            $this->fmOutput->showError(400, 'Bad Request', '400 Bad Request');
+            wp_die();
+        }
     }
 }
