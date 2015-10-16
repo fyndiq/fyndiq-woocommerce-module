@@ -1422,7 +1422,7 @@ EOS;
     function check_page()
     {
         echo "<h1>Fyndiq Checker Page</h1>";
-        echo "<p>This is a page to check all the important requirements to make the Fyndiq work.</p>";
+        echo "<p>".__('This is a page to check all the important requirements to make the Fyndiq work.', 'fyndiq')."</p>";
 
         echo "<h2>File Permission</h2>";
         echo $this->probe_file_permissions();
