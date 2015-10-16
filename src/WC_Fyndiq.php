@@ -383,9 +383,10 @@ EOS;
     * This is validating product data and show error if
     * it is not following the fyndiq validations
     */
-    public function fyndiq_product_validate()
+    public function fyndiq_product_validate($post_id)
     {
         if ($this->getExportState() == self::EXPORTED) {
+            $error = false;
             $postTitleLength = strlen($_POST['post_title']);
             if ($postTitleLength < FyndiqFeedWriter::$minLength[FyndiqFeedWriter::PRODUCT_TITLE] ||
             $postTitleLength > FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::PRODUCT_TITLE]) {
@@ -398,6 +399,7 @@ EOS;
                     ),
                     'error'
                 );
+                $error = true;
             }
 
             $postDescriptionLength = strlen($_POST['content']);
@@ -412,6 +414,7 @@ EOS;
                     ),
                     'error'
                 );
+                $error = true;
             }
 
             $postSKULength = strlen($_POST['_sku']);
@@ -426,6 +429,7 @@ EOS;
                     ),
                     'error'
                 );
+                $error = true;
             }
 
             $postRegularPrice = intval($_POST['_regular_price']);
@@ -437,6 +441,11 @@ EOS;
                     ),
                     'error'
                 );
+                $error = true;
+            }
+
+            if ($error) {
+                update_post_meta($post_id, '_fyndiq_export', self::NOT_EXPORTED);
             }
         }
     }
@@ -460,7 +469,7 @@ EOS;
             update_post_meta($post_id, '_fyndiq_price_percentage', $woocommerce_pricepercentage);
         }
 
-        $this->fyndiq_product_validate();
+        $this->fyndiq_product_validate($post_id);
     }
 
     public function fyndiq_product_add_column($defaults)
