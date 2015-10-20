@@ -8,7 +8,7 @@ class WC_Fyndiq
     const EXPORTED = 'exported';
     const NOT_EXPORTED = 'not exported';
     const NOTICES = 'fyndiq_notices';
-    const DELIMITER = '>';
+    const DELIMITER = ' / ';
 
     public function __construct($fmOutput)
     {
@@ -1556,26 +1556,17 @@ EOS;
         $categories = array();
 
         $category = get_term($cat, 'product_cat');
-        $categories[] = $category;
-        
-        while (isset($category->parent) && $category->parent > 0) {
-            $category = get_term($category->parent, 'product_cat');
-            $categories[] = $category;
+        $parent = $category->parent;
+        $categories[] = $category->name;
+
+        while (isset($parent) && $parent > 0) {
+            $category = get_term($parent, 'product_cat');
+            $categories[] = $category->name;
+            $parent = $category->parent;
         }
 
         $categories = array_reverse($categories);
-        $path = "";
-        $i = 0;
-        foreach ($categories as $key => $cat) {
-            if ($i == 0) {
-                // first
-                $path .= $cat->name;
-            } else {
-                $path .= " " . self::DELIMITER . " " . $cat->name;
-            }
-
-            $i++;
-        }
-        return $path;
+        $categories = implode(self::DELIMITER, $categories);
+        return $categories;
     }
 }
