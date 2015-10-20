@@ -1551,13 +1551,14 @@ EOS;
         }
     }
 
-    private function getCategoriesPath($cat) {
+    private function getCategoriesPath($cat)
+    {
         $categories = array();
 
         $category = get_term($cat, 'product_cat');
         var_dump($category);
         $categories[] = $category;
-        while(isset($category->parent) && $category->parent > 0) {
+        while (isset($category->parent) && $category->parent > 0) {
             $category = get_term($category->parent, 'product_cat');
             $categories[] = $category;
         }
@@ -1569,8 +1570,7 @@ EOS;
             if ($i == 0) {
                 // first
                 $path .= $cat->name;
-            }
-            else {
+            } else {
                 $path .= " " . self::DELIMITER . " " . $cat->name;
             }
 
