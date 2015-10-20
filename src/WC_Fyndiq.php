@@ -1556,8 +1556,8 @@ EOS;
         $categories = array();
 
         $category = get_term($cat, 'product_cat');
-        var_dump($category);
         $categories[] = $category;
+        
         while (isset($category->parent) && $category->parent > 0) {
             $category = get_term($category->parent, 'product_cat');
             $categories[] = $category;
