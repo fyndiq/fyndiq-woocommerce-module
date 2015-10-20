@@ -1559,15 +1559,12 @@ EOS;
         }
         $categories = array();
 
-        $category = get_term($categoryId, 'product_cat');
-        $parent = $category->parent;
-        $categories[] = $category->name;
-
-        while (isset($parent) && $parent > 0) {
+        $parent = $categoryId;
+        do {
             $category = get_term($parent, 'product_cat');
             $categories[] = $category->name;
             $parent = $category->parent;
-        }
+        } while (isset($parent) && $parent > 0);
 
         $categories = array_reverse($categories);
         $this->categoryCache[$categoryId] = implode(self::DELIMITER, $categories);
