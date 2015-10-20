@@ -4,6 +4,7 @@ class WC_Fyndiq
     private $filepath = null;
     private $fmOutput = null;
     private $productImages = null;
+    private $categoryCache = array();
 
     const EXPORTED = 'exported';
     const NOT_EXPORTED = 'not exported';
@@ -1551,11 +1552,14 @@ EOS;
         }
     }
 
-    private function getCategoriesPath($cat)
+    private function getCategoriesPath($categoryId)
     {
+        if(isset($this->categoryCache[$categoryId])) {
+            return $this->categoryCache[$categoryId];
+        }
         $categories = array();
 
-        $category = get_term($cat, 'product_cat');
+        $category = get_term($categoryId, 'product_cat');
         $parent = $category->parent;
         $categories[] = $category->name;
 
@@ -1566,7 +1570,7 @@ EOS;
         }
 
         $categories = array_reverse($categories);
-        $categories = implode(self::DELIMITER, $categories);
-        return $categories;
+        $this->categoryCache[$categoryId] = implode(self::DELIMITER, $categories);
+        return $this->categoryCache[$categoryId];
     }
 }
