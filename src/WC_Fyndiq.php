@@ -4,10 +4,12 @@ class WC_Fyndiq
     private $filepath = null;
     private $fmOutput = null;
     private $productImages = null;
+    private $categoryCache = array();
 
     const EXPORTED = 'exported';
     const NOT_EXPORTED = 'not exported';
     const NOTICES = 'fyndiq_notices';
+    const DELIMITER = ' / ';
 
     public function __construct($fmOutput)
     {
@@ -998,8 +1000,9 @@ EOS;
         FyndiqUtils::debug('product $terms', $terms);
         if ($terms && !is_wp_error($terms)) {
             foreach ($terms as $term) {
+                $path = $this->getCategoriesPath($term->term_id);
                 $feedProduct['product-category-id'] = $term->term_id;
-                $feedProduct['product-category-name'] = $term->name;
+                $feedProduct['product-category-name'] = $path;
                 break;
             }
         } else {
@@ -1547,5 +1550,24 @@ EOS;
             $messages[] = $e->getMessage();
             return implode('<br />', $messages);
         }
+    }
+
+    private function getCategoriesPath($categoryId)
+    {
+        if(isset($this->categoryCache[$categoryId])) {
+            return $this->categoryCache[$categoryId];
+        }
+        $categories = array();
+
+        $parent = $categoryId;
+        do {
+            $category = get_term($parent, 'product_cat');
+            $categories[] = $category->name;
+            $parent = $category->parent;
+        } while (isset($parent) && $parent > 0);
+
+        $categories = array_reverse($categories);
+        $this->categoryCache[$categoryId] = implode(self::DELIMITER, $categories);
+        return $this->categoryCache[$categoryId];
     }
 }
