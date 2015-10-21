@@ -11,6 +11,10 @@ class WC_Fyndiq
     const NOTICES = 'fyndiq_notices';
     const DELIMITER = ' / ';
 
+    const DESCRIPTION_SHORT = 1;
+    const DESCRIPTION_LONG = 2;
+    const DESCRIPTION_SHORT_LONG = 3;
+
     public function __construct($fmOutput)
     {
         //Load locale in init
@@ -238,6 +242,26 @@ EOS;
                     'on-hold' => 'on-hold'
                 ),
                 'desc' => __('This must be picked accurate', 'fyndiq'),
+
+            );
+
+
+            // Add Description picker
+            $settings_slider[] = array(
+
+                'name' => __('Description to use', 'fyndiq'),
+                'desc_tip' => __(
+                    'Set how you want your description to be exported to Fyndiq.',
+                    'fyndiq'
+                ),
+                'id' => 'wcfyndiq_description_picker',
+                'type' => 'select',
+                'options' => array(
+                    self::DESCRIPTION_LONG => __('Long Description', 'fyndiq'),
+                    self::DESCRIPTION_SHORT => __('Short Description', 'fyndiq'),
+                    self::DESCRIPTION_SHORT_LONG => __('Short and Long Description', 'fyndiq'),
+                ),
+                'desc' => __('Default is Long Description', 'fyndiq'),
 
             );
 
@@ -972,7 +996,10 @@ EOS;
         //Initialize models here so it saves memory.
         $feedProduct['product-id'] = $product->id;
         $feedProduct['product-title'] = $product->post->post_title;
-        $feedProduct['product-description'] = $product->post->post_content;
+
+        $description = $this->getDescription($product);
+
+        $feedProduct['product-description'] = $description;
 
         $productPrice = $product->get_price();
         $regularPrice = $product->get_regular_price();
@@ -1057,7 +1084,9 @@ EOS;
             //Initialize models here so it saves memory.
             $feedProduct['product-id'] = $product->id;
             $feedProduct['product-title'] = $product->post->post_title;
-            $feedProduct['product-description'] = $product->post->post_content;
+
+            $description = $this->getDescription($product);
+            $feedProduct['product-description'] = $description;
 
             $productPrice = $variation['display_price'];
             $price = $this->getPrice($product->id, $productPrice);
@@ -1126,6 +1155,22 @@ EOS;
             FyndiqUtils::debug('variation without images', $feedProduct);
 
             return $feedProduct;
+        }
+    }
+
+    function getDescription($post)
+    {
+        $option = get_option('wcfyndiq_description_picker');
+        if (!isset($option) || $option == false) {
+            $option = self::DESCRIPTION_LONG;
+        }
+        switch ($option) {
+            case self::DESCRIPTION_SHORT:
+                return $post->post->post_excerpt;
+            case self::DESCRIPTION_LONG:
+                return $post->post->post_content;
+            case self::DESCRIPTION_SHORT_LONG:
+                return $post->post->post_excerpt . "\n" . $post->post->post_content;
         }
     }
 
@@ -1560,7 +1605,7 @@ EOS;
 
     private function getCategoriesPath($categoryId)
     {
-        if(isset($this->categoryCache[$categoryId])) {
+        if (isset($this->categoryCache[$categoryId])) {
             return $this->categoryCache[$categoryId];
         }
         $categories = array();
