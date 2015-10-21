@@ -15,6 +15,9 @@ class WC_Fyndiq
     const DESCRIPTION_LONG = 2;
     const DESCRIPTION_SHORT_LONG = 3;
 
+    const ORDERS_DISABLE = 1;
+    const ORDERS_ENABLE = 2;
+
     public function __construct($fmOutput)
     {
         //Load locale in init
@@ -64,15 +67,16 @@ class WC_Fyndiq
         add_action('admin_notices', array(&$this, 'fyndiq_bulk_notices'));
 
         //order list
-        add_filter('manage_edit-shop_order_columns', array(&$this, 'fyndiq_order_add_column'));
-        add_action('manage_shop_order_posts_custom_column', array(&$this, 'fyndiq_order_column'), 5, 2);
-        add_filter('manage_edit-shop_order_sortable_columns', array(&$this, 'fyndiq_order_column_sort'));
-
+        if($this->ordersEnabled()) {
+            add_filter('manage_edit-shop_order_columns', array(&$this, 'fyndiq_order_add_column'));
+            add_action('manage_shop_order_posts_custom_column', array(&$this, 'fyndiq_order_column'), 5, 2);
+            add_filter('manage_edit-shop_order_sortable_columns', array(&$this, 'fyndiq_order_column_sort'));
+            add_action('load-edit.php', array(&$this, 'fyndiq_order_delivery_note_bulk_action'));
+        }
 
         //bulk action
         add_action('admin_footer-edit.php', array(&$this, 'fyndiq_product_add_bulk_action'));
         add_action('load-edit.php', array(&$this, 'fyndiq_product_export_bulk_action'));
-        add_action('load-edit.php', array(&$this, 'fyndiq_order_delivery_note_bulk_action'));
 
         //add_action('post_submitbox_misc_actions', array( &$this, 'fyndiq_order_edit_action'));
         add_action('add_meta_boxes', array(&$this, 'fyndiq_order_meta_boxes'));
@@ -144,25 +148,48 @@ class WC_Fyndiq
 
     public function get_url()
     {
-        $script = <<<EOS
-        <script type="text/javascript">
-            var wordpressurl = '%s';
-            var trans_error = '%s';
-            var trans_loading = '%s';
-            var trans_done = '%s';
-        </script>
-        <script src="%s" type="text/javascript"></script>
-        <script src="%s" type="text/javascript"></script>
+        if($this->ordersEnabled()) {
+            $script = <<<EOS
+            <script type="text/javascript">
+                var wordpressurl = '%s';
+                var trans_error = '%s';
+                var trans_loading = '%s';
+                var trans_done = '%s';
+            </script>
+            <script src="%s" type="text/javascript"></script>
+            <script src="%s" type="text/javascript"></script>
 EOS;
-        printf(
-            $script,
-            get_site_url(),
-            __('Error!', 'fyndiq'),
-            __('Loading', 'fyndiq') . '...',
-            __('Done', 'fyndiq'),
-            plugins_url('/js/order-import.js', __FILE__),
-            plugins_url('/js/product-update.js', __FILE__)
-        );
+            printf(
+                $script,
+                get_site_url(),
+                __('Error!', 'fyndiq'),
+                __('Loading', 'fyndiq') . '...',
+                __('Done', 'fyndiq'),
+                plugins_url('/js/order-import.js', __FILE__),
+                plugins_url('/js/product-update.js', __FILE__)
+            );
+        }
+        else {
+            $script = <<<EOS
+            <script type="text/javascript">
+                var wordpressurl = '%s';
+                var trans_error = '%s';
+                var trans_loading = '%s';
+                var trans_done = '%s';
+            </script>
+            <script src="%s" type="text/javascript"></script>
+EOS;
+            printf(
+                $script,
+                get_site_url(),
+                __('Error!', 'fyndiq'),
+                __('Loading', 'fyndiq') . '...',
+                __('Done', 'fyndiq'),
+                plugins_url('/js/product-update.js', __FILE__)
+            );
+        }
+
+
     }
 
     public function fyndiq_settings_action($sections)
@@ -225,27 +252,6 @@ EOS;
 
             );
 
-            // Add order status setting
-            $settings_slider[] = array(
-
-                'name' => __('Order Status', 'fyndiq'),
-                'desc_tip' => __(
-                    'When a order is imported from fyndiq, this status will be applied.',
-                    'fyndiq'
-                ),
-                'id' => 'wcfyndiq_create_order_status',
-                'type' => 'select',
-                'options' => array(
-                    'completed' => 'completed',
-                    'processing' => 'processing',
-                    'pending' => 'pending',
-                    'on-hold' => 'on-hold'
-                ),
-                'desc' => __('This must be picked accurate', 'fyndiq'),
-
-            );
-
-
             // Add Description picker
             $settings_slider[] = array(
 
@@ -278,6 +284,44 @@ EOS;
                 'type' => 'text',
                 'default' => '0',
                 'desc' => __('Stay on 0 if you want to send all stock to Fyndiq.', 'fyndiq'),
+
+            );
+
+            // Add Description picker
+            $settings_slider[] = array(
+
+                'name' => __('Enable Orders', 'fyndiq'),
+                'desc_tip' => __(
+                    'This will disable all order logic for Fyndiq',
+                    'fyndiq'
+                ),
+                'id' => 'wcfyndiq_order_enable',
+                'type' => 'select',
+                'options' => array(
+                    self::ORDERS_ENABLE => __('Enable', 'fyndiq'),
+                    self::ORDERS_DISABLE => __('Disable', 'fyndiq'),
+                ),
+                'desc' => __('Default is to have orders enabled', 'fyndiq'),
+
+            );
+
+            // Add order status setting
+            $settings_slider[] = array(
+
+                'name' => __('Order Status', 'fyndiq'),
+                'desc_tip' => __(
+                    'When a order is imported from fyndiq, this status will be applied.',
+                    'fyndiq'
+                ),
+                'id' => 'wcfyndiq_create_order_status',
+                'type' => 'select',
+                'options' => array(
+                    'completed' => 'completed',
+                    'processing' => 'processing',
+                    'pending' => 'pending',
+                    'on-hold' => 'on-hold'
+                ),
+                'desc' => __('This must be picked accurate', 'fyndiq'),
 
             );
 
@@ -316,10 +360,12 @@ EOS;
 
         $data = array(
             FyndiqUtils::NAME_PRODUCT_FEED_URL => get_site_url() . '/?fyndiq_feed',
-            FyndiqUtils::NAME_NOTIFICATION_URL => get_site_url() . '/?fyndiq_notification=1&event=order_created',
             FyndiqUtils::NAME_PING_URL => get_site_url() .
                 '/?fyndiq_notification=1&event=ping&pingToken=' . $pingToken
         );
+        if($this->ordersEnabled()) {
+            $data[FyndiqUtils::NAME_NOTIFICATION_URL] = get_site_url() . '/?fyndiq_notification=1&event=order_created';
+        }
         return FmHelpers::callApi('PATCH', 'settings/', $data);
     }
 
@@ -687,7 +733,7 @@ EOS;
 EOS;
             $this->fmOutput->output($script);
         }
-        if ($post_type == 'shop_order') {
+        if ($post_type == 'shop_order' && $this->ordersEnabled()) {
             $getFyndiqDeliveryNote =  __('Get Fyndiq Delivery Note', 'fyndiq');
             $importFromFyndiq = __('Import From Fyndiq', 'fyndiq');
             $script =  <<<EOS
@@ -1226,6 +1272,9 @@ EOS;
 
     private function notice_order_created()
     {
+        if(!$this->ordersEnabled()) {
+            wp_die('Orders is disabled');
+        }
         $order_id = $_GET['order_id'];
         $orderId = is_numeric($order_id) ? intval($order_id) : 0;
         if ($orderId > 0) {
@@ -1614,5 +1663,14 @@ EOS;
         $categories = array_reverse($categories);
         $this->categoryCache[$categoryId] = implode(self::DELIMITER, $categories);
         return $this->categoryCache[$categoryId];
+    }
+
+    private function ordersEnabled()
+    {
+        $setting = get_option('wcfyndiq_order_enable');
+        if(!isset($setting) || $setting == false) {
+            return true;
+        }
+        return ($setting == SELF::ORDERS_ENABLE);
     }
 }
