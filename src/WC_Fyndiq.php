@@ -1155,11 +1155,10 @@ EOS;
     function getDescription($post)
     {
         $option = get_option('wcfyndiq_description_picker');
-        if(!isset($option) || $option == false)
-        {
-            $option = self::DESCRIPTION_LONG;
+        if (!isset($option) || $option == false) {
+        $option = self::DESCRIPTION_LONG;
         }
-        switch($option) {
+        switch ($option) {
             case self::DESCRIPTION_SHORT:
                 return $post->post->post_excerpt;
             case self::DESCRIPTION_LONG:
@@ -1600,7 +1599,7 @@ EOS;
 
     private function getCategoriesPath($categoryId)
     {
-        if(isset($this->categoryCache[$categoryId])) {
+        if (isset($this->categoryCache[$categoryId])) {
             return $this->categoryCache[$categoryId];
         }
         $categories = array();
