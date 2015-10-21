@@ -1156,7 +1156,7 @@ EOS;
     {
         $option = get_option('wcfyndiq_description_picker');
         if (!isset($option) || $option == false) {
-        $option = self::DESCRIPTION_LONG;
+            $option = self::DESCRIPTION_LONG;
         }
         switch ($option) {
             case self::DESCRIPTION_SHORT:
