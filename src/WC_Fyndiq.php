@@ -996,10 +996,16 @@ EOS;
         $feedProduct['product-market'] = WC()->countries->get_base_country();
         $feedProduct['product-currency'] = get_woocommerce_currency();
 
-        $terms = wc_get_product_terms($product->id, 'product_cat');
-        FyndiqUtils::debug('product $terms', $terms);
+        $terms = wp_get_post_terms($product->id, 'product_cat');
         if ($terms && !is_wp_error($terms)) {
-            foreach ($terms as $term) {
+            $correctTerms = array();
+            foreach($terms as $term) {
+                if(isset($term->taxonomy) && $term->taxonomy == 'product_cat') {
+                    $correctTerms[] = $term;
+                }
+            }
+            FyndiqUtils::debug('product $correctTerms', $correctTerms);
+            foreach ($correctTerms as $term) {
                 $path = $this->getCategoriesPath($term->term_id);
                 $feedProduct['product-category-id'] = $term->term_id;
                 $feedProduct['product-category-name'] = $path;
