@@ -1403,7 +1403,7 @@ EOS;
 
     public function checkCountry()
     {
-        $country = strval(WC()->countries->get_base_country());
+        $country = WC()->countries->get_base_country();
         return !in_array($country, FyndiqUtils::$allowedMarkets);
     }
 
