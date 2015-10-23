@@ -1398,7 +1398,8 @@ EOS;
 
     public function checkCurrency()
     {
-        return (get_woocommerce_currency() != 'SEK' && get_woocommerce_currency() != 'EUR');
+        $currency = get_woocommerce_currency();
+        return !in_array($currency, FyndiqUtils::$allowedCurrencies);
     }
 
     public function checkCountry()
