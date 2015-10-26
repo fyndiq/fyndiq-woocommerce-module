@@ -1410,7 +1410,10 @@ EOS;
 
     public function checkCredentials()
     {
-        return empty(get_option('wcfyndiq_username')) || empty(get_option('wcfyndiq_apitoken'));
+        $username = get_option('wcfyndiq_username');
+        $token = get_option('wcfyndiq_apitoken');
+
+        return (empty($username) || empty($token));
     }
 
     private function getPrice($product_id, $product_price)
