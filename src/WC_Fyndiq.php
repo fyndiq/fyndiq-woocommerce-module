@@ -1412,9 +1412,6 @@ EOS;
     {
         $username = get_option('wcfyndiq_username');
         $token = get_option('wcfyndiq_apitoken');
-        if(!isset($username) || !isset($token)) {
-            return true;
-        }
 
         return (empty($username) || empty($token));
     }
