@@ -510,7 +510,8 @@ EOS;
             }
 
             $postRegularPrice = intval($_POST['_regular_price']);
-            if ($postRegularPrice <= 0) {
+            $type = $_POST['product-type'];
+            if ($type != 'variable' && $postRegularPrice <= 0) {
                 $this->add_fyndiq_notice(
                     sprintf(
                         __('Regular Price needs to be set above 0, now it is: %s', 'fyndiq'),
