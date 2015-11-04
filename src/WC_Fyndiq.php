@@ -385,7 +385,7 @@ EOS;
             return;
         }
         $this->fmOutput->output('<div class="options_group"><p>' . __('Fyndiq Product Settings', 'fyndiq') . '</p>');
-        if (version_compare($version, '2.2.11') > 0) {
+        if (version_compare($version, '2.3.8') >= 0) {
             // Checkbox for exporting to fyndiq
             $value = (get_post_meta($product->id, '_fyndiq_export', true) == self::EXPORTED) ? 1 : 0;
 
@@ -396,7 +396,6 @@ EOS;
                     'class' => array('form-field', 'input-checkbox'),
                     'label' => __('Export to Fyndiq', 'fyndiq'),
                     'description' => __('mark this as true if you want to export to Fyndiq', 'fyndiq'),
-                    'required' => false,
                 ),
                 $value
             );
