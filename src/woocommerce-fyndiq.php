@@ -18,6 +18,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
         require_once('models/FmOrderFetch.php');
         require_once('models/FmProduct.php');
         require_once('models/FmProductFetch.php');
+        require_once('FmUpdate.php');
         require_once('WC_Fyndiq.php');
 
         $fmOuput = new FyndiqOutput();
