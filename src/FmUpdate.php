@@ -3,7 +3,7 @@
 class FmUpdate
 {
 
-    const UPDATE_URL = 'http://developers.fyndiq.com/repos/woocommerce/releases/latest.json?';
+    const UPDATE_URL = 'http://developers.fyndiq.com/repos/fyndiq-woocommerce-module/releases/latest.json';
 
     function updateNotification()
     {
@@ -12,7 +12,8 @@ class FmUpdate
             $version = $this->get_update_version();
 
             if (!is_null($version)) {
-                update_option('wcfyndiq_update_version', $version);
+                update_option('wcfyndiq_update_version', $version->tag_name);
+                update_option('wcfyndiq_update_url', $version->html_url);
                 update_option('wcfyndiq_update_date', time());
             }
         }
@@ -26,9 +27,10 @@ class FmUpdate
 
     function updateNotificiation_shower()
     {
+        $url = get_option('wcfyndiq_update_url');
         ?>
         <div class="updated">
-        <p><?php _e('It exist a new version of Fyndiq plugin, install it by clicking on the link:', 'fyndiq'); ?></p>
+        <p><?php _e('It exist a new version of Fyndiq plugin, install it by clicking on the link:', 'fyndiq'); ?> <a href="<? echo $url; ?>"><? echo $url; ?></a> </p>
         </div>
         <?php
     }
@@ -36,6 +38,10 @@ class FmUpdate
     function get_update_version()
     {
         $data = $this->update_curl();
+        if (isset($data->tag_name)) {
+            return $data;
+        }
+        return null;
     }
 
     function update_curl()
@@ -60,7 +66,7 @@ class FmUpdate
         # make the call
         $ch = curl_init();
         curl_setopt_array($ch, $curlOpts);
-        $response['data'] = curl_exec($ch);
+        $response = curl_exec($ch);
         return $response;
     }
 }
