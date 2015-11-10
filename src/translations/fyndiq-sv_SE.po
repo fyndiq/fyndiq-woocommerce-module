@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Fyndiq Modules: Woocommerce\n"
 "POT-Creation-Date: 2015-10-16 10:31+0100\n"
-"PO-Revision-Date: 2015-10-16 08:40+0000\n"
+"PO-Revision-Date: 2015-11-10 13:10+0000\n"
 "Last-Translator: Håkan Nylén <confacted@gmail.com>\n"
 "Language-Team: Swedish (http://www.transifex.com/fyndiq/fyndiq-modules-woocommerce/language/sv/)\n"
 "MIME-Version: 1.0\n"
@@ -374,3 +374,8 @@ msgstr "FEL - Kunde inte skapa order"
 #: models/FmOrder.php:113
 msgid "ERROR - product is downloadable."
 msgstr "FEL - Produkten är nedladdningsbar."
+
+#: FmUpdate.php:33
+msgid ""
+"It exist a new version of Fyndiq plugin, install it by clicking on the link:"
+msgstr "Det finns en ny version av Fyndiq pluginet, installera den genom att klicka på länken:"
