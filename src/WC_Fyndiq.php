@@ -842,7 +842,7 @@ EOS;
                 'orders' => array()
             );
             if (!isset($_REQUEST['post'])) {
-                throw new Exception('Pick at least one order');
+                throw new Exception(__('Pick at least one Order', 'fyndiq'));
             }
             foreach ($_REQUEST['post'] as $order) {
                 $meta = get_post_custom($order);
@@ -867,7 +867,11 @@ EOS;
                 wp_redirect($sendback);
             }
         } catch (Exception $e) {
-            wp_die($e);
+            $sendback = add_query_arg(
+                array('post_type' => 'shop_order', $report_action => $changed, 'ids' => join(',', $post_ids), 'error' => $e->getMessage()),
+                ''
+            );
+            wp_redirect($sendback);
         }
         exit();
     }
