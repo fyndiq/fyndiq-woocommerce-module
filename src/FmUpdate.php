@@ -3,7 +3,7 @@
 class FmUpdate
 {
 
-    const UPDATE_URL = 'http://developers.fyndiq.com/repos/fyndiq-woocommerce-module/releases/latest.json';
+    const UPDATE_URL = 'http://developers.fyndiq.com/repos/fyndiq/fyndiq-woocommerce-module/releases/latest.json';
 
     function updateNotification()
     {
