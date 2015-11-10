@@ -29,6 +29,7 @@ class WC_Fyndiq
         $this->filepath = $upload_dir['basedir'] . '/fyndiq-feed.csv';
 
         $this->fmOutput = $fmOutput;
+        $this->fmUpdate = new FmUpdate();
     }
 
     public function locale_load()
@@ -87,6 +88,9 @@ class WC_Fyndiq
         //Checker Page
         add_action('admin_menu', array(&$this, 'fyndiq_add_menu'));
         add_filter('plugin_action_links_' . plugin_basename(dirname(__FILE__).'/woocommerce-fyndiq.php'), array(&$this, 'fyndiq_action_links'));
+
+        //index
+        add_action('load-index.php', array($this->fmUpdate, 'updateNotification'));
 
         //functions
         if (isset($_GET['fyndiq_feed'])) {

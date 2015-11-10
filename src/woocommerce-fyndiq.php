@@ -14,6 +14,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
         session_start();
         require_once('include/api/fyndiqAPI.php');
         require_once('classes/FmHelpers.php');
+        require_once('classes/FmUpdate.php');
         require_once('include/shared/src/init.php');
         require_once('models/FmOrder.php');
         require_once('models/FmOrderFetch.php');
