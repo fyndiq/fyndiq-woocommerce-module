@@ -67,7 +67,7 @@ class WC_Fyndiq
         add_action('admin_notices', array(&$this, 'fyndiq_bulk_notices'));
 
         //order list
-        if($this->ordersEnabled()) {
+        if ($this->ordersEnabled()) {
             add_filter('manage_edit-shop_order_columns', array(&$this, 'fyndiq_order_add_column'));
             add_action('manage_shop_order_posts_custom_column', array(&$this, 'fyndiq_order_column'), 5, 2);
             add_filter('manage_edit-shop_order_sortable_columns', array(&$this, 'fyndiq_order_column_sort'));
@@ -148,7 +148,7 @@ class WC_Fyndiq
 
     public function get_url()
     {
-        if($this->ordersEnabled()) {
+        if ($this->ordersEnabled()) {
             $script = <<<EOS
             <script type="text/javascript">
                 var wordpressurl = '%s';
@@ -168,8 +168,7 @@ EOS;
                 plugins_url('/js/order-import.js', __FILE__),
                 plugins_url('/js/product-update.js', __FILE__)
             );
-        }
-        else {
+        } else {
             $script = <<<EOS
             <script type="text/javascript">
                 var wordpressurl = '%s';
@@ -363,7 +362,7 @@ EOS;
             FyndiqUtils::NAME_PING_URL => get_site_url() .
                 '/?fyndiq_notification=1&event=ping&pingToken=' . $pingToken
         );
-        if($this->ordersEnabled()) {
+        if ($this->ordersEnabled()) {
             $data[FyndiqUtils::NAME_NOTIFICATION_URL] = get_site_url() . '/?fyndiq_notification=1&event=order_created';
         }
         return FmHelpers::callApi('PATCH', 'settings/', $data);
@@ -1076,8 +1075,8 @@ EOS;
         $terms = wp_get_post_terms($product->id, 'product_cat');
         if ($terms && !is_wp_error($terms)) {
             $correctTerms = array();
-            foreach($terms as $term) {
-                if(isset($term->taxonomy) && $term->taxonomy == 'product_cat') {
+            foreach ($terms as $term) {
+                if (isset($term->taxonomy) && $term->taxonomy == 'product_cat') {
                     $correctTerms[] = $term;
                 }
             }
@@ -1282,7 +1281,7 @@ EOS;
 
     private function notice_order_created()
     {
-        if(!$this->ordersEnabled()) {
+        if (!$this->ordersEnabled()) {
             wp_die('Orders is disabled');
         }
         $order_id = $_GET['order_id'];
@@ -1683,7 +1682,7 @@ EOS;
     private function ordersEnabled()
     {
         $setting = get_option('wcfyndiq_order_enable');
-        if(!isset($setting) || $setting == false) {
+        if (!isset($setting) || $setting == false) {
             return true;
         }
         return ($setting == SELF::ORDERS_ENABLE);
