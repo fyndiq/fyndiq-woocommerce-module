@@ -66,7 +66,13 @@ class FmUpdate
         # make the call
         $ch = curl_init();
         curl_setopt_array($ch, $curlOpts);
-        $response = curl_exec($ch);
-        return $response;
+        $response['data'] = curl_exec($ch);
+
+        # extract different parts of the response
+        $response['http_status'] = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $response['header_size'] = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $response['header'] = substr($response['data'], 0, $response['header_size']);
+        $response['body'] = substr($response['data'], $response['header_size']);
+        return json_decode($response['body']);
     }
 }
