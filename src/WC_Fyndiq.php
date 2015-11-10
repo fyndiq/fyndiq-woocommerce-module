@@ -828,43 +828,47 @@ EOS;
 
     public function fyndiq_order_delivery_note_bulk_action()
     {
-        $wp_list_table = _get_list_table('WP_Posts_List_Table');
-        $action = $wp_list_table->current_action();
+        try {
+            $wp_list_table = _get_list_table('WP_Posts_List_Table');
+            $action = $wp_list_table->current_action();
 
-        switch ($action) {
-            case 'fyndiq_delivery':
-                break;
-            default:
-                return;
-        }
-
-        $orders = array(
-            'orders' => array()
-        );
-        if (!isset($_REQUEST['post'])) {
-            throw new Exception('Pick at least one order');
-        }
-        foreach ($_REQUEST['post'] as $order) {
-            $meta = get_post_custom($order);
-            if (isset($meta['fyndiq_id']) && isset($meta['fyndiq_id'][0]) && $meta['fyndiq_id'][0] != '') {
-                $orders['orders'][] = array('order' => intval($meta['fyndiq_id'][0]));
+            switch ($action) {
+                case 'fyndiq_delivery':
+                    break;
+                default:
+                    return;
             }
-        }
 
-        $ret = FmHelpers::callApi('POST', 'delivery_notes/', $orders, true);
-
-        if ($ret['status'] == 200) {
-            $fileName = 'delivery_notes-' . implode('-', $_REQUEST['post']) . '.pdf';
-            $file = fopen('php://temp', 'wb+');
-            fputs($file, $ret['data']);
-            $this->fmOutput->streamFile($file, $fileName, 'application/pdf', strlen($ret['data']));
-            fclose($file);
-        } else {
-            $sendback = add_query_arg(
-                array('post_type' => 'shop_order', $report_action => $changed, 'ids' => join(',', $post_ids)),
-                ''
+            $orders = array(
+                'orders' => array()
             );
-            wp_redirect($sendback);
+            if (!isset($_REQUEST['post'])) {
+                throw new Exception('Pick at least one order');
+            }
+            foreach ($_REQUEST['post'] as $order) {
+                $meta = get_post_custom($order);
+                if (isset($meta['fyndiq_id']) && isset($meta['fyndiq_id'][0]) && $meta['fyndiq_id'][0] != '') {
+                    $orders['orders'][] = array('order' => intval($meta['fyndiq_id'][0]));
+                }
+            }
+
+            $ret = FmHelpers::callApi('POST', 'delivery_notes/', $orders, true);
+
+            if ($ret['status'] == 200) {
+                $fileName = 'delivery_notes-' . implode('-', $_REQUEST['post']) . '.pdf';
+                $file = fopen('php://temp', 'wb+');
+                fputs($file, $ret['data']);
+                $this->fmOutput->streamFile($file, $fileName, 'application/pdf', strlen($ret['data']));
+                fclose($file);
+            } else {
+                $sendback = add_query_arg(
+                    array('post_type' => 'shop_order', $report_action => $changed, 'ids' => join(',', $post_ids)),
+                    ''
+                );
+                wp_redirect($sendback);
+            }
+        } catch (Exception $e) {
+            wp_die($e);
         }
         exit();
     }
