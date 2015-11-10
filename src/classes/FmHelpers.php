@@ -1,6 +1,4 @@
 <?php
-require_once('include/api/fyndiqAPI.php');
-
 class FmHelpers
 {
 
@@ -27,10 +25,6 @@ class FmHelpers
      */
     public static function callApi($method, $path, $data = array())
     {
-        if (!function_exists('get_plugins')) {
-            require_once(ABSPATH . 'wp-admin/includes/plugin.php');
-        }
-
         $username = get_option('wcfyndiq_username');
         $apiToken = get_option('wcfyndiq_apitoken');
 
