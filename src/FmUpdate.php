@@ -46,33 +46,12 @@ class FmUpdate
 
     function update_curl()
     {
+        $response = wp_remote_get(self::UPDATE_URL);
 
-        $curlOpts = array(
-            CURLOPT_URL => self::UPDATE_URL,
-            CURLOPT_CUSTOMREQUEST => 'GET',
-            CURLOPT_HTTPHEADER => array('Content-type: application/json'),
+        if(isset($response['response']['code']) && 200 == $response['response']['code']) {
+            return json_decode($response['body']);
+        }
 
-            CURLOPT_VERBOSE => true,
-            CURLOPT_HEADER => true,
-
-            #CURLOPT_SSLVERSION => 3,
-            #CURLOPT_SSL_VERIFYPEER => true,
-            #CURLOPT_SSL_VERIFYHOST => 2,
-
-            CURLOPT_CONNECTTIMEOUT => 5,
-            CURLOPT_RETURNTRANSFER => 1,
-        );
-
-        # make the call
-        $ch = curl_init();
-        curl_setopt_array($ch, $curlOpts);
-        $response['data'] = curl_exec($ch);
-
-        # extract different parts of the response
-        $response['http_status'] = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $response['header_size'] = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $response['header'] = substr($response['data'], 0, $response['header_size']);
-        $response['body'] = substr($response['data'], $response['header_size']);
-        return json_decode($response['body']);
+        return null;
     }
 }
