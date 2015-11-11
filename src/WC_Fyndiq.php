@@ -18,7 +18,7 @@ class WC_Fyndiq
     const ORDERS_DISABLE = 1;
     const ORDERS_ENABLE = 2;
 
-    public function __construct($fmOutput)
+    public function __construct($fmOutput, $mainfile)
     {
         //Load locale in init
         add_action('init', array(&$this, 'locale_load'));
@@ -30,6 +30,7 @@ class WC_Fyndiq
 
         $this->fmOutput = $fmOutput;
         $this->fmUpdate = new FmUpdate();
+        $this->mainfile = $mainfile;
     }
 
     public function locale_load()
@@ -66,6 +67,9 @@ class WC_Fyndiq
         add_filter('manage_edit-product_sortable_columns', array(&$this, 'fyndiq_product_column_sort'));
         add_action('pre_get_posts', array(&$this, 'fyndiq_product_column_sort_by'));
         add_action('admin_notices', array(&$this, 'fyndiq_bulk_notices'));
+
+        //Deactivation
+        register_deactivation_hook($this->mainfile, array(&$this, 'deactivate'));
 
         //order list
         if ($this->ordersEnabled()) {
@@ -1548,6 +1552,22 @@ EOS;
 
         echo "<h2>".__('API Connection', 'fyndiq')."</h2>";
         echo $this->probe_connection();
+    }
+
+    function deactivate()
+    {
+        //First empty the settings on fyndiq
+        $data = array(
+            FyndiqUtils::NAME_PRODUCT_FEED_URL => '',
+            FyndiqUtils::NAME_PING_URL => '',
+            FyndiqUtils::NAME_NOTIFICATION_URL => ''
+        );
+        FmHelpers::callApi('PATCH', 'settings/', $data);
+
+        //Empty all settings
+        update_option('wcfyndiq_ping_token', '');
+        update_option('wcfyndiq_username', '');
+        update_option('wcfyndiq_apitoken', '');
     }
 
     private function add_fyndiq_notice($message, $type = 'update')
