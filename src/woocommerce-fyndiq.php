@@ -26,6 +26,6 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
         $fmOuput = new FyndiqOutput();
 
         // finally instantiate our plugin class and add it to the set of globals
-        $GLOBALS['wc_fyndiq'] = new WC_Fyndiq($fmOuput);
+        $GLOBALS['wc_fyndiq'] = new WC_Fyndiq($fmOuput, __FILE__);
     }
 }
