@@ -954,7 +954,7 @@ EOS;
         FyndiqUtils::debug('USER AGENT', FmHelpers::get_user_agent());
         $languageId = WC()->countries->get_base_country();
         FyndiqUtils::debug('language', $languageId);
-        $return = $this->feedFileHandling();
+        $return = $this->fmExport->feedFileHandling();
         $result = file_get_contents($this->filepath);
         FyndiqUtils::debug('$result', $result, true);
         FyndiqUtils::debugStop();
@@ -974,7 +974,7 @@ EOS;
         if (!$locked) {
             update_option('wcfyndiq_ping_time', time());
             try {
-                $this->feedFileHandling();
+                $this->fmExport->feedFileHandling();
                 $this->update_product_info();
             } catch (Exception $e) {
                 error_log($e->getMessage());
