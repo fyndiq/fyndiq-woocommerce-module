@@ -1083,13 +1083,15 @@ EOS;
     function deactivate()
     {
         //First empty the settings on fyndiq
-        $data = array(
-            FyndiqUtils::NAME_PRODUCT_FEED_URL => '',
-            FyndiqUtils::NAME_PING_URL => '',
-            FyndiqUtils::NAME_NOTIFICATION_URL => ''
-        );
-        FmHelpers::callApi('PATCH', 'settings/', $data);
+        if(!$this->checkCredentials()) {
+            $data = array(
+                FyndiqUtils::NAME_PRODUCT_FEED_URL => '',
+                FyndiqUtils::NAME_PING_URL => '',
+                FyndiqUtils::NAME_NOTIFICATION_URL => ''
+            );
 
+            FmHelpers::callApi('PATCH', 'settings/', $data);
+        }
         //Empty all settings
         update_option('wcfyndiq_ping_token', '');
         update_option('wcfyndiq_username', '');
