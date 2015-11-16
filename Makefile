@@ -14,10 +14,11 @@ build: clean
 	rsync -a --exclude='.*' $(SRC_DIR) $(BUILD_DIR)
 	#cp $(DOCS)/* $(BUILD_DIR)/fyndiqmerchant
 	cp LICENSE $(BUILD_DIR)/src
-	sed -i'' -e 's/XXXXXX/$(COMMIT)/g' $(BUILD_DIR)/src/FmHelpers.php
-	mv -f $(BUILD_DIR)/src $(BUILD_DIR)/woocommerce-fyndiq/
-	cd $(BUILD_DIR); zip -r -X fyndiq-woocommerce-module-v$(MODULE_VERSION)-$(COMMIT).zip
-	rm -rf $(BUILD_DIR)/woocommerce-fyndiq
+	sed -i'' -e 's/XXXXXX/$(COMMIT)/g' $(BUILD_DIR)/src/classes/FmHelpers.php
+	cd $(BUILD_DIR); mkdir build;
+	mv -f $(BUILD_DIR)/src $(BUILD_DIR)/build/woocommerce-fyndiq/
+	cd $(BUILD_DIR)/build; zip -r -X ../fyndiq-woocommerce-module-v$(MODULE_VERSION)-$(COMMIT).zip .
+	rm -rf $(BUILD_DIR)/build
 
 clean:
 	rm -rf $(BUILD_DIR)/*
