@@ -1,6 +1,4 @@
 <?php
-require_once('include/api/fyndiqAPI.php');
-
 class FmHelpers
 {
 
@@ -27,10 +25,6 @@ class FmHelpers
      */
     public static function callApi($method, $path, $data = array())
     {
-        if (!function_exists('get_plugins')) {
-            require_once(ABSPATH . 'wp-admin/includes/plugin.php');
-        }
-
         $username = get_option('wcfyndiq_username');
         $apiToken = get_option('wcfyndiq_apitoken');
 
@@ -102,11 +96,17 @@ class FmHelpers
 
     static function fyndiq_wc_tax_enabled()
     {
+        if(function_exists('wc_tax_enabled')) {
+            return wc_tax_enabled();
+        }
         return apply_filters('wc_tax_enabled', get_option('woocommerce_calc_taxes') === 'yes');
     }
 
     static function fyndiq_wc_prices_include_tax()
     {
+        if(function_exists('wc_tax_enabled')) {
+            return wc_prices_include_tax();
+        }
         return self::fyndiq_wc_tax_enabled() && get_option('woocommerce_prices_include_tax') === 'yes';
     }
 }
