@@ -1222,6 +1222,6 @@ EOS;
         if (!isset($setting) || $setting == false) {
             return true;
         }
-        return ($setting == SELF::ORDERS_ENABLE);
+        return ($setting == self::ORDERS_ENABLE);
     }
 }
