@@ -165,7 +165,10 @@ class FmOrder
     public function getProductByReference($reference)
     {
         $option = get_option('wcfyndiq_reference_picker');
-        switch($option) {
+        if (empty($reference)) {
+            return null;
+        }
+        switch ($option) {
             case FmExport::REF_ID:
                 $id = explode(FmExport::REF_DELIMITER, $reference);
                 return (count($id) == 2) ? $this->getProductById(end($id)) : $this->getProductById(reset($id));
