@@ -255,23 +255,25 @@ EOS;
 
             );
 
-            // Add SKU picker
-            $settings_slider[] = array(
+            if(isset($_GET['set_sku'])) {
+                // Add SKU picker
+                $settings_slider[] = array(
 
-                'name' => __('Reference to be in use', 'fyndiq'),
-                'desc_tip' => __(
-                    'If you have multi SKU as in variations changing this will make it work better',
-                    'fyndiq'
-                ),
-                'id' => 'wcfyndiq_reference_picker',
-                'type' => 'select',
-                'options' => array(
-                    FmExport::REF_SKU => __('SKU', 'fyndiq'),
-                    FmExport::REF_ID => __('Product and Article ID', 'fyndiq'),
-                ),
-                'desc' => __('If this value is changed, products already existing on Fyndiq will be removed and uploaded again and orders might not be able to be imported with old SKU.', 'fyndiq'),
+                    'name' => __('Reference to be in use', 'fyndiq'),
+                    'desc_tip' => __(
+                        'If you have multi SKU as in variations changing this will make it work better',
+                        'fyndiq'
+                    ),
+                    'id' => 'wcfyndiq_reference_picker',
+                    'type' => 'select',
+                    'options' => array(
+                        FmExport::REF_SKU => __('SKU', 'fyndiq'),
+                        FmExport::REF_ID => __('Product and Article ID', 'fyndiq'),
+                    ),
+                    'desc' => __('If this value is changed, products already existing on Fyndiq will be removed and uploaded again and orders might not be able to be imported with old SKU.', 'fyndiq'),
 
-            );
+                );
+            }
 
             // Add Description picker
             $settings_slider[] = array(

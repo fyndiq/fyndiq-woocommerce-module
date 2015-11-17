@@ -513,6 +513,9 @@ class FmExport
     private function getReference($product, $parent_id = false)
     {
         $option = get_option('wcfyndiq_reference_picker');
+        if(!isset($option) || $option == false) {
+            $option = self::REF_SKU;
+        }
         switch ($option) {
             case self::REF_ID:
                 return ($parent_id) ? $parent_id . self::REF_DELIMITER . $product->get_variation_id() : $product->id;
