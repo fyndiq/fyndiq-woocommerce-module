@@ -339,11 +339,11 @@ class FmExport
         }
         switch ($option) {
             case self::DESCRIPTION_SHORT:
-            return $post->post->post_excerpt;
+                return $post->post->post_excerpt;
             case self::DESCRIPTION_LONG:
-            return $post->post->post_content;
+                return $post->post->post_content;
             case self::DESCRIPTION_SHORT_LONG:
-            return $post->post->post_excerpt . "\n" . $post->post->post_content;
+                return $post->post->post_excerpt . "\n" . $post->post->post_content;
         }
     }
 
@@ -513,12 +513,12 @@ class FmExport
     private function getReference($product, $parent_id = false)
     {
         $option = get_option('wcfyndiq_reference_picker');
-        switch($option) {
+        switch ($option) {
             case self::REF_ID:
                 return ($parent_id) ? $parent_id . self::REF_DELIMITER . $product->get_variation_id() : $product->id;
             default:
                 $sku = $product->get_sku();
-                if($parent_id == false) {
+                if ($parent_id == false) {
                     $sku = get_post_meta($product->id, '_sku');
                     $sku = array_shift($sku);
                 }

@@ -144,7 +144,7 @@ class FmOrder
 
         if ($product_id) {
             $product = new WC_Product($product_id);
-            if(!is_null($product->post)) {
+            if (!is_null($product->post)) {
                 return $product;
             }
             return null;
@@ -156,7 +156,7 @@ class FmOrder
     public function getProductById($product_id)
     {
         $product = new WC_Product($product_id);
-        if(!is_null($product->post)) {
+        if (!is_null($product->post)) {
             return $product;
         }
         return null;

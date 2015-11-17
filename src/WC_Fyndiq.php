@@ -1101,7 +1101,7 @@ EOS;
     function deactivate()
     {
         //First empty the settings on fyndiq
-        if(!$this->checkCredentials()) {
+        if (!$this->checkCredentials()) {
             $data = array(
                 FyndiqUtils::NAME_PRODUCT_FEED_URL => '',
                 FyndiqUtils::NAME_PING_URL => '',
