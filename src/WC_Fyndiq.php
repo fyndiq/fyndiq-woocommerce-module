@@ -986,8 +986,13 @@ EOS;
     public function generate_orders()
     {
         define('DOING_AJAX', true);
-        $orderFetch = new FmOrderFetch(false);
-        $result = $orderFetch->getAll();
+        try {
+            $orderFetch = new FmOrderFetch(false);
+            $result = $orderFetch->getAll();
+        }
+        catch (Exception $e) {
+            $result = $e->getMessage();
+        }
         $this->fmOutput->outputJSON($result);
         wp_die();
     }
