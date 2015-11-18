@@ -28,11 +28,20 @@ class FmOrderFetch extends FyndiqPaginatedFetch
 
     public function processData($data)
     {
+        $errors = array();
         $orderModel = new FmOrder();
         foreach ($data as $order) {
-            if (!$orderModel->orderExists($order->id)) {
-                $orderModel->createOrder($order);
+            try {
+                if (!$orderModel->orderExists($order->id)) {
+                    $orderModel->createOrder($order);
+                }
+            } catch (Exception $e) {
+                $errors[] = $e->getMessage();
             }
+        }
+
+        if ($errors) {
+            throw new Exception(implode("\n", $errors));
         }
 
         return true;
