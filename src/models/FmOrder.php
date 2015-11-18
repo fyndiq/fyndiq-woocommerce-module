@@ -168,9 +168,6 @@ class FmOrder
         if (empty($reference)) {
             return null;
         }
-        if(!isset($option) || $option == false) {
-            $option = self::REF_SKU;
-        }
         switch ($option) {
             case FmExport::REF_ID:
                 $id = explode(FmExport::REF_DELIMITER, $reference);
