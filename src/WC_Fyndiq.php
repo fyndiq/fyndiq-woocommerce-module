@@ -92,6 +92,9 @@ class WC_Fyndiq
         //index
         add_action('load-index.php', array($this->fmUpdate, 'updateNotification'));
 
+        //orders
+        add_action('load-edit.php', array(&$this, 'fyndiq_show_order_error'));
+
         //functions
         if (isset($_GET['fyndiq_feed'])) {
             $this->fmExport->generate_feed();
@@ -456,6 +459,26 @@ EOS;
             $price,
             get_woocommerce_currency()
         ));
+    }
+
+    public function fyndiq_show_order_error()
+    {
+        if(isset($_GET['post_type']) && $_GET['post_type'] == 'shop_order') {
+            $error = get_option('wcfyndiq_order_error');
+            if($error) {
+                add_action('admin_notices', array(&$this, 'fyndiq_show_order_error_notice'));
+                update_option('wcfyndiq_order_error', false);
+            }
+        }
+    }
+
+    public function fyndiq_show_order_error_notice()
+    {
+        ?>
+        <div class="error">
+        <p><?php _e('Some orders failed to be imported, most likely due to stock or couldn\'t find product on Reference.', 'fyndiq'); ?></p>
+        </div>
+        <?php
     }
 
     /**
@@ -992,6 +1015,7 @@ EOS;
         }
         catch (Exception $e) {
             $result = $e->getMessage();
+            $this->setOrderError();
         }
         $this->fmOutput->outputJSON($result);
         wp_die();
@@ -1228,5 +1252,15 @@ EOS;
             return true;
         }
         return ($setting == self::ORDERS_ENABLE);
+    }
+
+    private function setOrderError()
+    {
+        if ( get_option('wcfyndiq_order_error') !== false ) {
+            update_option('wcfyndiq_order_error', true);
+        }
+        else {
+            add_option('wcfyndiq_order_error', true, null, false);
+        }
     }
 }
