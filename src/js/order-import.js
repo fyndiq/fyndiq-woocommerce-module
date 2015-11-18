@@ -12,7 +12,7 @@ jQuery(document).on('click', '#fyndiq-order-import', function(){
     }).fail(function() {
         button.text(trans_error).delay(1400).queue(function(nxt) {
             jQuery(this).text(beforetext);
-            nxt();
+            location.reload();
         });
     });
 });
