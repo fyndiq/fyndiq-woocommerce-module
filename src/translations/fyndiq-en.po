@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Fyndiq Woocommerce\n"
 "POT-Creation-Date: 2015-10-16 10:31+0100\n"
-"PO-Revision-Date: 2015-11-10 14:27+0100\n"
+"PO-Revision-Date: 2015-11-18 10:47+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en\n"
@@ -117,13 +117,77 @@ msgstr ""
 msgid "Stay on 0 if you want to send all stock to Fyndiq."
 msgstr "Stay on 0 if you want to send all stock to Fyndiq."
 
+#: WC_Fyndiq.php:265
+msgid "Reference to be in use"
+msgstr "Reference to be in use"
+
+#: WC_Fyndiq.php:267
+msgid ""
+"If you have multi SKU as in variations changing this will make it work better"
+msgstr ""
+"If you have multi SKU as in variations changing this will make it work better"
+
+#: WC_Fyndiq.php:273
+msgid "SKU"
+msgstr "SKU"
+
+#: WC_Fyndiq.php:274
+msgid "Product and Article ID"
+msgstr "Product and Article ID"
+
+#: WC_Fyndiq.php:276
+msgid ""
+"If this value is changed, products already existing on Fyndiq will be "
+"removed and uploaded again and orders might not be able to be imported with "
+"old SKU."
+msgstr ""
+"If this value is changed, products already existing on Fyndiq will be "
+"removed and uploaded again and orders might not be able to be imported with "
+"old SKU."
+
 #: WC_Fyndiq.php:273
 msgid "Fyndiq credentials was wrong, try again."
 msgstr "Fyndiq credentials was wrong, try again."
 
+#: WC_Fyndiq.php:286
+msgid "Set how you want your description to be exported to Fyndiq."
+msgstr "Set how you want your description to be exported to Fyndiq."
+
+#: WC_Fyndiq.php:292
+msgid "Long Description"
+msgstr "Long Description"
+
+#: WC_Fyndiq.php:293
+msgid "Short Description"
+msgstr "Short Description"
+
+#: WC_Fyndiq.php:294
+msgid "Short and Long Description"
+msgstr "Short and Long Description"
+
+#: WC_Fyndiq.php:296
+msgid "Default is Long Description"
+msgstr "Default is Long Description"
+
 #: WC_Fyndiq.php:306
 msgid "Can't export this product to Fyndiq"
 msgstr "Can't export this product to Fyndiq"
+
+#: WC_Fyndiq.php:321
+msgid "This will disable all order logic for Fyndiq"
+msgstr "This will disable all order logic for Fyndiq"
+
+#: WC_Fyndiq.php:327
+msgid "Enable"
+msgstr "Enable"
+
+#: WC_Fyndiq.php:328
+msgid "Disable"
+msgstr "Disable"
+
+#: WC_Fyndiq.php:330
+msgid "Default is to have orders enabled"
+msgstr "Default is to have orders enabled"
 
 #: WC_Fyndiq.php:310
 msgid "Fyndiq Product Settings"
@@ -188,6 +252,14 @@ msgstr "Exported"
 #: WC_Fyndiq.php:494 WC_Fyndiq.php:498
 msgid "Not exported"
 msgstr "Not exported"
+
+#: WC_Fyndiq.php:499
+msgid ""
+"Some Fyndiq Orders failed to be imported, most likely due to stock or "
+"couldn't find product on Reference."
+msgstr ""
+"Some Fyndiq Orders failed to be imported, most likely due to stock or "
+"couldn't find product on Reference."
 
 #: WC_Fyndiq.php:501
 msgid "Can't be exported"
