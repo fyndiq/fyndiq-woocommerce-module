@@ -3,10 +3,14 @@ class FmExport
 {
 
     const DELIMITER = ' / ';
+    const REF_DELIMITER = '-';
 
     const DESCRIPTION_SHORT = 1;
     const DESCRIPTION_LONG = 2;
     const DESCRIPTION_SHORT_LONG = 3;
+
+    const REF_SKU = 1;
+    const REF_ID = 2;
 
     function __construct($filepath, $fmoutput)
     {
@@ -234,8 +238,7 @@ class FmExport
             $feedProduct['article-quantity'] = intval($stock);
         }
 
-        $sku = get_post_meta($product->id, '_sku');
-        $sku = array_shift($sku);
+        $sku = $this->getReference($product);
         $feedProduct['article-sku'] = strval($sku);
 
         $feedProduct['article-name'] = $product->post->post_title;
@@ -281,7 +284,7 @@ class FmExport
                 FyndiqUtils::debug('Variation have no categories set - skipped');
                 return array();
             }
-            $sku = $variation['sku'];
+            $sku = $this->getReference($variationModel, $product->id);
 
             $feedProduct['article-sku'] = strval($sku);
 
@@ -336,11 +339,11 @@ class FmExport
         }
         switch ($option) {
             case self::DESCRIPTION_SHORT:
-            return $post->post->post_excerpt;
+                return $post->post->post_excerpt;
             case self::DESCRIPTION_LONG:
-            return $post->post->post_content;
+                return $post->post->post_content;
             case self::DESCRIPTION_SHORT_LONG:
-            return $post->post->post_excerpt . "\n" . $post->post->post_content;
+                return $post->post->post_excerpt . "\n" . $post->post->post_content;
         }
     }
 
@@ -505,6 +508,22 @@ class FmExport
         $categories = array_reverse($categories);
         $this->categoryCache[$categoryId] = implode(self::DELIMITER, $categories);
         return $this->categoryCache[$categoryId];
+    }
+
+    private function getReference($product, $parent_id = false)
+    {
+        $option = get_option('wcfyndiq_reference_picker');
+        switch ($option) {
+            case self::REF_ID:
+                return ($parent_id) ? $parent_id . self::REF_DELIMITER . $product->get_variation_id() : $product->id;
+            default:
+                $sku = $product->get_sku();
+                if ($parent_id == false) {
+                    $sku = get_post_meta($product->id, '_sku');
+                    $sku = array_shift($sku);
+                }
+                return $sku;
+        }
     }
 
     public function returnAndDie($return)

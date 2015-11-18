@@ -26,7 +26,7 @@ class FmOrder
 
         foreach ($order->order_rows as $order_row) {
             // get product by item_id
-            $product = $this->getProductBySku($order_row->sku);
+            $product = $this->getProductByReference($order_row->sku);
             if (!isset($product)) {
                 throw new Exception(sprintf(__('Product SKU ( %s ) not found.', 'fyndiq'), $order_row->sku));
             }
@@ -106,7 +106,7 @@ class FmOrder
 
         foreach ($order->order_rows as $order_row) {
             // get product by item_id
-            $product = $this->getProductBySku($order_row->sku);
+            $product = $this->getProductByReference($order_row->sku);
 
             if (isset($product)) {
                 // if downloadable
@@ -144,9 +144,37 @@ class FmOrder
         $product_id = $wpdb->get_var($wpdb->prepare("SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_sku' AND meta_value='%s' LIMIT 1", $sku));
 
         if ($product_id) {
-            return new WC_Product($product_id);
+            $product = new WC_Product($product_id);
+            if (!is_null($product->post)) {
+                return $product;
+            }
+            return null;
         }
 
         return null;
+    }
+
+    public function getProductById($product_id)
+    {
+        $product = new WC_Product($product_id);
+        if (!is_null($product->post)) {
+            return $product;
+        }
+        return null;
+    }
+
+    public function getProductByReference($reference)
+    {
+        $option = get_option('wcfyndiq_reference_picker');
+        if (empty($reference)) {
+            return null;
+        }
+        switch ($option) {
+            case FmExport::REF_ID:
+                $id = explode(FmExport::REF_DELIMITER, $reference);
+                return (count($id) == 2) ? $this->getProductById(end($id)) : $this->getProductById(reset($id));
+            default:
+                return $this->getProductBySku($reference);
+        }
     }
 }
