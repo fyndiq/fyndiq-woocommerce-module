@@ -476,7 +476,7 @@ EOS;
     {
         ?>
         <div class="error">
-        <p><?php _e('Some orders failed to be imported, most likely due to stock or couldn\'t find product on Reference.', 'fyndiq'); ?></p>
+        <p><?php _e('Some Fyndiq Orders failed to be imported, most likely due to stock or couldn\'t find product on Reference.', 'fyndiq'); ?></p>
         </div>
         <?php
     }
