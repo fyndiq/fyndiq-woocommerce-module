@@ -962,6 +962,7 @@ EOS;
                     $orderModel->createOrder($fyndiqOrder);
                 }
             } catch (Exception $e) {
+                $this->setOrderError();
                 $this->fmOutput->showError(500, 'Internal Server Error', $e);
             }
 
