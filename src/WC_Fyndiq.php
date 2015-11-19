@@ -1032,7 +1032,7 @@ EOS;
         define('DOING_AJAX', true);
         $error = false;
         try {
-            $orderFetch = new FmOrderFetch(false);
+            $orderFetch = new FmOrderFetch(false, true);
             $result = $orderFetch->getAll();
         }
         catch (Exception $e) {
