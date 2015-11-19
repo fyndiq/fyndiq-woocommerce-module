@@ -1,11 +1,11 @@
-#
+# 
 # Translators:
 # Håkan Nylén <confacted@gmail.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: Fyndiq Modules: Woocommerce\n"
 "POT-Creation-Date: 2015-10-16 10:31+0100\n"
-"PO-Revision-Date: 2015-11-10 14:26+0100\n"
+"PO-Revision-Date: 2015-11-18 09:55+0000\n"
 "Last-Translator: Håkan Nylén <confacted@gmail.com>\n"
 "Language-Team: Swedish (http://www.transifex.com/fyndiq/fyndiq-modules-woocommerce/language/sv/)\n"
 "MIME-Version: 1.0\n"
@@ -15,11 +15,10 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.7.6\n"
 "X-Poedit-Basepath: ..\n"
-"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;esc_attr_e;esc_attr_x:1,2c;"
-"esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
-"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
+"X-Poedit-SourceCharset: UTF-8\n"
 
 #: WC_Fyndiq.php:103
 msgid "Settings"
@@ -82,7 +81,8 @@ msgid "Global Price Percentage"
 msgstr "Global Pris Procentenhet"
 
 #: WC_Fyndiq.php:207
-msgid "The percentage that will be removed from the price when sending to fyndiq."
+msgid ""
+"The percentage that will be removed from the price when sending to fyndiq."
 msgstr "Procenten som tas bort från priset när det skickas till Fyndiq."
 
 #: WC_Fyndiq.php:213
@@ -106,20 +106,83 @@ msgid "Minimum Quantity Limit"
 msgstr "Minsta kvantitet-gräns"
 
 #: WC_Fyndiq.php:243
-msgid "this quantity will be reserved by you and will be removed from the quantity that is sent to Fyndiq."
+msgid ""
+"this quantity will be reserved by you and will be removed from the quantity "
+"that is sent to Fyndiq."
 msgstr "Denna kvantitet blir reserverad av dig och tas bort från kvantitet som skickas till Fyndiq."
 
 #: WC_Fyndiq.php:249
 msgid "Stay on 0 if you want to send all stock to Fyndiq."
 msgstr "Låt den vara 0 om du vill att all kvantitet ska skickas till Fyndiq."
 
+#: WC_Fyndiq.php:265
+msgid "Reference to be in use"
+msgstr "Referens som ska användas"
+
+#: WC_Fyndiq.php:267
+msgid ""
+"If you have multi SKU as in variations changing this will make it work "
+"better"
+msgstr "Om du har samma SKU i variationerna så kan ändring av detta fungera bättre"
+
+#: WC_Fyndiq.php:273
+msgid "SKU"
+msgstr "SKU"
+
+#: WC_Fyndiq.php:274
+msgid "Product and Article ID"
+msgstr "Produkt och Artikel ID"
+
+#: WC_Fyndiq.php:276
+msgid ""
+"If this value is changed, products already existing on Fyndiq will be "
+"removed and uploaded again and orders might not be able to be imported with "
+"old SKU."
+msgstr "Om denna fält ändras så kommer produkter som redan finns på fyndiq att raderas och läggas till igen och ordrar med gamla Referenser till artiklar kan ha problem att importeras."
+
 #: WC_Fyndiq.php:273
 msgid "Fyndiq credentials was wrong, try again."
 msgstr "Fyndiq användaruppgifterna var fel, testa igen."
 
+#: WC_Fyndiq.php:286
+msgid "Set how you want your description to be exported to Fyndiq."
+msgstr "Sätt hur du vill ha din Beskrivning ska hanteras när exporterad till Fyndiq."
+
+#: WC_Fyndiq.php:292
+msgid "Long Description"
+msgstr "Lång Beskrivning"
+
+#: WC_Fyndiq.php:293
+msgid "Short Description"
+msgstr "Kort Beskrvining"
+
+#: WC_Fyndiq.php:294
+msgid "Short and Long Description"
+msgstr "Kort och Lång Beskrivning"
+
+#: WC_Fyndiq.php:296
+msgid "Default is Long Description"
+msgstr "förvald är Lång Beskrivning"
+
 #: WC_Fyndiq.php:306
 msgid "Can't export this product to Fyndiq"
 msgstr "Kan inte exportera denna produkt till Fyndiq"
+
+#: WC_Fyndiq.php:321
+msgid "This will disable all order logic for Fyndiq"
+msgstr "Detta kommer stänga av all order logik för Fyndiq"
+
+#: WC_Fyndiq.php:327
+msgid "Enable"
+msgstr "Aktiverad"
+
+#: WC_Fyndiq.php:328
+msgid "Disable"
+msgstr "Inaktiverad"
+
+#: WC_Fyndiq.php:330
+msgid "Default is to have orders enabled"
+msgstr "Förvald är Aktiverad"
 
 #: WC_Fyndiq.php:310
 msgid "Fyndiq Product Settings"
@@ -138,7 +201,9 @@ msgid "Fyndiq Discount Percentage"
 msgstr "Fyndiq rabatt procentenhet."
 
 #: WC_Fyndiq.php:335 WC_Fyndiq.php:368
-msgid "The percentage specific for this product, it will override the globel percentage for this product."
+msgid ""
+"The percentage specific for this product, it will override the globel "
+"percentage for this product."
 msgstr "Denna procent är specific för denna produkt, den skriver över den globala procenten för denna produkt."
 
 #: WC_Fyndiq.php:376
@@ -181,6 +246,12 @@ msgstr "Exporterad"
 msgid "Not exported"
 msgstr "Inte Exporterad"
 
+#: WC_Fyndiq.php:499
+msgid ""
+"Some Fyndiq Orders failed to be imported, most likely due to stock or "
+"couldn't find product on Reference."
+msgstr "Några Fyndiq Ordrar fick problem att importats. Troligast är på grund av kvantitet eller inte kunde hitta produkten på Referensen."
+
 #: WC_Fyndiq.php:501
 msgid "Can't be exported"
 msgstr "Kan inte exporteras"
@@ -202,7 +273,9 @@ msgid "Wrong Currency"
 msgstr "Fel Valuta"
 
 #: WC_Fyndiq.php:526
-msgid "Fyndiq only works in EUR and SEK. change to correct currency. Current Currency:"
+msgid ""
+"Fyndiq only works in EUR and SEK. change to correct currency. Current "
+"Currency:"
 msgstr "Fyndiq funkar bara i EUR och SEK. Ändra till korrekt valuta. Nuvarande valuta:"
 
 #: WC_Fyndiq.php:533
@@ -210,7 +283,9 @@ msgid "Wrong Country"
 msgstr "Fel Land"
 
 #: WC_Fyndiq.php:534
-msgid "Fyndiq only works in Sweden and Germany. change to correct country. Current Country:"
+msgid ""
+"Fyndiq only works in Sweden and Germany. change to correct country. Current "
+"Country:"
 msgstr "Fyndiq funkar bara i Sverige och i Tyskland. Ändra till korrekt land. Nuvarande Land:"
 
 #: WC_Fyndiq.php:542
@@ -230,7 +305,9 @@ msgid "Fyndiq Validations"
 msgstr "Fyndiq Valideringar"
 
 #: WC_Fyndiq.php:559
-msgid "The product will not be exported to Fyndiq until these validations are fixed."
+msgid ""
+"The product will not be exported to Fyndiq until these validations are "
+"fixed."
 msgstr "Produkten kommer inte exporteras till Fyndiq förens dessa valideringar är åtgärdade."
 
 #: WC_Fyndiq.php:589
@@ -272,7 +349,9 @@ msgid "Fyndiq Checker Page"
 msgstr "Fyndiq Check Sida"
 
 #: WC_Fyndiq.php:1425
-msgid "This is a page to check all the important requirements to make the Fyndiq work."
+msgid ""
+"This is a page to check all the important requirements to make the Fyndiq "
+"work."
 msgstr "Denna sida kontrollerar så all viktiga krav för att Fyndiq pluginet ska funka, fungerar."
 
 #: WC_Fyndiq.php:1427
@@ -302,7 +381,9 @@ msgstr "Filnamnet: `%s` (%s)"
 
 #: WC_Fyndiq.php:1467
 #, php-format
-msgid "Cannot create file. Please make sure that the server can create new files in `%s`"
+msgid ""
+"Cannot create file. Please make sure that the server can create new files in"
+" `%s`"
 msgstr "Kan inte skapa filen. Vänligen var säker att server kan skapa filer i `%s`"
 
 #: WC_Fyndiq.php:1471
@@ -362,7 +443,8 @@ msgid "ERROR - product is downloadable."
 msgstr "FEL - Produkten är nedladdningsbar."
 
 #: FmUpdate.php:33
-msgid "It exist a new version of Fyndiq plugin, install it by clicking on the link:"
+msgid ""
+"It exist a new version of Fyndiq plugin, install it by clicking on the link:"
 msgstr "Det finns en ny version av Fyndiq pluginet, installera den genom att klicka på länken:"
 
 #: WC_Fyndiq.php:849
