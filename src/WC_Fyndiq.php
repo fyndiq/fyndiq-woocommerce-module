@@ -1031,8 +1031,9 @@ EOS;
     {
         define('DOING_AJAX', true);
         try {
-            $orderFetch = new FmOrderFetch(false);
+            $orderFetch = new FmOrderFetch(false, true);
             $result = $orderFetch->getAll();
+            update_option('wcfyndiq_order_time', time());
         }
         catch (Exception $e) {
             $result = $e->getMessage();

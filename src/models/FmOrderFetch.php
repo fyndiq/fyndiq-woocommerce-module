@@ -12,7 +12,8 @@ class FmOrderFetch extends FyndiqPaginatedFetch
     {
         $date = false;
         if ($this->settingExists) {
-            $date = 0;
+            $time = get_option('wcfyndiq_order_time');
+            $date = date('Y-m-d H:i:s', $time);
         }
         $url = 'orders/' . (empty($date) ? '' : '?min_date=' . urlencode($date));
 
