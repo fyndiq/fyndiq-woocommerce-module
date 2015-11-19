@@ -1006,8 +1006,20 @@ EOS;
     public function generate_orders()
     {
         define('DOING_AJAX', true);
-        $orderFetch = new FmOrderFetch(false);
-        $result = $orderFetch->getAll();
+        $error = false;
+        try {
+            $orderFetch = new FmOrderFetch(false);
+            $result = $orderFetch->getAll();
+        }
+        catch (Exception $e) {
+            $result = $e->getMessage();
+            $error = true;
+            $this->setOrderError();
+        }
+        if(!$error)
+        {
+            update_option('wcfyndiq_order_time', time());
+        }
         $this->fmOutput->outputJSON($result);
         wp_die();
     }
