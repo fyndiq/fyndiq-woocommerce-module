@@ -524,7 +524,7 @@ EOS;
                 $error = true;
             }
 
-            $postDescriptionLength = strlen($_POST['content']);
+            $postDescriptionLength = strlen($this->fmExport->getDescriptionPOST());
             if ($postDescriptionLength < FyndiqFeedWriter::$minLength[FyndiqFeedWriter::PRODUCT_DESCRIPTION] ||
             $postDescriptionLength > FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::PRODUCT_DESCRIPTION]) {
                 $this->add_fyndiq_notice(

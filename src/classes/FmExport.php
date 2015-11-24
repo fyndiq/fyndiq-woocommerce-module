@@ -347,6 +347,22 @@ class FmExport
         }
     }
 
+    function getDescriptionPOST()
+    {
+        $option = get_option('wcfyndiq_description_picker');
+        if (!isset($option) || $option == false) {
+            $option = self::DESCRIPTION_LONG;
+        }
+        switch ($option) {
+            case self::DESCRIPTION_SHORT:
+                return $_POST['post_excerpt'];
+            case self::DESCRIPTION_LONG:
+                return $_POST['post_content'];
+            case self::DESCRIPTION_SHORT_LONG:
+                return $_POST['post_excerpt'] . "\n" . $_POST['post_content'];
+        }
+    }
+
     private function getImagesFromArray($articleId = null)
     {
         $product = array();
