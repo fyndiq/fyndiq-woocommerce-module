@@ -1140,8 +1140,11 @@ EOS;
                 FyndiqUtils::NAME_PING_URL => '',
                 FyndiqUtils::NAME_NOTIFICATION_URL => ''
             );
-
-            FmHelpers::callApi('PATCH', 'settings/', $data);
+            try {
+                FmHelpers::callApi('PATCH', 'settings/', $data);
+            } catch (Exception $e) {
+                error_log($e->getMessage());
+            }
         }
         //Empty all settings
         update_option('wcfyndiq_ping_token', '');
