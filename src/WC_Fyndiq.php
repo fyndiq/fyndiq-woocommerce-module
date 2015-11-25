@@ -258,7 +258,7 @@ EOS;
 
             );
 
-            if(isset($_GET['set_sku'])) {
+            if (isset($_GET['set_sku'])) {
                 // Add SKU picker
                 $settings_slider[] = array(
 
@@ -483,9 +483,9 @@ EOS;
 
     public function fyndiq_show_order_error()
     {
-        if(isset($_GET['post_type']) && $_GET['post_type'] == 'shop_order') {
+        if (isset($_GET['post_type']) && $_GET['post_type'] == 'shop_order') {
             $error = get_option('wcfyndiq_order_error');
-            if($error) {
+            if ($error) {
                 add_action('admin_notices', array(&$this, 'fyndiq_show_order_error_notice'));
                 update_option('wcfyndiq_order_error', false);
             }
@@ -509,7 +509,7 @@ EOS;
     {
         if ($this->getExportState() == self::EXPORTED) {
             $error = false;
-            $postTitleLength = strlen($_POST['post_title']);
+            $postTitleLength = mb_strlen($_POST['post_title']);
             if ($postTitleLength < FyndiqFeedWriter::$minLength[FyndiqFeedWriter::PRODUCT_TITLE] ||
             $postTitleLength > FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::PRODUCT_TITLE]) {
                 $this->add_fyndiq_notice(
@@ -524,7 +524,7 @@ EOS;
                 $error = true;
             }
 
-            $postDescriptionLength = strlen($_POST['content']);
+            $postDescriptionLength = mb_strlen($this->fmExport->getDescriptionPOST());
             if ($postDescriptionLength < FyndiqFeedWriter::$minLength[FyndiqFeedWriter::PRODUCT_DESCRIPTION] ||
             $postDescriptionLength > FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::PRODUCT_DESCRIPTION]) {
                 $this->add_fyndiq_notice(
@@ -539,7 +539,7 @@ EOS;
                 $error = true;
             }
 
-            $postSKULength = strlen($_POST['_sku']);
+            $postSKULength = mb_strlen($_POST['_sku']);
             if ($postSKULength < FyndiqFeedWriter::$minLength[FyndiqFeedWriter::ARTICLE_SKU] ||
             $postSKULength > FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::ARTICLE_SKU]) {
                 $this->add_fyndiq_notice(
@@ -1034,8 +1034,7 @@ EOS;
             $orderFetch = new FmOrderFetch(false, true);
             $result = $orderFetch->getAll();
             update_option('wcfyndiq_order_time', time());
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             $result = $e->getMessage();
             $this->setOrderError();
         }
@@ -1140,8 +1139,10 @@ EOS;
                 FyndiqUtils::NAME_PING_URL => '',
                 FyndiqUtils::NAME_NOTIFICATION_URL => ''
             );
-
-            FmHelpers::callApi('PATCH', 'settings/', $data);
+            try {
+                FmHelpers::callApi('PATCH', 'settings/', $data);
+            } catch (Exception $e) {
+            }
         }
         //Empty all settings
         update_option('wcfyndiq_ping_token', '');
@@ -1278,10 +1279,9 @@ EOS;
 
     private function setOrderError()
     {
-        if ( get_option('wcfyndiq_order_error') !== false ) {
+        if (get_option('wcfyndiq_order_error') !== false) {
             update_option('wcfyndiq_order_error', true);
-        }
-        else {
+        } else {
             add_option('wcfyndiq_order_error', true, null, false);
         }
     }
