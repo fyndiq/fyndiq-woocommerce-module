@@ -84,13 +84,15 @@ class FmExport
             FyndiqUtils::debug('$product', $product);
             $tag_values = get_post_meta($product->id, '_product_attributes', true);
             FyndiqUtils::debug('$tag_values', $tag_values);
-            foreach ($tag_values as $value) {
-                FyndiqUtils::debug('$value[\'name\']', $value['name']);
-                $name = str_replace('pa_', '', $value['name']);
-                if (!isset($this->tag_values_fixed[$value['name']])) {
-                    $label = $wpdb->get_var($wpdb->prepare("SELECT attribute_label FROM {$wpdb->prefix}woocommerce_attribute_taxonomies WHERE attribute_name = %s;", $name));
-                    $this->tag_values_fixed[$value['name']] =  $label;
-                }
+            if (is_array($tag_values)) {
+              foreach ($tag_values as $value) {
+                  FyndiqUtils::debug('$value[\'name\']', $value['name']);
+                  $name = str_replace('pa_', '', $value['name']);
+                  if (!isset($this->tag_values_fixed[$value['name']])) {
+                      $label = $wpdb->get_var($wpdb->prepare("SELECT attribute_label FROM {$wpdb->prefix}woocommerce_attribute_taxonomies WHERE attribute_name = %s;", $name));
+                      $this->tag_values_fixed[$value['name']] =  $label;
+                  }
+              }
             }
             FyndiqUtils::debug('$tag_values_fixed', $this->tag_values_fixed);
             $variations = $this->getAllVariations($product);
