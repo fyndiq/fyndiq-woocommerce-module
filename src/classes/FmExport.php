@@ -84,7 +84,7 @@ class FmExport
             FyndiqUtils::debug('$product', $product);
             $tag_values = get_post_meta($product->id, '_product_attributes', true);
             FyndiqUtils::debug('$tag_values', $tag_values);
-            if (isset($tag_values)) {
+            if (is_array($tag_values)) {
               foreach ($tag_values as $value) {
                   FyndiqUtils::debug('$value[\'name\']', $value['name']);
                   $name = str_replace('pa_', '', $value['name']);
