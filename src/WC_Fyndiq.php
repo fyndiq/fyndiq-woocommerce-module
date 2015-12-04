@@ -1277,7 +1277,7 @@ EOS;
         $installed_plugin = array();
         foreach($all_plugins as $plugin)
         {
-            $installed_plugin[] = $plugin['Name'];
+            $installed_plugin[] = $plugin['Name'] . ' v. ' . $plugin['Version'];
         }
         return implode('<br />', $installed_plugin);
     }
