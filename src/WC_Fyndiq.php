@@ -1128,6 +1128,9 @@ EOS;
 
         echo "<h2>".__('API Connection', 'fyndiq')."</h2>";
         echo $this->probe_connection();
+
+        echo "<h2>".__('Installed Plugins', 'fyndiq')."</h2>";
+        echo $this->probe_plugins();
     }
 
     function deactivate()
@@ -1266,6 +1269,17 @@ EOS;
             $messages[] = $e->getMessage();
             return implode('<br />', $messages);
         }
+    }
+
+    protected function probe_plugins()
+    {
+        $all_plugins = get_plugins();
+        $installed_plugin = array();
+        foreach($all_plugins as $plugin)
+        {
+            $installed_plugin[] = $plugin['Name'] . ' v. ' . $plugin['Version'];
+        }
+        return implode('<br />', $installed_plugin);
     }
 
     private function ordersEnabled()
