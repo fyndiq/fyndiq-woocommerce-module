@@ -46,8 +46,8 @@ class WC_Fyndiq
 
 
         //Settings
-        add_filter( 'woocommerce_settings_tabs_array', array(&$this, 'fyndiq_add_settings_tab'), 50 );
-        add_action('woocommerce_settings_tabs_wcfyndiq', array(&$this, 'settings_tab') );
+        add_filter('woocommerce_settings_tabs_array', array(&$this, 'fyndiq_add_settings_tab'), 50);
+        add_action('woocommerce_settings_tabs_wcfyndiq', array(&$this, 'settings_tab'));
         add_action('woocommerce_update_options_wcfyndiq', array(&$this, 'update_settings'));
 
         //products
@@ -198,8 +198,9 @@ EOS;
 
     }
 
-    function settings_tab() {
-        woocommerce_admin_fields( $this->fyndiq_all_settings() );
+    function settings_tab()
+    {
+        woocommerce_admin_fields($this->fyndiq_all_settings());
     }
 
     public function fyndiq_all_settings()
@@ -210,7 +211,7 @@ EOS;
             $settings_slider = array();
 
             $settings_slider[] = array(
-                'name'     => __( 'Fyndiq', 'fyndiq' ),
+                'name'     => __('Fyndiq', 'fyndiq'),
                 'type'     => 'title',
                 'desc'     => '',
                 'id'       => 'wc_settings_wcfyndiq_section_title'
@@ -358,11 +359,12 @@ EOS;
                  'id' => 'wc_settings_wcfyndiq_section_end'
             );
 
-            return apply_filters( 'wc_settings_tab_wcfyndiq', $settings_slider );
+            return apply_filters('wc_settings_tab_wcfyndiq', $settings_slider);
     }
 
-    public function fyndiq_add_settings_tab( $settings_tabs ) {
-        $settings_tabs['wcfyndiq'] = __( 'Fyndiq', 'fyndiq' );
+    public function fyndiq_add_settings_tab($settings_tabs)
+    {
+        $settings_tabs['wcfyndiq'] = __('Fyndiq', 'fyndiq');
         return $settings_tabs;
     }
 
@@ -1284,7 +1286,7 @@ EOS;
         $all_plugins = get_plugins();
         $installed_plugin = array();
         foreach ($all_plugins as $plugin) {
-        $installed_plugin[] = $plugin['Name'] . ' v. ' . $plugin['Version'];
+            $installed_plugin[] = $plugin['Name'] . ' v. ' . $plugin['Version'];
         }
         return implode('<br />', $installed_plugin);
     }
