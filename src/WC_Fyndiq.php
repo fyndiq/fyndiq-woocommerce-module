@@ -46,9 +46,9 @@ class WC_Fyndiq
 
 
         //Settings
-        add_filter('woocommerce_get_sections_products', array(&$this, 'fyndiq_settings_action'));
-        add_filter('woocommerce_get_settings_products', array(&$this, 'fyndiq_all_settings'), 10, 2);
-        add_action('woocommerce_update_options_products', array(&$this, 'update_settings'));
+        add_filter('woocommerce_settings_tabs_array', array(&$this, 'fyndiq_add_settings_tab'), 50);
+        add_action('woocommerce_settings_tabs_wcfyndiq', array(&$this, 'settings_tab'));
+        add_action('woocommerce_update_options_wcfyndiq', array(&$this, 'update_settings'));
 
         //products
         add_action(
@@ -198,24 +198,28 @@ EOS;
 
     }
 
-    public function fyndiq_settings_action($sections)
+    function settings_tab()
     {
-        $sections['wcfyndiq'] = __('Fyndiq', 'fyndiq');
-        return $sections;
+        woocommerce_admin_fields($this->fyndiq_all_settings());
     }
 
-    public function fyndiq_all_settings($settings, $current_section)
+    public function fyndiq_all_settings()
     {
         /**
          * Check the current section is what we want
          **/
-
-        if ($current_section == 'wcfyndiq') {
             $settings_slider = array();
+
+            $settings_slider[] = array(
+                'name'     => __('Fyndiq', 'fyndiq'),
+                'type'     => 'title',
+                'desc'     => '',
+                'id'       => 'wc_settings_wcfyndiq_section_title'
+            );
 
             // Add Title to the Settings
             $settings_slider[] = array(
-                'name' => __('Fyndiq Settings', 'fyndiq'),
+                'name' => __('General Settings', 'fyndiq'),
                 'type' => 'title',
                 'desc' => __('The following options are used to configure Fyndiq', 'fyndiq'),
                 'id' => 'wcfyndiq'
@@ -350,31 +354,29 @@ EOS;
                 'desc' => __('This must be picked accurate', 'fyndiq'),
 
             );
+            $settings_slider[] = array(
+                 'type' => 'sectionend',
+                 'id' => 'wc_settings_wcfyndiq_section_end'
+            );
 
-            $settings_slider[] = array('type' => 'sectionend', 'id' => 'wcfyndiq');
+            return apply_filters('wc_settings_tab_wcfyndiq', $settings_slider);
+    }
 
-            return $settings_slider;
-        } else {
-            /**
-             * If not, return the standard settings
-             **/
-            return $settings;
-        }
+    public function fyndiq_add_settings_tab($settings_tabs)
+    {
+        $settings_tabs['wcfyndiq'] = __('Fyndiq', 'fyndiq');
+        return $settings_tabs;
     }
 
     public function update_settings()
     {
-        woocommerce_update_options($this->fyndiq_all_settings(array(), 'wcfyndiq'));
+        woocommerce_update_options($this->fyndiq_all_settings());
         try {
             $this->updateUrls();
         } catch (Exception $e) {
             if ($e->getMessage() == 'Unauthorized') {
-                $this->fmOutput->output(sprintf(
-                    '<div class="error"><p>%s</p></div>',
-                    __('Fyndiq credentials was wrong, try again.', 'fyndiq')
-                ));
+                $this->fyndiq_show_setting_error_notice();
             }
-            //die();
         }
     }
 
@@ -499,6 +501,14 @@ EOS;
         <p><?php _e('Some Fyndiq Orders failed to be imported, most likely due to stock or couldn\'t find product on Reference.', 'fyndiq'); ?></p>
         </div>
         <?php
+    }
+
+    public function fyndiq_show_setting_error_notice()
+    {
+        $this->fmOutput->output(sprintf(
+            '<div class="error"><p>%s</p></div>',
+            __('Fyndiq credentials was wrong, try again.', 'fyndiq')
+        ));
     }
 
     /**
@@ -1275,8 +1285,7 @@ EOS;
     {
         $all_plugins = get_plugins();
         $installed_plugin = array();
-        foreach($all_plugins as $plugin)
-        {
+        foreach ($all_plugins as $plugin) {
             $installed_plugin[] = $plugin['Name'] . ' v. ' . $plugin['Version'];
         }
         return implode('<br />', $installed_plugin);
