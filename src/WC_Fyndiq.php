@@ -48,7 +48,7 @@ class WC_Fyndiq
         //Settings
         add_filter('woocommerce_get_sections_products', array(&$this, 'fyndiq_settings_action'));
         add_filter('woocommerce_get_settings_products', array(&$this, 'fyndiq_all_settings'), 10, 2);
-        add_action('woocommerce_update_options_products', array(&$this, 'update_settings'));
+        add_action('woocommerce_update_options_wcfyndiq', array(&$this, 'update_settings'));
 
         //products
         add_action(
@@ -364,7 +364,7 @@ EOS;
 
     public function update_settings()
     {
-        woocommerce_update_options($this->fyndiq_all_settings(array(), 'wcfyndiq'));
+            woocommerce_update_options($this->fyndiq_all_settings(array(), 'wcfyndiq'));
         try {
             $this->updateUrls();
         } catch (Exception $e) {
@@ -1275,9 +1275,8 @@ EOS;
     {
         $all_plugins = get_plugins();
         $installed_plugin = array();
-        foreach($all_plugins as $plugin)
-        {
-            $installed_plugin[] = $plugin['Name'] . ' v. ' . $plugin['Version'];
+        foreach ($all_plugins as $plugin) {
+        $installed_plugin[] = $plugin['Name'] . ' v. ' . $plugin['Version'];
         }
         return implode('<br />', $installed_plugin);
     }
