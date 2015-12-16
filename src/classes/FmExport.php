@@ -28,6 +28,9 @@ class FmExport
                 $this->feedFileHandling();
             }
             if (file_exists($this->filepath)) {
+                // Clean output buffer if possible. Not this is not guaranteed to work because we don't control
+                // when/if ob_start will be called
+                ob_get_clean();
                 $lastModified = filemtime($this->filepath);
                 $file = fopen($this->filepath, 'r');
                 $this->fmOutput->header('Last-Modified: ' . gmdate('D, d M Y H:i:s T', $lastModified));
