@@ -778,11 +778,11 @@ EOS;
         jQuery('<option>').val('fyndiq_export').text('$exportToFyndiq').appendTo("select[name='action2']");
         jQuery('<option>').val('fyndiq_no_export').text('$removeFromFyndiq').appendTo("select[name='action']");
         jQuery('<option>').val('fyndiq_no_export').text('$removeFromFyndiq').appendTo("select[name='action2']");
-        if( jQuery('.wrap h2').length )  {
-            jQuery(jQuery(".wrap h2")[0]).append("<a href='#' id='fyndiq-product-update' class='add-new-h2'>$updateFyndiqStatus</a>");
+        if( jQuery('.wrap h2').length && jQuery(jQuery('.wrap h2')[0]).text() != 'Filter posts list') {
+            jQuery(jQuery('.wrap h2')[0]).append("<a href='#' id='fyndiq-product-update' class='add-new-h2'>$updateFyndiqStatus</a>");
         }
-        else if(jQuery('.wrap h1').length ){
-            jQuery(jQuery(".wrap h1")[0]).append("<a href='#' id='fyndiq-product-update' class='page-title-action'>$updateFyndiqStatus</a>");
+        else if( jQuery('.wrap h1').length ) {
+            jQuery(jQuery('.wrap h1')[0]).append("<a href='#' id='fyndiq-product-update' class='page-title-action'>$updateFyndiqStatus</a>");
         }
     });
 </script>
@@ -797,11 +797,11 @@ EOS;
     jQuery(document).ready(function () {
         jQuery('<option>').val('fyndiq_delivery').text('$getFyndiqDeliveryNote').appendTo("select[name='action']");
         jQuery('<option>').val('fyndiq_delivery').text('$getFyndiqDeliveryNote').appendTo("select[name='action2']");
-        if( jQuery('.wrap h2').length ) {
-            jQuery(jQuery(".wrap h2")[0]).append("<a href='#' id='fyndiq-order-import' class='add-new-h2'>$importFromFyndiq</a>");
+        if( jQuery('.wrap h2').length && jQuery(jQuery('.wrap h2')[0]).text() != 'Filter posts list' ) {
+            jQuery(jQuery('.wrap h2')[0]).append("<a href='#' id='fyndiq-order-import' class='add-new-h2'>$importFromFyndiq</a>");
         }
         else if(jQuery('.wrap h1').length ){
-            jQuery(jQuery(".wrap h1")[0]).append("<a href='#' id='fyndiq-order-import' class='page-title-action'>$importFromFyndiq</a>");
+            jQuery(jQuery('.wrap h1')[0]).append("<a href='#' id='fyndiq-order-import' class='page-title-action'>$importFromFyndiq</a>");
         }
     });
 </script>
