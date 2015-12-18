@@ -669,13 +669,13 @@ EOS;
             );
         }
         if ($this->checkCredentials()) {
-            $url = admin_url('admin.php?page=wc-settings&tab=products&section=wcfyndiq');
+            $url = admin_url('admin.php?page=wc-settings&tab=wcfyndiq');
             printf(
                 '<div class="error"><p><strong>%s</strong>: %s <a href="%s">%s</a></p></div>',
                 __('Fyndiq Credentials', 'fyndiq'),
                 __('You need to set Fyndiq Credentials to make it work. Do it in ', 'fyndiq'),
                 $url,
-                __('Woocommerce Settings > Products > Fyndiq', 'fyndiq')
+                __('Woocommerce Settings > Fyndiq', 'fyndiq')
             );
         }
         if (isset($_SESSION[self::NOTICES])) {
