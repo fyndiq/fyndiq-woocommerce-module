@@ -156,6 +156,7 @@ class FmExport
             $productPrice = $product->get_price_including_tax();
             $regularPrice = $product->get_price_including_tax(1, $regularPrice);
         }
+        $productPrice = $this->getPrice($product->id, $productPrice);
 
         $_tax = new WC_Tax(); //looking for appropriate vat for specific product
         FyndiqUtils::debug('tax class', $product->get_tax_class());
