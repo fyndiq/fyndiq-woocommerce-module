@@ -196,7 +196,7 @@ class FmExport
 
         $quantity = 0;
         if ($product->is_in_stock()) {
-            $quantity = $product->get_stock_quantity();
+            $quantity = intval($product->get_stock_quantity());
             if ($config['minQty'] > 0) {
                 $quantity -= $config['minQty'];
             }
