@@ -164,6 +164,8 @@ class FmExport
                 }
             }
         }
+        FyndiqUtils::debug('$feedWriter->getProductCount()', $feedWriter->getProductCount());
+        FyndiqUtils::debug('$feedWriter->getArticleCount()', $feedWriter->getArticleCount());
         $feedWriter->write();
         return true;
     }
