@@ -60,7 +60,7 @@ class FmExport
         }
 
         $feedWriter = new FyndiqCSVFeedWriter($file);
-        $exportResult = $this->feed_write($feedWriter);
+        $exportResult = $this->writeFeed($feedWriter);
         fclose($file);
         if ($exportResult) {
             // File successfully generated
@@ -71,138 +71,101 @@ class FmExport
         }
     }
 
-    private function feed_write($feedWriter)
+    protected function getTagValuesFixed($wpdb, $productId)
+    {
+        $result = array();
+        $tag_values = get_post_meta($productId, '_product_attributes', true);
+        if (is_array($tag_values)) {
+            foreach ($tag_values as $value) {
+                $name = str_replace('pa_', '', $value['name']);
+                if (!isset($result[$value['name']])) {
+                    $label = $wpdb->get_var(
+                        $wpdb->prepare(
+                            "SELECT attribute_label FROM {$wpdb->prefix}woocommerce_attribute_taxonomies WHERE attribute_name = %s;",
+                            $name
+                        )
+                    );
+                    $result[$value['name']] =  $label;
+                }
+            }
+        }
+        return $result;
+    }
+
+    protected function writeFeed($feedWriter)
     {
         global $wpdb;
-        $productmodel = new FmProduct();
-        $posts_array = $productmodel->getExportedProducts();
-        FyndiqUtils::debug('quantity minmum', get_option('wcfyndiq_quantity_minimum'));
-        $this->tag_values_fixed = array();
-        foreach ($posts_array as $product) {
+        $fmProduct = new FmProduct();
+        $products = $fmProduct->getExportedProducts();
+
+        $config = array(
+            'market' => WC()->countries->get_base_country(),
+            'currency' => get_woocommerce_currency(),
+            'minQty' => get_option('wcfyndiq_quantity_minimum'),
+        );
+
+        FyndiqUtils::debug('config', $config);
+        foreach ($products as $product) {
             $this->productImages = array();
             $this->productImages['product'] = array();
             $this->productImages['articles'] = array();
             $exportedArticles = array();
             $product = new WC_Product_Variable($product);
             FyndiqUtils::debug('$product', $product);
-            $tag_values = get_post_meta($product->id, '_product_attributes', true);
-            FyndiqUtils::debug('$tag_values', $tag_values);
-            if (is_array($tag_values)) {
-                foreach ($tag_values as $value) {
-                    FyndiqUtils::debug('$value[\'name\']', $value['name']);
-                    $name = str_replace('pa_', '', $value['name']);
-                    if (!isset($this->tag_values_fixed[$value['name']])) {
-                        $label = $wpdb->get_var($wpdb->prepare("SELECT attribute_label FROM {$wpdb->prefix}woocommerce_attribute_taxonomies WHERE attribute_name = %s;", $name));
-                        $this->tag_values_fixed[$value['name']] =  $label;
-                    }
-                }
-            }
-            FyndiqUtils::debug('$tag_values_fixed', $this->tag_values_fixed);
+
+            $exportProduct = $this->getProduct($product, $config);
             $variations = $this->getAllVariations($product);
-            if (count($variations) > 0) {
-                $prices = array();
-
-                $attachment_ids = $product->get_gallery_attachment_ids();
-                $feat_image = wp_get_attachment_url(get_post_thumbnail_id($product->id));
-                if (!empty($feat_image)) {
-                    $this->productImages['product'][] = $feat_image;
-                }
-                foreach ($attachment_ids as $attachment_id) {
-                    $image_link = wp_get_attachment_url($attachment_id);
-                    $this->productImages['product'][] = $image_link;
-                }
-
-                foreach ($variations as $variation) {
-                    $exportVariation = $this->getVariation($product, $variation);
-                    if (!empty($exportVariation)) {
-                        $prices[] = $exportVariation['product-price'];
-                        FyndiqUtils::debug('$exportVariation', $exportVariation);
-                        $exportedArticles[] = $exportVariation;
-                    }
-                }
-
-                $differentPrice = count(array_unique($prices)) > 1;
-                FyndiqUtils::debug('$differentPrice', $differentPrice);
-
-                FyndiqUtils::debug('productImages', $this->productImages);
-
-                foreach ($exportedArticles as $articleId => $article) {
-                    if (!$differentPrice) {
-                        // All prices are NOT different, create articles
-                        $images = $this->getImagesFromArray();
-                        $article = array_merge($article, $images);
-                        if (empty($article['article-sku'])) {
-                            FyndiqUtils::debug('EMPTY ARTICLE SKU');
-                        }
-                        $feedWriter->addProduct($article);
-                        FyndiqUtils::debug('Any sameprice Errors', $feedWriter->getLastProductErrors());
-                        continue;
-                    }
-
-                    // Prices differ, create products
-                    $id = count($article['article-sku']) > 0 ? $article['article-sku'] : null;
-                    FyndiqUtils::debug('$id', $id);
-                    $images = $this->getImagesFromArray($id);
-                    $article = array_merge($article, $images);
-                    $article['product-id'] = $article['product-id'] . '-' . $articleId;
-                    if (empty($article['article-sku'])) {
-                        FyndiqUtils::debug('EMPTY ARTICLE SKU');
-                    }
-                    $feedWriter->addProduct($article);
-                    FyndiqUtils::debug('Any Validation Errors', $feedWriter->getLastProductErrors());
-                }
-            } else {
-                $exportProduct = $this->getProduct($product);
-                if (!empty($exportProduct)) {
-                    $images = $this->getImagesFromArray();
-                    $exportProduct = array_merge($exportProduct, $images);
-                    if (empty($exportProduct['article-sku'])) {
-                        FyndiqUtils::debug('EMPTY PRODUCT SKU');
-                    }
-                    $feedWriter->addProduct($exportProduct);
+            if (count($variations) === 0) {
+                FyndiqUtils::debug('Simple product', $exportProduct);
+                if (!$feedWriter->addCompleteProduct($exportProduct, false)) {
                     FyndiqUtils::debug('Product Validation Errors', $feedWriter->getLastProductErrors());
                 }
+                continue;
+            }
+
+            $articles = array();
+            $tagValuesFixed = $this->getTagValuesFixed($wpdb, $product->id);
+            FyndiqUtils::debug('$tagValuesFixed', $tagValuesFixed);
+            foreach ($variations as $variation) {
+                $exportVariation = $this->getVariation($product, $variation, $config, $tagValuesFixed);
+                if (!empty($exportVariation)) {
+                    $articles[] = $exportVariation;
+                }
+            }
+            FyndiqUtils::debug('Variations product', $exportProduct, $articles);
+            if ($articles) {
+                if (!$feedWriter->addCompleteProduct($exportProduct, $articles)) {
+                    FyndiqUtils::debug('Articles Validation Errors', $feedWriter->getLastProductErrors());
+                }
+                continue;
             }
         }
         FyndiqUtils::debug('$feedWriter->getProductCount()', $feedWriter->getProductCount());
         FyndiqUtils::debug('$feedWriter->getArticleCount()', $feedWriter->getArticleCount());
-        $feedWriter->write();
-        return true;
+        return $feedWriter->write();
     }
 
 
-    private function getProduct($product)
+    private function getProduct($product, $config)
     {
-        //Initialize models here so it saves memory.
-        $feedProduct['product-id'] = $product->id;
-        $feedProduct['product-title'] = $product->post->post_title;
-
-        $description = $this->getDescription($product);
-
-        $feedProduct['product-description'] = $description;
-
         $productPrice = $product->get_price();
         $regularPrice = $product->get_regular_price();
-        if ((function_exists('wc_tax_enabled') && wc_tax_enabled()) || (!function_exists('wc_tax_enabled') && FmHelpers::fyndiq_wc_tax_enabled())) {
+        if ((function_exists('wc_tax_enabled') && wc_tax_enabled()) ||
+            (!function_exists('wc_tax_enabled') && FmHelpers::fyndiq_wc_tax_enabled())
+        ) {
             $productPrice = $product->get_price_including_tax();
             $regularPrice = $product->get_price_including_tax(1, $regularPrice);
         }
-        $price = $this->getPrice($product->id, $productPrice);
 
         $_tax = new WC_Tax(); //looking for appropriate vat for specific product
         FyndiqUtils::debug('tax class', $product->get_tax_class());
-
         $rates = $_tax->get_rates($product->get_tax_class());
         $rates = array_shift($rates);
         FyndiqUtils::debug('tax rate', $rates);
 
-
-        $feedProduct['product-price'] = FyndiqUtils::formatPrice($price);
-        $feedProduct['product-vat-percent'] = !empty($rates['rate']) ? $rates['rate'] : 0;
-        $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($regularPrice);
-        $feedProduct['product-market'] = WC()->countries->get_base_country();
-        $feedProduct['product-currency'] = get_woocommerce_currency();
-
+        // GetCategory
+        $categoryId = '';
+        $categoryName = '';
         $terms = wp_get_post_terms($product->id, 'product_cat');
         if ($terms && !is_wp_error($terms)) {
             $correctTerms = array();
@@ -211,130 +174,110 @@ class FmExport
                     $correctTerms[] = $term;
                 }
             }
-            FyndiqUtils::debug('product $correctTerms', $correctTerms);
             foreach ($correctTerms as $term) {
                 $path = $this->getCategoriesPath($term->term_id);
-                $feedProduct['product-category-id'] = $term->term_id;
-                $feedProduct['product-category-name'] = $path;
+                $categoryId = $term->term_id;
+                $categoryName = $path;
                 break;
             }
-        } else {
-            FyndiqUtils::debug('Product have no categories set - skipped');
-            return array();
         }
 
+        $images = array();
         $attachment_ids = $product->get_gallery_attachment_ids();
         $feat_image = wp_get_attachment_url(get_post_thumbnail_id($product->id));
         FyndiqUtils::debug('$feat_image', $feat_image);
         if (!empty($feat_image)) {
-            $this->productImages['product'][] = $feat_image;
+            $images[] = $feat_image;
         }
         foreach ($attachment_ids as $attachment_id) {
             $image_link = wp_get_attachment_url($attachment_id);
-            $this->productImages['product'][] = $image_link;
+            $images[] = $image_link;
         }
 
-        $feedProduct['article-quantity'] = intval(0);
+        $quantity = 0;
         if ($product->is_in_stock()) {
-            $stock = $product->get_stock_quantity();
-            $minimumQuantity = get_option('wcfyndiq_quantity_minimum');
-            if ($minimumQuantity > 0) {
-                $stock = $stock - $minimumQuantity;
+            $quantity = $product->get_stock_quantity();
+            if ($config['minQty'] > 0) {
+                $quantity -= $config['minQty'];
             }
-            FyndiqUtils::debug('$stock product', $stock);
-            $feedProduct['article-quantity'] = intval($stock);
         }
 
-        $sku = $this->getReference($product);
-        $feedProduct['article-sku'] = strval($sku);
-
-        $feedProduct['article-name'] = $product->post->post_title;
-
-        FyndiqUtils::debug('product without images', $feedProduct);
-        return $feedProduct;
+        return array(
+            FyndiqFeedWriter::ID => $product->id,
+            FyndiqFeedWriter::PRODUCT_TITLE => $product->post->post_title,
+            FyndiqFeedWriter::PRODUCT_DESCRIPTION => $this->getDescription($product),
+            FyndiqFeedWriter::PRICE => FyndiqUtils::formatPrice($productPrice),
+            FyndiqFeedWriter::OLDPRICE => FyndiqUtils::formatPrice($regularPrice),
+            FyndiqFeedWriter::PRODUCT_VAT_PERCENT => !empty($rates['rate']) ? $rates['rate'] : 0,
+            FyndiqFeedWriter::PRODUCT_CURRENCY => $config['currency'],
+            FyndiqFeedWriter::PRODUCT_MARKET => $config['market'],
+            FyndiqFeedWriter::PRODUCT_CATEGORY_ID => $categoryId,
+            FyndiqFeedWriter::PRODUCT_CATEGORY_NAME => $categoryName,
+            FyndiqFeedWriter::IMAGES => $images,
+            FyndiqFeedWriter::QUANTITY => $quantity,
+            FyndiqFeedWriter::SKU => $this->getReference($product),
+        );
     }
 
 
-    private function getVariation($product, $variation)
+    private function getVariation($product, $variation, $config, $tagValuesFixed)
     {
-        FyndiqUtils::debug('$variation', $variation);
-        if (!$variation['is_downloadable'] && !$variation['is_virtual']) {
-            $variationModel = new WC_Product_Variation($variation['variation_id'], array('parent_id' => $product->id, 'parent' => $product));
-            //Initialize models here so it saves memory.
-            $feedProduct['product-id'] = $product->id;
-            $feedProduct['product-title'] = $product->post->post_title;
+        if ($variation['is_downloadable'] || $variation['is_virtual']) {
+            FyndiqUtils::debug('downloadable, virtual', $variation['is_downloadable'], $variation['is_virtual']);
 
-            $description = $this->getDescription($product);
-            $feedProduct['product-description'] = $description;
-
-            $productPrice = $variation['display_price'];
-            $price = $this->getPrice($product->id, $productPrice);
-            $_tax = new WC_Tax(); //looking for appropriate vat for specific product
-            $rates = $_tax->get_rates($product->get_tax_class());
-            $rates = array_shift($rates);
-
-            $feedProduct['product-price'] = FyndiqUtils::formatPrice($price);
-            $feedProduct['product-vat-percent'] = !empty($rates['rate']) ? $rates['rate'] : 0;
-            $feedProduct['product-oldprice'] = FyndiqUtils::formatPrice($productPrice);
-            $feedProduct['product-market'] = WC()->countries->get_base_country();
-            $feedProduct['product-currency'] = get_woocommerce_currency();
-
-            $terms = wc_get_product_terms($product->id, 'product_cat');
-            FyndiqUtils::debug('$terms', $terms);
-            if ($terms && !is_wp_error($terms)) {
-                foreach ($terms as $term) {
-                    $feedProduct['product-category-id'] = $term->term_id;
-                    $feedProduct['product-category-name'] = $term->name;
-                    break;
-                }
-            } else {
-                FyndiqUtils::debug('Variation have no categories set - skipped');
-                return array();
-            }
-            $sku = $this->getReference($variationModel, $product->id);
-
-            $feedProduct['article-sku'] = strval($sku);
-
-            $variationImages = array();
-            if (!empty($variation['image_src'])) {
-                $variationImages[] = $variation['image_src'];
-            }
-            $this->productImages['articles'][$sku] = $variationImages;
-
-            $feedProduct['article-quantity'] = 0;
-
-            if ($variation['is_purchasable'] && $variation['is_in_stock']) {
-                $stock = intval($variationModel->get_stock_quantity());
-                $minimumQuantity = get_option('wcfyndiq_quantity_minimum');
-                if ($minimumQuantity > 0) {
-                    $stock = $stock - $minimumQuantity;
-                }
-                $feedProduct['article-quantity'] = $stock;
-            }
-
-
-            $feedProduct['article-name'] = $product->post->post_title;
-            $tag_values = $variationModel->get_variation_attributes();
-
-            if (!empty($tag_values)) {
-                FyndiqUtils::debug('$tag_values', $tag_values);
-                $propertyId = 1;
-                $tags = array();
-                foreach ($tag_values as $key => $value) {
-                    $key = str_replace('attribute_', '', $key);
-                    $feedProduct['article-property-'.$propertyId.'-name'] = $this->tag_values_fixed[$key];
-                    $feedProduct['article-property-'.$propertyId.'-value'] = $value;
-                    $tags[] = $this->tag_values_fixed[$key] . ': ' . $value;
-                    $propertyId++;
-                }
-
-                $feedProduct['article-name'] = implode(', ', $tags);
-            }
-
-            FyndiqUtils::debug('variation without images', $feedProduct);
-
-            return $feedProduct;
         }
+        $variationModel = new WC_Product_Variation(
+            $variation['variation_id'],
+            array('parent_id' => $product->id, 'parent' => $product)
+        );
+
+        $productPrice = $variation['display_price'];
+        $price = $this->getPrice($product->id, $productPrice);
+        $price = FyndiqUtils::formatPrice($price);
+        $oldPrice = FyndiqUtils::formatPrice($productPrice);
+
+        $images = array();
+        if (!empty($variation['image_src'])) {
+            $images[] = $variation['image_src'];
+        }
+
+        $quantity = 0;
+        if ($variation['is_purchasable'] && $variation['is_in_stock']) {
+            $quantity = intval($variationModel->get_stock_quantity());
+            if ($config['minQty'] > 0) {
+                $quantity -= $config['minQty'];
+            }
+        }
+
+        $articleName = $product->post->post_title;
+        $properties = array();
+
+        $tag_values = $variationModel->get_variation_attributes();
+        if (!empty($tag_values)) {
+            $tags = array();
+            foreach ($tag_values as $key => $value) {
+                $key = str_replace('attribute_', '', $key);
+                $name = $tagValuesFixed[$key];
+                $property = array(
+                    FyndiqFeedWriter::PROPERTY_NAME => $name,
+                    FyndiqFeedWriter::PROPERTY_VALUE => $value,
+                );
+                $properties[] = $property;
+                $tags[] = $name . ': ' . $value;
+            }
+            $articleName = implode(', ', $tags);
+        }
+
+        return array(
+            FyndiqFeedWriter::ID => $variation['variation_id'],
+            FyndiqFeedWriter::PRICE => FyndiqUtils::formatPrice($price),
+            FyndiqFeedWriter::OLDPRICE => FyndiqUtils::formatPrice($oldPrice),
+            FyndiqFeedWriter::SKU => $this->getReference($variationModel, $product->id),
+            FyndiqFeedWriter::IMAGES => $images,
+            FyndiqFeedWriter::QUANTITY => $quantity,
+            FyndiqFeedWriter::ARTICLE_NAME => $articleName,
+            FyndiqFeedWriter::PROPERTIES => $properties,
+        );
     }
 
 
