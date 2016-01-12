@@ -387,7 +387,7 @@ EOS;
         update_option('wcfyndiq_ping_token', $pingToken);
 
         $data = array(
-            FyndiqUtils::NAME_PRODUCT_FEED_URL => get_site_url() . '/?fyndiq_feed?pingToken=' . $pingToken,
+            FyndiqUtils::NAME_PRODUCT_FEED_URL => get_site_url() . '/?fyndiq_feed&pingToken=' . $pingToken,
             FyndiqUtils::NAME_PING_URL => get_site_url() .
                 '/?fyndiq_notification=1&event=ping&pingToken=' . $pingToken
         );
