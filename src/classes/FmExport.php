@@ -71,24 +71,18 @@ class FmExport
         }
     }
 
-    protected function getTagValuesFixed($wpdb, $productId, $tagValuesFixed)
+    protected function getTagValuesFixed($wpdb, $productId)
     {
+        $result = array();
         $tag_values = get_post_meta($productId, '_product_attributes', true);
         if (is_array($tag_values)) {
-            foreach ($tag_values as $value) {
-                $name = str_replace('pa_', '', $value['name']);
-                if (!isset($tagValuesFixed[$value['name']])) {
-                    $label = $wpdb->get_var(
-                        $wpdb->prepare(
-                            "SELECT attribute_label FROM {$wpdb->prefix}woocommerce_attribute_taxonomies WHERE attribute_name = %s;",
-                            $name
-                        )
-                    );
-                    $tagValuesFixed[$name] = $label;
+            foreach ($tag_values as $key => $values) {
+                if (isset($values['name']) && $values['name']){
+                    $result[$key] = $values['name'];
                 }
             }
         }
-        return $tagValuesFixed;
+        return $result;
     }
 
     protected function writeFeed($feedWriter)
@@ -102,8 +96,6 @@ class FmExport
             'currency' => get_woocommerce_currency(),
             'minQty' => get_option('wcfyndiq_quantity_minimum'),
         );
-
-        $tagValuesFixed = array();
 
         FyndiqUtils::debug('config', $config);
         foreach ($products as $product) {
@@ -125,8 +117,7 @@ class FmExport
             }
 
             $articles = array();
-            $tagValuesFixed = $this->getTagValuesFixed($wpdb, $product->id, $tagValuesFixed);
-
+            $tagValuesFixed = $this->getTagValuesFixed($wpdb, $product->id);
             foreach ($variations as $variation) {
                 $exportVariation = $this->getVariation($product, $variation, $config, $tagValuesFixed);
                 if (!empty($exportVariation)) {
@@ -253,19 +244,19 @@ class FmExport
         $properties = array();
 
         $tag_values = $variationModel->get_variation_attributes();
-
         if (!empty($tag_values)) {
             $tags = array();
             foreach ($tag_values as $key => $value) {
                 $key = str_replace('attribute_', '', $key);
-
-                $name = $tagValuesFixed[$key];
-                $property = array(
-                    FyndiqFeedWriter::PROPERTY_NAME => $name,
-                    FyndiqFeedWriter::PROPERTY_VALUE => $value,
-                );
-                $properties[] = $property;
-                $tags[] = $name . ': ' . $value;
+                if (isset($tagValuesFixed[$key]) && $tagValuesFixed[$key]) {
+                    $name = $tagValuesFixed[$key];
+                    $property = array(
+                        FyndiqFeedWriter::PROPERTY_NAME => $name,
+                        FyndiqFeedWriter::PROPERTY_VALUE => $value,
+                    );
+                    $properties[] = $property;
+                    $tags[] = $name . ': ' . $value;
+                }
             }
             $articleName = implode(', ', $tags);
         }
