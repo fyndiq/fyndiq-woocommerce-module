@@ -71,25 +71,24 @@ class FmExport
         }
     }
 
-    protected function getTagValuesFixed($wpdb, $productId)
+    protected function getTagValuesFixed($wpdb, $productId, $tagValuesFixed)
     {
-        $result = array();
         $tag_values = get_post_meta($productId, '_product_attributes', true);
         if (is_array($tag_values)) {
             foreach ($tag_values as $value) {
                 $name = str_replace('pa_', '', $value['name']);
-                if (!isset($result[$value['name']])) {
+                if (!isset($tagValuesFixed[$value['name']])) {
                     $label = $wpdb->get_var(
                         $wpdb->prepare(
                             "SELECT attribute_label FROM {$wpdb->prefix}woocommerce_attribute_taxonomies WHERE attribute_name = %s;",
                             $name
                         )
                     );
-                    $result[$value['name']] =  $label;
+                    $tagValuesFixed[$name] = $label;
                 }
             }
         }
-        return $result;
+        return $tagValuesFixed;
     }
 
     protected function writeFeed($feedWriter)
@@ -103,6 +102,8 @@ class FmExport
             'currency' => get_woocommerce_currency(),
             'minQty' => get_option('wcfyndiq_quantity_minimum'),
         );
+
+        $tagValuesFixed = array();
 
         FyndiqUtils::debug('config', $config);
         foreach ($products as $product) {
@@ -124,8 +125,8 @@ class FmExport
             }
 
             $articles = array();
-            $tagValuesFixed = $this->getTagValuesFixed($wpdb, $product->id);
-            FyndiqUtils::debug('$tagValuesFixed', $tagValuesFixed);
+            $tagValuesFixed = $this->getTagValuesFixed($wpdb, $product->id, $tagValuesFixed);
+
             foreach ($variations as $variation) {
                 $exportVariation = $this->getVariation($product, $variation, $config, $tagValuesFixed);
                 if (!empty($exportVariation)) {
@@ -144,7 +145,6 @@ class FmExport
         FyndiqUtils::debug('$feedWriter->getArticleCount()', $feedWriter->getArticleCount());
         return $feedWriter->write();
     }
-
 
     private function getProduct($product, $config)
     {
@@ -220,12 +220,11 @@ class FmExport
         );
     }
 
-
     private function getVariation($product, $variation, $config, $tagValuesFixed)
     {
         if ($variation['is_downloadable'] || $variation['is_virtual']) {
             FyndiqUtils::debug('downloadable, virtual', $variation['is_downloadable'], $variation['is_virtual']);
-
+            return;
         }
         $variationModel = new WC_Product_Variation(
             $variation['variation_id'],
@@ -254,10 +253,12 @@ class FmExport
         $properties = array();
 
         $tag_values = $variationModel->get_variation_attributes();
+
         if (!empty($tag_values)) {
             $tags = array();
             foreach ($tag_values as $key => $value) {
                 $key = str_replace('attribute_', '', $key);
+
                 $name = $tagValuesFixed[$key];
                 $property = array(
                     FyndiqFeedWriter::PROPERTY_NAME => $name,
@@ -280,7 +281,6 @@ class FmExport
             FyndiqFeedWriter::PROPERTIES => $properties,
         );
     }
-
 
     function getDescription($post)
     {
@@ -312,46 +312,6 @@ class FmExport
             case self::DESCRIPTION_SHORT_LONG:
                 return $_POST['post_excerpt'] . "\n" . $_POST['post_content'];
         }
-    }
-
-    private function getImagesFromArray($articleId = null)
-    {
-        $product = array();
-        $urls = array();
-        //If we don't want to add a specific article, add all of them.
-        if (!isset($articleId)) {
-            foreach ($this->productImages['product'] as $url) {
-                if (!in_array($url, $product)) {
-                    $urls[] = $url;
-                }
-            }
-            foreach ($this->productImages['articles'] as $article) {
-                foreach ($article as $url) {
-                    if (!in_array($url, $product)) {
-                        $urls[] = $url;
-                    }
-                }
-            }
-            // If we want to add just the product images and the article's images - run this.
-        } else {
-            foreach ($this->productImages['articles'][$articleId] as $url) {
-                $urls[] = $url;
-            }
-
-            foreach ($this->productImages['product'] as $url) {
-                $urls[] = $url;
-            }
-        }
-        $imageId = 1;
-        foreach ($urls as $url) {
-            if ($imageId > FyndiqUtils::NUMBER_OF_ALLOWED_IMAGES) {
-                break;
-            }
-            $product['product-image-' . $imageId . '-url'] = $url;
-            $product['product-image-' . $imageId . '-identifier'] = substr(md5($url), 0, 10);
-            $imageId++;
-        }
-        return $product;
     }
 
     private function getAllVariations($product)
