@@ -77,7 +77,7 @@ class FmExport
         $tag_values = get_post_meta($productId, '_product_attributes', true);
         if (is_array($tag_values)) {
             foreach ($tag_values as $key => $values) {
-                if (isset($values['name']) && $values['name']){
+                if (isset($values['name']) && $values['name']) {
                     $result[$key] = $values['name'];
                 }
             }
@@ -270,20 +270,19 @@ class FmExport
 
     function getProductPrice($product, $currency)
     {
-        if(is_plugin_active( 'woocommerce-multilingual/wpml-woocommerce.php' )) {
-            $saleprice = get_post_meta( $product->id, '_sale_price_'.$currency, true);
-            if(get_post_meta( $product->id, '_wcml_schedule_'.$currency, true)) {
-                $from = get_post_meta( $product->id, '_sale_price_dates_from_'.$currency, true);
-                $to = get_post_meta( $product->id, '_sale_price_dates_to_'.$currency, true);
+        if (is_plugin_active('woocommerce-multilingual/wpml-woocommerce.php')) {
+            $saleprice = get_post_meta($product->id, '_sale_price_'.$currency, true);
+            if (get_post_meta($product->id, '_wcml_schedule_'.$currency, true)) {
+                $from = get_post_meta($product->id, '_sale_price_dates_from_'.$currency, true);
+                $to = get_post_meta($product->id, '_sale_price_dates_to_'.$currency, true);
                 $now = time();
-                if($from < $now && $to > $now) {
+                if ($from < $now && $to > $now) {
                     return $saleprice;
                 }
-            }
-            elseif (!empty($saleprice)) {
+            } elseif (!empty($saleprice)) {
                 return $saleprice;
             }
-            return get_post_meta( $product->id, '_price_'.$currency, true);
+            return get_post_meta($product->id, '_price_'.$currency, true);
         }
         $price = $product->get_price();
         if ((function_exists('wc_tax_enabled') && wc_tax_enabled()) ||
@@ -296,8 +295,8 @@ class FmExport
 
     function getProductRegularPrice($product, $currency)
     {
-        if(is_plugin_active( 'woocommerce-multilingual/wpml-woocommerce.php' )) {
-            return get_post_meta( $product->id, '_regular_price_'.$currency, true);
+        if (is_plugin_active('woocommerce-multilingual/wpml-woocommerce.php')) {
+            return get_post_meta($product->id, '_regular_price_'.$currency, true);
         }
         $regularPrice = $product->get_regular_price();
         if ((function_exists('wc_tax_enabled') && wc_tax_enabled()) ||
