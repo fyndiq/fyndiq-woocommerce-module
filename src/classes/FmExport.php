@@ -271,16 +271,16 @@ class FmExport
     function getProductPrice($product, $currency)
     {
         if (is_plugin_active('woocommerce-multilingual/wpml-woocommerce.php')) {
-            $saleprice = get_post_meta($product->id, '_sale_price_'.$currency, true);
+            $salePrice = get_post_meta($product->id, '_sale_price_'.$currency, true);
             if (get_post_meta($product->id, '_wcml_schedule_'.$currency, true)) {
                 $from = get_post_meta($product->id, '_sale_price_dates_from_'.$currency, true);
                 $to = get_post_meta($product->id, '_sale_price_dates_to_'.$currency, true);
                 $now = time();
                 if ($from < $now && $to > $now) {
-                    return $saleprice;
+                    return $salePrice;
                 }
-            } elseif (!empty($saleprice)) {
-                return $saleprice;
+            } elseif (!empty($salePrice)) {
+                return $salePrice;
             }
             return get_post_meta($product->id, '_price_'.$currency, true);
         }
