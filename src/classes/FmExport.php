@@ -139,14 +139,9 @@ class FmExport
 
     private function getProduct($product, $config)
     {
-        $productPrice = $product->get_price();
-        $regularPrice = $product->get_regular_price();
-        if ((function_exists('wc_tax_enabled') && wc_tax_enabled()) ||
-            (!function_exists('wc_tax_enabled') && FmHelpers::fyndiq_wc_tax_enabled())
-        ) {
-            $productPrice = $product->get_price_including_tax();
-            $regularPrice = $product->get_price_including_tax(1, $regularPrice);
-        }
+        $productPrice = $this->getProductPrice($product, $config['currency']);
+        $regularPrice = $this->getProductRegularPrice($product, $config['currency']);
+
         $productPrice = $this->getPrice($product->id, $productPrice);
 
         $_tax = new WC_Tax(); //looking for appropriate vat for specific product
@@ -271,6 +266,34 @@ class FmExport
             FyndiqFeedWriter::ARTICLE_NAME => $articleName,
             FyndiqFeedWriter::PROPERTIES => $properties,
         );
+    }
+
+    function getProductPrice($product, $currency = "SEK")
+    {
+        if(is_plugin_active( 'woocommerce-multilingual/wpml-woocommerce.php' )) {
+            return get_post_meta( $product->id, '_price_'.$currency, true);
+        }
+        $price = $product->get_price();
+        if ((function_exists('wc_tax_enabled') && wc_tax_enabled()) ||
+            (!function_exists('wc_tax_enabled') && FmHelpers::fyndiq_wc_tax_enabled())
+        ) {
+            $price = $product->get_price_including_tax();
+        }
+        return $price;
+    }
+
+    function getProductRegularPrice($product, $currency = "SEK")
+    {
+        if(is_plugin_active( 'woocommerce-multilingual/wpml-woocommerce.php' )) {
+            return get_post_meta( $product->id, '_regular_price_'.$currency, true);
+        }
+        $regularPrice = $product->get_regular_price();
+        if ((function_exists('wc_tax_enabled') && wc_tax_enabled()) ||
+            (!function_exists('wc_tax_enabled') && FmHelpers::fyndiq_wc_tax_enabled())
+        ) {
+            $regularPrice = $product->get_price_including_tax(1, $regularPrice);
+        }
+        return $regularPrice;
     }
 
     function getDescription($post)
