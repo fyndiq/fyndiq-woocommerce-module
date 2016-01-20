@@ -271,6 +271,14 @@ class FmExport
     function getProductPrice($product, $currency = "SEK")
     {
         if(is_plugin_active( 'woocommerce-multilingual/wpml-woocommerce.php' )) {
+            if(get_post_meta( $product->id, '_wcml_schedule_'.$currency, true)) {
+                $from = get_post_meta( $product->id, '_sale_price_dates_from_'.$currency, true);
+                $to = et_post_meta( $product->id, '_sale_price_dates_to_'.$currency, true);
+                $now = time();
+                if($from < $now && $to > $now) {
+                    get_post_meta( $product->id, '_sale_price_'.$currency, true);
+                }
+            }
             return get_post_meta( $product->id, '_price_'.$currency, true);
         }
         $price = $product->get_price();
