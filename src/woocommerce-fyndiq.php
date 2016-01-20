@@ -22,7 +22,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
         require_once('models/FmProduct.php');
         require_once('models/FmProductFetch.php');
         require_once('WC_Fyndiq.php');
-
+        include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
         $fmOuput = new FyndiqOutput();
 
         // finally instantiate our plugin class and add it to the set of globals
