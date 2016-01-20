@@ -15,10 +15,8 @@ class WC_Fyndiq
 
     public function __construct($fmOutput, $mainfile)
     {
-        $this->currencies = array();
-        foreach(FyndiqUtils::$allowedCurrencies as $value) {
-            $this->currencies[$value] = $value;
-        }
+        $this->currencies = array_combine(FyndiqUtils::$allowedCurrencies, FyndiqUtils::$allowedCurrencies);
+
         //Load locale in init
         add_action('init', array(&$this, 'locale_load'));
         // called only after woocommerce has finished loading
