@@ -273,10 +273,22 @@ class FmExport
     function getProductPrice($product, $currency)
     {
         if (is_plugin_active('woocommerce-multilingual/wpml-woocommerce.php')) {
-            $salePrice = get_post_meta($product->id, '_sale_price_'.$currency, true);
+            $salePriceColumn = '_sale_price';
+            $priceColumn = '_price';
+            $priceFromColumn = '_sale_price_dates_from';
+            $priceToColumn = '_sale_price_dates_to';
+            $orderCurrency = get_post_meta($product->id, '_order_currency', true);
+            if($currency != $orderCurrency) {
+                $salePriceColumn .= '_'.$currency;
+                $priceColumn .= '_'.$currency;
+                $priceFromColumn .= '_'.$currency;
+                $priceToColumn .= '_'.$currency;
+            }
+            $salePrice = get_post_meta($product->id, $salePriceColumn, true);
+            FyndiqUtils::debug('$salePrice', $salePrice);
             if (get_post_meta($product->id, '_wcml_schedule_'.$currency, true)) {
-                $from = get_post_meta($product->id, '_sale_price_dates_from_'.$currency, true);
-                $to = get_post_meta($product->id, '_sale_price_dates_to_'.$currency, true);
+                $from = get_post_meta($product->id, $priceFromColumn, true);
+                $to = get_post_meta($product->id, $priceToColumn, true);
                 $now = time();
                 if ($from < $now && $to > $now) {
                     return $salePrice;
@@ -284,7 +296,9 @@ class FmExport
             } elseif (!empty($salePrice)) {
                 return $salePrice;
             }
-            return get_post_meta($product->id, '_price_'.$currency, true);
+            $price = get_post_meta($product->id, $priceColumn, true);
+            FyndiqUtils::debug('$price', $price);
+            return $price;
         }
         $price = $product->get_price();
         if ((function_exists('wc_tax_enabled') && wc_tax_enabled()) ||
@@ -298,7 +312,12 @@ class FmExport
     function getProductRegularPrice($product, $currency)
     {
         if (is_plugin_active('woocommerce-multilingual/wpml-woocommerce.php')) {
-            return get_post_meta($product->id, '_regular_price_'.$currency, true);
+            $regularPrice = '_regular_price';
+            $orderCurrency = get_post_meta($product->id, '_order_currency', true);
+            if($currency != $orderCurrency) {
+                $regularPrice .= '_'.$currency;
+            }
+            return get_post_meta($product->id, $regularPrice, true);
         }
         $regularPrice = $product->get_regular_price();
         if ((function_exists('wc_tax_enabled') && wc_tax_enabled()) ||
