@@ -91,9 +91,11 @@ class FmExport
         $fmProduct = new FmProduct();
         $products = $fmProduct->getExportedProducts();
 
+        $currency = !empty(get_option('wcfyndiq_currency')) ? get_option('wcfyndiq_currency') : get_woocommerce_currency();
+
         $config = array(
             'market' => WC()->countries->get_base_country(),
-            'currency' => get_option('wcfyndiq_currency'),
+            'currency' => $currency,
             'minQty' => get_option('wcfyndiq_quantity_minimum'),
         );
 
