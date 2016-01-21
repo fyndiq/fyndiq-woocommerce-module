@@ -90,8 +90,8 @@ class FmExport
         global $wpdb;
         $fmProduct = new FmProduct();
         $products = $fmProduct->getExportedProducts();
-        $wcfyndiqCurrency = get_option('wcfyndiq_currency');
-        $currency = !empty($wcfyndiqCurrency) ? $wcfyndiqCurrency : get_woocommerce_currency();
+        $wcFyndiqCurrency = get_option('wcfyndiq_currency');
+        $currency = !empty($wcFyndiqCurrency) ? $wcFyndiqCurrency : get_woocommerce_currency();
 
         $config = array(
             'market' => WC()->countries->get_base_country(),
