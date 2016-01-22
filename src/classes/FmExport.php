@@ -278,12 +278,14 @@ class FmExport
             $priceFromColumn = '_sale_price_dates_from';
             $priceToColumn = '_sale_price_dates_to';
             $orderCurrency = get_post_meta($product->id, '_order_currency', true);
+            FyndiqUtils::debug('$orderCurrency', $orderCurrency);
             if($currency != $orderCurrency) {
                 $salePriceColumn .= '_'.$currency;
                 $priceColumn .= '_'.$currency;
                 $priceFromColumn .= '_'.$currency;
                 $priceToColumn .= '_'.$currency;
             }
+            FyndiqUtils::debug('$salePriceColumn', $salePriceColumn);
             $salePrice = get_post_meta($product->id, $salePriceColumn, true);
             FyndiqUtils::debug('$salePrice', $salePrice);
             if (get_post_meta($product->id, '_wcml_schedule_'.$currency, true)) {
@@ -317,6 +319,7 @@ class FmExport
             if($currency != $orderCurrency) {
                 $regularPrice .= '_'.$currency;
             }
+            FyndiqUtils::debug('$regularPrice Column', $regularPrice);
             return get_post_meta($product->id, $regularPrice, true);
         }
         $regularPrice = $product->get_regular_price();
