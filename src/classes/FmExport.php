@@ -97,6 +97,7 @@ class FmExport
             'market' => WC()->countries->get_base_country(),
             'currency' => $currency,
             'minQty' => get_option('wcfyndiq_quantity_minimum'),
+            'wooML' => is_plugin_active('woocommerce-multilingual/wpml-woocommerce.php'),
         );
 
         FyndiqUtils::debug('config', $config);
@@ -141,8 +142,8 @@ class FmExport
 
     private function getProduct($product, $config)
     {
-        $productPrice = $this->getProductPrice($product, $config['currency']);
-        $regularPrice = $this->getProductRegularPrice($product, $config['currency']);
+        $productPrice = $this->getProductPrice($product, $config);
+        $regularPrice = $this->getProductRegularPrice($product, $config);
 
         $productPrice = $this->getPrice($product->id, $productPrice);
 
@@ -270,10 +271,10 @@ class FmExport
         );
     }
 
-    function getProductPrice($product, $currency)
+    function getProductPrice($product, $config)
     {
-        if (is_plugin_active('woocommerce-multilingual/wpml-woocommerce.php')) {
-            return $this->getSaleProductPrice($product, $currency);
+        if ($config['wooML']) {
+            return $this->getSaleProductPrice($product, $config['currency']);
         }
         $price = $product->get_price();
         if ((function_exists('wc_tax_enabled') && wc_tax_enabled()) ||
@@ -284,14 +285,14 @@ class FmExport
         return $price;
     }
 
-    function getProductRegularPrice($product, $currency)
+    function getProductRegularPrice($product, $config)
     {
-        if (is_plugin_active('woocommerce-multilingual/wpml-woocommerce.php')) {
+        if ($config['wooML']) {
             $regularPrice = '_regular_price';
             $orderCurrency = get_post_meta($product->id, '_order_currency', true);
-            $checkPrice = get_post_meta($product->id, $regularPrice . '_'.currency, true);
-            if (!empty($checkPrice) && $currency != $orderCurrency) {
-                $regularPrice .= '_'.$currency;
+            $checkPrice = get_post_meta($product->id, $regularPrice . '_'.$config['currency'], true);
+            if (!empty($checkPrice) && $config['currency'] != $orderCurrency) {
+                $regularPrice .= '_'.$config['currency'];
             }
 
             FyndiqUtils::debug('$regularPrice Column', $regularPrice);
