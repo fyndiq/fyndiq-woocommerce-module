@@ -273,35 +273,7 @@ class FmExport
     function getProductPrice($product, $currency)
     {
         if (is_plugin_active('woocommerce-multilingual/wpml-woocommerce.php')) {
-            $salePriceColumn = '_sale_price';
-            $priceColumn = '_price';
-            $priceFromColumn = '_sale_price_dates_from';
-            $priceToColumn = '_sale_price_dates_to';
-            $orderCurrency = get_post_meta($product->id, '_order_currency', true);
-            $checkPrice = get_post_meta($product->id, $salePriceColumn . '_'.$currency, true);
-            FyndiqUtils::debug('$orderCurrency', $orderCurrency);
-            if (!empty($checkPrice) && $currency != $orderCurrency) {
-                $salePriceColumn .= '_'.$currency;
-                $priceColumn .= '_'.$currency;
-                $priceFromColumn .= '_'.$currency;
-                $priceToColumn .= '_'.$currency;
-            }
-            FyndiqUtils::debug('$salePriceColumn', $salePriceColumn);
-            $salePrice = get_post_meta($product->id, $salePriceColumn, true);
-            FyndiqUtils::debug('$salePrice', $salePrice);
-            if (get_post_meta($product->id, '_wcml_schedule_'.$currency, true)) {
-                $from = get_post_meta($product->id, $priceFromColumn, true);
-                $to = get_post_meta($product->id, $priceToColumn, true);
-                $now = time();
-                if ($from < $now && $to > $now) {
-                    return $salePrice;
-                }
-            } elseif (!empty($salePrice)) {
-                return $salePrice;
-            }
-            $price = get_post_meta($product->id, $priceColumn, true);
-            FyndiqUtils::debug('$price', $price);
-            return $price;
+            return $this->getSaleProductPrice($product, $currency);
         }
         $price = $product->get_price();
         if ((function_exists('wc_tax_enabled') && wc_tax_enabled()) ||
@@ -332,6 +304,40 @@ class FmExport
             $regularPrice = $product->get_price_including_tax(1, $regularPrice);
         }
         return $regularPrice;
+    }
+
+
+    function getSaleProductPrice($product, $currency)
+    {
+        $salePriceColumn = '_sale_price';
+        $priceColumn = '_price';
+        $priceFromColumn = '_sale_price_dates_from';
+        $priceToColumn = '_sale_price_dates_to';
+        $orderCurrency = get_post_meta($product->id, '_order_currency', true);
+        $checkPrice = get_post_meta($product->id, $salePriceColumn . '_'.$currency, true);
+        FyndiqUtils::debug('$orderCurrency', $orderCurrency);
+        if (!empty($checkPrice) && $currency != $orderCurrency) {
+            $salePriceColumn .= '_'.$currency;
+            $priceColumn .= '_'.$currency;
+            $priceFromColumn .= '_'.$currency;
+            $priceToColumn .= '_'.$currency;
+        }
+        FyndiqUtils::debug('$salePriceColumn', $salePriceColumn);
+        $salePrice = get_post_meta($product->id, $salePriceColumn, true);
+        FyndiqUtils::debug('$salePrice', $salePrice);
+        if (get_post_meta($product->id, '_wcml_schedule_'.$currency, true)) {
+            $from = get_post_meta($product->id, $priceFromColumn, true);
+            $to = get_post_meta($product->id, $priceToColumn, true);
+            $now = time();
+            if ($from < $now && $to > $now) {
+                return $salePrice;
+            }
+        } elseif (!empty($salePrice)) {
+            return $salePrice;
+        }
+        $price = get_post_meta($product->id, $priceColumn, true);
+        FyndiqUtils::debug('$price', $price);
+        return $price;
     }
 
     function getDescription($post)
