@@ -15,6 +15,8 @@ class WC_Fyndiq
 
     public function __construct($fmOutput, $mainfile)
     {
+        $this->currencies = array_combine(FyndiqUtils::$allowedCurrencies, FyndiqUtils::$allowedCurrencies);
+
         //Load locale in init
         add_action('init', array(&$this, 'locale_load'));
         // called only after woocommerce has finished loading
@@ -298,6 +300,21 @@ EOS;
                     FmExport::DESCRIPTION_SHORT_LONG => __('Short and Long Description', 'fyndiq'),
                 ),
                 'desc' => __('Default is Long Description', 'fyndiq'),
+
+            );
+
+            // Add currency setting
+            $settings_slider[] = array(
+
+                'name' => __('Used Currency', 'fyndiq'),
+                'desc_tip' => __(
+                    'Choose currency to be used for Fyndiq.',
+                    'fyndiq'
+                ),
+                'id' => 'wcfyndiq_currency',
+                'type' => 'select',
+                'options' => $this->currencies,
+                'desc' => __('This must be picked accurate', 'fyndiq'),
 
             );
 
