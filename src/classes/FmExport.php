@@ -278,7 +278,7 @@ class FmExport
             $priceFromColumn = '_sale_price_dates_from';
             $priceToColumn = '_sale_price_dates_to';
             $orderCurrency = get_post_meta($product->id, '_order_currency', true);
-            $checkPrice = get_post_meta($product->id, $salePriceColumn . '_'.currency, true);
+            $checkPrice = get_post_meta($product->id, $salePriceColumn . '_'.$currency, true);
             FyndiqUtils::debug('$orderCurrency', $orderCurrency);
             if (!empty($checkPrice) && $currency != $orderCurrency) {
                 $salePriceColumn .= '_'.$currency;
