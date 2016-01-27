@@ -1055,7 +1055,7 @@ EOS;
     {
 
         $info = FyndiqUtils::getInfo(
-            'WooCommerce',
+            FmHelpers::PLATFORM,
             FmHelpers::get_woocommerce_version(),
             FmHelpers::get_plugin_version(),
             FmHelpers::COMMIT
