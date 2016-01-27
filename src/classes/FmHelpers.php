@@ -3,6 +3,7 @@ class FmHelpers
 {
 
     const COMMIT = 'XXXXXX';
+    const PLATFORM = 'WooCommerce';
 
     public static function apiConnectionExists()
     {
@@ -85,7 +86,7 @@ class FmHelpers
     public static function get_user_agent()
     {
         return FyndiqUtils::getUserAgentString(
-            'Woocommerce',
+            self::PLATFORM,
             self::get_woocommerce_version(),
             'module',
             self::get_plugin_version(),
