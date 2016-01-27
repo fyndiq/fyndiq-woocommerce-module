@@ -1051,7 +1051,8 @@ EOS;
         wp_die();
     }
 
-    private function notice_info() {
+    private function notice_info()
+    {
 
         $info = FyndiqUtils::getInfo(
             'WooCommerce',
