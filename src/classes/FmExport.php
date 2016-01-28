@@ -375,11 +375,10 @@ class FmExport
 
     private function getAllVariations($exportedProduct)
     {
-
         $available_variations = array();
-
         global $product;
         $product = $exportedProduct;
+
         foreach ($product->get_children() as $child_id) {
             $variation = $product->get_child($child_id);
 
