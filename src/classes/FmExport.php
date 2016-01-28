@@ -373,11 +373,13 @@ class FmExport
         }
     }
 
-    private function getAllVariations($product)
+    private function getAllVariations($exported_product)
     {
 
         $available_variations = array();
 
+        global $product;
+        $product = $exported_product;
         foreach ($product->get_children() as $child_id) {
             $variation = $product->get_child($child_id);
 
