@@ -23,9 +23,9 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
         require_once('models/FmProductFetch.php');
         require_once('WC_Fyndiq.php');
         include_once(ABSPATH . 'wp-admin/includes/plugin.php');
-        $fmOuput = new FyndiqOutput();
+        $fmOutput = new FyndiqOutput();
 
         // finally instantiate our plugin class and add it to the set of globals
-        $GLOBALS['wc_fyndiq'] = new WC_Fyndiq($fmOuput, __FILE__);
+        $GLOBALS['wc_fyndiq'] = new WC_Fyndiq($fmOutput, __FILE__);
     }
 }
