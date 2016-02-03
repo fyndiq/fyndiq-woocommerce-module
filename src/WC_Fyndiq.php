@@ -607,13 +607,10 @@ EOS;
         update_post_meta($post_id, '_fyndiq_export', $woocommerce_checkbox);
 
 
-        if ($woocommerce_checkbox == self::EXPORTED && !update_post_meta($post_id, '_fyndiq_status', FmProduct::STATUS_PENDING)) {
-            add_post_meta($post_id, '_fyndiq_status', FmProduct::STATUS_PENDING, true);
+        if ($woocommerce_checkbox == self::EXPORTED) {
             if (empty($woocommerce_pricepercentage)) {
                 update_post_meta($post_id, '_fyndiq_price_percentage', get_option('wcfyndiq_price_percentage'));
             }
-        } elseif ($woocommerce_checkbox == self::NOT_EXPORTED && !update_post_meta($post_id, '_fyndiq_status', '')) {
-            add_post_meta($post_id, '_fyndiq_status', '', true);
         }
         if (!empty($woocommerce_pricepercentage)) {
             update_post_meta($post_id, '_fyndiq_price_percentage', $woocommerce_pricepercentage);
@@ -624,9 +621,7 @@ EOS;
 
     public function fyndiq_product_add_column($defaults)
     {
-        $defaults['fyndiq_export'] = __('Fyndiq Exported', 'fyndiq');
-        $defaults['fyndiq_status'] = __('Fyndiq Status', 'fyndiq');
-
+        $defaults['fyndiq_export'] = __('Fyndiq', 'fyndiq');
         return $defaults;
     }
 
@@ -649,20 +644,6 @@ EOS;
                 }
             } else {
                 _e('Can\'t be exported', 'fyndiq');
-            }
-        }
-        if ($column == 'fyndiq_status') {
-            $status = get_post_meta($postid, '_fyndiq_status', true);
-            $exported = get_post_meta($postid, '_fyndiq_export', true);
-
-            if ($exported != '' && $status != '') {
-                if ($status == FmProduct::STATUS_PENDING) {
-                    _e('Pending', 'fyndiq');
-                } elseif ($status == FmProduct::STATUS_FOR_SALE) {
-                    _e('For Sale', 'fyndiq');
-                }
-            } else {
-                _e('-', 'fyndiq');
             }
         }
     }
@@ -760,7 +741,6 @@ EOS;
     {
         return array(
             'fyndiq_export' => 'fyndiq_export',
-            'fyndiq_status' => 'fyndiq_status'
         );
     }
 
@@ -774,10 +754,7 @@ EOS;
             $query->set('meta_key', '_fyndiq_export');
             $query->set('orderby', 'meta_value');
         }
-        if ('fyndiq_status' == $orderby) {
-            $query->set('meta_key', '_fyndiq_status');
-            $query->set('orderby', 'meta_value');
-        }
+
     }
 
     public function fyndiq_product_add_bulk_action()
@@ -787,20 +764,19 @@ EOS;
         if ($post_type == 'product') {
             $exportToFyndiq = __('Export to Fyndiq', 'fyndiq');
             $removeFromFyndiq = __('Remove from Fyndiq', 'fyndiq');
-            $updateFyndiqStatus = __('Update Fyndiq Status', 'fyndiq');
+            $setFyndiqOrderHandled = __('Mark order as handled', 'fyndiq');
             $script = <<<EOS
 <script type="text/javascript">
     jQuery(document).ready(function () {
+
+
+
         jQuery('<option>').val('fyndiq_export').text('$exportToFyndiq').appendTo("select[name='action']");
         jQuery('<option>').val('fyndiq_export').text('$exportToFyndiq').appendTo("select[name='action2']");
+        jQuery('<option>').val('fyndiq_handle_order').text('$setFyndiqOrderHandled').appendTo("select[name='action']");
+        jQuery('<option>').val('fyndiq_handle_order').text('$setFyndiqOrderHandled').appendTo("select[name='action2']");
         jQuery('<option>').val('fyndiq_no_export').text('$removeFromFyndiq').appendTo("select[name='action']");
         jQuery('<option>').val('fyndiq_no_export').text('$removeFromFyndiq').appendTo("select[name='action2']");
-        if( jQuery('.wrap h2').length && jQuery(jQuery('.wrap h2')[0]).text() != 'Filter posts list') {
-            jQuery(jQuery('.wrap h2')[0]).append("<a href='#' id='fyndiq-product-update' class='add-new-h2'>$updateFyndiqStatus</a>");
-        }
-        else if( jQuery('.wrap h1').length ) {
-            jQuery(jQuery('.wrap h1')[0]).append("<a href='#' id='fyndiq-product-update' class='page-title-action'>$updateFyndiqStatus</a>");
-        }
     });
 </script>
 EOS;
@@ -955,9 +931,6 @@ EOS;
         if (!update_post_meta($post_id, '_fyndiq_export', self::EXPORTED)) {
             add_post_meta($post_id, '_fyndiq_export', self::EXPORTED, true);
         };
-        if (!update_post_meta($post_id, '_fyndiq_status', FmProduct::STATUS_PENDING)) {
-            add_post_meta($post_id, '_fyndiq_status', FmProduct::STATUS_PENDING, true);
-        };
         $percentage = get_post_meta($post_id, '_fyndiq_price_percentage', true);
         if (empty($percentage)) {
             update_post_meta($post_id, '_fyndiq_price_percentage', get_option('wcfyndiq_price_percentage'));
@@ -968,9 +941,6 @@ EOS;
     {
         if (!update_post_meta($post_id, '_fyndiq_export', self::NOT_EXPORTED)) {
             add_post_meta($post_id, '_fyndiq_export', self::NOT_EXPORTED, true);
-        };
-        if (!update_post_meta($post_id, '_fyndiq_status', '')) {
-            add_post_meta($post_id, '_fyndiq_status', '', true);
         };
     }
 
