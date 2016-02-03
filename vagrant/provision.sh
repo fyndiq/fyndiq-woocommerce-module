@@ -7,6 +7,7 @@ ADMIN_EMAIL=admin@example.com
 ADMIN_PASS=password123123
 
 apt-get update
+apt-get install -y git
 apt-get install -y build-essential vim-nox
 apt-get install -y unzip
 
