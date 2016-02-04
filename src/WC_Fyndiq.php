@@ -1024,6 +1024,7 @@ EOS;
         FyndiqUtils::debug('USER AGENT', FmHelpers::get_user_agent());
         $languageId = WC()->countries->get_base_country();
         FyndiqUtils::debug('language', $languageId);
+        FyndiqUtils::debug('taxonomy', $this->getAllTerms());
         $return = $this->fmExport->feedFileHandling();
         $result = file_get_contents($this->filepath);
         FyndiqUtils::debug('$result', $result, true);
@@ -1334,5 +1335,21 @@ EOS;
         } else {
             add_option('wcfyndiq_order_error', true, null, false);
         }
+    }
+
+    private function getAllTerms()
+    {
+        $taxonomy_terms = array();
+        $taxonomy_terms[] = '';
+        $attribute_taxonomies = wc_get_attribute_taxonomies();
+
+        if ($attribute_taxonomies) {
+            foreach ($attribute_taxonomies as $tax) {
+                if (taxonomy_exists(wc_attribute_taxonomy_name($tax->attribute_name))) {
+                    $taxonomy_terms[$tax->attribute_name] = $tax->attribute_label;
+                }
+            }
+        }
+        return $taxonomy_terms;
     }
 }
