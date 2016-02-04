@@ -284,25 +284,6 @@ EOS;
                 );
             }
 
-            // Add Description picker
-            $settings_slider[] = array(
-
-                'name' => __('Description to use', 'fyndiq'),
-                'desc_tip' => __(
-                    'Set how you want your description to be exported to Fyndiq.',
-                    'fyndiq'
-                ),
-                'id' => 'wcfyndiq_description_picker',
-                'type' => 'select',
-                'options' => array(
-                    FmExport::DESCRIPTION_LONG => __('Long Description', 'fyndiq'),
-                    FmExport::DESCRIPTION_SHORT => __('Short Description', 'fyndiq'),
-                    FmExport::DESCRIPTION_SHORT_LONG => __('Short and Long Description', 'fyndiq'),
-                ),
-                'desc' => __('Default is Long Description', 'fyndiq'),
-
-            );
-
             // Add currency setting
             $settings_slider[] = array(
 
@@ -371,6 +352,88 @@ EOS;
                 'desc' => __('This must be picked accurate', 'fyndiq'),
 
             );
+            $settings_slider[] = array(
+                 'type' => 'sectionend',
+                 'id' => 'wc_settings_wcfyndiq_section_end'
+            );
+
+            $settings_slider[] = array(
+                'name'     => __('Field Mappings', 'fyndiq'),
+                'type'     => 'title',
+                'desc'     => '',
+                'id'       => 'wc_settings_wcfyndiq_section_title'
+            );
+
+
+            // Add Description picker
+            $settings_slider[] = array(
+                'name' => __('Description to use', 'fyndiq'),
+                'desc_tip' => __(
+                    'Set how you want your description to be exported to Fyndiq.',
+                    'fyndiq'
+                ),
+                'id' => 'wcfyndiq_description_picker',
+                'type' => 'select',
+                'options' => array(
+                                FmExport::DESCRIPTION_LONG => __('Long Description', 'fyndiq'),
+                                FmExport::DESCRIPTION_SHORT => __('Short Description', 'fyndiq'),
+                                FmExport::DESCRIPTION_SHORT_LONG => __('Short and Long Description', 'fyndiq'),
+                ),
+                'desc' => __('Default is Long Description', 'fyndiq'),
+            );
+
+            // Map Field for EAN
+            $settings_slider[] = array(
+                'name' => __('EAN', 'fyndiq'),
+                'desc_tip' => __(
+                    'EAN',
+                    'fyndiq'
+                ),
+                'id' => 'wcfyndiq_field_map_ean',
+                'type' => 'select',
+                'options' => $this->getAllTerms(),
+                'desc' => __('This must be picked accurate', 'fyndiq'),
+            );
+
+            // Map Field for ISBN
+            $settings_slider[] = array(
+                'name' => __('ISBN', 'fyndiq'),
+                'desc_tip' => __(
+                    'ISBN',
+                    'fyndiq'
+                ),
+                'id' => 'wcfyndiq_field_map_isbn',
+                'type' => 'select',
+                'options' => $this->getAllTerms(),
+                'desc' => __('This must be picked accurate', 'fyndiq'),
+            );
+
+            // Map Field for MPN
+            $settings_slider[] = array(
+                'name' => __('MPN', 'fyndiq'),
+                'desc_tip' => __(
+                    'MPN',
+                    'fyndiq'
+                ),
+                'id' => 'wcfyndiq_field_map_mpn',
+                'type' => 'select',
+                'options' => $this->getAllTerms(),
+                'desc' => __('This must be picked accurate', 'fyndiq'),
+            );
+
+            // Map Field for MPN
+            $settings_slider[] = array(
+                'name' => __('Brand', 'fyndiq'),
+                'desc_tip' => __(
+                    'Brand',
+                    'fyndiq'
+                ),
+                'id' => 'wcfyndiq_field_map_brand',
+                'type' => 'select',
+                'options' => $this->getAllTerms(),
+                'desc' => __('This must be picked accurate', 'fyndiq'),
+            );
+
             $settings_slider[] = array(
                  'type' => 'sectionend',
                  'id' => 'wc_settings_wcfyndiq_section_end'
