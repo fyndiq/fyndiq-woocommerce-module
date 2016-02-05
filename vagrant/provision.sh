@@ -53,7 +53,11 @@ if [ ! -f "$WC_PATH/index.php" ]; then
 
     ## Install WordPress
     sudo -u vagrant -i -- wp core download --path=$WC_PATH
-    sudo -u vagrant -i -- wp core config --dbname=woocommerce --dbuser=root --dbpass=123 --path=$WC_PATH
+    sudo -u vagrant -i -- wp core config --dbname=woocommerce --dbuser=root --dbpass=123 --path=$WC_PATH \
+    --extra-php <<PHP
+		define( 'WP_DEBUG', true );
+		define( 'WP_DEBUG_LOG', true );
+PHP
     sudo -u vagrant -i -- wp core install --url=$DOMAIN --title="Fyndiq Test Store" \
     --admin_user=$ADMIN_USER --admin_password=$ADMIN_PASS --admin_email=$ADMIN_EMAIL --path=$WC_PATH
 
