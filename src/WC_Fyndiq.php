@@ -65,6 +65,7 @@ class WC_Fyndiq
         add_filter('manage_edit-product_sortable_columns', array(&$this, 'fyndiq_product_column_sort'));
         add_action('pre_get_posts', array(&$this, 'fyndiq_product_column_sort_by'));
         add_action('admin_notices', array(&$this, 'fyndiq_bulk_notices'));
+        add_action('admin_notices', array(&$this, 'do_bulk_action_messages'));
 
         //Deactivation
         register_deactivation_hook($this->mainfile, array(&$this, 'deactivate'));
@@ -78,8 +79,12 @@ class WC_Fyndiq
         }
 
         //bulk action
+        //Inserts the JS for the appropriate dropdown items
         add_action('admin_footer-edit.php', array(&$this, 'fyndiq_product_add_bulk_action'));
+
+        //The actual actions behind the bulk actions. Ought to be coalesced into a dispatcher
         add_action('load-edit.php', array(&$this, 'fyndiq_product_export_bulk_action'));
+        add_action('load-edit.php', array(&$this, 'fyndiq_bulk_action_dispatcher'));
 
         //add_action('post_submitbox_misc_actions', array( &$this, 'fyndiq_order_edit_action'));
         add_action('add_meta_boxes', array(&$this, 'fyndiq_order_meta_boxes'));
@@ -445,6 +450,19 @@ EOS;
                 $value
             );
 
+            $handledordervalue = get_post_meta($product->id, '_fyndiq_handled_order', true);
+
+            woocommerce_form_field(
+                '_fyndiq_handled_order',
+                array(
+                    'type' => 'checkbox',
+                    'class' => array('form-field', 'input-checkbox'),
+                    'label' => __('Order handled', 'fyndiq'),
+                    'description' => __('Report this order as handled to Fyndiq', 'fyndiq'),
+                ), (bool) get_post_meta($product->id, '_fyndiq_handled_order', true)
+
+            );
+
             //The price percentage for fyndiq for this specific product.
             woocommerce_form_field(
                 '_fyndiq_price_percentage',
@@ -463,6 +481,7 @@ EOS;
         } else {
             // If the woocommerce is older or the same as 2.2.11 it needs to
             // use raw html becuase woocommerce_form_field doesn't exist
+            // use raw html because woocommerce_form_field doesn't exist
 
             $exported = (get_post_meta($product->id, '_fyndiq_export', true) == self::EXPORTED) ? ' checked' : '';
 
@@ -477,7 +496,18 @@ EOS;
                 __('mark this as true if you want to export to Fyndiq', 'fyndiq')
             ));
 
-            //The price percentage for fyndiq for this specific product.
+            //Checkbox to mark order as handled
+            $this->fmOutput->output(sprintf(
+                '<p class="form-field" id="_fyndiq_export_field">
+                <label for="_fyndiq_handled_order"> %s</label>
+				<input type="checkbox" class="input-checkbox " name="_fyndiq_handled_order" id="_fyndiq_handled_order" value="1"%s>
+                <span class="description">%s</span></p>',
+                __('Order handled', 'fyndiq'),
+                $exported,
+                __('Report this order as handled to Fyndiq', 'fyndiq')
+            ));
+
+            //The fyndiq percentage discount for this specific product.
             $this->fmOutput->output(sprintf(
                 '<p class="form-row form-row form-field short" id="_fyndiq_price_percentage_field">
                 <label for="_fyndiq_price_percentage" class="">%s</label>
@@ -604,8 +634,9 @@ EOS;
     {
         $woocommerce_checkbox = $this->getExportState();
         $woocommerce_pricepercentage = $this->getPricePercentage();
-        update_post_meta($post_id, '_fyndiq_export', $woocommerce_checkbox);
 
+        update_post_meta($post_id, '_fyndiq_export', $woocommerce_checkbox);
+        update_post_meta($post_id, '_fyndiq_handled_order', $this->getIsHandled());
 
         if ($woocommerce_checkbox == self::EXPORTED) {
             if (empty($woocommerce_pricepercentage)) {
@@ -757,49 +788,101 @@ EOS;
 
     }
 
-    public function fyndiq_product_add_bulk_action()
-    {
+    //Adds the bulk actions to the dropdown by inserting some JS
+    public function fyndiq_product_add_bulk_action() {
         global $post_type;
 
-        if ($post_type == 'product') {
-            $exportToFyndiq = __('Export to Fyndiq', 'fyndiq');
-            $removeFromFyndiq = __('Remove from Fyndiq', 'fyndiq');
-            $setFyndiqOrderHandled = __('Mark order as handled', 'fyndiq');
-            $script = <<<EOS
-<script type="text/javascript">
-    jQuery(document).ready(function () {
+        //Define bulk actions for the various page types
+        $bulkActionArray = array(
+            'product' => array(
+                'fyndiq_export' => __('Export to Fyndiq', 'fyndiq'),
+                'fyndiq_no_export' => __('Remove from Fyndiq', 'fyndiq'),
+                'fyndiq_handle_order' => __('Mark order(s) as handled', 'fyndiq'),
+                'fyndiq_unhandle_order' => __('Mark order(s) as not handled', 'fyndiq')
+
+                ),
+            'shop_order' => array(
+                'fyndiq_delivery' => __('Get Fyndiq Delivery Note', 'fyndiq'),
+                'fyndiq-order-import' => __('Import From Fyndiq', 'fyndiq')
+            )
+        );
 
 
+        //We need this JS header in any case. Initialises output var too. TODO: why is the IDE marking this as wrong?
+        $scriptOutput = '<script type="text/javascript">jQuery(document).ready(function () {';
 
-        jQuery('<option>').val('fyndiq_export').text('$exportToFyndiq').appendTo("select[name='action']");
-        jQuery('<option>').val('fyndiq_export').text('$exportToFyndiq').appendTo("select[name='action2']");
-        jQuery('<option>').val('fyndiq_handle_order').text('$setFyndiqOrderHandled').appendTo("select[name='action']");
-        jQuery('<option>').val('fyndiq_handle_order').text('$setFyndiqOrderHandled').appendTo("select[name='action2']");
-        jQuery('<option>').val('fyndiq_no_export').text('$removeFromFyndiq').appendTo("select[name='action']");
-        jQuery('<option>').val('fyndiq_no_export').text('$removeFromFyndiq').appendTo("select[name='action2']");
-    });
-</script>
-EOS;
-            $this->fmOutput->output($script);
+
+        //Goes through the corresponding array for the page type and writes JS needed for dropdown
+        foreach ($bulkActionArray[$post_type] as $key => $value) {
+            $scriptOutput .= "  jQuery('<option>').val('$key').text('$value').appendTo('select[name=\"action\"]');
+                                    jQuery('<option>').val('$key').text('$value').appendTo('select[name=\"action2\"]');";
         }
-        if ($post_type == 'shop_order' && $this->ordersEnabled()) {
-            $getFyndiqDeliveryNote =  __('Get Fyndiq Delivery Note', 'fyndiq');
-            $importFromFyndiq = __('Import From Fyndiq', 'fyndiq');
-            $script =  <<<EOS
-<script type="text/javascript">
-    jQuery(document).ready(function () {
-        jQuery('<option>').val('fyndiq_delivery').text('$getFyndiqDeliveryNote').appendTo("select[name='action']");
-        jQuery('<option>').val('fyndiq_delivery').text('$getFyndiqDeliveryNote').appendTo("select[name='action2']");
-        if( jQuery('.wrap h2').length && jQuery(jQuery('.wrap h2')[0]).text() != 'Filter posts list' ) {
-            jQuery(jQuery('.wrap h2')[0]).append("<a href='#' id='fyndiq-order-import' class='add-new-h2'>$importFromFyndiq</a>");
+
+
+        //This adds a button for importing stuff from fyndiq TODO: ask about this - it probably shouldnt be there
+        switch ($post_type) {
+            case 'shop_order': {
+                if ($this->ordersEnabled()) {
+                    $scriptOutput .= "if( jQuery('.wrap h2').length && jQuery(jQuery('.wrap h2')[0]).text() != 'Filter posts list' ) {
+                                        jQuery(jQuery('.wrap h2')[0]).append(\"<a href='#' id='fyndiq-order-import' class='add-new-h2'>" .
+                                        $bulkActionArray[$post_type]['fyndiq-order-import'] . "</a>\");
+                                    } else if (jQuery('.wrap h1').length ){
+                                        jQuery(jQuery('.wrap h1')[0]).append(\"<a href='#' id='fyndiq-order-import' class='page-title-action'>" .
+                                        $bulkActionArray[$post_type]['fyndiq-order-import'] . "</a>\");
+                                    }";
+                }
+            }
+            break;
         }
-        else if(jQuery('.wrap h1').length ){
-            jQuery(jQuery('.wrap h1')[0]).append("<a href='#' id='fyndiq-order-import' class='page-title-action'>$importFromFyndiq</a>");
+
+        //We also need this footer in all cases too
+        $scriptOutput .= "});</script>";
+
+        $this->fmOutput->output($scriptOutput);
+    }
+
+
+    public function fyndiq_bulk_action_dispatcher() {
+        switch ($this->getAction('WP_Posts_List_Table')) {
+            case 'fyndiq_handle_order':
+                $this->fyndiq_product_handled_bulk_action();
+                break;
+            case 'fyndiq_unhandle_order':
+                $this->fyndiq_product_unhandled_bulk_action();
+                break;
+            default:
+                break;
         }
-    });
-</script>
-EOS;
-            $this->fmOutput->output($script);
+    }
+
+    private function fyndiq_product_handled_bulk_action () {
+        $posts = $this->getRequestPost();
+
+        if ($this->getRequestPost() > 0) {
+            foreach ($posts as $post) {
+                update_post_meta($post, '_fyndiq_handled_order', 'true');
+            }
+        }
+    }
+
+    private function fyndiq_product_unhandled_bulk_action ()
+    {
+        $posts = $this->getRequestPost();
+
+        if ($this->getRequestPost() > 0) {
+            foreach ($posts as $post) {
+                update_post_meta($post, '_fyndiq_handled_order', 'false');
+            }
+        } else {
+            $_SESSION['bulkMessage'] = 'Goofed. U dun it, son.';
+        }
+    }
+
+
+    public function do_bulk_action_messages() {
+        if (isset($_SESSION['bulkMessage']) && $GLOBALS['pagenow'] === 'edit.php') {
+            $this->fmOutput->output('<div class="updated"><p>' . $_SESSION['bulkMessage'] . '</p></div>');
+            unset($_SESSION['bulkMessage']);
         }
     }
 
@@ -1090,6 +1173,14 @@ EOS;
     public function getExportState()
     {
         return isset($_POST['_fyndiq_export']) ? self::EXPORTED : self::NOT_EXPORTED;
+    }
+
+    public function getIsHandled() {
+        if (isset($_POST['_fyndiq_handled_order'])) {
+            return (bool) $_POST['_fyndiq_handled_order'];
+         } else {
+            return false;
+        }
     }
 
     public function getPricePercentage()
