@@ -873,8 +873,6 @@ EOS;
             foreach ($posts as $post) {
                 update_post_meta($post, '_fyndiq_handled_order', 'false');
             }
-        } else {
-            $_SESSION['bulkMessage'] = 'Goofed. U dun it, son.';
         }
     }
 
