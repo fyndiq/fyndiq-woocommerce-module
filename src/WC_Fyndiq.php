@@ -229,20 +229,18 @@ EOS;
 
             // Add second text field option
             $settings_slider[] = array(
-
                 'name' => __('Username', 'fyndiq'),
-                'desc_tip' => __('This is the username you use for login on Fyndiq Merchant', 'fyndiq'),
+                'desc_tip' => __('This is the username that you use to log in to the Fyndiq merchant page', 'fyndiq'),
                 'id' => 'wcfyndiq_username',
                 'type' => 'text',
                 'desc' => __('Must be your username', 'fyndiq'),
-
             );
 
             // Add second text field option
             $settings_slider[] = array(
 
                 'name' => __('API-token', 'fyndiq'),
-                'desc_tip' => __('This is the API V2 Token on Fyndiq', 'fyndiq'),
+                'desc_tip' => __('This is the API V2 Token generated for you on the Fyndiq merchant page', 'fyndiq'),
                 'id' => 'wcfyndiq_apitoken',
                 'type' => 'text',
                 'desc' => __('Must be API v2 token', 'fyndiq'),
@@ -254,13 +252,13 @@ EOS;
 
                 'name' => __('Global Price Percentage', 'fyndiq'),
                 'desc_tip' => __(
-                    'The percentage that will be removed from the price when sending to fyndiq.',
+                    'The percentage discount applied to prices sent to Fyndiq.',
                     'fyndiq'
                 ),
                 'id' => 'wcfyndiq_price_percentage',
                 'type' => 'text',
                 'default' => '10',
-                'desc' => __('Can be 0 if the price should be the same as in your shop.', 'fyndiq'),
+                'desc' => __('Can be set to \'0\' to apply no discount to products sold via Fyndiq.', 'fyndiq'),
 
             );
 
@@ -440,7 +438,7 @@ EOS;
                     'type' => 'checkbox',
                     'class' => array('form-field', 'input-checkbox'),
                     'label' => __('Export to Fyndiq', 'fyndiq'),
-                    'description' => __('mark this as true if you want to export to Fyndiq', 'fyndiq'),
+                    'description' => __('Export this product to Fyndiq', 'fyndiq'),
                 ),
                 $value
             );
@@ -453,7 +451,7 @@ EOS;
                     'class' => array('form-field', 'short'),
                     'label' => __('Fyndiq Discount Percentage', 'fyndiq'),
                     'description' => __(
-                        'The percentage specific for this product, it will override the globel percentage for this product.',
+                        'A specific percentage discount for this product, overriding the global discount setting.',
                         'fyndiq'
                     ),
                     'required' => false,
@@ -462,7 +460,8 @@ EOS;
             );
         } else {
             // If the woocommerce is older or the same as 2.2.11 it needs to
-            // use raw html becuase woocommerce_form_field doesn't exist
+            // use raw html because woocommerce_form_field doesn't exist
+
 
             $exported = (get_post_meta($product->id, '_fyndiq_export', true) == self::EXPORTED) ? ' checked' : '';
 
@@ -474,7 +473,7 @@ EOS;
                 <span class="description">%s</span></p>',
                 __('Export to Fyndiq', 'fyndiq'),
                 $exported,
-                __('mark this as true if you want to export to Fyndiq', 'fyndiq')
+                __('Export this product to Fyndiq', 'fyndiq')
             ));
 
             //The price percentage for fyndiq for this specific product.
@@ -486,7 +485,7 @@ EOS;
                 __('Fyndiq Discount Percentage', 'fyndiq'),
                 $percentage,
                 __(
-                    'The percentage specific for this product, it will override the globel percentage for this product.',
+                    'A specific percentage discount for this product, overriding the global discount setting.',
                     'fyndiq'
                 )
             ));
@@ -494,7 +493,7 @@ EOS;
 
         $this->fmOutput->output(sprintf(
             '<p>%s %s %s</p></div>',
-            __('Fyndiq Price with set Discount percentage: ', 'fyndiq'),
+            __('Fyndiq Price after discount is applied: ', 'fyndiq'),
             $price,
             get_woocommerce_currency()
         ));
@@ -524,7 +523,7 @@ EOS;
     {
         $this->fmOutput->output(sprintf(
             '<div class="error"><p>%s</p></div>',
-            __('Fyndiq credentials was wrong, try again.', 'fyndiq')
+            __('The supplied credentials for Fyndiq were incorrect.', 'fyndiq')
         ));
     }
 
@@ -994,7 +993,7 @@ EOS;
     private function notice_order_created()
     {
         if (!$this->ordersEnabled()) {
-            wp_die('Orders is disabled');
+            wp_die('Orders are disabled');
         }
         $order_id = $_GET['order_id'];
         $orderId = is_numeric($order_id) ? intval($order_id) : 0;
