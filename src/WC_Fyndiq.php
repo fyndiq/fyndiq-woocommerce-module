@@ -29,6 +29,7 @@ class WC_Fyndiq
         $this->fmUpdate = new FmUpdate();
         $this->fmExport = new FmExport($this->filepath, $this->fmOutput);
         $this->mainfile = $mainfile;
+        $this->attributes = array();
     }
 
     public function locale_load()
@@ -1402,17 +1403,30 @@ EOS;
 
     private function getAllTerms()
     {
-        $taxonomy_terms = array();
-        $taxonomy_terms[] = '';
-        $attribute_taxonomies = wc_get_attribute_taxonomies();
+        if(empty($this->attributes)) {
+            $this->attributes[] = '';
+            $attribute_taxonomies = wc_get_attribute_taxonomies();
 
-        if ($attribute_taxonomies) {
-            foreach ($attribute_taxonomies as $tax) {
-                if (taxonomy_exists(wc_attribute_taxonomy_name($tax->attribute_name))) {
-                    $taxonomy_terms[$tax->attribute_name] = $tax->attribute_label;
+            if ($attribute_taxonomies) {
+                foreach ($attribute_taxonomies as $tax) {
+                    //if (taxonomy_exists(wc_attribute_taxonomy_name($tax->attribute_name))) {
+                        $this->attributes[$tax->attribute_name] = $tax->attribute_label;
+                    //}
+                }
+            }
+
+            // Get products attributes
+            // This can be set per product and some product can have no attributes at all
+            global $wpdb;
+            $results = $wpdb->get_results( 'SELECT * FROM wp_postmeta WHERE meta_key = "_product_attributes" AND meta_value != "a:0:{}"', OBJECT );
+            foreach ($results as $meta) {
+                $data = unserialize($meta->meta_value);
+                foreach($data as $key => $attribute)
+                {
+                    $this->attributes[$key] = $attribute['name'];
                 }
             }
         }
-        return $taxonomy_terms;
+        return $this->attributes;
     }
 }
