@@ -1049,7 +1049,7 @@ EOS;
             $eventName = $event ? 'notice_' . $event : false;
             if ($eventName) {
                 if ($eventName[0] != '_' && method_exists($this, $eventName)) {
-                    //$this->checkToken();
+                    $this->checkToken();
                     return $this->$eventName();
                 }
             }
