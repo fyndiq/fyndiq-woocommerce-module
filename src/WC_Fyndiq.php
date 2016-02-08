@@ -414,9 +414,7 @@ EOS;
 
     public function fyndiq_product_tab()
     {
-    ?>
-        <li class="fyndiq_tab"><a href="#fyndiq_tab"><?php _e('Fyndiq', 'fyndiq'); ?></a></li>
-    <?php
+        echo '<li class="fyndiq_tab"><a href="#fyndiq_tab">' . __('Fyndiq', 'fyndiq') . '</a></li>';
     }
 
     public function fyndiq_product_tab_content()
@@ -426,10 +424,7 @@ EOS;
         $price = $this->fmExport->getPrice($product->id, $product->price);
         $percentage = get_post_meta($product->id, '_fyndiq_price_percentage', true);
 
-        ?>
-        <div id="fyndiq_tab" class="panel woocommerce_options_panel">
-            <div class="fyndiq_tab">
-        <?php
+        echo '<div id="fyndiq_tab" class="panel woocommerce_options_panel"><div class="fyndiq_tab">';
 
         if (!$this->isProductExportable($product)) {
             $this->fmOutput->output(sprintf(
@@ -507,10 +502,7 @@ EOS;
             $price,
             get_woocommerce_currency()
         ));
-        ?>
-    </div>
-</div>
-        <?php
+        echo '</div></div>';
     }
 
     public function fyndiq_show_order_error()
