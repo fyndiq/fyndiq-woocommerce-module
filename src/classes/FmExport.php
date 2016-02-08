@@ -531,28 +531,25 @@ class FmExport
     {
         //Get the options, if empty it is not set, return empty string
         $option = get_option('wcfyndiq_field_map_'.$key);
-        if(empty($option)) {
+        if (empty($option)) {
             return '';
         }
         FyndiqUtils::debug('$option', $option);
         //if product is int, it will not be a get_attribute function called, skip it
-        if(is_int($product)) {
+        if (is_int($product)) {
             $attribute = '';
+        } else {
+            $attribute = $product->get_attribute('pa_'.$option);
         }
-        else {
-            $attribute = $product->get_attribute( 'pa_'.$option );
-        }
-        if(empty($attribute)) {
+        if (empty($attribute)) {
             //handling if product is integer
-            if(is_int($product)) {
-                $meta = get_post_meta ( $product, '_product_attributes' );
+            if (is_int($product)) {
+                $meta = get_post_meta($product, '_product_attributes');
+            } else {
+                $meta = get_post_meta($product->id, '_product_attributes');
             }
-            else {
-                $meta = get_post_meta ( $product->id, '_product_attributes' );
-            }
-            foreach ($meta as $attrkey => $attr)
-            {
-                if(isset($attr[$option])) {
+            foreach ($meta as $attrkey => $attr) {
+                if (isset($attr[$option])) {
                     $chosenAttr = $attr[$option];
                     FyndiqUtils::debug('$attr', $chosenAttr);
                     $attribute = $chosenAttr['value'];

@@ -1408,7 +1408,7 @@ EOS;
 
     private function getAllTerms()
     {
-        if(empty($this->attributes)) {
+        if (empty($this->attributes)) {
             $this->attributes[] = '';
             $attribute_taxonomies = wc_get_attribute_taxonomies();
 
@@ -1421,11 +1421,10 @@ EOS;
             // Get products attributes
             // This can be set per product and some product can have no attributes at all
             global $wpdb;
-            $results = $wpdb->get_results( 'SELECT * FROM wp_postmeta WHERE meta_key = "_product_attributes" AND meta_value != "a:0:{}"', OBJECT );
+            $results = $wpdb->get_results('SELECT * FROM wp_postmeta WHERE meta_key = "_product_attributes" AND meta_value != "a:0:{}"', OBJECT);
             foreach ($results as $meta) {
                 $data = unserialize($meta->meta_value);
-                foreach($data as $key => $attribute)
-                {
+                foreach ($data as $key => $attribute) {
                     $this->attributes[$key] = $attribute['name'];
                 }
             }
