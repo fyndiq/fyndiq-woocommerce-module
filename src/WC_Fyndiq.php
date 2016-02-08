@@ -208,6 +208,10 @@ EOS;
 
     public function fyndiq_all_settings()
     {
+
+        //Get options for attributes
+        $attributes = $this->getAllTerms();
+
         /**
          * Check the current section is what we want
          **/
@@ -392,7 +396,7 @@ EOS;
                 ),
                 'id' => 'wcfyndiq_field_map_ean',
                 'type' => 'select',
-                'options' => $this->getAllTerms(),
+                'options' => $attributes,
                 'desc' => __('This must be picked accurate', 'fyndiq'),
             );
 
@@ -405,7 +409,7 @@ EOS;
                 ),
                 'id' => 'wcfyndiq_field_map_isbn',
                 'type' => 'select',
-                'options' => $this->getAllTerms(),
+                'options' => $attributes,
                 'desc' => __('This must be picked accurate', 'fyndiq'),
             );
 
@@ -418,7 +422,7 @@ EOS;
                 ),
                 'id' => 'wcfyndiq_field_map_mpn',
                 'type' => 'select',
-                'options' => $this->getAllTerms(),
+                'options' => $attributes,
                 'desc' => __('This must be picked accurate', 'fyndiq'),
             );
 
@@ -431,7 +435,7 @@ EOS;
                 ),
                 'id' => 'wcfyndiq_field_map_brand',
                 'type' => 'select',
-                'options' => $this->getAllTerms(),
+                'options' => $attributes,
                 'desc' => __('This must be picked accurate', 'fyndiq'),
             );
 
@@ -1046,7 +1050,7 @@ EOS;
             $eventName = $event ? 'notice_' . $event : false;
             if ($eventName) {
                 if ($eventName[0] != '_' && method_exists($this, $eventName)) {
-                    $this->checkToken();
+                    //$this->checkToken();
                     return $this->$eventName();
                 }
             }
@@ -1401,6 +1405,7 @@ EOS;
         }
     }
 
+
     private function getAllTerms()
     {
         if(empty($this->attributes)) {
@@ -1409,9 +1414,7 @@ EOS;
 
             if ($attribute_taxonomies) {
                 foreach ($attribute_taxonomies as $tax) {
-                    //if (taxonomy_exists(wc_attribute_taxonomy_name($tax->attribute_name))) {
-                        $this->attributes[$tax->attribute_name] = $tax->attribute_label;
-                    //}
+                    $this->attributes[$tax->attribute_name] = $tax->attribute_label;
                 }
             }
 
