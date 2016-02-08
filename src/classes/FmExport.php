@@ -271,6 +271,7 @@ class FmExport
             FyndiqFeedWriter::ARTICLE_NAME => $articleName,
             FyndiqFeedWriter::PROPERTIES => $properties,
         );
+        //$feedArticle = array_merge($feedArticle, $this->getMappedFields());
         return $feedArticle;
     }
 
@@ -532,14 +533,14 @@ class FmExport
         if(empty($option)) {
             return '';
         }
-        $attribute = $product->get_attribute( 'pa_'.$key );
+        $attribute = $product->get_attribute( 'pa_'.$option );
         if(empty($attribute)) {
             $meta = get_post_meta ( $product->id, '_product_attributes' );
             foreach ($meta as $attrkey => $attr)
             {
-                FyndiqUtils::debug('$key', $key);
-                if(isset($attr[$key])) {
-                    $chosenAttr = $attr[$key];
+                FyndiqUtils::debug('$option', $option);
+                if(isset($attr[$option])) {
+                    $chosenAttr = $attr[$option];
                     FyndiqUtils::debug('$attr', $chosenAttr);
                     $attribute = $chosenAttr['value'];
                 }
