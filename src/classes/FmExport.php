@@ -207,8 +207,7 @@ class FmExport
             FyndiqFeedWriter::QUANTITY => $quantity,
             FyndiqFeedWriter::SKU => $this->getReference($product),
         );
-        $feedProduct = $feedProduct = array_merge($feedProduct, $this->getMappedFields($product));
-        return $feedProduct;
+        return array_merge($feedProduct, $this->getMappedFields($product));
     }
 
     private function getVariation($product, $variation, $config, $tagValuesFixed)
@@ -271,8 +270,7 @@ class FmExport
             FyndiqFeedWriter::ARTICLE_NAME => $articleName,
             FyndiqFeedWriter::PROPERTIES => $properties,
         );
-        $feedArticle = array_merge($feedArticle, $this->getMappedFields($variation['variation_id']));
-        return $feedArticle;
+        return array_merge($feedArticle, $this->getMappedFields($variation['variation_id']));
     }
 
     function getProductPrice($product, $config)
