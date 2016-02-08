@@ -58,6 +58,9 @@ class WC_Fyndiq
             array(&$this, 'fyndiq_add_product_field')
         );
         add_action('woocommerce_process_product_meta', array(&$this, 'fyndiq_product_save'));
+        add_action('woocommerce_process_shop_order_meta', array(&$this, 'fyndiq_order_save'));
+
+        add_action('woocommerce_admin_order_data_after_order_details', array(&$this, 'fyndiq_add_order_field'));
 
         //product list
         add_filter('manage_edit-product_columns', array(&$this, 'fyndiq_product_add_column'));
@@ -80,7 +83,7 @@ class WC_Fyndiq
 
         //bulk action
         //Inserts the JS for the appropriate dropdown items
-        add_action('admin_footer-edit.php', array(&$this, 'fyndiq_product_add_bulk_action'));
+        add_action('admin_footer-edit.php', array(&$this, 'fyndiq_add_bulk_action'));
 
         //The actual actions behind the bulk actions. Ought to be coalesced into a dispatcher
         add_action('load-edit.php', array(&$this, 'fyndiq_product_export_bulk_action'));
@@ -137,8 +140,7 @@ class WC_Fyndiq
     public function fyndiq_order_meta_boxes()
     {
         global $post;
-        $post_id = $post->ID;
-        $meta = get_post_custom($post_id);
+        $meta = get_post_custom($this->getPostId());
         if (isset($meta['fyndiq_delivery_note']) && isset($meta['fyndiq_delivery_note'][0]) && $meta['fyndiq_delivery_note'][0] != '') {
             add_meta_box(
                 'woocommerce-order-fyndiq-delivery-note',
@@ -153,10 +155,7 @@ class WC_Fyndiq
 
     public function order_meta_box_delivery_note()
     {
-        global $post;
-        $post_id = $post->ID;
-        $meta = get_post_custom($post_id);
-
+        $meta = get_post_custom($this->getPostId());
         $this->fmOutput->output('<a href="' . $meta['fyndiq_delivery_note'][0] . '" class="button button-primary">Get Fyndiq Delivery Note</a>');
     }
 
@@ -420,9 +419,48 @@ EOS;
     }
 
 
+    /**
+     * This generates the code for fields, compensating for old versions
+     *
+     * @param $fieldName - the name of the field to be added
+     * @param $array - the array that would usually be passed to woocommerce_form_field()
+     * @param $value - the value of the field
+     */
+    private function fyndiq_generate_field($fieldName, $array, $value) {
+        if (version_compare(FmHelpers::get_woocommerce_version(), '2.3.8') >= 0) {
+            woocommerce_form_field($fieldName, $array, $value);
+        } else {
+            $this->fmOutput->output("<p class='form-field' id=$fieldName>
+                <label for=\'$fieldName\'>". $array['label']  ."</label>
+				<input type='" . $array['type'] . "' class='input-" . $array['type'] . "' name='$fieldName' id='$fieldName' value='$value'>
+                <span class='description'>" . $array['description'] . "</span></p>");
+        }
+    }
+
+
+    /**
+     *
+     *This is the hooked function for fields on the order pages
+     *
+     */
+    public function fyndiq_add_order_field() {
+        $this->fyndiq_generate_field('_fyndiq_handled_order',  array(
+            'type' => 'checkbox',
+            'class' => array('input-checkbox'),
+            'label' => __('Order handled', 'fyndiq'),
+            'description' => __('Report this order as handled to Fyndiq', 'fyndiq'),
+        ), (bool)get_post_meta($this->getPostId(), '_fyndiq_handled_order', true));
+    }
+
+    /**
+     *
+     *This is the hooked function for fields on the product pages
+     * TODO: make this function use fyndiq_generate_field
+     *
+     */
     public function fyndiq_add_product_field()
     {
-        $product = get_product($this->getProductId());
+        $product = get_product($this->getPostId());
         $version = FmHelpers::get_woocommerce_version();
         $price = $this->fmExport->getPrice($product->id, $product->price);
         $percentage = get_post_meta($product->id, '_fyndiq_price_percentage', true);
@@ -450,18 +488,6 @@ EOS;
                 $value
             );
 
-            $handledordervalue = get_post_meta($product->id, '_fyndiq_handled_order', true);
-
-            woocommerce_form_field(
-                '_fyndiq_handled_order',
-                array(
-                    'type' => 'checkbox',
-                    'class' => array('form-field', 'input-checkbox'),
-                    'label' => __('Order handled', 'fyndiq'),
-                    'description' => __('Report this order as handled to Fyndiq', 'fyndiq'),
-                ), (bool) get_post_meta($product->id, '_fyndiq_handled_order', true)
-
-            );
 
             //The price percentage for fyndiq for this specific product.
             woocommerce_form_field(
@@ -494,17 +520,6 @@ EOS;
                 __('Export to Fyndiq', 'fyndiq'),
                 $exported,
                 __('mark this as true if you want to export to Fyndiq', 'fyndiq')
-            ));
-
-            //Checkbox to mark order as handled
-            $this->fmOutput->output(sprintf(
-                '<p class="form-field" id="_fyndiq_export_field">
-                <label for="_fyndiq_handled_order"> %s</label>
-				<input type="checkbox" class="input-checkbox " name="_fyndiq_handled_order" id="_fyndiq_handled_order" value="1"%s>
-                <span class="description">%s</span></p>',
-                __('Order handled', 'fyndiq'),
-                $exported,
-                __('Report this order as handled to Fyndiq', 'fyndiq')
             ));
 
             //The fyndiq percentage discount for this specific product.
@@ -630,13 +645,29 @@ EOS;
         }
     }
 
+    //
+    /**
+     *
+     * Hooked action for saving orders (woocommerce_process_shop_order_meta)
+     *
+     * @param $post_id
+     */
+    public function fyndiq_order_save($post_id) {
+        $this->setIsHandled(array(
+            array(
+                'id' => $post_id,
+                'marked' => $this->getIsHandled()
+            )
+            ));
+    }
+
+    //Hooked action for saving products (woocommerce_process_product_meta)
     public function fyndiq_product_save($post_id)
     {
         $woocommerce_checkbox = $this->getExportState();
         $woocommerce_pricepercentage = $this->getPricePercentage();
 
         update_post_meta($post_id, '_fyndiq_export', $woocommerce_checkbox);
-        update_post_meta($post_id, '_fyndiq_handled_order', $this->getIsHandled());
 
         if ($woocommerce_checkbox == self::EXPORTED) {
             if (empty($woocommerce_pricepercentage)) {
@@ -650,14 +681,69 @@ EOS;
         $this->fyndiq_product_validate($post_id);
     }
 
-    public function fyndiq_product_add_column($defaults)
-    {
+
+    //Hooked function for adding columns to the products page (manage_edit-shop_order_columns)
+    public function fyndiq_order_add_column($defaults) {
+        $defaults['fyndiq_order'] = __('Fyndiq Order', 'fyndiq');
+        return $defaults;
+    }
+
+    public function fyndiq_order_column($column, $postid) {
+        $product = new WC_Order($postid);
+        if ($column == 'fyndiq_order') {
+            $fyndiq_order = get_post_meta($postid, 'fyndiq_id', true);
+            if ($fyndiq_order != '') {
+                $this->fmOutput->output($fyndiq_order);
+            } else {
+                update_post_meta($postid, 'fyndiq_id', '-');
+                $this->fmOutput->output('-');
+            }
+        }
+    }
+
+    public function fyndiq_order_column_sort() {
+        return array(
+            'fyndiq_order' => 'fyndiq_order'
+        );
+    }
+
+    public function fyndiq_order_column_sort_by($query) {
+        if (!is_admin()) {
+            return;
+        }
+        $orderby = $query->get('orderby');
+        if ('fyndiq_order' == $orderby) {
+            $query->set('meta_key', 'fyndiq_id');
+            $query->set('orderby', 'meta_value_integer');
+        }
+    }
+
+
+
+    //Hooked function for adding columns to the products page (manage_edit-product_columns)
+    public function fyndiq_product_add_column($defaults) {
         $defaults['fyndiq_export'] = __('Fyndiq', 'fyndiq');
         return $defaults;
     }
 
-    public function fyndiq_product_column_export($column, $postid)
-    {
+    public function fyndiq_product_column_sort() {
+        return array(
+            'fyndiq_export' => 'fyndiq_export',
+        );
+    }
+
+    public function fyndiq_product_column_sort_by($query) {
+        if (!is_admin()) {
+            return;
+        }
+        $orderby = $query->get('orderby');
+        if ('fyndiq_export' == $orderby) {
+            $query->set('meta_key', '_fyndiq_export');
+            $query->set('orderby', 'meta_value');
+        }
+    }
+
+    public function fyndiq_product_column_export($column, $postid) {
         $product = get_product($postid);
 
         if ($column == 'fyndiq_export') {
@@ -678,6 +764,8 @@ EOS;
             }
         }
     }
+
+
 
     public function my_admin_notice()
     {
@@ -726,70 +814,16 @@ EOS;
     }
 
 
-    public function fyndiq_order_column_sort()
-    {
-        return array(
-            'fyndiq_order' => 'fyndiq_order'
-        );
-    }
-
-    public function fyndiq_order_column_sort_by($query)
-    {
-        if (!is_admin()) {
-            return;
-        }
-        $orderby = $query->get('orderby');
-        if ('fyndiq_order' == $orderby) {
-            $query->set('meta_key', 'fyndiq_id');
-            $query->set('orderby', 'meta_value_integer');
-        }
-    }
 
 
-    public function fyndiq_order_add_column($defaults)
-    {
-        $defaults['fyndiq_order'] = __('Fyndiq Order', 'fyndiq');
-
-        return $defaults;
-    }
-
-    public function fyndiq_order_column($column, $postid)
-    {
-        $product = new WC_Order($postid);
-        if ($column == 'fyndiq_order') {
-            $fyndiq_order = get_post_meta($postid, 'fyndiq_id', true);
-            if ($fyndiq_order != '') {
-                $this->fmOutput->output($fyndiq_order);
-            } else {
-                update_post_meta($postid, 'fyndiq_id', '-');
-                $this->fmOutput->output('-');
-            }
-        }
-    }
 
 
-    public function fyndiq_product_column_sort()
-    {
-        return array(
-            'fyndiq_export' => 'fyndiq_export',
-        );
-    }
-
-    public function fyndiq_product_column_sort_by($query)
-    {
-        if (!is_admin()) {
-            return;
-        }
-        $orderby = $query->get('orderby');
-        if ('fyndiq_export' == $orderby) {
-            $query->set('meta_key', '_fyndiq_export');
-            $query->set('orderby', 'meta_value');
-        }
-
-    }
-
-    //Adds the bulk actions to the dropdown by inserting some JS
-    public function fyndiq_product_add_bulk_action() {
+    /**
+     *
+     * Adds bulk actions to the dropdown by reading array and generating relevant JS
+     *
+     */
+    public function fyndiq_add_bulk_action() {
         global $post_type;
 
         //Define bulk actions for the various page types
@@ -797,13 +831,13 @@ EOS;
             'product' => array(
                 'fyndiq_export' => __('Export to Fyndiq', 'fyndiq'),
                 'fyndiq_no_export' => __('Remove from Fyndiq', 'fyndiq'),
-                'fyndiq_handle_order' => __('Mark order(s) as handled', 'fyndiq'),
-                'fyndiq_unhandle_order' => __('Mark order(s) as not handled', 'fyndiq')
 
                 ),
             'shop_order' => array(
                 'fyndiq_delivery' => __('Get Fyndiq Delivery Note', 'fyndiq'),
-                'fyndiq-order-import' => __('Import From Fyndiq', 'fyndiq')
+                'fyndiq-order-import' => __('Import From Fyndiq', 'fyndiq'),
+                'fyndiq_handle_order' => __('Mark order(s) as handled', 'fyndiq'),
+                'fyndiq_unhandle_order' => __('Mark order(s) as not handled', 'fyndiq')
             )
         );
 
@@ -819,7 +853,7 @@ EOS;
         }
 
 
-        //This adds a button for importing stuff from fyndiq TODO: ask about this - it probably shouldnt be there
+        //This adds a button for importing stuff from fyndiq TODO: ask about this - it probably shouldn't be there
         switch ($post_type) {
             case 'shop_order': {
                 if ($this->ordersEnabled()) {
@@ -842,39 +876,62 @@ EOS;
     }
 
 
+    /**
+     *
+     * This function acts as a dispatcher, taking various actions and routing them to the appropriate function
+     * TODO: get all bulk actions to use the dispatcher
+     *
+     */
     public function fyndiq_bulk_action_dispatcher() {
         switch ($this->getAction('WP_Posts_List_Table')) {
             case 'fyndiq_handle_order':
-                $this->fyndiq_product_handled_bulk_action();
+                $this->fyndiq_order_handle_bulk_action();
                 break;
             case 'fyndiq_unhandle_order':
-                $this->fyndiq_product_unhandled_bulk_action();
+                $this->fyndiq_order_unhandle_bulk_action();
                 break;
             default:
                 break;
         }
     }
 
-    private function fyndiq_product_handled_bulk_action () {
-        $posts = $this->getRequestPost();
 
+    /**
+     *
+     * Action code for setting an order as handled
+     *
+     */
+    private function fyndiq_order_handle_bulk_action() {
         if ($this->getRequestPost() > 0) {
-            foreach ($posts as $post) {
-                update_post_meta($post, '_fyndiq_handled_order', 'true');
+            $posts = array();
+            foreach ($this->getRequestPost() as $post) {
+                $posts[] = array(
+                    'id' => $post,
+                    'marked' => 1
+                );
             }
+                $this->setIsHandled($posts);
         }
     }
 
-    private function fyndiq_product_unhandled_bulk_action ()
-    {
-        $posts = $this->getRequestPost();
 
+    /**
+     *
+     * Action code for setting an order as not handled
+     *
+     */
+    private function fyndiq_order_unhandle_bulk_action () {
         if ($this->getRequestPost() > 0) {
-            foreach ($posts as $post) {
-                update_post_meta($post, '_fyndiq_handled_order', 'false');
+            $posts = array();
+            foreach ($this->getRequestPost() as $post) {
+                $posts[] = array(
+                    'id' => $post,
+                    'marked' => 0
+                );
             }
+                $this->setIsHandled($posts);
         }
-    }
+}
 
 
     public function do_bulk_action_messages() {
@@ -1163,7 +1220,7 @@ EOS;
         exit();
     }
 
-    public function getProductId()
+    public function getPostId()
     {
         return get_the_ID();
     }
@@ -1173,12 +1230,28 @@ EOS;
         return isset($_POST['_fyndiq_export']) ? self::EXPORTED : self::NOT_EXPORTED;
     }
 
+    public function getFyndiqID($postID) {
+        return get_post_meta($postID, 'fyndiq_id', true);
+    }
+
     public function getIsHandled() {
         if (isset($_POST['_fyndiq_handled_order'])) {
             return (bool) $_POST['_fyndiq_handled_order'];
          } else {
             return false;
         }
+    }
+
+    public function setIsHandled($posts) {
+        foreach ($posts as &$post) {
+            update_post_meta($post['id'], '_fyndiq_handled_order', (bool) $post['marked']);
+            $post['id'] = $this->getFyndiqID($post['id']);
+            $post = (object) $post;
+        }
+
+        $data = new stdClass();
+        $data->orders = $posts;
+        FmHelpers::callApi('POST', 'orders/marked/', $data);
     }
 
     public function getPricePercentage()
