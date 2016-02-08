@@ -53,11 +53,9 @@ class WC_Fyndiq
         add_action('woocommerce_update_options_wcfyndiq', array(&$this, 'update_settings'));
 
         //products
-        add_action(
-            'woocommerce_product_options_general_product_data',
-            array(&$this, 'fyndiq_add_product_field')
-        );
         add_action('woocommerce_process_product_meta', array(&$this, 'fyndiq_product_save'));
+        add_action( 'woocommerce_product_write_panel_tabs', array(&$this, 'fyndiq_product_tab') );
+        add_action('woocommerce_product_write_panels', array(&$this, 'fyndiq_product_tab_content'));
 
         //product list
         add_filter('manage_edit-product_columns', array(&$this, 'fyndiq_product_add_column'));
@@ -414,13 +412,24 @@ EOS;
         return FmHelpers::callApi('PATCH', 'settings/', $data);
     }
 
+    public function fyndiq_product_tab()
+    {
+    ?>
+        <li class="fyndiq_tab"><a href="#fyndiq_tab"><?php _e('Fyndiq', 'fyndiq'); ?></a></li>
+    <?php
+    }
 
-    public function fyndiq_add_product_field()
+    public function fyndiq_product_tab_content()
     {
         $product = get_product($this->getProductId());
         $version = FmHelpers::get_woocommerce_version();
         $price = $this->fmExport->getPrice($product->id, $product->price);
         $percentage = get_post_meta($product->id, '_fyndiq_price_percentage', true);
+
+        ?>
+        <div id="fyndiq_tab" class="panel woocommerce_options_panel">
+            <div class="fyndiq_tab">
+        <?php
 
         if (!$this->isProductExportable($product)) {
             $this->fmOutput->output(sprintf(
@@ -498,6 +507,10 @@ EOS;
             $price,
             get_woocommerce_currency()
         ));
+        ?>
+    </div>
+</div>
+        <?php
     }
 
     public function fyndiq_show_order_error()
