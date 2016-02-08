@@ -271,7 +271,7 @@ class FmExport
             FyndiqFeedWriter::ARTICLE_NAME => $articleName,
             FyndiqFeedWriter::PROPERTIES => $properties,
         );
-        //$feedArticle = array_merge($feedArticle, $this->getMappedFields());
+        $feedArticle = array_merge($feedArticle, $this->getMappedFields($variation['variation_id']));
         return $feedArticle;
     }
 
@@ -529,16 +529,29 @@ class FmExport
 
     private function getValueForFields($key, $product)
     {
+        //Get the options, if empty it is not set, return empty string
         $option = get_option('wcfyndiq_field_map_'.$key);
         if(empty($option)) {
             return '';
         }
-        $attribute = $product->get_attribute( 'pa_'.$option );
+        FyndiqUtils::debug('$option', $option);
+        //if product is int, it will not be a get_attribute function called, skip it
+        if(is_int($product)) {
+            $attribute = '';
+        }
+        else {
+            $attribute = $product->get_attribute( 'pa_'.$option );
+        }
         if(empty($attribute)) {
-            $meta = get_post_meta ( $product->id, '_product_attributes' );
+            //handling if product is integer
+            if(is_int($product)) {
+                $meta = get_post_meta ( $product, '_product_attributes' );
+            }
+            else {
+                $meta = get_post_meta ( $product->id, '_product_attributes' );
+            }
             foreach ($meta as $attrkey => $attr)
             {
-                FyndiqUtils::debug('$option', $option);
                 if(isset($attr[$option])) {
                     $chosenAttr = $attr[$option];
                     FyndiqUtils::debug('$attr', $chosenAttr);
