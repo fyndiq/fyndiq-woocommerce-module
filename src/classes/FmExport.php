@@ -534,18 +534,14 @@ class FmExport
         }
         FyndiqUtils::debug('$option', $option);
         //if product is int, it will not be a get_attribute function called, skip it
-        if (is_int($product)) {
-            $attribute = '';
-        } else {
+        $attribute = '';
+        if (!is_int($product)) {
             $attribute = $product->get_attribute('pa_'.$option);
         }
         if (empty($attribute)) {
             //handling if product is integer
-            if (is_int($product)) {
-                $meta = get_post_meta($product, '_product_attributes');
-            } else {
-                $meta = get_post_meta($product->id, '_product_attributes');
-            }
+            $productId = is_int($product) ? $product : $product->id;
+            $meta = get_post_meta($productId, '_product_attributes');
             foreach ($meta as $attrkey => $attr) {
                 if (isset($attr[$option])) {
                     $chosenAttr = $attr[$option];
