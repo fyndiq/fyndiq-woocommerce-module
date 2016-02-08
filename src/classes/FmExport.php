@@ -192,7 +192,7 @@ class FmExport
             }
         }
 
-        return array(
+        $feedProduct = array(
             FyndiqFeedWriter::ID => $product->id,
             FyndiqFeedWriter::PRODUCT_TITLE => $product->post->post_title,
             FyndiqFeedWriter::PRODUCT_DESCRIPTION => $this->getDescription($product),
@@ -207,6 +207,8 @@ class FmExport
             FyndiqFeedWriter::QUANTITY => $quantity,
             FyndiqFeedWriter::SKU => $this->getReference($product),
         );
+        $feedProduct = $feedProduct = array_merge($feedProduct, $this->getMappedFields($product));
+        return $feedProduct;
     }
 
     private function getVariation($product, $variation, $config, $tagValuesFixed)
@@ -259,7 +261,7 @@ class FmExport
             $articleName = implode(', ', $tags);
         }
 
-        return array(
+        $feedArticle = array(
             FyndiqFeedWriter::ID => $variation['variation_id'],
             FyndiqFeedWriter::PRICE => FyndiqUtils::formatPrice($price),
             FyndiqFeedWriter::OLDPRICE => FyndiqUtils::formatPrice($oldPrice),
@@ -269,6 +271,7 @@ class FmExport
             FyndiqFeedWriter::ARTICLE_NAME => $articleName,
             FyndiqFeedWriter::PROPERTIES => $properties,
         );
+        return $feedArticle;
     }
 
     function getProductPrice($product, $config)
@@ -511,6 +514,39 @@ class FmExport
                 }
                 return $sku;
         }
+    }
+
+    private function getMappedFields($product)
+    {
+        return array(
+            FyndiqCSVFeedWriter::PRODUCT_BRAND_NAME => $this->getValueForFields('brand', $product),
+            FyndiqCSVFeedWriter::ARTICLE_EAN => $this->getValueForFields('ean', $product),
+            FyndiqCSVFeedWriter::ARTICLE_ISBN => $this->getValueForFields('isbn', $product),
+            FyndiqCSVFeedWriter::ARTICLE_MPN => $this->getValueForFields('mpn', $product),
+        );
+    }
+
+    private function getValueForFields($key, $product)
+    {
+        $option = get_option('wcfyndiq_field_map_'.$key);
+        if(empty($option)) {
+            return '';
+        }
+        $attribute = $product->get_attribute( 'pa_'.$key );
+        if(empty($attribute)) {
+            $meta = get_post_meta ( $product->id, '_product_attributes' );
+            foreach ($meta as $attrkey => $attr)
+            {
+                FyndiqUtils::debug('$key', $key);
+                if(isset($attr[$key])) {
+                    $chosenAttr = $attr[$key];
+                    FyndiqUtils::debug('$attr', $chosenAttr);
+                    $attribute = $chosenAttr['value'];
+                }
+            }
+        }
+        FyndiqUtils::debug('attribute', $attribute);
+        return $attribute;
     }
 
     public function returnAndDie($return)
