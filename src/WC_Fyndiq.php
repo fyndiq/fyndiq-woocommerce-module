@@ -1407,8 +1407,7 @@ EOS;
 
     private function getAllTerms()
     {
-        $attributes = array();
-        $attributes[] = '';
+        $attributes = array('');
         $attribute_taxonomies = wc_get_attribute_taxonomies();
 
         if ($attribute_taxonomies) {
