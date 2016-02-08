@@ -54,7 +54,7 @@ class WC_Fyndiq
 
         //products
         add_action('woocommerce_process_product_meta', array(&$this, 'fyndiq_product_save'));
-        add_action( 'woocommerce_product_write_panel_tabs', array(&$this, 'fyndiq_product_tab') );
+        add_action('woocommerce_product_write_panel_tabs', array(&$this, 'fyndiq_product_tab'));
         add_action('woocommerce_product_write_panels', array(&$this, 'fyndiq_product_tab_content'));
 
         //product list
