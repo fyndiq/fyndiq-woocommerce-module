@@ -6,12 +6,19 @@ ADMIN_USER=admin
 ADMIN_EMAIL=admin@example.com
 ADMIN_PASS=password123123
 
+##We're not doing any installs interactively
+export DEBIAN_FRONTEND=noninteractive
+
 apt-get update
 apt-get install -y git
+apt-get install -y curl
 apt-get install -y build-essential vim-nox
 apt-get install -y unzip
 
 ## Setup locales
+export LANGUAGE=en_GB.UTF-8
+export LANG=en_GB.UTF-8
+export LC_ALL=en_GB.UTF-8
 locale-gen en_GB.UTF-8
 dpkg-reconfigure locales
 
@@ -20,6 +27,8 @@ echo "mysql-server-5.5 mysql-server/root_password password 123" | sudo debconf-s
 echo "mysql-server-5.5 mysql-server/root_password_again password 123" | sudo debconf-set-selections
 apt-get install -y mysql-server
 apt-get install -y apache2 php5 php5-mysql php5-gd php5-mcrypt php5-curl php5-xdebug
+
+echo 'ServerName localhost' >> /etc/apache2/apache2.conf
 
 ## COMPOSER
 if [ ! -e '/usr/local/bin/composer' ]; then
@@ -49,12 +58,22 @@ if [ ! -f "$WC_PATH/index.php" ]; then
     mysql -uroot -p123 -e 'create database woocommerce'
 
     ## Setup virtual host
+    echo 'xdebug.remote_enable=on
+    xdebug.remote_connect_back=on
+    xdebug.idekey="PHPSTORM"
+    xdebug.extended_info=1' >> /etc/php5/mods-available/xdebug.ini
     ln -s /vagrant/assets/001-woocommerce.conf /etc/apache2/sites-enabled/001-woocommerce.conf
     service apache2 restart
 
-    ## Install WordPress
+    ## Install WordPress, enabling debug and setting direct plugin access
     sudo -u vagrant -i -- wp core download --path=$WC_PATH
-    sudo -u vagrant -i -- wp core config --dbname=woocommerce --dbuser=root --dbpass=123 --path=$WC_PATH
+    sudo -u vagrant -i -- wp core config --dbname=woocommerce --dbuser=root --dbpass=123 --path=$WC_PATH \
+    --extra-php <<PHP
+    define( 'WP_DEBUG', true );
+    define( 'WP_DEBUG_LOG', true );
+    define('FS_METHOD', 'direct');
+PHP
+
     sudo -u vagrant -i -- wp core install --url=$DOMAIN --title="Fyndiq Test Store" \
     --admin_user=$ADMIN_USER --admin_password=$ADMIN_PASS --admin_email=$ADMIN_EMAIL --path=$WC_PATH
 
@@ -64,9 +83,6 @@ if [ ! -f "$WC_PATH/index.php" ]; then
     ## Install woocommerce-fyndiq
     ln -s /opt/fyndiq-woocommerce-module/src $WC_PATH/wp-content/plugins/woocommerce-fyndiq
     sudo -u vagrant -i -- wp plugin activate --path=$WC_PATH woocommerce-fyndiq
-
-    ## Directly install plug-ins (no FTP)
-    echo "define('FS_METHOD', 'direct');" >> $WC_PATH/wp-config.php
 
     chown -R vagrant:www-data $WC_PATH
     chmod -R 775 $WC_PATH
