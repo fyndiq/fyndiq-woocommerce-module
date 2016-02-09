@@ -61,8 +61,7 @@ if [ ! -f "$WC_PATH/index.php" ]; then
     echo 'xdebug.remote_enable=on
     xdebug.remote_connect_back=on
     xdebug.idekey="PHPSTORM"
-    xdebug.extended_info=1
-    html_errors=1' >> /etc/php5/mods-available/xdebug.ini
+    xdebug.extended_info=1' >> /etc/php5/mods-available/xdebug.ini
     ln -s /vagrant/assets/001-woocommerce.conf /etc/apache2/sites-enabled/001-woocommerce.conf
     service apache2 restart
 
