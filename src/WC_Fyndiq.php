@@ -815,9 +815,6 @@ EOS;
 
 
 
-
-
-
     /**
      *
      * Adds bulk actions to the dropdown by reading array and generating relevant JS
@@ -1242,6 +1239,23 @@ EOS;
         }
     }
 
+
+    /**
+     *
+     * Sets whether the given posts are marked as processed to Fyndiq or not
+     *
+     * @param $posts - an array of posts in the structure:
+     *
+     * array(
+     *        array(
+     *              id => postIDvalue,
+     *              marked => boolean
+     *              ),
+     *                  ...
+     * )
+     *
+     *
+     */
     public function setIsHandled($posts) {
         foreach ($posts as &$post) {
             update_post_meta($post['id'], '_fyndiq_handled_order', (bool) $post['marked']);
