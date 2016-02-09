@@ -53,14 +53,14 @@ class WC_Fyndiq
         add_action('woocommerce_update_options_wcfyndiq', array(&$this, 'update_settings'));
 
         //products
-        add_action(
-            'woocommerce_product_options_general_product_data',
-            array(&$this, 'fyndiq_add_product_field')
-        );
         add_action('woocommerce_process_product_meta', array(&$this, 'fyndiq_product_save'));
+
         add_action('woocommerce_process_shop_order_meta', array(&$this, 'fyndiq_order_save'));
 
         add_action('woocommerce_admin_order_data_after_order_details', array(&$this, 'fyndiq_add_order_field'));
+        add_action('woocommerce_product_write_panel_tabs', array(&$this, 'fyndiq_product_tab'));
+        add_action('woocommerce_product_write_panels', array(&$this, 'fyndiq_product_tab_content'));
+
 
         //product list
         add_filter('manage_edit-product_columns', array(&$this, 'fyndiq_product_add_column'));
@@ -211,6 +211,10 @@ EOS;
 
     public function fyndiq_all_settings()
     {
+
+        //Get options for attributes
+        $attributes = $this->getAllTerms();
+
         /**
          * Check the current section is what we want
          **/
@@ -288,25 +292,6 @@ EOS;
                 );
             }
 
-            // Add Description picker
-            $settings_slider[] = array(
-
-                'name' => __('Description to use', 'fyndiq'),
-                'desc_tip' => __(
-                    'Set how you want your description to be exported to Fyndiq.',
-                    'fyndiq'
-                ),
-                'id' => 'wcfyndiq_description_picker',
-                'type' => 'select',
-                'options' => array(
-                    FmExport::DESCRIPTION_LONG => __('Long Description', 'fyndiq'),
-                    FmExport::DESCRIPTION_SHORT => __('Short Description', 'fyndiq'),
-                    FmExport::DESCRIPTION_SHORT_LONG => __('Short and Long Description', 'fyndiq'),
-                ),
-                'desc' => __('Default is Long Description', 'fyndiq'),
-
-            );
-
             // Add currency setting
             $settings_slider[] = array(
 
@@ -380,6 +365,88 @@ EOS;
                  'id' => 'wc_settings_wcfyndiq_section_end'
             );
 
+            $settings_slider[] = array(
+                'name'     => __('Field Mappings', 'fyndiq'),
+                'type'     => 'title',
+                'desc'     => '',
+                'id'       => 'wc_settings_wcfyndiq_section_title'
+            );
+
+
+            // Add Description picker
+            $settings_slider[] = array(
+                'name' => __('Description to use', 'fyndiq'),
+                'desc_tip' => __(
+                    'Set how you want your description to be exported to Fyndiq.',
+                    'fyndiq'
+                ),
+                'id' => 'wcfyndiq_description_picker',
+                'type' => 'select',
+                'options' => array(
+                                FmExport::DESCRIPTION_LONG => __('Long Description', 'fyndiq'),
+                                FmExport::DESCRIPTION_SHORT => __('Short Description', 'fyndiq'),
+                                FmExport::DESCRIPTION_SHORT_LONG => __('Short and Long Description', 'fyndiq'),
+                ),
+                'desc' => __('Default is Long Description', 'fyndiq'),
+            );
+
+            // Map Field for EAN
+            $settings_slider[] = array(
+                'name' => __('EAN', 'fyndiq'),
+                'desc_tip' => __(
+                    'EAN',
+                    'fyndiq'
+                ),
+                'id' => 'wcfyndiq_field_map_ean',
+                'type' => 'select',
+                'options' => $attributes,
+                'desc' => __('This must be picked accurate', 'fyndiq'),
+            );
+
+            // Map Field for ISBN
+            $settings_slider[] = array(
+                'name' => __('ISBN', 'fyndiq'),
+                'desc_tip' => __(
+                    'ISBN',
+                    'fyndiq'
+                ),
+                'id' => 'wcfyndiq_field_map_isbn',
+                'type' => 'select',
+                'options' => $attributes,
+                'desc' => __('This must be picked accurate', 'fyndiq'),
+            );
+
+            // Map Field for MPN
+            $settings_slider[] = array(
+                'name' => __('MPN', 'fyndiq'),
+                'desc_tip' => __(
+                    'MPN',
+                    'fyndiq'
+                ),
+                'id' => 'wcfyndiq_field_map_mpn',
+                'type' => 'select',
+                'options' => $attributes,
+                'desc' => __('This must be picked accurate', 'fyndiq'),
+            );
+
+            // Map Field for MPN
+            $settings_slider[] = array(
+                'name' => __('Brand', 'fyndiq'),
+                'desc_tip' => __(
+                    'Brand',
+                    'fyndiq'
+                ),
+                'id' => 'wcfyndiq_field_map_brand',
+                'type' => 'select',
+                'options' => $attributes,
+                'desc' => __('This must be picked accurate', 'fyndiq'),
+            );
+
+            $settings_slider[] = array(
+                 'type' => 'sectionend',
+                 'id' => 'wc_settings_wcfyndiq_section_end'
+            );
+
             return apply_filters('wc_settings_tab_wcfyndiq', $settings_slider);
     }
 
@@ -418,6 +485,10 @@ EOS;
         return FmHelpers::callApi('PATCH', 'settings/', $data);
     }
 
+    public function fyndiq_product_tab()
+    {
+        echo '<li class="fyndiq_tab"><a href="#fyndiq_tab">' . __('Fyndiq', 'fyndiq') . '</a></li>';
+    }
 
     /**
      * This generates the code for fields, compensating for old versions
@@ -458,12 +529,14 @@ EOS;
      * TODO: make this function use fyndiq_generate_field
      *
      */
-    public function fyndiq_add_product_field()
+    public function fyndiq_product_tab_content()
     {
         $product = get_product($this->getPostId());
         $version = FmHelpers::get_woocommerce_version();
         $price = $this->fmExport->getPrice($product->id, $product->price);
         $percentage = get_post_meta($product->id, '_fyndiq_price_percentage', true);
+
+        echo '<div id="fyndiq_tab" class="panel woocommerce_options_panel"><div class="fyndiq_tab">';
 
         if (!$this->isProductExportable($product)) {
             $this->fmOutput->output(sprintf(
@@ -472,7 +545,7 @@ EOS;
             ));
             return;
         }
-        $this->fmOutput->output('<div class="options_group"><p>' . __('Fyndiq Product Settings', 'fyndiq') . '</p>');
+        $this->fmOutput->output('<div class="options_group">');
         if (version_compare($version, '2.3.8') >= 0) {
             // Checkbox for exporting to fyndiq
             $value = (get_post_meta($product->id, '_fyndiq_export', true) == self::EXPORTED) ? 1 : 0;
@@ -543,6 +616,7 @@ EOS;
             $price,
             get_woocommerce_currency()
         ));
+        echo '</div></div>';
     }
 
     public function fyndiq_show_order_error()
@@ -1129,6 +1203,7 @@ EOS;
         FyndiqUtils::debug('USER AGENT', FmHelpers::get_user_agent());
         $languageId = WC()->countries->get_base_country();
         FyndiqUtils::debug('language', $languageId);
+        FyndiqUtils::debug('taxonomy', $this->getAllTerms());
         $return = $this->fmExport->feedFileHandling();
         $result = file_get_contents($this->filepath);
         FyndiqUtils::debug('$result', $result, true);
@@ -1480,5 +1555,30 @@ EOS;
         } else {
             add_option('wcfyndiq_order_error', true, null, false);
         }
+    }
+
+
+    private function getAllTerms()
+    {
+        $attributes = array('' => '');
+        $attribute_taxonomies = wc_get_attribute_taxonomies();
+
+        if ($attribute_taxonomies) {
+            foreach ($attribute_taxonomies as $tax) {
+                $attributes[$tax->attribute_name] = $tax->attribute_label;
+            }
+        }
+
+        // Get products attributes
+        // This can be set per product and some product can have no attributes at all
+        global $wpdb;
+        $results = $wpdb->get_results('SELECT * FROM wp_postmeta WHERE meta_key = "_product_attributes" AND meta_value != "a:0:{}"', OBJECT);
+        foreach ($results as $meta) {
+            $data = unserialize($meta->meta_value);
+            foreach ($data as $key => $attribute) {
+                $attributes[$key] = $attribute['name'];
+            }
+        }
+        return $attributes;
     }
 }
