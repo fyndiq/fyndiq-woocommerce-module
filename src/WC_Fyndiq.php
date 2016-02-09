@@ -500,7 +500,7 @@ EOS;
             ));
             return;
         }
-        $this->fmOutput->output('<div class="options_group"><p>' . __('Fyndiq Product Settings', 'fyndiq') . '</p>');
+        $this->fmOutput->output('<div class="options_group">');
         if (version_compare($version, '2.3.8') >= 0) {
             // Checkbox for exporting to fyndiq
             $value = (get_post_meta($product->id, '_fyndiq_export', true) == self::EXPORTED) ? 1 : 0;
