@@ -339,10 +339,7 @@ EOS;
             $settings_slider[] = array(
 
                 'name' => __('Order Status', 'fyndiq'),
-                'desc_tip' => __(
-                    'When a order is imported from fyndiq, this status will be applied.',
-                    'fyndiq'
-                ),
+                'desc_tip' => __('When a order is imported from fyndiq, this status will be applied.', 'fyndiq'),
                 'id' => 'wcfyndiq_create_order_status',
                 'type' => 'select',
                 'options' => array(
@@ -370,10 +367,7 @@ EOS;
             // Add Description picker
             $settings_slider[] = array(
                 'name' => __('Description to use', 'fyndiq'),
-                'desc_tip' => __(
-                    'Set how you want your description to be exported to Fyndiq.',
-                    'fyndiq'
-                ),
+                'desc_tip' => __('Set how you want your description to be exported to Fyndiq.', 'fyndiq'),
                 'id' => 'wcfyndiq_description_picker',
                 'type' => 'select',
                 'options' => array(
@@ -387,10 +381,7 @@ EOS;
             // Map Field for EAN
             $settings_slider[] = array(
                 'name' => __('EAN', 'fyndiq'),
-                'desc_tip' => __(
-                    'EAN',
-                    'fyndiq'
-                ),
+                'desc_tip' => __('EAN', 'fyndiq'),
                 'id' => 'wcfyndiq_field_map_ean',
                 'type' => 'select',
                 'options' => $attributes,
@@ -400,10 +391,7 @@ EOS;
             // Map Field for ISBN
             $settings_slider[] = array(
                 'name' => __('ISBN', 'fyndiq'),
-                'desc_tip' => __(
-                    'ISBN',
-                    'fyndiq'
-                ),
+                'desc_tip' => __('ISBN', 'fyndiq'),
                 'id' => 'wcfyndiq_field_map_isbn',
                 'type' => 'select',
                 'options' => $attributes,
@@ -413,24 +401,38 @@ EOS;
             // Map Field for MPN
             $settings_slider[] = array(
                 'name' => __('MPN', 'fyndiq'),
-                'desc_tip' => __(
-                    'MPN',
-                    'fyndiq'
-                ),
+                'desc_tip' => __('MPN', 'fyndiq'),
                 'id' => 'wcfyndiq_field_map_mpn',
                 'type' => 'select',
                 'options' => $attributes,
                 'desc' => __('This must be picked accurate', 'fyndiq'),
             );
 
-            // Map Field for MPN
+            // Map Field for Brand
             $settings_slider[] = array(
                 'name' => __('Brand', 'fyndiq'),
-                'desc_tip' => __(
-                    'Brand',
-                    'fyndiq'
-                ),
+                'desc_tip' => __('Brand', 'fyndiq'),
                 'id' => 'wcfyndiq_field_map_brand',
+                'type' => 'select',
+                'options' => $attributes,
+                'desc' => __('This must be picked accurate', 'fyndiq'),
+            );
+
+            // Map Field for Comparison Price
+            $settings_slider[] = array(
+                'name' => __('Comparison Price', 'fyndiq'),
+                'desc_tip' => __('Comparison Price', 'fyndiq'),
+                'id' => 'wcfyndiq_field_map_comp_price',
+                'type' => 'select',
+                'options' => $attributes,
+                'desc' => __('This must be picked accurate', 'fyndiq'),
+            );
+
+            // Map Field for Comparison Unit
+            $settings_slider[] = array(
+                'name' => __('Comparison Unit', 'fyndiq'),
+                'desc_tip' => __('Comparison Unit', 'fyndiq'),
+                'id' => 'wcfyndiq_field_map_comp_unit',
                 'type' => 'select',
                 'options' => $attributes,
                 'desc' => __('This must be picked accurate', 'fyndiq'),
