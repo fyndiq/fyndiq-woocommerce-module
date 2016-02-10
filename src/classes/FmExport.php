@@ -579,10 +579,7 @@ class FmExport
     private function checkFieldIsSet($key)
     {
         $option = get_option('wcfyndiq_field_map_'.$key);
-        if (empty($option)) {
-            return false;
-        }
-        return true;
+        return !empty($option);
     }
 
     public function returnAndDie($return)
