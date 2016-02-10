@@ -178,7 +178,7 @@ add_action('admin_notices', function () {
 function fyndiq_order_delivery_note_bulk_action()
 {
     try {
-        if (!ordersEnabled()) {
+        if (!FmHelpers::ordersEnabled()) {
             exit();
         }
 
@@ -262,7 +262,7 @@ add_action('admin_footer-edit.php', function () {
     //This adds a button for importing stuff from fyndiq TODO: ask about this - it probably shouldn't be there
     switch ($post_type) {
         case 'shop_order': {
-            if (ordersEnabled()) {
+            if (FmHelpers::ordersEnabled()) {
                 $scriptOutput .= "if( jQuery('.wrap h2').length && jQuery(jQuery('.wrap h2')[0]).text() != 'Filter posts list' ) {
                                         jQuery(jQuery('.wrap h2')[0]).append(\"<a href='#' id='fyndiq-order-import' class='add-new-h2'>" .
                     $bulkActionArray[$post_type]['fyndiq-order-import'] . "</a>\");
