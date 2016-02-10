@@ -5,6 +5,7 @@
  *
  */
 
+//This has to be called in multiple places so cannot be made into a closure
 add_action('woocommerce_settings_tabs_wcfyndiq', 'fyndiq_all_settings');
 function fyndiq_all_settings() {
     woocommerce_admin_fields(function () {

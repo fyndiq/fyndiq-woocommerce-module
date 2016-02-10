@@ -18,6 +18,6 @@ add_action('admin_head', function () {
 add_action('wp_enqueue_scripts', function () {
     wp_enqueue_script('fyndiq-product-update', plugins_url('/js/product-update.js', __FILE__), array(), false, false);
 
-    //This used to only be called if orders are enabled. TODO: Check that this doesn't cause users to do things that they shouldn't
+    //This used to only be called if orders are enabled. TODO: Check that this doesn't let users to do things that they shouldn't do
     wp_enqueue_script('fyndiq-order-import', plugins_url('/js/order-import.js', __FILE__), array(), false, false);
 });
