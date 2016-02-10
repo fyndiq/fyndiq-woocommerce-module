@@ -208,17 +208,7 @@ class FmExport
             FyndiqFeedWriter::SKU => $this->getReference($product),
         );
 
-        if ($this->checkFieldIsSet('comp_price')) {
-            $comparisonUnit = $this->getValueForFields('comp_unit', $product);
-            $comparisonPrice = $this->getValueForFields('comp_price', $product);
-            if (!empty($comparisonUnit) && !empty($comparisonPrice)) {
-                $feedProduct[FyndiqFeedWriter::PRODUCT_PORTION] =
-                    number_format((float)$comparisonPrice, 2, '.', '');
-                $feedProduct[FyndiqFeedWriter::PRODUCT_COMPARISON_UNIT] = $comparisonUnit;
-            }
-        }
-
-        return array_merge($feedProduct, $this->getMappedFields($product));
+        return array_merge($feedProduct, $this->getMappedFields($product), $this->getComparisons($product));
     }
 
     private function getVariation($product, $variation, $config, $tagValuesFixed)
@@ -282,18 +272,7 @@ class FmExport
             FyndiqFeedWriter::PROPERTIES => $properties,
         );
 
-        //Add comparison unit and price if set
-        if ($this->checkFieldIsSet('comp_price')) {
-            $comparisonUnit = $this->getValueForFields('comp_unit', $variation['variation_id']);
-            $comparisonPrice = $this->getValueForFields('comp_price', $variation['variation_id']);
-            if (!empty($comparisonUnit) && !empty($comparisonPrice)) {
-                $feedArticle[FyndiqFeedWriter::PRODUCT_PORTION] =
-                    number_format((float)$comparisonPrice, 2, '.', '');
-                $feedArticle[FyndiqFeedWriter::PRODUCT_COMPARISON_UNIT] = $comparisonUnit;
-            }
-        }
-
-        return array_merge($feedArticle, $this->getMappedFields($variation['variation_id']));
+        return array_merge($feedArticle, $this->getMappedFields($variation['variation_id']), $this->getComparisons($variation['variation_id']));
     }
 
     function getProductPrice($product, $config)
@@ -580,6 +559,21 @@ class FmExport
     {
         $option = get_option('wcfyndiq_field_map_'.$key);
         return !empty($option);
+    }
+
+    private function getComparisons($product)
+    {
+        $feedProduct = array();
+        if ($this->checkFieldIsSet('comp_price')) {
+            $comparisonUnit = $this->getValueForFields('comp_unit', $product);
+            $comparisonPrice = $this->getValueForFields('comp_price', $product);
+            if (!empty($comparisonUnit) && !empty($comparisonPrice)) {
+                $feedProduct[FyndiqFeedWriter::PRODUCT_PORTION] =
+                    number_format((float)$comparisonPrice, 2, '.', '');
+                $feedProduct[FyndiqFeedWriter::PRODUCT_COMPARISON_UNIT] = $comparisonUnit;
+            }
+        }
+        return $feedProduct;
     }
 
     public function returnAndDie($return)
