@@ -1,41 +1,53 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: confact
- * Date: 08/07/15
- * Time: 13:22
+ * Product object (single orders only)
+ *
+ * TODO: product bundle support?
+ *
  */
-class FmProduct
-{
 
-    const STATUS_PENDING = 'PENDING';
-    const STATUS_FOR_SALE = 'FOR_SALE';
+class FmProduct{
+	private $post;
 
-    public function getExportedProducts()
-    {
-        $args = array(
-            'numberposts' => -1,
-            'orderby' => 'post_date',
-            'order' => 'DESC',
-            'post_type' => 'product',
-            'post_status' => 'publish',
-            'suppress_filters' => true,
-            'meta_key' => '_fyndiq_export',
-            'meta_value' => 'exported'
-        );
-        return get_posts($args);
-    }
+	public function __construct($postID) {
+		$this->post = get_post($postID);
+	}
 
-    public function updateStatus($product_id, $status)
-    {
-        return update_post_meta($product_id, '_fyndiq_status', $status);
-    }
+	public function getProductObject() {
+	   return get_product($this->post->ID);
+	}
+	public function getPostID() {
+	   return $this->post->ID;
+	}
 
-    public function updateStatusAllProducts($status)
-    {
-        $posts_array = $this->getExportedProducts();
-        foreach ($posts_array as $product) {
-            $this->updateStatus($product->ID, $status);
-        }
-    }
+	public function isProductExportable() {
+			$product = $this->getProductObject();
+			return (!$product->is_downloadable() && !$product->is_virtual() && !$product->is_type('external') && !$product->is_type('grouped'));
+	}
+
+	public function isProductExported() {
+		return (bool) get_post_meta($this->getPostID(), '_fyndiq_export', EXPORTED);
+	}
+
+
+	public function exportToFyndiq() {
+
+			/*This only adds post meta if it doesn't exist. Otherwise, the if statement criteria itself sets the
+			 *post meta through update_post_meta
+			 */
+			if (!update_post_meta($this->getPostID(), '_fyndiq_export', EXPORTED)) {
+				add_post_meta($this->getPostID(), '_fyndiq_export', EXPORTED, true);
+			}
+
+			$percentage = get_post_meta($this->getPostID(), '_fyndiq_price_percentage', true);
+			if (empty($percentage)) {
+				update_post_meta($this->getPostID(), '_fyndiq_price_percentage', get_option('wcfyndiq_price_percentage'));
+			}
+	}
+
+	public function removeFromFyndiq() {
+		if (!update_post_meta($this->getPostID(), '_fyndiq_export', NOT_EXPORTED)) {
+			add_post_meta($this->getPostID(), '_fyndiq_export', NOT_EXPORTED, true);
+		};
+	}
 }

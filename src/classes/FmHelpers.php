@@ -110,4 +110,13 @@ class FmHelpers
         }
         return self::fyndiq_wc_tax_enabled() && get_option('woocommerce_prices_include_tax') === 'yes';
     }
+
+    public static function ordersEnabled()
+    {
+        $setting = get_option('wcfyndiq_order_enable');
+        if (!isset($setting) || $setting == false) {
+            return true;
+        }
+        return ($setting == ORDERS_ENABLE);
+    }
 }
