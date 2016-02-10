@@ -445,7 +445,7 @@ EOS;
             'type' => 'sectionend',
             'id' => 'wc_settings_wcfyndiq_section_end'
         );
-        
+
         return apply_filters('wc_settings_tab_wcfyndiq', $settings_slider);
     }
 
@@ -912,9 +912,11 @@ EOS;
 
 
         //Goes through the corresponding array for the page type and writes JS needed for dropdown
-        foreach ($bulkActionArray[$post_type] as $key => $value) {
-            $scriptOutput .= "	jQuery('<option>').val('$key').text('$value').appendTo('select[name=\"action\"]');
-                                jQuery('<option>').val('$key').text('$value').appendTo('select[name=\"action2\"]');";
+        if (isset($bulkActionArray[$post_type])) {
+            foreach ($bulkActionArray[$post_type] as $key => $value) {
+                $scriptOutput .= "jQuery('<option>').val('$key').text('$value').appendTo('select[name=\"action\"]');
+                              jQuery('<option>').val('$key').text('$value').appendTo('select[name=\"action2\"]');";
+            }
         }
 
 
