@@ -218,236 +218,236 @@ EOS;
         /**
          * Check the current section is what we want
          **/
-            $settings_slider = array();
+        $settings_slider = array();
 
+        $settings_slider[] = array(
+            'name'     => __('Fyndiq', 'fyndiq'),
+            'type'     => 'title',
+            'desc'     => '',
+            'id'       => 'wc_settings_wcfyndiq_section_title'
+        );
+
+        // Add Title to the Settings
+        $settings_slider[] = array(
+            'name' => __('General Settings', 'fyndiq'),
+            'type' => 'title',
+            'desc' => __('The following options are used to configure Fyndiq', 'fyndiq'),
+            'id' => 'wcfyndiq'
+        );
+
+        // Add second text field option
+        $settings_slider[] = array(
+
+            'name' => __('Username', 'fyndiq'),
+            'desc_tip' => __('This is the username you use for login on Fyndiq Merchant', 'fyndiq'),
+            'id' => 'wcfyndiq_username',
+            'type' => 'text',
+            'desc' => __('Must be your username', 'fyndiq'),
+
+        );
+
+        // Add second text field option
+        $settings_slider[] = array(
+
+            'name' => __('API-token', 'fyndiq'),
+            'desc_tip' => __('This is the API V2 Token on Fyndiq', 'fyndiq'),
+            'id' => 'wcfyndiq_apitoken',
+            'type' => 'text',
+            'desc' => __('Must be API v2 token', 'fyndiq'),
+
+        );
+
+        //Price Percentage
+        $settings_slider[] = array(
+
+            'name' => __('Global Price Percentage', 'fyndiq'),
+            'desc_tip' => __(
+                'The percentage that will be removed from the price when sending to fyndiq.',
+                'fyndiq'
+            ),
+            'id' => 'wcfyndiq_price_percentage',
+            'type' => 'text',
+            'default' => '10',
+            'desc' => __('Can be 0 if the price should be the same as in your shop.', 'fyndiq'),
+
+        );
+
+        if (isset($_GET['set_sku'])) {
+            // Add SKU picker
             $settings_slider[] = array(
-                'name'     => __('Fyndiq', 'fyndiq'),
-                'type'     => 'title',
-                'desc'     => '',
-                'id'       => 'wc_settings_wcfyndiq_section_title'
-            );
 
-            // Add Title to the Settings
-            $settings_slider[] = array(
-                'name' => __('General Settings', 'fyndiq'),
-                'type' => 'title',
-                'desc' => __('The following options are used to configure Fyndiq', 'fyndiq'),
-                'id' => 'wcfyndiq'
-            );
-
-            // Add second text field option
-            $settings_slider[] = array(
-
-                'name' => __('Username', 'fyndiq'),
-                'desc_tip' => __('This is the username you use for login on Fyndiq Merchant', 'fyndiq'),
-                'id' => 'wcfyndiq_username',
-                'type' => 'text',
-                'desc' => __('Must be your username', 'fyndiq'),
-
-            );
-
-            // Add second text field option
-            $settings_slider[] = array(
-
-                'name' => __('API-token', 'fyndiq'),
-                'desc_tip' => __('This is the API V2 Token on Fyndiq', 'fyndiq'),
-                'id' => 'wcfyndiq_apitoken',
-                'type' => 'text',
-                'desc' => __('Must be API v2 token', 'fyndiq'),
-
-            );
-
-            //Price Percentage
-            $settings_slider[] = array(
-
-                'name' => __('Global Price Percentage', 'fyndiq'),
+                'name' => __('Reference to be in use', 'fyndiq'),
                 'desc_tip' => __(
-                    'The percentage that will be removed from the price when sending to fyndiq.',
+                    'If you have multi SKU as in variations changing this will make it work better',
                     'fyndiq'
                 ),
-                'id' => 'wcfyndiq_price_percentage',
-                'type' => 'text',
-                'default' => '10',
-                'desc' => __('Can be 0 if the price should be the same as in your shop.', 'fyndiq'),
-
-            );
-
-            if (isset($_GET['set_sku'])) {
-                // Add SKU picker
-                $settings_slider[] = array(
-
-                    'name' => __('Reference to be in use', 'fyndiq'),
-                    'desc_tip' => __(
-                        'If you have multi SKU as in variations changing this will make it work better',
-                        'fyndiq'
-                    ),
-                    'id' => 'wcfyndiq_reference_picker',
-                    'type' => 'select',
-                    'options' => array(
-                        FmExport::REF_SKU => __('SKU', 'fyndiq'),
-                        FmExport::REF_ID => __('Product and Article ID', 'fyndiq'),
-                    ),
-                    'desc' => __('If this value is changed, products already existing on Fyndiq will be removed and uploaded again and orders might not be able to be imported with old SKU.', 'fyndiq'),
-
-                );
-            }
-
-            // Add currency setting
-            $settings_slider[] = array(
-
-                'name' => __('Used Currency', 'fyndiq'),
-                'desc_tip' => __(
-                    'Choose currency to be used for Fyndiq.',
-                    'fyndiq'
-                ),
-                'id' => 'wcfyndiq_currency',
-                'type' => 'select',
-                'options' => $this->currencies,
-                'desc' => __('This must be picked accurate', 'fyndiq'),
-
-            );
-
-
-            //Price Percentage
-            $settings_slider[] = array(
-
-                'name' => __('Minimum Quantity Limit', 'fyndiq'),
-                'desc_tip' => __(
-                    'this quantity will be reserved by you and will be removed from the quantity that is sent to Fyndiq.',
-                    'fyndiq'
-                ),
-                'id' => 'wcfyndiq_quantity_minimum',
-                'type' => 'text',
-                'default' => '0',
-                'desc' => __('Stay on 0 if you want to send all stock to Fyndiq.', 'fyndiq'),
-
-            );
-
-            // Add Description picker
-            $settings_slider[] = array(
-
-                'name' => __('Enable Orders', 'fyndiq'),
-                'desc_tip' => __(
-                    'This will disable all order logic for Fyndiq',
-                    'fyndiq'
-                ),
-                'id' => 'wcfyndiq_order_enable',
+                'id' => 'wcfyndiq_reference_picker',
                 'type' => 'select',
                 'options' => array(
-                    self::ORDERS_ENABLE => __('Enable', 'fyndiq'),
-                    self::ORDERS_DISABLE => __('Disable', 'fyndiq'),
+                    FmExport::REF_SKU => __('SKU', 'fyndiq'),
+                    FmExport::REF_ID => __('Product and Article ID', 'fyndiq'),
                 ),
-                'desc' => __('Default is to have orders enabled', 'fyndiq'),
+                'desc' => __('If this value is changed, products already existing on Fyndiq will be removed and uploaded again and orders might not be able to be imported with old SKU.', 'fyndiq'),
 
             );
+        }
 
-            // Add order status setting
-            $settings_slider[] = array(
+        // Add currency setting
+        $settings_slider[] = array(
 
-                'name' => __('Order Status', 'fyndiq'),
-                'desc_tip' => __(
-                    'When a order is imported from fyndiq, this status will be applied.',
-                    'fyndiq'
-                ),
-                'id' => 'wcfyndiq_create_order_status',
-                'type' => 'select',
-                'options' => array(
-                    'completed' => 'completed',
-                    'processing' => 'processing',
-                    'pending' => 'pending',
-                    'on-hold' => 'on-hold'
-                ),
-                'desc' => __('This must be picked accurate', 'fyndiq'),
+            'name' => __('Used Currency', 'fyndiq'),
+            'desc_tip' => __(
+                'Choose currency to be used for Fyndiq.',
+                'fyndiq'
+            ),
+            'id' => 'wcfyndiq_currency',
+            'type' => 'select',
+            'options' => $this->currencies,
+            'desc' => __('This must be picked accurate', 'fyndiq'),
 
-            );
-            $settings_slider[] = array(
-                 'type' => 'sectionend',
-                 'id' => 'wc_settings_wcfyndiq_section_end'
-            );
-
-            $settings_slider[] = array(
-                'name'     => __('Field Mappings', 'fyndiq'),
-                'type'     => 'title',
-                'desc'     => '',
-                'id'       => 'wc_settings_wcfyndiq_section_title'
-            );
+        );
 
 
-            // Add Description picker
-            $settings_slider[] = array(
-                'name' => __('Description to use', 'fyndiq'),
-                'desc_tip' => __(
-                    'Set how you want your description to be exported to Fyndiq.',
-                    'fyndiq'
-                ),
-                'id' => 'wcfyndiq_description_picker',
-                'type' => 'select',
-                'options' => array(
-                                FmExport::DESCRIPTION_LONG => __('Long Description', 'fyndiq'),
-                                FmExport::DESCRIPTION_SHORT => __('Short Description', 'fyndiq'),
-                                FmExport::DESCRIPTION_SHORT_LONG => __('Short and Long Description', 'fyndiq'),
-                ),
-                'desc' => __('Default is Long Description', 'fyndiq'),
-            );
+        //Price Percentage
+        $settings_slider[] = array(
 
-            // Map Field for EAN
-            $settings_slider[] = array(
-                'name' => __('EAN', 'fyndiq'),
-                'desc_tip' => __(
-                    'EAN',
-                    'fyndiq'
-                ),
-                'id' => 'wcfyndiq_field_map_ean',
-                'type' => 'select',
-                'options' => $attributes,
-                'desc' => __('This must be picked accurate', 'fyndiq'),
-            );
+            'name' => __('Minimum Quantity Limit', 'fyndiq'),
+            'desc_tip' => __(
+                'this quantity will be reserved by you and will be removed from the quantity that is sent to Fyndiq.',
+                'fyndiq'
+            ),
+            'id' => 'wcfyndiq_quantity_minimum',
+            'type' => 'text',
+            'default' => '0',
+            'desc' => __('Stay on 0 if you want to send all stock to Fyndiq.', 'fyndiq'),
 
-            // Map Field for ISBN
-            $settings_slider[] = array(
-                'name' => __('ISBN', 'fyndiq'),
-                'desc_tip' => __(
-                    'ISBN',
-                    'fyndiq'
-                ),
-                'id' => 'wcfyndiq_field_map_isbn',
-                'type' => 'select',
-                'options' => $attributes,
-                'desc' => __('This must be picked accurate', 'fyndiq'),
-            );
+        );
 
-            // Map Field for MPN
-            $settings_slider[] = array(
-                'name' => __('MPN', 'fyndiq'),
-                'desc_tip' => __(
-                    'MPN',
-                    'fyndiq'
-                ),
-                'id' => 'wcfyndiq_field_map_mpn',
-                'type' => 'select',
-                'options' => $attributes,
-                'desc' => __('This must be picked accurate', 'fyndiq'),
-            );
+        // Add Description picker
+        $settings_slider[] = array(
 
-            // Map Field for MPN
-            $settings_slider[] = array(
-                'name' => __('Brand', 'fyndiq'),
-                'desc_tip' => __(
-                    'Brand',
-                    'fyndiq'
-                ),
-                'id' => 'wcfyndiq_field_map_brand',
-                'type' => 'select',
-                'options' => $attributes,
-                'desc' => __('This must be picked accurate', 'fyndiq'),
-            );
+            'name' => __('Enable Orders', 'fyndiq'),
+            'desc_tip' => __(
+                'This will disable all order logic for Fyndiq',
+                'fyndiq'
+            ),
+            'id' => 'wcfyndiq_order_enable',
+            'type' => 'select',
+            'options' => array(
+                self::ORDERS_ENABLE => __('Enable', 'fyndiq'),
+                self::ORDERS_DISABLE => __('Disable', 'fyndiq'),
+            ),
+            'desc' => __('Default is to have orders enabled', 'fyndiq'),
 
-            $settings_slider[] = array(
-                 'type' => 'sectionend',
-                 'id' => 'wc_settings_wcfyndiq_section_end'
-            );
+        );
 
-            return apply_filters('wc_settings_tab_wcfyndiq', $settings_slider);
+        // Add order status setting
+        $settings_slider[] = array(
+
+            'name' => __('Order Status', 'fyndiq'),
+            'desc_tip' => __(
+                'When a order is imported from fyndiq, this status will be applied.',
+                'fyndiq'
+            ),
+            'id' => 'wcfyndiq_create_order_status',
+            'type' => 'select',
+            'options' => array(
+                'completed' => 'completed',
+                'processing' => 'processing',
+                'pending' => 'pending',
+                'on-hold' => 'on-hold'
+            ),
+            'desc' => __('This must be picked accurate', 'fyndiq'),
+
+        );
+        $settings_slider[] = array(
+            'type' => 'sectionend',
+            'id' => 'wc_settings_wcfyndiq_section_end'
+        );
+
+        $settings_slider[] = array(
+            'name'     => __('Field Mappings', 'fyndiq'),
+            'type'     => 'title',
+            'desc'     => '',
+            'id'       => 'wc_settings_wcfyndiq_section_title'
+        );
+
+
+        // Add Description picker
+        $settings_slider[] = array(
+            'name' => __('Description to use', 'fyndiq'),
+            'desc_tip' => __(
+                'Set how you want your description to be exported to Fyndiq.',
+                'fyndiq'
+            ),
+            'id' => 'wcfyndiq_description_picker',
+            'type' => 'select',
+            'options' => array(
+                FmExport::DESCRIPTION_LONG => __('Long Description', 'fyndiq'),
+                FmExport::DESCRIPTION_SHORT => __('Short Description', 'fyndiq'),
+                FmExport::DESCRIPTION_SHORT_LONG => __('Short and Long Description', 'fyndiq'),
+            ),
+            'desc' => __('Default is Long Description', 'fyndiq'),
+        );
+
+        // Map Field for EAN
+        $settings_slider[] = array(
+            'name' => __('EAN', 'fyndiq'),
+            'desc_tip' => __(
+                'EAN',
+                'fyndiq'
+            ),
+            'id' => 'wcfyndiq_field_map_ean',
+            'type' => 'select',
+            'options' => $attributes,
+            'desc' => __('This must be picked accurate', 'fyndiq'),
+        );
+
+        // Map Field for ISBN
+        $settings_slider[] = array(
+            'name' => __('ISBN', 'fyndiq'),
+            'desc_tip' => __(
+                'ISBN',
+                'fyndiq'
+            ),
+            'id' => 'wcfyndiq_field_map_isbn',
+            'type' => 'select',
+            'options' => $attributes,
+            'desc' => __('This must be picked accurate', 'fyndiq'),
+        );
+
+        // Map Field for MPN
+        $settings_slider[] = array(
+            'name' => __('MPN', 'fyndiq'),
+            'desc_tip' => __(
+                'MPN',
+                'fyndiq'
+            ),
+            'id' => 'wcfyndiq_field_map_mpn',
+            'type' => 'select',
+            'options' => $attributes,
+            'desc' => __('This must be picked accurate', 'fyndiq'),
+        );
+
+        // Map Field for MPN
+        $settings_slider[] = array(
+            'name' => __('Brand', 'fyndiq'),
+            'desc_tip' => __(
+                'Brand',
+                'fyndiq'
+            ),
+            'id' => 'wcfyndiq_field_map_brand',
+            'type' => 'select',
+            'options' => $attributes,
+            'desc' => __('This must be picked accurate', 'fyndiq'),
+        );
+
+        $settings_slider[] = array(
+            'type' => 'sectionend',
+            'id' => 'wc_settings_wcfyndiq_section_end'
+        );
+
+        return apply_filters('wc_settings_tab_wcfyndiq', $settings_slider);
     }
 
     public function fyndiq_add_settings_tab($settings_tabs)
@@ -502,9 +502,9 @@ EOS;
             woocommerce_form_field($fieldName, $array, $value);
         } else {
             $this->fmOutput->output("<p class='form-field' id=$fieldName>
-				<label for=\'$fieldName\'>". $array['label']  ."</label>
-				<input type='" . $array['type'] . "' class='input-" . $array['type'] . "' name='$fieldName' id='$fieldName' value='$value'>
-				<span class='description'>" . $array['description'] . "</span></p>");
+                <label for=\'$fieldName\'>". $array['label']  ."</label>
+                <input type='" . $array['type'] . "' class='input-" . $array['type'] . "' name='$fieldName' id='$fieldName' value='$value'>
+                <span class='description'>" . $array['description'] . "</span></p>");
         }
     }
 
@@ -586,7 +586,7 @@ EOS;
             $this->fmOutput->output(sprintf(
                 '<p class="form-field" id="_fyndiq_export_field">
                 <label for="_fyndiq_export"> %s</label>
-				<input type="checkbox" class="input-checkbox " name="_fyndiq_export" id="_fyndiq_export" value="1"%s>
+                <input type="checkbox" class="input-checkbox " name="_fyndiq_export" id="_fyndiq_export" value="1"%s>
                 <span class="description">%s</span></p>',
                 __('Export to Fyndiq', 'fyndiq'),
                 $exported,
@@ -632,7 +632,7 @@ EOS;
     {
         ?>
         <div class="error">
-        <p><?php _e('Some Fyndiq Orders failed to be imported, most likely due to stock or couldn\'t find product on Reference.', 'fyndiq'); ?></p>
+            <p><?php _e('Some Fyndiq Orders failed to be imported, most likely due to stock or couldn\'t find product on Reference.', 'fyndiq'); ?></p>
         </div>
         <?php
     }
@@ -646,16 +646,16 @@ EOS;
     }
 
     /**
-    * This is validating product data and show error if
-    * it is not following the fyndiq validations
-    */
+     * This is validating product data and show error if
+     * it is not following the fyndiq validations
+     */
     public function fyndiq_product_validate($post_id)
     {
         if ($this->getExportState() == self::EXPORTED) {
             $error = false;
             $postTitleLength = mb_strlen($_POST['post_title']);
             if ($postTitleLength < FyndiqFeedWriter::$minLength[FyndiqFeedWriter::PRODUCT_TITLE] ||
-            $postTitleLength > FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::PRODUCT_TITLE]) {
+                $postTitleLength > FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::PRODUCT_TITLE]) {
                 $this->add_fyndiq_notice(
                     sprintf(
                         __('Title needs to be between %s and %s in length, now it is: %s', 'fyndiq'),
@@ -670,7 +670,7 @@ EOS;
 
             $postDescriptionLength = mb_strlen($this->fmExport->getDescriptionPOST());
             if ($postDescriptionLength < FyndiqFeedWriter::$minLength[FyndiqFeedWriter::PRODUCT_DESCRIPTION] ||
-            $postDescriptionLength > FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::PRODUCT_DESCRIPTION]) {
+                $postDescriptionLength > FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::PRODUCT_DESCRIPTION]) {
                 $this->add_fyndiq_notice(
                     sprintf(
                         __('Description needs to be between %s and %s in length, now it is: %s', 'fyndiq'),
@@ -685,7 +685,7 @@ EOS;
 
             $postSKULength = mb_strlen($_POST['_sku']);
             if ($postSKULength < FyndiqFeedWriter::$minLength[FyndiqFeedWriter::ARTICLE_SKU] ||
-            $postSKULength > FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::ARTICLE_SKU]) {
+                $postSKULength > FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::ARTICLE_SKU]) {
                 $this->add_fyndiq_notice(
                     sprintf(
                         __('SKU needs to be between %s and %s in length, now it is: %s', 'fyndiq'),
@@ -729,7 +729,7 @@ EOS;
                 'id' => $post_id,
                 'marked' => $this->getIsHandled()
             )
-            ));
+        ));
     }
 
     //Hooked action for saving products (woocommerce_process_product_meta)
@@ -898,8 +898,7 @@ EOS;
             'product' => array(
                 'fyndiq_export' => __('Export to Fyndiq', 'fyndiq'),
                 'fyndiq_no_export' => __('Remove from Fyndiq', 'fyndiq'),
-
-                ),
+            ),
             'shop_order' => array(
                 'fyndiq_delivery' => __('Get Fyndiq Delivery Note', 'fyndiq'),
                 'fyndiq-order-import' => __('Import From Fyndiq', 'fyndiq'),
@@ -916,25 +915,25 @@ EOS;
         //Goes through the corresponding array for the page type and writes JS needed for dropdown
         foreach ($bulkActionArray[$post_type] as $key => $value) {
             $scriptOutput .= "	jQuery('<option>').val('$key').text('$value').appendTo('select[name=\"action\"]');
-								jQuery('<option>').val('$key').text('$value').appendTo('select[name=\"action2\"]');";
+                                jQuery('<option>').val('$key').text('$value').appendTo('select[name=\"action2\"]');";
         }
 
 
         //This adds a button for importing stuff from fyndiq TODO: ask about this - it probably shouldn't be there
-	    //TODO: This should not rely on a translatable string
+        //TODO: This should not rely on a translatable string
         switch ($post_type) {
             case 'shop_order': {
                 if ($this->ordersEnabled()) {
                     $scriptOutput .= "if( jQuery('.wrap h2').length && jQuery(jQuery('.wrap h2')[0]).text() != 'Filter posts list' ) {
                                         jQuery(jQuery('.wrap h2')[0]).append(\"<a href='#' id='fyndiq-order-import' class='add-new-h2'>" .
-                                        $bulkActionArray[$post_type]['fyndiq-order-import'] . "</a>\");
+                        $bulkActionArray[$post_type]['fyndiq-order-import'] . "</a>\");
                                     } else if (jQuery('.wrap h1').length ){
                                         jQuery(jQuery('.wrap h1')[0]).append(\"<a href='#' id='fyndiq-order-import' class='page-title-action'>" .
-                                        $bulkActionArray[$post_type]['fyndiq-order-import'] . "</a>\");
+                        $bulkActionArray[$post_type]['fyndiq-order-import'] . "</a>\");
                                     }";
                 }
             }
-            break;
+                break;
         }
 
         //We also need this footer in all cases too
@@ -970,7 +969,7 @@ EOS;
      *
      */
     private function fyndiq_order_handle_bulk_action() {
-	    $test = $this->getRequestPost();
+        $test = $this->getRequestPost();
         if (!empty($this->getRequestPost())) {
             $posts = array();
             foreach ($this->getRequestPost() as $post) {
@@ -979,7 +978,7 @@ EOS;
                     'marked' => 1
                 );
             }
-	        $this->setIsHandled($posts);
+            $this->setIsHandled($posts);
         }
     }
 
@@ -990,7 +989,7 @@ EOS;
      *
      */
     private function fyndiq_order_unhandle_bulk_action () {
-	    if (!empty($this->getRequestPost())) {
+        if (!empty($this->getRequestPost())) {
             $posts = array();
             foreach ($this->getRequestPost() as $post) {
                 $posts[] = array(
@@ -998,9 +997,9 @@ EOS;
                     'marked' => 0
                 );
             }
-		    $this->setIsHandled($posts);
+            $this->setIsHandled($posts);
         }
-	}
+    }
 
 
     public function do_bulk_action_messages() {
@@ -1305,7 +1304,7 @@ EOS;
     }
 
     public function getIsHandled() {
-            return (bool) $_POST['_fyndiq_handled_order'];
+        return (bool) $_POST['_fyndiq_handled_order'];
     }
 
 
