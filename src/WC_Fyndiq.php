@@ -502,9 +502,9 @@ EOS;
             woocommerce_form_field($fieldName, $array, $value);
         } else {
             $this->fmOutput->output("<p class='form-field' id=$fieldName>
-                <label for=\'$fieldName\'>". $array['label']  ."</label>
+				<label for=\'$fieldName\'>". $array['label']  ."</label>
 				<input type='" . $array['type'] . "' class='input-" . $array['type'] . "' name='$fieldName' id='$fieldName' value='$value'>
-                <span class='description'>" . $array['description'] . "</span></p>");
+				<span class='description'>" . $array['description'] . "</span></p>");
         }
     }
 
@@ -719,12 +719,11 @@ EOS;
         }
     }
 
-    //
     /**
      *
      * Hooked action for saving orders (woocommerce_process_shop_order_meta)
      *
-     * @param $post_id
+     * @param int $post_id
      */
     public function fyndiq_order_save($post_id) {
         $this->setIsHandled(array(
@@ -763,8 +762,7 @@ EOS;
     }
 
     public function fyndiq_order_column($column, $postid) {
-        $product = new WC_Order($postid);
-        if ($column == 'fyndiq_order') {
+        if ($column === 'fyndiq_order') {
             $fyndiq_order = get_post_meta($postid, 'fyndiq_id', true);
             if ($fyndiq_order != '') {
                 $this->fmOutput->output($fyndiq_order);
@@ -919,12 +917,13 @@ EOS;
 
         //Goes through the corresponding array for the page type and writes JS needed for dropdown
         foreach ($bulkActionArray[$post_type] as $key => $value) {
-            $scriptOutput .= "  jQuery('<option>').val('$key').text('$value').appendTo('select[name=\"action\"]');
-                                    jQuery('<option>').val('$key').text('$value').appendTo('select[name=\"action2\"]');";
+            $scriptOutput .= "	jQuery('<option>').val('$key').text('$value').appendTo('select[name=\"action\"]');
+								jQuery('<option>').val('$key').text('$value').appendTo('select[name=\"action2\"]');";
         }
 
 
         //This adds a button for importing stuff from fyndiq TODO: ask about this - it probably shouldn't be there
+	    //TODO: This should not rely on a translatable string
         switch ($post_type) {
             case 'shop_order': {
                 if ($this->ordersEnabled()) {
@@ -973,7 +972,8 @@ EOS;
      *
      */
     private function fyndiq_order_handle_bulk_action() {
-        if ($this->getRequestPost() > 0) {
+	    $test = $this->getRequestPost();
+        if (!empty($this->getRequestPost())) {
             $posts = array();
             foreach ($this->getRequestPost() as $post) {
                 $posts[] = array(
@@ -992,7 +992,7 @@ EOS;
      *
      */
     private function fyndiq_order_unhandle_bulk_action () {
-        if ($this->getRequestPost() > 0) {
+	    if (!empty($this->getRequestPost())) {
             $posts = array();
             foreach ($this->getRequestPost() as $post) {
                 $posts[] = array(
@@ -1000,9 +1000,9 @@ EOS;
                     'marked' => 0
                 );
             }
-                $this->setIsHandled($posts);
+		    $this->setIsHandled($posts);
         }
-}
+	}
 
 
     public function do_bulk_action_messages() {
@@ -1302,16 +1302,12 @@ EOS;
         return isset($_POST['_fyndiq_export']) ? self::EXPORTED : self::NOT_EXPORTED;
     }
 
-    public function getFyndiqID($postID) {
-        return get_post_meta($postID, 'fyndiq_id', true);
+    public function getFyndiqOrderID($orderID) {
+        return get_post_meta($orderID, 'fyndiq_id', true);
     }
 
     public function getIsHandled() {
-        if (isset($_POST['_fyndiq_handled_order'])) {
             return (bool) $_POST['_fyndiq_handled_order'];
-         } else {
-            return false;
-        }
     }
 
 
@@ -1334,7 +1330,7 @@ EOS;
     public function setIsHandled($posts) {
         foreach ($posts as &$post) {
             update_post_meta($post['id'], '_fyndiq_handled_order', (bool) $post['marked']);
-            $post['id'] = $this->getFyndiqID($post['id']);
+            $post['id'] = $this->getFyndiqOrderID($post['id']);
             $post = (object) $post;
         }
 
