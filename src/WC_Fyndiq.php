@@ -423,7 +423,7 @@ EOS;
                 'desc' => __('This must be picked accurate', 'fyndiq'),
             );
 
-            // Map Field for MPN
+            // Map Field for Brand
             $settings_slider[] = array(
                 'name' => __('Brand', 'fyndiq'),
                 'desc_tip' => __(
@@ -431,6 +431,32 @@ EOS;
                     'fyndiq'
                 ),
                 'id' => 'wcfyndiq_field_map_brand',
+                'type' => 'select',
+                'options' => $attributes,
+                'desc' => __('This must be picked accurate', 'fyndiq'),
+            );
+
+            // Map Field for Comparison Price
+            $settings_slider[] = array(
+                'name' => __('Comparison Price', 'fyndiq'),
+                'desc_tip' => __(
+                    'Comparison Price',
+                    'fyndiq'
+                ),
+                'id' => 'wcfyndiq_field_map_comp_price',
+                'type' => 'select',
+                'options' => $attributes,
+                'desc' => __('This must be picked accurate', 'fyndiq'),
+            );
+
+            // Map Field for Comparison Unit
+            $settings_slider[] = array(
+                'name' => __('Comparison Unit', 'fyndiq'),
+                'desc_tip' => __(
+                    'Comparison Unit',
+                    'fyndiq'
+                ),
+                'id' => 'wcfyndiq_field_map_comp_unit',
                 'type' => 'select',
                 'options' => $attributes,
                 'desc' => __('This must be picked accurate', 'fyndiq'),
