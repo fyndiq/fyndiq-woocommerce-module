@@ -6,8 +6,7 @@
  */
 
 add_action('woocommerce_settings_tabs_wcfyndiq', 'fyndiq_all_settings');
-
-    function fyndiq_all_settings() {
+function fyndiq_all_settings() {
     woocommerce_admin_fields(function () {
 
         //Get options for attributes
@@ -278,3 +277,52 @@ add_action('woocommerce_update_options_wcfyndiq', function() {
     }
 });
 
+/**
+ * checkSettingsValid
+ *
+ * Displays an error message if the settings for the module are not valid
+ */
+add_action('admin_notices', function () {
+    if (checkCurrency()) {
+        printf(
+            '<div class="error"><p><strong>%s</strong>: %s %s</p></div>',
+            __('Wrong Currency', 'fyndiq'),
+            __('Fyndiq only works in EUR and SEK. change to correct currency. Current Currency:', 'fyndiq'),
+            get_woocommerce_currency()
+        );
+    }
+    if (checkCountry()) {
+        printf(
+            '<div class="error"><p><strong>%s</strong>: %s %s</p></div>',
+            __('Wrong Country', 'fyndiq'),
+            __('Fyndiq only works in Sweden and Germany. change to correct country. Current Country:', 'fyndiq'),
+            WC()->countries->get_base_country()
+        );
+    }
+    if (checkCredentials()) {
+        $url = admin_url('admin.php?page=wc-settings&tab=wcfyndiq');
+        printf(
+            '<div class="error"><p><strong>%s</strong>: %s <a href="%s">%s</a></p></div>',
+            __('Fyndiq Credentials', 'fyndiq'),
+            __('You need to set Fyndiq Credentials to make it work. Do it in ', 'fyndiq'),
+            $url,
+            __('Woocommerce Settings > Fyndiq', 'fyndiq')
+        );
+    }
+    if (isset($_SESSION[NOTICES])) {
+        $notices = $_SESSION[NOTICES];
+        foreach ($notices as $type => $noticegroup) {
+            $class = 'update' === $type ? 'updated' : $type;
+            echo '<div class="fn_message ' . $class . '">';
+            echo '<strong>' . __('Fyndiq Validations', 'fyndiq') . '</strong>';
+            echo '<ul>';
+            foreach ($noticegroup as $notice) :
+                echo '<li>' . wp_kses($notice, wp_kses_allowed_html('post')) . '</li>';
+            endforeach;
+            echo '</ul>';
+            echo '<p>' . __('The product will not be exported to Fyndiq until these validations are fixed.', 'fyndiq') . '</p>';
+            echo '</div>';
+        }
+        unset($_SESSION[NOTICES]);
+    }
+});

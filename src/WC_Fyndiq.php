@@ -21,12 +21,7 @@ add_action('init', function () {
  *
  */
 add_action('init', function () {
-
-	//notice for currency check
-	add_action('admin_notices', 'my_admin_notice');
-
 	//Checker Page
-	add_action('admin_menu', 'fyndiq_add_menu');
 	add_filter('plugin_action_links_' . plugin_basename(dirname(__FILE__) . '/woocommerce-fyndiq.php'), 'fyndiq_action_links');
 
 	//index
@@ -37,10 +32,6 @@ add_action('init', function () {
 
 }, 250);
 
-function fyndiq_add_menu()
-{
-	add_submenu_page(null, 'Fyndiq Checker Page', 'Fyndiq', 'manage_options', 'fyndiq-check', 'check_page');
-}
 
 function fyndiq_action_links($links)
 {
@@ -174,51 +165,6 @@ function fyndiq_product_validate($post_id)
 
 
 
-function my_admin_notice() {
-	if (checkCurrency()) {
-		printf(
-			'<div class="error"><p><strong>%s</strong>: %s %s</p></div>',
-			__('Wrong Currency', 'fyndiq'),
-			__('Fyndiq only works in EUR and SEK. change to correct currency. Current Currency:', 'fyndiq'),
-			get_woocommerce_currency()
-		);
-	}
-	if (checkCountry()) {
-		printf(
-			'<div class="error"><p><strong>%s</strong>: %s %s</p></div>',
-			__('Wrong Country', 'fyndiq'),
-			__('Fyndiq only works in Sweden and Germany. change to correct country. Current Country:', 'fyndiq'),
-			WC()->countries->get_base_country()
-		);
-	}
-	if (checkCredentials()) {
-		$url = admin_url('admin.php?page=wc-settings&tab=wcfyndiq');
-		printf(
-			'<div class="error"><p><strong>%s</strong>: %s <a href="%s">%s</a></p></div>',
-			__('Fyndiq Credentials', 'fyndiq'),
-			__('You need to set Fyndiq Credentials to make it work. Do it in ', 'fyndiq'),
-			$url,
-			__('Woocommerce Settings > Fyndiq', 'fyndiq')
-		);
-	}
-	if (isset($_SESSION[NOTICES])) {
-		$notices = $_SESSION[NOTICES];
-		foreach ($notices as $type => $noticegroup) {
-			$class = 'update' === $type ? 'updated' : $type;
-			echo '<div class="fn_message ' . $class . '">';
-			echo '<strong>' . __('Fyndiq Validations', 'fyndiq') . '</strong>';
-			echo '<ul>';
-			foreach ($noticegroup as $notice) :
-				echo '<li>' . wp_kses($notice, wp_kses_allowed_html('post')) . '</li>';
-			endforeach;
-			echo '</ul>';
-			echo '<p>' . __('The product will not be exported to Fyndiq until these validations are fixed.', 'fyndiq') . '</p>';
-			echo '</div>';
-		}
-		unset($_SESSION[NOTICES]);
-	}
-}
-
 
 function notification_handle()
 {
@@ -278,11 +224,8 @@ function notice_debug()
 	wp_die();
 }
 
-function notice_ping()
-{
+function notice_ping() {
 	$GLOBALS['fmOutput']->flushHeader('OK');
-
-	$locked = false;
 	$lastPing = get_option('wcfyndiq_ping_time');
 	$lastPing = $lastPing ? $lastPing : false;
 	$locked = $lastPing && $lastPing > strtotime('15 minutes ago');
@@ -429,26 +372,6 @@ function checkCredentials()
 }
 
 
-
-function check_page()
-{
-	echo "<h1>" . __('Fyndiq Checker Page', 'fyndiq') . "</h1>";
-	echo "<p>" . __('This is a page to check all the important requirements to make the Fyndiq work.', 'fyndiq') . "</p>";
-
-	echo "<h2>" . __('File Permission', 'fyndiq') . "</h2>";
-	echo probe_file_permissions();
-
-	echo "<h2>" . __('Classes', 'fyndiq') . "</h2>";
-	echo probe_module_integrity();
-
-	echo "<h2>" . __('API Connection', 'fyndiq') . "</h2>";
-	echo probe_connection();
-
-	echo "<h2>" . __('Installed Plugins', 'fyndiq') . "</h2>";
-	echo probe_plugins();
-}
-
-
 function add_fyndiq_notice($message, $type = 'update')
 {
 	$notices = array();
@@ -477,106 +400,6 @@ function checkToken()
 	}
 }
 
-function probe_file_permissions()
-{
-	$messages = array();
-	$testMessage = time();
-	try {
-		$fileName = $GLOBALS['filePath'];
-		$exists = file_exists($fileName) ?
-			__('exists', 'fyndiq') :
-			__('does not exist', 'fyndiq');
-		$messages[] = sprintf(__('Feed file name: `%s` (%s)', 'fyndiq'), $fileName, $exists);
-		$tempFileName = FyndiqUtils::getTempFilename(dirname($fileName));
-		if (dirname($tempFileName) !== dirname($fileName)) {
-			throw new Exception(sprintf(
-				__('Cannot create file. Please make sure that the server can create new files in `%s`', 'fyndiq'),
-				dirname($fileName)
-			));
-		}
-		$messages[] = sprintf(__('Trying to create temporary file: `%s`', 'fyndiq'), $tempFileName);
-		$file = fopen($tempFileName, 'w+');
-		if (!$file) {
-			throw new Exception(sprintf(__('Cannot create file: `%s`', 'fyndiq'), $tempFileName));
-		}
-		fwrite($file, $testMessage);
-		fclose($file);
-		$content = file_get_contents($tempFileName);
-		if ($testMessage == file_get_contents($tempFileName)) {
-			$messages[] = sprintf(__('File `%s` successfully read.', 'fyndiq'), $tempFileName);
-		}
-		FyndiqUtils::deleteFile($tempFileName);
-		$messages[] = sprintf(__('Successfully deleted temp file `%s`', 'fyndiq'), $tempFileName);
-		return implode('<br />', $messages);
-	} catch (Exception $e) {
-		$messages[] = $e->getMessage();
-		return implode('<br />', $messages);
-	}
-}
-
-function probe_module_integrity()
-{
-	$messages = array();
-	$missing = array();
-	$checkClasses = array(
-		'FyndiqAPI',
-		'FyndiqAPICall',
-		'FyndiqCSVFeedWriter',
-		'FyndiqFeedWriter',
-		'FyndiqOutput',
-		'FyndiqPaginatedFetch',
-		'FyndiqUtils',
-		'FmHelpers'
-	);
-	try {
-		foreach ($checkClasses as $className) {
-			if (class_exists($className)) {
-				$messages[] = sprintf(__('Class `%s` is found.', 'fyndiq'), $className);
-				continue;
-			}
-			$messages[] = sprintf(__('Class `%s` is NOT found.', 'fyndiq'), $className);
-		}
-		if ($missing) {
-			throw new Exception(sprintf(
-				__('Required classes `%s` are missing.', 'fyndiq'),
-				implode(',', $missing)
-			));
-		}
-		return implode('<br />', $messages);
-	} catch (Exception $e) {
-		$messages[] = $e->getMessage();
-		return implode('<br />', $messages);
-	}
-}
-
-function probe_connection()
-{
-	$messages = array();
-	try {
-		try {
-			FmHelpers::callApi('GET', 'settings/');
-		} catch (Exception $e) {
-			if ($e instanceof FyndiqAPIAuthorizationFailed) {
-				throw new Exception(__('Module is not authorized.', 'fyndiq'));
-			}
-		}
-		$messages[] = __('Connection to Fyndiq successfully tested', 'fyndiq');
-		return implode('<br />', $messages);
-	} catch (Exception $e) {
-		$messages[] = $e->getMessage();
-		return implode('<br />', $messages);
-	}
-}
-
-function probe_plugins()
-{
-	$all_plugins = get_plugins();
-	$installed_plugin = array();
-	foreach ($all_plugins as $plugin) {
-		$installed_plugin[] = $plugin['Name'] . ' v. ' . $plugin['Version'];
-	}
-	return implode('<br />', $installed_plugin);
-}
 
 function setOrderError()
 {
@@ -586,7 +409,6 @@ function setOrderError()
 		add_option('wcfyndiq_order_error', true, null, false);
 	}
 }
-
 
 function getAllTerms()
 {

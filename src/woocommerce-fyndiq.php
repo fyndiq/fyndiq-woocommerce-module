@@ -32,6 +32,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 		require_once('metaboxes.php');
 		require_once('settings.php');
 		require_once('columns.php');
+		require_once('diagnostics.php');
 
 		//Play ball
 		require_once('WC_Fyndiq.php');
