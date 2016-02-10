@@ -6,8 +6,6 @@
  */
 
 
-
-
 /**
  * This generates the code for fields, compensating for old versions
  *

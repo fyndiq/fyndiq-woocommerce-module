@@ -29,7 +29,8 @@ add_action('load-edit.php', function () {
  * Mark multiple orders as handled (fyndiq_orders_mark) - is called by dispatcher
  *
  */
-function fyndiq_orders_mark_bulk_action() {
+function fyndiq_orders_mark_bulk_action()
+{
     if (getRequestPost() > 0) {
         $posts = array();
         foreach (getRequestPost() as $post) {
@@ -48,7 +49,8 @@ function fyndiq_orders_mark_bulk_action() {
  * Mark multiple orders as not handled (fyndiq_orders_unmark) - is called by dispatcher
  *
  */
-function fyndiq_orders_unmark_bulk_action() {
+function fyndiq_orders_unmark_bulk_action()
+{
     if (getRequestPost() > 0) {
         $posts = array();
         foreach (getRequestPost() as $post) {
@@ -110,16 +112,16 @@ add_action('load-edit.php', function () {
             foreach ($posts as $post_id) {
                 $product = new FmProduct($post_id);
                 if ($product->isProductExportable()) {
-	                $product->exportToFyndiq();
+                    $product->exportToFyndiq();
                     $post_ids[] = $post_id;
                     $changed++;
                 }
             }
         } else {
             foreach ($posts as $post_id) {
-	            $product = new FmProduct($post_id);
+                $product = new FmProduct($post_id);
                 if ($product->isProductExportable()) {
-	                $product->removeFromFyndiq();
+                    $product->removeFromFyndiq();
                     $post_ids[] = $post_id;
                     $changed++;
                 }
@@ -139,11 +141,11 @@ add_action('load-edit.php', function () {
  * TODO: The functions responsible for the messages ought to use the $_SESSION['bulkMessage'] variable instead
  *
  */
-add_action('admin_notices', function() {
+add_action('admin_notices', function () {
     global $post_type, $pagenow;
 
     if ($pagenow == 'edit.php' && isset($_REQUEST['fyndiq_removed']) && (int)$_REQUEST['fyndiq_removed']) {
-        $_SESSION['bulkMessage'] =  sprintf(
+        $_SESSION['bulkMessage'] = sprintf(
             _n(
                 'Products removed from Fyndiq.',
                 '%s products removed from Fyndiq.',
@@ -154,7 +156,7 @@ add_action('admin_notices', function() {
     }
 
     if ($pagenow == 'edit.php' && isset($_REQUEST['fyndiq_exported']) && (int)$_REQUEST['fyndiq_exported']) {
-        $_SESSION['bulkMessage'] =  sprintf(
+        $_SESSION['bulkMessage'] = sprintf(
             _n(
                 'Products exported to Fyndiq.',
                 '%s products exported to Fyndiq.',
@@ -173,7 +175,8 @@ add_action('admin_notices', function() {
  * TODO: this probably needs refinement. ask about this.
  *
  */
-function fyndiq_order_delivery_note_bulk_action() {
+function fyndiq_order_delivery_note_bulk_action()
+{
     try {
         if (!ordersEnabled()) {
             exit();

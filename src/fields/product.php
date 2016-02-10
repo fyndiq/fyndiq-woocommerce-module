@@ -12,7 +12,7 @@
  * Handles saving product metadata
  *
  */
-add_action('woocommerce_process_product_meta', function($post_id) {
+add_action('woocommerce_process_product_meta', function ($post_id) {
     $woocommerce_checkbox = getExportState();
     $woocommerce_pricepercentage = getPricePercentage();
 
@@ -31,13 +31,12 @@ add_action('woocommerce_process_product_meta', function($post_id) {
 });
 
 
-
 /**
  *
  * fyndiqProductTab
  *
  */
-add_action('woocommerce_product_write_panel_tabs', function() {
+add_action('woocommerce_product_write_panel_tabs', function () {
     echo '<li class="fyndiq_tab"><a href="#fyndiq_tab">' . __('Fyndiq', 'fyndiq') . '</a></li>';
 });
 

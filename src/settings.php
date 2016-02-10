@@ -256,7 +256,7 @@ function fyndiq_all_settings() {
  * Adds the tab for fyndiq in the WC settings page
  *
  */
-add_filter('woocommerce_settings_tabs_array', function($settings_tabs) {
+add_filter('woocommerce_settings_tabs_array', function ($settings_tabs) {
     $settings_tabs['wcfyndiq'] = __('Fyndiq', 'fyndiq');
     return $settings_tabs;
 }, 50);
@@ -267,7 +267,7 @@ add_filter('woocommerce_settings_tabs_array', function($settings_tabs) {
  *
  * Handles saving the settings for the fyndiq
  */
-add_action('woocommerce_update_options_wcfyndiq', function() {
+add_action('woocommerce_update_options_wcfyndiq', function () {
     woocommerce_update_options(fyndiq_all_settings());
     try {
         updateUrls();
