@@ -580,8 +580,6 @@ EOS;
         } else {
             // If the woocommerce is older or the same as 2.2.11 it needs to
             // use raw html becuase woocommerce_form_field doesn't exist
-            // use raw html because woocommerce_form_field doesn't exist
-
             $exported = (get_post_meta($product->id, '_fyndiq_export', true) == self::EXPORTED) ? ' checked' : '';
 
             // Checkbox for exporting to fyndiq
