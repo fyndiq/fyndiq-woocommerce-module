@@ -981,7 +981,7 @@ EOS;
                     'marked' => 1
                 );
             }
-                $this->setIsHandled($posts);
+	        $this->setIsHandled($posts);
         }
     }
 
