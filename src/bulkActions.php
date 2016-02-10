@@ -253,9 +253,11 @@ add_action('admin_footer-edit.php', function () {
 
 
     //Goes through the corresponding array for the page type and writes JS needed for dropdown
-    foreach ($bulkActionArray[$post_type] as $key => $value) {
-        $scriptOutput .= "  jQuery('<option>').val('$key').text('$value').appendTo('select[name=\"action\"]');
-                                    jQuery('<option>').val('$key').text('$value').appendTo('select[name=\"action2\"]');";
+    if (isset($bulkActionArray[$post_type])) {
+            foreach ($bulkActionArray[$post_type] as $key => $value) {
+            $scriptOutput .= "jQuery('<option>').val('$key').text('$value').appendTo('select[name=\"action\"]');
+                              jQuery('<option>').val('$key').text('$value').appendTo('select[name=\"action2\"]');";
+        }
     }
 
 
