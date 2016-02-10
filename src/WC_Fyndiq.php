@@ -1235,7 +1235,7 @@ EOS;
 
     public function getAbsolutePrice()
     {
-        return isset($_POST['_fyndiq_absolute_price']) ? $_POST['_fyndiq_absolute_price'] : '';
+        return isset($_POST['_fyndiq_price_absolute']) ? $_POST['_fyndiq_price_absolute'] : '';
     }
 
     public function checkCurrency()
