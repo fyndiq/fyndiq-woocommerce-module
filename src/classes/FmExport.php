@@ -278,11 +278,12 @@ class FmExport
         if ($config['wooML']) {
             return $this->getSaleProductPrice($product, $config['currency']);
         }
-        $price = $product->get_price();
+        $absolutePrice = get_post_meta($product->id, '_fyndiq_price_absolute', true);
+        $price = (!empty($absolutePrice)) ? $absolutePrice : $product->get_price();
         if ((function_exists('wc_tax_enabled') && wc_tax_enabled()) ||
             (!function_exists('wc_tax_enabled') && FmHelpers::fyndiq_wc_tax_enabled())
         ) {
-            $price = $product->get_price_including_tax();
+            $price = $product->get_price_including_tax(1, $price);
         }
         return $price;
     }
