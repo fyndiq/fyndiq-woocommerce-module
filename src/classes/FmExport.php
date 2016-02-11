@@ -284,6 +284,7 @@ class FmExport
         if ((function_exists('wc_tax_enabled') && wc_tax_enabled()) ||
             (!function_exists('wc_tax_enabled') && FmHelpers::fyndiq_wc_tax_enabled())
         ) {
+            // this get the price including taxes for 1 quantity of this product
             $price = $product->get_price_including_tax(1, $price);
         }
         return $price;
@@ -306,6 +307,7 @@ class FmExport
         if ((function_exists('wc_tax_enabled') && wc_tax_enabled()) ||
             (!function_exists('wc_tax_enabled') && FmHelpers::fyndiq_wc_tax_enabled())
         ) {
+            // this get the price including taxes for 1 quantity of this product
             $regularPrice = $product->get_price_including_tax(1, $regularPrice);
         }
         return $regularPrice;
