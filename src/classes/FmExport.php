@@ -142,7 +142,8 @@ class FmExport
 
     private function getProduct($product, $config)
     {
-        $productPrice = $this->getProductPrice($product, $config);
+        $absolutePrice = get_post_meta($product->id, '_fyndiq_price_absolute', true);
+        $productPrice = $this->getProductPrice($product, $config, $absolutePrice);
         $regularPrice = $this->getProductRegularPrice($product, $config);
 
         $productPrice = $this->getPrice($product->id, $productPrice);
@@ -274,12 +275,12 @@ class FmExport
         return array_merge($feedArticle, $this->getMappedFields($variation['variation_id']));
     }
 
-    function getProductPrice($product, $config)
+    function getProductPrice($product, $config, $absolutePrice)
     {
         if ($config['wooML']) {
             return $this->getSaleProductPrice($product, $config['currency']);
         }
-        $absolutePrice = get_post_meta($product->id, '_fyndiq_price_absolute', true);
+
         $price = (!empty($absolutePrice)) ? $absolutePrice : $product->get_price();
         if ((function_exists('wc_tax_enabled') && wc_tax_enabled()) ||
             (!function_exists('wc_tax_enabled') && FmHelpers::fyndiq_wc_tax_enabled())
