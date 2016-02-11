@@ -527,7 +527,7 @@ EOS;
     /**
      *
      *This is the hooked function for fields on the product pages
-     * TODO: make this function use fyndiq_generate_field
+     * @todo make this function use fyndiq_generate_field
      *
      */
     public function fyndiq_product_tab_content()
@@ -959,7 +959,7 @@ EOS;
     /**
      *
      * This function acts as a dispatcher, taking various actions and routing them to the appropriate function
-     * TODO: get all bulk actions to use the dispatcher
+     * @todo get all bulk actions to use the dispatcher
      *
      */
     public function fyndiq_bulk_action_dispatcher()
