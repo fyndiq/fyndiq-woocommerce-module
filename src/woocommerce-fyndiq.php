@@ -24,7 +24,6 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
         require_once('models/FmOrderFetch.php');
         require_once('classes/FmProductHelper.php');
         require_once('models/FmProductFetch.php');
-        require_once('getDispatcher.php');
         require_once('deactivate.php');
         require_once('scripts.php');
         require_once('fields.php');
