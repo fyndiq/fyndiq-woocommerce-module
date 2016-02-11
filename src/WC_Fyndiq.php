@@ -276,7 +276,7 @@ EOS;
                 ),
                 'id' => 'wcfyndiq_price_discount',
                 'type' => 'text',
-                'default' => '10',
+                'default' => '0',
                 'desc' => __('Can be 0 if the price should not change', 'fyndiq'),
 
             );
