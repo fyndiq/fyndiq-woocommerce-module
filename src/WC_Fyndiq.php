@@ -511,7 +511,7 @@ EOS;
 
     /**
      *
-     *This is the hooked function for fields on the order pages
+     * This is the hooked function for fields on the order pages
      *
      */
     public function fyndiq_add_order_field()
@@ -526,7 +526,7 @@ EOS;
 
     /**
      *
-     *This is the hooked function for fields on the product pages
+     * This is the hooked function for fields on the product pages
      * @todo make this function use fyndiq_generate_field
      *
      */
@@ -788,7 +788,7 @@ EOS;
             return;
         }
         $orderby = $query->get('orderby');
-        if ('fyndiq_order' == $orderby) {
+        if ('fyndiq_order' === $orderby) {
             $query->set('meta_key', 'fyndiq_id');
             $query->set('orderby', 'meta_value_integer');
         }
