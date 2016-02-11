@@ -501,8 +501,8 @@ EOS;
         if (version_compare(FmHelpers::get_woocommerce_version(), '2.3.8') >= 0) {
             woocommerce_form_field($fieldName, $array, $value);
         } else {
-            $this->fmOutput->output("<p class='form-field' id=$fieldName>
-                <label for=\'$fieldName\'>". $array['label']  ."</label>
+            $this->fmOutput->output("<p class='form-field' 'id'=$fieldName>
+                <label for='$fieldName'>". $array['label']  ."</label>
                 <input type='" . $array['type'] . "' class='input-" . $array['type'] . "' name='$fieldName' id='$fieldName' value='$value'>
                 <span class='description'>" . $array['description'] . "</span></p>");
         }
