@@ -984,7 +984,6 @@ EOS;
      */
     private function fyndiq_order_handle_bulk_action()
     {
-        $test = $this->getRequestPost();
         if (!empty($this->getRequestPost())) {
             $posts = array();
             foreach ($this->getRequestPost() as $post) {
