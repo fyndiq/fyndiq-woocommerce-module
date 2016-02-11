@@ -1311,6 +1311,16 @@ EOS;
         return get_the_ID();
     }
 
+    public function getOrderId()
+    {
+        return get_the_ID();
+    }
+
+    public function getProductId()
+    {
+        return get_the_ID();
+    }
+
     public function getExportState()
     {
         return isset($_POST['_fyndiq_export']) ? self::EXPORTED : self::NOT_EXPORTED;
