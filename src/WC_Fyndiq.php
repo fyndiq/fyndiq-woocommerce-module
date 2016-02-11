@@ -648,7 +648,7 @@ EOS;
      * This is validating product data and show error if
      * it is not following the fyndiq validations
      */
-    public function fyndiq_product_validate($post_id)
+    public function fyndiq_product_validate($productId)
     {
         if ($this->getExportState() == self::EXPORTED) {
             $error = false;
@@ -711,7 +711,7 @@ EOS;
             }
 
             if ($error) {
-                update_post_meta($post_id, '_fyndiq_export', self::NOT_EXPORTED);
+                update_post_meta($productId, '_fyndiq_export', self::NOT_EXPORTED);
             }
         }
     }
