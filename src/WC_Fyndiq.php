@@ -341,7 +341,7 @@ EOS;
 
 
         // Add order status setting
-        $settings_slider[] = array(
+            $settings_slider[] = array(
 
             'name' => __('Order Status', 'fyndiq'),
             'desc_tip' => __(
@@ -357,7 +357,7 @@ EOS;
                 'on-hold' => 'on-hold'
             ),
             'desc' => __('This must be picked accurate', 'fyndiq')
-        ));
+            ));
 
         $settings_slider[] = array(
             'type' => 'sectionend',
@@ -496,7 +496,8 @@ EOS;
      * @param $array - the array that would usually be passed to woocommerce_form_field()
      * @param $value - the value of the field
      */
-    private function fyndiq_generate_field($fieldName, $array, $value) {
+    private function fyndiq_generate_field($fieldName, $array, $value)
+    {
         if (version_compare(FmHelpers::get_woocommerce_version(), '2.3.8') >= 0) {
             woocommerce_form_field($fieldName, $array, $value);
         } else {
@@ -513,8 +514,9 @@ EOS;
      *This is the hooked function for fields on the order pages
      *
      */
-    public function fyndiq_add_order_field() {
-        $this->fyndiq_generate_field('_fyndiq_handled_order',  array(
+    public function fyndiq_add_order_field()
+    {
+        $this->fyndiq_generate_field('_fyndiq_handled_order', array(
             'type' => 'checkbox',
             'class' => array('input-checkbox'),
             'label' => __('Order handled', 'fyndiq'),
@@ -722,7 +724,8 @@ EOS;
      *
      * @param int $orderId
      */
-    public function fyndiq_order_save($orderId) {
+    public function fyndiq_order_save($orderId)
+    {
         $this->setIsHandled(array(
             array(
                 'id' => $orderId,
@@ -753,12 +756,14 @@ EOS;
 
 
     //Hooked function for adding columns to the products page (manage_edit-shop_order_columns)
-    public function fyndiq_order_add_column($defaults) {
+    public function fyndiq_order_add_column($defaults)
+    {
         $defaults['fyndiq_order'] = __('Fyndiq Order', 'fyndiq');
         return $defaults;
     }
 
-    public function fyndiq_order_column($column, $orderId) {
+    public function fyndiq_order_column($column, $orderId)
+    {
         if ($column === 'fyndiq_order') {
             $fyndiq_order = get_post_meta($orderId, 'fyndiq_id', true);
             if ($fyndiq_order != '') {
@@ -770,13 +775,15 @@ EOS;
         }
     }
 
-    public function fyndiq_order_column_sort() {
+    public function fyndiq_order_column_sort()
+    {
         return array(
             'fyndiq_order' => 'fyndiq_order'
         );
     }
 
-    public function fyndiq_order_column_sort_by($query) {
+    public function fyndiq_order_column_sort_by($query)
+    {
         if (!is_admin()) {
             return;
         }
@@ -790,18 +797,21 @@ EOS;
 
 
     //Hooked function for adding columns to the products page (manage_edit-product_columns)
-    public function fyndiq_product_add_column($defaults) {
+    public function fyndiq_product_add_column($defaults)
+    {
         $defaults['fyndiq_export'] = __('Fyndiq', 'fyndiq');
         return $defaults;
     }
 
-    public function fyndiq_product_column_sort() {
+    public function fyndiq_product_column_sort()
+    {
         return array(
             'fyndiq_export' => 'fyndiq_export',
         );
     }
 
-    public function fyndiq_product_column_sort_by($query) {
+    public function fyndiq_product_column_sort_by($query)
+    {
         if (!is_admin()) {
             return;
         }
@@ -812,7 +822,8 @@ EOS;
         }
     }
 
-    public function fyndiq_product_column_export($column, $postid) {
+    public function fyndiq_product_column_export($column, $postid)
+    {
         $product = get_product($postid);
 
         if ($column == 'fyndiq_export') {
@@ -889,7 +900,8 @@ EOS;
      * Adds bulk actions to the dropdown by reading array and generating relevant JS
      *
      */
-    public function fyndiq_add_bulk_action() {
+    public function fyndiq_add_bulk_action()
+    {
         global $post_type;
 
         //Define bulk actions for the various page types
@@ -950,7 +962,8 @@ EOS;
      * TODO: get all bulk actions to use the dispatcher
      *
      */
-    public function fyndiq_bulk_action_dispatcher() {
+    public function fyndiq_bulk_action_dispatcher()
+    {
         switch ($this->getAction('WP_Posts_List_Table')) {
             case 'fyndiq_handle_order':
                 $this->fyndiq_order_handle_bulk_action();
@@ -969,7 +982,8 @@ EOS;
      * Action code for setting an order as handled
      *
      */
-    private function fyndiq_order_handle_bulk_action() {
+    private function fyndiq_order_handle_bulk_action()
+    {
         $test = $this->getRequestPost();
         if (!empty($this->getRequestPost())) {
             $posts = array();
@@ -989,7 +1003,8 @@ EOS;
      * Action code for setting an order as not handled
      *
      */
-    private function fyndiq_order_unhandle_bulk_action () {
+    private function fyndiq_order_unhandle_bulk_action()
+    {
         if (!empty($this->getRequestPost())) {
             $posts = array();
             foreach ($this->getRequestPost() as $post) {
@@ -1003,7 +1018,8 @@ EOS;
     }
 
 
-    public function do_bulk_action_messages() {
+    public function do_bulk_action_messages()
+    {
         if (isset($_SESSION['bulkMessage']) && $GLOBALS['pagenow'] === 'edit.php') {
             $this->fmOutput->output('<div class="updated"><p>' . $_SESSION['bulkMessage'] . '</p></div>');
             unset($_SESSION['bulkMessage']);
@@ -1300,11 +1316,13 @@ EOS;
         return isset($_POST['_fyndiq_export']) ? self::EXPORTED : self::NOT_EXPORTED;
     }
 
-    public function getFyndiqOrderID($orderID) {
+    public function getFyndiqOrderID($orderID)
+    {
         return get_post_meta($orderID, 'fyndiq_id', true);
     }
 
-    public function getIsHandled() {
+    public function getIsHandled()
+    {
         return (bool) $_POST['_fyndiq_handled_order'];
     }
 
@@ -1325,7 +1343,8 @@ EOS;
      *
      *
      */
-    public function setIsHandled($posts) {
+    public function setIsHandled($posts)
+    {
         foreach ($posts as &$post) {
             update_post_meta($post['id'], '_fyndiq_handled_order', (bool) $post['marked']);
             $post['id'] = $this->getFyndiqOrderID($post['id']);
