@@ -720,35 +720,35 @@ EOS;
      *
      * Hooked action for saving orders (woocommerce_process_shop_order_meta)
      *
-     * @param int $post_id
+     * @param int $orderId
      */
-    public function fyndiq_order_save($post_id) {
+    public function fyndiq_order_save($orderId) {
         $this->setIsHandled(array(
             array(
-                'id' => $post_id,
+                'id' => $orderId,
                 'marked' => $this->getIsHandled()
             )
         ));
     }
 
     //Hooked action for saving products (woocommerce_process_product_meta)
-    public function fyndiq_product_save($post_id)
+    public function fyndiq_product_save($productId)
     {
         $woocommerce_checkbox = $this->getExportState();
         $woocommerce_pricepercentage = $this->getPricePercentage();
 
-        update_post_meta($post_id, '_fyndiq_export', $woocommerce_checkbox);
+        update_post_meta($productId, '_fyndiq_export', $woocommerce_checkbox);
 
         if ($woocommerce_checkbox == self::EXPORTED) {
             if (empty($woocommerce_pricepercentage)) {
-                update_post_meta($post_id, '_fyndiq_price_percentage', get_option('wcfyndiq_price_percentage'));
+                update_post_meta($productId, '_fyndiq_price_percentage', get_option('wcfyndiq_price_percentage'));
             }
         }
         if (!empty($woocommerce_pricepercentage)) {
-            update_post_meta($post_id, '_fyndiq_price_percentage', $woocommerce_pricepercentage);
+            update_post_meta($productId, '_fyndiq_price_percentage', $woocommerce_pricepercentage);
         }
 
-        $this->fyndiq_product_validate($post_id);
+        $this->fyndiq_product_validate($productId);
     }
 
 
@@ -758,13 +758,13 @@ EOS;
         return $defaults;
     }
 
-    public function fyndiq_order_column($column, $postid) {
+    public function fyndiq_order_column($column, $orderId) {
         if ($column === 'fyndiq_order') {
-            $fyndiq_order = get_post_meta($postid, 'fyndiq_id', true);
+            $fyndiq_order = get_post_meta($orderId, 'fyndiq_id', true);
             if ($fyndiq_order != '') {
                 $this->fmOutput->output($fyndiq_order);
             } else {
-                update_post_meta($postid, 'fyndiq_id', '-');
+                update_post_meta($orderId, 'fyndiq_id', '-');
                 $this->fmOutput->output('-');
             }
         }
@@ -1133,21 +1133,21 @@ EOS;
         exit();
     }
 
-    private function perform_export($post_id)
+    private function perform_export($productId)
     {
-        if (!update_post_meta($post_id, '_fyndiq_export', self::EXPORTED)) {
-            add_post_meta($post_id, '_fyndiq_export', self::EXPORTED, true);
+        if (!update_post_meta($productId, '_fyndiq_export', self::EXPORTED)) {
+            add_post_meta($productId, '_fyndiq_export', self::EXPORTED, true);
         };
-        $percentage = get_post_meta($post_id, '_fyndiq_price_percentage', true);
+        $percentage = get_post_meta($productId, '_fyndiq_price_percentage', true);
         if (empty($percentage)) {
-            update_post_meta($post_id, '_fyndiq_price_percentage', get_option('wcfyndiq_price_percentage'));
+            update_post_meta($productId, '_fyndiq_price_percentage', get_option('wcfyndiq_price_percentage'));
         }
     }
 
-    private function perform_no_export($post_id)
+    private function perform_no_export($productId)
     {
-        if (!update_post_meta($post_id, '_fyndiq_export', self::NOT_EXPORTED)) {
-            add_post_meta($post_id, '_fyndiq_export', self::NOT_EXPORTED, true);
+        if (!update_post_meta($productId, '_fyndiq_export', self::NOT_EXPORTED)) {
+            add_post_meta($productId, '_fyndiq_export', self::NOT_EXPORTED, true);
         };
     }
 
