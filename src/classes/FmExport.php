@@ -223,6 +223,7 @@ class FmExport
 
         $productPrice = $variation['display_price'];
         $price = $this->getPrice($product->id, $productPrice);
+
         $price = FyndiqUtils::formatPrice($price);
         $oldPrice = FyndiqUtils::formatPrice($productPrice);
 
@@ -297,10 +298,10 @@ class FmExport
             if (!empty($checkPrice) && $config['currency'] != $orderCurrency) {
                 $regularPrice .= '_'.$config['currency'];
             }
-
             FyndiqUtils::debug('$regularPrice Column', $regularPrice);
             return get_post_meta($product->id, $regularPrice, true);
         }
+
         $regularPrice = $product->get_regular_price();
         if ((function_exists('wc_tax_enabled') && wc_tax_enabled()) ||
             (!function_exists('wc_tax_enabled') && FmHelpers::fyndiq_wc_tax_enabled())
@@ -464,7 +465,7 @@ class FmExport
     public function getPrice($product_id, $product_price)
     {
         $percentage_discount = get_option('wcfyndiq_price_percentage');
-        $price_discount = empty(get_option('wcfyndiq_price_discount')) ? get_option('wcfyndiq_price_discount') : 0;
+        $price_discount = !empty(get_option('wcfyndiq_price_discount')) ? intval(get_option('wcfyndiq_price_discount')) : 0;
         $discount = $this->getDiscount(intval($percentage_discount));
 
         return FyndiqUtils::getFyndiqPrice($product_price, $discount, $price_discount);
