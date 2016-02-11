@@ -1332,15 +1332,15 @@ EOS;
 
     public function getIsHandled()
     {
-        return (bool) $_POST['_fyndiq_handled_order'];
+        return (bool) isset($_POST['_fyndiq_handled_order']);
     }
 
 
     /**
      *
-     * Sets whether the given posts are marked as processed to Fyndiq or not
+     * Sets whether the given orders are marked as processed to Fyndiq or not
      *
-     * @param $posts - an array of posts in the structure:
+     * @param $orders - an array of orders in the structure:
      *
      * array(
      *        array(
@@ -1352,17 +1352,31 @@ EOS;
      *
      *
      */
-    public function setIsHandled($posts)
+    public function setIsHandled($orders)
     {
-        foreach ($posts as &$post) {
-            update_post_meta($post['id'], '_fyndiq_handled_order', (bool) $post['marked']);
-            $post['id'] = $this->getFyndiqOrderID($post['id']);
-            $post = (object) $post;
+        $data = new stdClass();
+        $dataOrders = array();
+
+        //Generates the data sent to the API
+        foreach ($orders as $order) {
+            $dataOrder['id'] = $this->getFyndiqOrderID($order['id']);
+            $dataOrder['marked'] = $this->getFyndiqOrderID($order['marked']);
+            $dataOrders[] = (object) $dataOrder;
+        }
+        $data->orders = $dataOrders;
+
+        //Try to send the data to the API
+        try {
+            FmHelpers::callApi('POST', 'orders/mharked/', $data);
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+
         }
 
-        $data = new stdClass();
-        $data->orders = $posts;
-        FmHelpers::callApi('POST', 'orders/marked/', $data);
+        //If the API call worked, update the orders on WC
+        foreach ($orders as $order) {
+            update_post_meta($order['id'], '_fyndiq_handled_order', (bool)$order['marked']);
+        }
     }
 
     public function getPricePercentage()
