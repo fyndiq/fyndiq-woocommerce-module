@@ -262,7 +262,22 @@ EOS;
                 'id' => 'wcfyndiq_price_percentage',
                 'type' => 'text',
                 'default' => '10',
-                'desc' => __('Can be 0 if the price should be the same as in your shop.', 'fyndiq'),
+                'desc' => __('Can be 0 if the price should not change.', 'fyndiq'),
+
+            );
+
+            //Price Discount
+            $settings_slider[] = array(
+
+                'name' => __('Global Price Discount', 'fyndiq'),
+                'desc_tip' => __(
+                    'The amount that will be removed from the price when sending to fyndiq.',
+                    'fyndiq'
+                ),
+                'id' => 'wcfyndiq_price_discount',
+                'type' => 'text',
+                'default' => '10',
+                'desc' => __('Can be 0 if the price should not change', 'fyndiq'),
 
             );
 

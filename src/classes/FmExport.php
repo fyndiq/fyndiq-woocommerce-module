@@ -463,10 +463,11 @@ class FmExport
 
     public function getPrice($product_id, $product_price)
     {
-        $percentage = get_post_meta($product_id, '_fyndiq_price_percentage', true);
-        $discount = $this->getDiscount(intval($percentage));
+        $percentage_discount = get_option('wcfyndiq_price_percentage');
+        $price_discount = empty(get_option('wcfyndiq_price_discount')) ? get_option('wcfyndiq_price_discount') : 0;
+        $discount = $this->getDiscount(intval($percentage_discount));
 
-        return FyndiqUtils::getFyndiqPrice($product_price, $discount);
+        return FyndiqUtils::getFyndiqPrice($product_price, $discount, $price_discount);
     }
 
     private function getDiscount($discount)
