@@ -30,8 +30,9 @@ class FmUpdate
         $url = get_option('wcfyndiq_update_url');
         ?>
         <div class="updated">
-            <p><?php _e('It exist a new version of Fyndiq plugin, install it by clicking on the link:', 'fyndiq'); ?> <a
-                    href="<?php echo $url; ?>"><?php echo $url; ?></a></p>
+            <p><?php _e('It exist a new version of Fyndiq plugin, install it by clicking on the link:', 'fyndiq'); ?>
+                <a href="<?php echo $url; ?>"><?php echo $url; ?></a>
+            </p>
         </div>
         <?php
     }
