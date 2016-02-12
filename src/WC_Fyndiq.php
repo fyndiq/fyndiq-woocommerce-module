@@ -504,7 +504,6 @@ EOS;
         $product = get_product($this->getProductId());
         $version = FmHelpers::get_woocommerce_version();
         $price = $this->fmExport->getPrice($product->id, $product->price);
-        $percentage = get_post_meta($product->id, '_fyndiq_price_percentage', true);
         $absolutePrice = get_post_meta($product->id, '_fyndiq_price_absolute', true);
 
         echo '<div id="fyndiq_tab" class="panel woocommerce_options_panel"><div class="fyndiq_tab">';
@@ -1041,10 +1040,6 @@ EOS;
         if (!update_post_meta($post_id, '_fyndiq_status', FmProduct::STATUS_PENDING)) {
             add_post_meta($post_id, '_fyndiq_status', FmProduct::STATUS_PENDING, true);
         };
-        $percentage = get_post_meta($post_id, '_fyndiq_price_percentage', true);
-        if (empty($percentage)) {
-            update_post_meta($post_id, '_fyndiq_price_percentage', get_option('wcfyndiq_price_percentage'));
-        }
     }
 
     private function perform_no_export($post_id)
@@ -1204,11 +1199,6 @@ EOS;
     public function getExportState()
     {
         return isset($_POST['_fyndiq_export']) ? self::EXPORTED : self::NOT_EXPORTED;
-    }
-
-    public function getPricePercentage()
-    {
-        return isset($_POST['_fyndiq_price_percentage']) ? $_POST['_fyndiq_price_percentage'] : '';
     }
 
     public function getAbsolutePrice()
