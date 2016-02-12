@@ -7,7 +7,7 @@ class FmProductFetch extends FyndiqPaginatedFetch
 
     public function __construct()
     {
-        $this->fmProduct = new FmProduct();
+        $this->fmProduct = new FmProductHelper();
     }
 
     public function getInitialPath()
@@ -43,9 +43,9 @@ class FmProductFetch extends FyndiqPaginatedFetch
     {
         $result = true;
         foreach ($data as $statusRow) {
-            $status = FmProduct::STATUS_FOR_SALE;
+            $status = FmProductHelper::STATUS_FOR_SALE;
             if ($statusRow->for_sale === 'NOT_FOR_SALE') {
-                $status = FmProduct::STATUS_PENDING;
+                $status = FmProductHelper::STATUS_PENDING;
             }
 
             $result &= $this->fmProduct->updateStatus($statusRow->product_id, $status);
@@ -55,7 +55,7 @@ class FmProductFetch extends FyndiqPaginatedFetch
 
     public function getAll()
     {
-        $this->fmProduct->updateStatusAllProducts(FmProduct::STATUS_PENDING);
+        $this->fmProduct->updateStatusAllProducts(FmProductHelper::STATUS_PENDING);
         return parent::getAll();
     }
 }

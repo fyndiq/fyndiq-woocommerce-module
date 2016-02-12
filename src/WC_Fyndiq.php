@@ -1196,7 +1196,7 @@ EOS;
 
                 $fyndiqOrder = $ret['data'];
 
-                $orderModel = new FmOrder();
+                $orderModel = new FmOrderHelper();
 
                 if (!$orderModel->orderExists($fyndiqOrder->id)) {
                     $orderModel->createOrder($fyndiqOrder);
