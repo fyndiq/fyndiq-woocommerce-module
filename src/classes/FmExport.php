@@ -92,12 +92,16 @@ class FmExport
         $products = $fmProduct->getExportedProducts();
         $wcFyndiqCurrency = get_option('wcfyndiq_currency');
         $currency = !empty($wcFyndiqCurrency) ? $wcFyndiqCurrency : get_woocommerce_currency();
+        $percentage_discount = get_option('wcfyndiq_price_percentage');
+        $price_discount = !empty(get_option('wcfyndiq_price_discount')) ? intval(get_option('wcfyndiq_price_discount')) : 0;
 
         $config = array(
             'market' => WC()->countries->get_base_country(),
             'currency' => $currency,
             'minQty' => get_option('wcfyndiq_quantity_minimum'),
             'wooML' => is_plugin_active('woocommerce-multilingual/wpml-woocommerce.php'),
+            'percentage_discount' => intval($percentage_discount),
+            'price_discount' => $price_discount
         );
 
         FyndiqUtils::debug('config', $config);
@@ -146,7 +150,7 @@ class FmExport
         $productPrice = $this->getProductPrice($product, $config, $absolutePrice);
         $regularPrice = $this->getProductRegularPrice($product, $config);
 
-        $productPrice = $this->getPrice($product->id, $productPrice);
+        $productPrice = $this->getPrice($product->id, $productPrice, $config);
 
         $_tax = new WC_Tax(); //looking for appropriate vat for specific product
         FyndiqUtils::debug('tax class', $product->get_tax_class());
@@ -223,7 +227,7 @@ class FmExport
         );
 
         $productPrice = $variation['display_price'];
-        $price = $this->getPrice($product->id, $productPrice);
+        $price = $this->getPrice($product->id, $productPrice, $config);
 
         $price = FyndiqUtils::formatPrice($price);
         $oldPrice = FyndiqUtils::formatPrice($productPrice);
@@ -465,13 +469,11 @@ class FmExport
         return $available_variations;
     }
 
-    public function getPrice($product_id, $product_price)
+    public function getPrice($product_id, $product_price, $config)
     {
-        $percentage_discount = get_option('wcfyndiq_price_percentage');
-        $price_discount = !empty(get_option('wcfyndiq_price_discount')) ? intval(get_option('wcfyndiq_price_discount')) : 0;
-        $discount = $this->getDiscount(intval($percentage_discount));
+        $discount = $this->getDiscount($config['percentage_discount']);
 
-        return FyndiqUtils::getFyndiqPrice($product_price, $discount, $price_discount);
+        return FyndiqUtils::getFyndiqPrice($product_price, $discount, $config['price_discount']);
     }
 
     private function getDiscount($discount)
