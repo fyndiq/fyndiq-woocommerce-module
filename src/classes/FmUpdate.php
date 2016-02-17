@@ -48,7 +48,7 @@ class FmUpdate
     {
         $response = wp_remote_get(self::UPDATE_URL);
 
-        if (isset($response['response']['code']) && 200 == $response['response']['code']) {
+        if ((!is_wp_error($response)) && (isset($response['response']['code']) && 200 == $response['response']['code'])) {
             return json_decode($response['body']);
         }
 
