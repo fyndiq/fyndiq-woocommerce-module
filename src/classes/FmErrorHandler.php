@@ -6,33 +6,27 @@
  */
 class FmError
 {
-    protected $error;
-
     public function __construct()
     {
-        $this->error = new FmErrorHandler();
-        set_error_handler(array( $this->error, 'handleError' ), E_USER_NOTICE);
 
-        add_action('admin_notices', function () {
-
-            if (isset($_REQUEST['fyndiqMessageType'])) {
-                echo "<div class='" . htmlspecialchars($_REQUEST['fyndiqMessageType']). "'><p>" .  htmlspecialchars($_REQUEST['fyndiqMessage']) . "</p></div>";
+        add_action('admin_notices', function ()
+        {
+            if (isset($_REQUEST['fyndiqMessageType']))
+            {
+                echo sprintf("<div class='%s'><p>%s</p></div>",
+                    htmlspecialchars(urldecode($_REQUEST['fyndiqMessageType'])),
+                    htmlspecialchars(urldecode($_REQUEST['fyndiqMessage'])));
             }
         });
-
-        add_action('wp_loaded', function ()
-        {
-            new FmError();
-        });
     }
-}
 
-class FmErrorHandler
-{
-    public function handleError($errorNumber, $errorMessage)
+    public static function handleError($errorMessage)
     {
-        $errorMessage = urlencode($errorMessage);
-        wp_redirect($_REQUEST['_wp_http_referer'] . '&fyndiqMessage=' . $errorMessage . '&fyndiqMessageType=error');
+        $errorMessage = sprintf("An error occurred: %s", $errorMessage);
+        $redirect = add_query_arg(
+            array('fyndiqMessageType' => 'error', 'fyndiqMessage' => urlencode($errorMessage)),
+            $_REQUEST['_wp_http_referer']);
+        wp_redirect($redirect);
         exit;
     }
 }

@@ -15,7 +15,12 @@ class WC_Fyndiq
 
     public function __construct($fmOutput, $mainfile)
     {
+
         $this->currencies = array_combine(FyndiqUtils::$allowedCurrencies, FyndiqUtils::$allowedCurrencies);
+
+        add_action('wp_loaded', function () {
+            new FmError();
+        });
 
         //Load locale in init
         add_action('init', array(&$this, 'locale_load'));
@@ -335,10 +340,10 @@ EOS;
             'default' => '0',
             'desc' => __('Stay on 0 if you want to send all stock to Fyndiq.', 'fyndiq'),
 
-        );
+            );
 
         // Add Description picker
-        $settings_slider[] = array(
+            $settings_slider[] = array(
 
             'name' => __('Enable Orders', 'fyndiq'),
             'desc_tip' => __(
@@ -373,21 +378,21 @@ EOS;
             'desc' => __('This must be picked accurate', 'fyndiq')
             ));
 
-        $settings_slider[] = array(
+            $settings_slider[] = array(
             'type' => 'sectionend',
             'id' => 'wc_settings_wcfyndiq_section_end'
-        );
+            );
 
-        $settings_slider[] = array(
+            $settings_slider[] = array(
             'name'     => __('Field Mappings', 'fyndiq'),
             'type'     => 'title',
             'desc'     => '',
             'id'       => 'wc_settings_wcfyndiq_section_title'
-        );
+            );
 
 
         // Add Description picker
-        $settings_slider[] = array(
+            $settings_slider[] = array(
             'name' => __('Description to use', 'fyndiq'),
             'desc_tip' => __(
                 'Set how you want your description to be exported to Fyndiq.',
@@ -401,10 +406,10 @@ EOS;
                 FmExport::DESCRIPTION_SHORT_LONG => __('Short and Long Description', 'fyndiq'),
             ),
             'desc' => __('Default is Long Description', 'fyndiq'),
-        );
+            );
 
         // Map Field for EAN
-        $settings_slider[] = array(
+            $settings_slider[] = array(
             'name' => __('EAN', 'fyndiq'),
             'desc_tip' => __(
                 'EAN',
@@ -414,10 +419,10 @@ EOS;
             'type' => 'select',
             'options' => $attributes,
             'desc' => __('This must be picked accurate', 'fyndiq'),
-        );
+            );
 
         // Map Field for ISBN
-        $settings_slider[] = array(
+            $settings_slider[] = array(
             'name' => __('ISBN', 'fyndiq'),
             'desc_tip' => __(
                 'ISBN',
@@ -427,10 +432,10 @@ EOS;
             'type' => 'select',
             'options' => $attributes,
             'desc' => __('This must be picked accurate', 'fyndiq'),
-        );
+            );
 
         // Map Field for MPN
-        $settings_slider[] = array(
+            $settings_slider[] = array(
             'name' => __('MPN', 'fyndiq'),
             'desc_tip' => __(
                 'MPN',
@@ -440,10 +445,10 @@ EOS;
             'type' => 'select',
             'options' => $attributes,
             'desc' => __('This must be picked accurate', 'fyndiq'),
-        );
+            );
 
         // Map Field for MPN
-        $settings_slider[] = array(
+            $settings_slider[] = array(
             'name' => __('Brand', 'fyndiq'),
             'desc_tip' => __(
                 'Brand',
@@ -453,14 +458,14 @@ EOS;
             'type' => 'select',
             'options' => $attributes,
             'desc' => __('This must be picked accurate', 'fyndiq'),
-        );
+            );
 
-        $settings_slider[] = array(
+            $settings_slider[] = array(
             'type' => 'sectionend',
             'id' => 'wc_settings_wcfyndiq_section_end'
-        );
+            );
 
-        return apply_filters('wc_settings_tab_wcfyndiq', $settings_slider);
+            return apply_filters('wc_settings_tab_wcfyndiq', $settings_slider);
     }
 
     public function fyndiq_add_settings_tab($settings_tabs)
@@ -515,10 +520,12 @@ EOS;
         if (version_compare(FmHelpers::get_woocommerce_version(), '2.3.8') >= 0) {
             woocommerce_form_field($fieldName, $array, $value);
         } else {
-            $this->fmOutput->output("<p class='form-field' 'id'=$fieldName>
-                <label for='$fieldName'>". $array['label']  ."</label>
-                <input type='" . $array['type'] . "' class='input-" . $array['type'] . "' name='$fieldName' id='$fieldName' value='$value'>
-                <span class='description'>" . $array['description'] . "</span></p>");
+            $this->fmOutput->output(sprintf("
+                <p class='form-field' 'id'=%s>
+                    <label for='%s'>%s</label>
+                    <input type='%s' class='input-%s' name='%s' id='%s value='%s'/>
+                    <span class='description'>" . $array['description'] . "</span>
+                </p>"), $fieldName, $fieldName, $array['label'], $array['type'], $array['type'], $fieldName, $fieldName,$fieldName, $array['description']);
         }
     }
 
@@ -1312,7 +1319,7 @@ EOS;
     {
         return isset($_POST['_fyndiq_export']) ? self::EXPORTED : self::NOT_EXPORTED;
     }
-    
+
     public function getFyndiqOrderID($orderID)
     {
         return get_post_meta($orderID, 'fyndiq_id', true);
@@ -1359,8 +1366,7 @@ EOS;
         try {
             FmHelpers::callApi('POST', 'orders/markded/', $data);
         } catch (Exception $e) {
-            trigger_error(urlencode("An " . $e->getMessage() . ". tell someone."), E_USER_NOTICE);
-
+            FmError::handleError(urlencode($e->getMessage()));
         }
 
         //If the API call worked, update the orders on WC
