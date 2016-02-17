@@ -255,7 +255,7 @@ EOS;
             'type' => 'text',
             'desc' => __('Must be API v2 token', 'fyndiq'),
         );
-        
+
 
         //Price Percentage
         $settings_slider[] = array(
@@ -310,7 +310,6 @@ EOS;
         // Add currency setting
         $settings_slider[] = array(
 
-<<<<<<< HEAD
             'name' => __('Used Currency', 'fyndiq'),
             'desc_tip' => __(
                 'Choose currency to be used for Fyndiq.',
@@ -320,16 +319,11 @@ EOS;
             'type' => 'select',
             'options' => $this->currencies,
             'desc' => __('This must be picked accurate', 'fyndiq'),
-=======
-            //Minimum Quantity limit
-            $settings_slider[] = array(
->>>>>>> master
 
         );
 
-
-        //Price Percentage
-        $settings_slider[] = array(
+            //Minimum Quantity limit
+            $settings_slider[] = array(
 
             'name' => __('Minimum Quantity Limit', 'fyndiq'),
             'desc_tip' => __(
@@ -582,12 +576,7 @@ EOS;
                 $value
             );
 
-<<<<<<< HEAD
-
-            //The price percentage for fyndiq for this specific product.
-=======
             //The absolute price for fyndiq for this specific product.
->>>>>>> master
             woocommerce_form_field(
                 '_fyndiq_price_absolute',
                 array(
@@ -618,11 +607,7 @@ EOS;
                 __('mark this as true if you want to export to Fyndiq', 'fyndiq')
             ));
 
-<<<<<<< HEAD
-            //The fyndiq percentage discount for this specific product.
-=======
             // Absolute Price that will overwrite the price of the product when exporting
->>>>>>> master
             $this->fmOutput->output(sprintf(
                 '<p class="form-row form-row form-field short" id="_fyndiq_price_absolute_field">
                 <label for="_fyndiq_price_absolute" class="">%s</label>
@@ -766,20 +751,7 @@ EOS;
     public function fyndiq_product_save($productId)
     {
         $woocommerce_checkbox = $this->getExportState();
-<<<<<<< HEAD
-        $woocommerce_pricepercentage = $this->getPricePercentage();
 
-        update_post_meta($productId, '_fyndiq_export', $woocommerce_checkbox);
-
-        if ($woocommerce_checkbox == self::EXPORTED) {
-            if (empty($woocommerce_pricepercentage)) {
-                update_post_meta($productId, '_fyndiq_price_percentage', get_option('wcfyndiq_price_percentage'));
-            }
-        }
-        if (!empty($woocommerce_pricepercentage)) {
-            update_post_meta($productId, '_fyndiq_price_percentage', $woocommerce_pricepercentage);
-        }
-=======
         $woocommerce_price = $this->getAbsolutePrice();
         update_post_meta($post_id, '_fyndiq_export', $woocommerce_checkbox);
 
@@ -790,8 +762,6 @@ EOS;
         } elseif ($woocommerce_checkbox == self::NOT_EXPORTED && !update_post_meta($post_id, '_fyndiq_status', '')) {
             add_post_meta($post_id, '_fyndiq_status', '', true);
         }
->>>>>>> master
-
         $this->fyndiq_product_validate($productId);
     }
 
@@ -1175,13 +1145,6 @@ EOS;
         if (!update_post_meta($productId, '_fyndiq_export', self::EXPORTED)) {
             add_post_meta($productId, '_fyndiq_export', self::EXPORTED, true);
         };
-<<<<<<< HEAD
-        $percentage = get_post_meta($productId, '_fyndiq_price_percentage', true);
-        if (empty($percentage)) {
-            update_post_meta($productId, '_fyndiq_price_percentage', get_option('wcfyndiq_price_percentage'));
-        }
-=======
->>>>>>> master
     }
 
     private function perform_no_export($productId)
@@ -1349,8 +1312,7 @@ EOS;
     {
         return isset($_POST['_fyndiq_export']) ? self::EXPORTED : self::NOT_EXPORTED;
     }
-
-<<<<<<< HEAD
+    
     public function getFyndiqOrderID($orderID)
     {
         return get_post_meta($orderID, 'fyndiq_id', true);
@@ -1407,10 +1369,8 @@ EOS;
         }
     }
 
-    public function getPricePercentage()
-=======
+
     public function getAbsolutePrice()
->>>>>>> master
     {
         return isset($_POST['_fyndiq_price_absolute']) ? $_POST['_fyndiq_price_absolute'] : '';
     }
