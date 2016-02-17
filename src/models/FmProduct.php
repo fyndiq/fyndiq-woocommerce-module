@@ -3,11 +3,16 @@
 /**
  * Product object (single orders only)
  *
- * TODO: product bundle support?
+ * @todo: product bundle support?
  *
  */
 class FmProduct
 {
+
+    const EXPORTED = 'exported';
+    const NOT_EXPORTED = 'not exported';
+    const NOTICES = 'fyndiq_notices';
+
     private $post;
 
     public function __construct($postID)
@@ -33,7 +38,7 @@ class FmProduct
 
     public function isProductExported()
     {
-        return (bool)get_post_meta($this->getPostID(), '_fyndiq_export', EXPORTED);
+        return (bool)get_post_meta($this->getPostID(), '_fyndiq_export', self::EXPORTED);
     }
 
 
@@ -43,8 +48,8 @@ class FmProduct
         /*This only adds post meta if it doesn't exist. Otherwise, the if statement criteria itself sets the
          *post meta through update_post_meta
          */
-        if (!update_post_meta($this->getPostID(), '_fyndiq_export', EXPORTED)) {
-            add_post_meta($this->getPostID(), '_fyndiq_export', EXPORTED, true);
+        if (!update_post_meta($this->getPostID(), '_fyndiq_export', self::EXPORTED)) {
+            add_post_meta($this->getPostID(), '_fyndiq_export', self::EXPORTED, true);
         }
 
         $percentage = get_post_meta($this->getPostID(), '_fyndiq_price_percentage', true);
@@ -55,8 +60,8 @@ class FmProduct
 
     public function removeFromFyndiq()
     {
-        if (!update_post_meta($this->getPostID(), '_fyndiq_export', NOT_EXPORTED)) {
-            add_post_meta($this->getPostID(), '_fyndiq_export', NOT_EXPORTED, true);
+        if (!update_post_meta($this->getPostID(), '_fyndiq_export', self::NOT_EXPORTED)) {
+            add_post_meta($this->getPostID(), '_fyndiq_export', self::NOT_EXPORTED, true);
         };
     }
 }
