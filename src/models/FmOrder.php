@@ -47,8 +47,11 @@ class FmOrder
 
         $data = new stdClass();
         $data->orders = array($markPair);
-
-        FmHelpers::callApi('POST', 'orders/marked/', $data);
+        try {
+            FmHelpers::callApi('POST', 'orders/marked/', $data);
+        } catch (Exception $e) {
+            FmError::handleError(urlencode($e->getMessage()));
+        }
     }
 
 
