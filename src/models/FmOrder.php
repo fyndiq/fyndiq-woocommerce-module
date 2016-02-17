@@ -20,7 +20,6 @@ class FmOrder
 
     public function getIsHandled()
     {
-
         //If we're saving the post, look in the HTTP POST data.
         if ($_POST['action'] == 'editpost' and $_POST['post_type'] == 'shop_order') {
             //Is only set if box is ticked.
@@ -28,9 +27,8 @@ class FmOrder
             //Otherwise, look in the metadata.
         } elseif (!get_post_meta($this->getPostID(), '_fyndiq_handled_order', true)) {
             return 0;
-        } else {
-            return 1;
         }
+        return 1;
     }
 
     public function setIsHandled($value)
