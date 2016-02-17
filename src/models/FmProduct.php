@@ -3,7 +3,7 @@
 /**
  * Product object (single orders only)
  *
- * @todo: product bundle support?
+ * @todo product bundle support?
  *
  */
 class FmProduct
