@@ -22,11 +22,11 @@ class FmOrder
     {
 
         //If we're saving the post, look in the HTTP POST data.
-        if ($_POST['action'] == 'editpost' AND $_POST['post_type'] == 'shop_order') {
+        if ($_POST['action'] == 'editpost' and $_POST['post_type'] == 'shop_order') {
             //Is only set if box is ticked.
             return isset($_POST['_fyndiq_handled_order']);
             //Otherwise, look in the metadata.
-        } else if (!get_post_meta($this->getPostID(), '_fyndiq_handled_order', true)) {
+        } elseif (!get_post_meta($this->getPostID(), '_fyndiq_handled_order', true)) {
             return 0;
         } else {
             return 1;

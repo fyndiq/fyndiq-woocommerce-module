@@ -966,10 +966,10 @@ EOS;
     {
         switch ($this->getAction('WP_Posts_List_Table')) {
             case 'fyndiq_handle_order':
-                $this->fyndiq_order_handle_bulk_action();
+                $this->fyndiq_order_handle_bulk_action(1);
                 break;
             case 'fyndiq_unhandle_order':
-                $this->fyndiq_order_unhandle_bulk_action();
+                $this->fyndiq_order_handle_bulk_action(0);
                 break;
             default:
                 break;
@@ -978,38 +978,19 @@ EOS;
 
 
     /**
+     * Function that handles bulk actions related to setting order handling status
      *
-     * Action code for setting an order as handled
-     *
+     * @param bool $markStatus - whether the orders are handled or not
+     * @throws Exception
      */
-    private function fyndiq_order_handle_bulk_action()
+    private function fyndiq_order_handle_bulk_action($markStatus)
     {
         if (!empty($this->getRequestPost())) {
             $posts = array();
             foreach ($this->getRequestPost() as $post) {
                 $posts[] = array(
                     'id' => $post,
-                    'marked' => 1
-                );
-            }
-            $this->setIsHandled($posts);
-        }
-    }
-
-
-    /**
-     *
-     * Action code for setting an order as not handled
-     *
-     */
-    private function fyndiq_order_unhandle_bulk_action()
-    {
-        if (!empty($this->getRequestPost())) {
-            $posts = array();
-            foreach ($this->getRequestPost() as $post) {
-                $posts[] = array(
-                    'id' => $post,
-                    'marked' => 0
+                    'marked' => $markStatus
                 );
             }
             $this->setIsHandled($posts);
@@ -1349,33 +1330,35 @@ EOS;
      *              ),
      *                  ...
      * )
-     *
+     * @throws Exception
      *
      */
     public function setIsHandled($orders)
     {
         $data = new stdClass();
         $dataOrders = array();
+        $orderObjects = array();
 
         //Generates the data sent to the API
         foreach ($orders as $order) {
-            $dataOrder['id'] = $this->getFyndiqOrderID($order['id']);
-            $dataOrder['marked'] = $this->getFyndiqOrderID($order['marked']);
+            $orderObjects[] = new FmOrder($order['id']);
+            $dataOrder['id'] = end($orderObjects)->getFyndiqOrderID();
+            $dataOrder['marked'] = $order['marked'];
             $dataOrders[] = (object) $dataOrder;
         }
         $data->orders = $dataOrders;
 
         //Try to send the data to the API
         try {
-            FmHelpers::callApi('POST', 'orders/mharked/', $data);
+            FmHelpers::callApi('POST', 'orders/markded/', $data);
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            trigger_error(urlencode("An " . $e->getMessage() . ". tell someone."), E_USER_NOTICE);
 
         }
 
         //If the API call worked, update the orders on WC
-        foreach ($orders as $order) {
-            update_post_meta($order['id'], '_fyndiq_handled_order', (bool)$order['marked']);
+        foreach ($orderObjects as $orderObject) {
+            $orderObject->setIsHandled(1);
         }
     }
 

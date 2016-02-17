@@ -12,12 +12,15 @@
 if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
     if (!class_exists('WC_Fyndiq')) {
         session_start();
+        require_once('classes/FmErrorHandler.php');
         require_once('include/api/fyndiqAPI.php');
         require_once('classes/FmHelpers.php');
         require_once('classes/FmUpdate.php');
         require_once('classes/FmExport.php');
         require_once('include/shared/src/init.php');
         require_once('models/FmOrder.php');
+        require_once('classes/FmOrderHelper.php');
+        require_once('classes/FmProductHelper.php');
         require_once('models/FmOrderFetch.php');
         require_once('models/FmProduct.php');
         require_once('models/FmProductFetch.php');
