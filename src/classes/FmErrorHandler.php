@@ -9,13 +9,14 @@ class FmError
     public function __construct()
     {
 
-        add_action('admin_notices', function ()
-        {
-            if (isset($_REQUEST['fyndiqMessageType']))
-            {
-                echo sprintf("<div class='%s'><p>%s</p></div>",
+        add_action('admin_notices', function () {
+        
+            if (isset($_REQUEST['fyndiqMessageType'])) {
+                echo sprintf(
+                    "<div class='%s'><p>%s</p></div>",
                     htmlspecialchars(urldecode($_REQUEST['fyndiqMessageType'])),
-                    htmlspecialchars(urldecode($_REQUEST['fyndiqMessage'])));
+                    htmlspecialchars(urldecode($_REQUEST['fyndiqMessage']))
+                );
             }
         });
     }
@@ -25,7 +26,8 @@ class FmError
         $errorMessage = sprintf("An error occurred: %s", $errorMessage);
         $redirect = add_query_arg(
             array('fyndiqMessageType' => 'error', 'fyndiqMessage' => urlencode($errorMessage)),
-            $_REQUEST['_wp_http_referer']);
+            $_REQUEST['_wp_http_referer']
+        );
         wp_redirect($redirect);
         exit;
     }

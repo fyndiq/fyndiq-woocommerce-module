@@ -525,7 +525,7 @@ EOS;
                     <label for='%s'>%s</label>
                     <input type='%s' class='input-%s' name='%s' id='%s value='%s'/>
                     <span class='description'>" . $array['description'] . "</span>
-                </p>"), $fieldName, $fieldName, $array['label'], $array['type'], $array['type'], $fieldName, $fieldName,$fieldName, $array['description']);
+                </p>"), $fieldName, $fieldName, $array['label'], $array['type'], $array['type'], $fieldName, $fieldName, $fieldName, $array['description']);
         }
     }
 
