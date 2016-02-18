@@ -22,7 +22,7 @@ class FmProduct
 
     public function getProductObject()
     {
-        return get_product($this->post->ID);
+        return get_product($this->getPostID());
     }
 
     public function getPostID()
