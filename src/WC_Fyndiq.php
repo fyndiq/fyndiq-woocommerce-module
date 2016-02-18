@@ -651,11 +651,11 @@ EOS;
 
     public function fyndiq_show_order_error_notice()
     {
-        ?>
-        <div class="error">
-            <p><?php _e('Some Fyndiq Orders failed to be imported, most likely due to stock or couldn\'t find product on Reference.', 'fyndiq'); ?></p>
-        </div>
-        <?php
+        $this->fmOutput->output(sprintf(
+            '<div class=\'error\'><p>%s</p></div>',
+            __('Some Fyndiq Orders failed to be imported, most likely due to
+            stock or couldn\'t find product on Reference.', 'fyndiq')
+        ));
     }
 
     public function fyndiq_show_setting_error_notice()
