@@ -20,8 +20,6 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
         require_once('include/shared/src/init.php');
         require_once('models/FmPost.php');
         require_once('models/FmOrder.php');
-        require_once('classes/FmOrderHelper.php');
-        require_once('classes/FmProductHelper.php');
         require_once('models/FmOrderFetch.php');
         require_once('models/FmProduct.php');
         require_once('models/FmProductFetch.php');

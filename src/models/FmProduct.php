@@ -8,6 +8,9 @@
 class FmProduct extends FmPost
 {
 
+    const STATUS_PENDING = 'PENDING';
+    const STATUS_FOR_SALE = 'FOR_SALE';
+
     const EXPORTED = 'exported';
     const NOT_EXPORTED = 'not exported';
     const NOTICES = 'fyndiq_notices';
@@ -78,5 +81,37 @@ class FmProduct extends FmPost
         $this->setInternalExportedStatus(false);
     }
 
+
+    /**
+     * Here be dragons. By dragons, I mean static methods.
+     */
+
+    static public function getExportedProducts()
+    {
+        $args = array(
+            'numberposts' => -1,
+            'orderby' => 'post_date',
+            'order' => 'DESC',
+            'post_type' => 'product',
+            'post_status' => 'publish',
+            'suppress_filters' => true,
+            'meta_key' => '_fyndiq_export',
+            'meta_value' => 'exported'
+        );
+        return get_posts($args);
+    }
+
+    static public function updateStatus($product_id, $status)
+    {
+        return update_post_meta($product_id, '_fyndiq_status', $status);
+    }
+
+    static public function updateStatusAllProducts($status)
+    {
+        $posts_array = FmProduct::getExportedProducts();
+        foreach ($posts_array as $product) {
+            FmProduct::updateStatus($product->ID, $status);
+        }
+    }
 
 }
