@@ -52,7 +52,7 @@ class FmOrder
         try {
             FmHelpers::callApi('POST', 'orders/marked/', $data);
         } catch (Exception $e) {
-            FmError::handleError(urlencode($e->getMessage()));
+            FmError::handleError($e->getMessage());
         }
     }
 
