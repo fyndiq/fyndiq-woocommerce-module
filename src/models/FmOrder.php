@@ -1,25 +1,17 @@
 <?php
 
-/**
- * Order object (single orders only)
- *
- * TODO: order bundle support?
- *
- */
-class FmOrder
-{
 
-    private $post;
+/**
+ * Class FmOrder
+ *
+ * Object model for orders
+ */
+class FmOrder extends FmPost
+{
 
     const FYNDIQ_ID_META_FIELD = 'fyndiq_id';
 
     const FYNDIQ_HANDLED_ORDER_META_FIELD = '_fyndiq_handled_order';
-
-
-    public function __construct($postID)
-    {
-        $this->post = get_post($postID);
-    }
 
 
     public function getIsHandled()
@@ -56,11 +48,6 @@ class FmOrder
         }
     }
 
-
-    public function getPostID()
-    {
-        return $this->post->ID;
-    }
 
     public function getFyndiqOrderID()
     {
