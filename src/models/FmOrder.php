@@ -11,6 +11,10 @@ class FmOrder
 
     private $post;
 
+    const FYNDIQ_ID_META_FIELD = 'fyndiq_id';
+
+    const FYNDIQ_HANDLED_ORDER_META_FIELD = '_fyndiq_handled_order';
+
 
     public function __construct($postID)
     {
@@ -25,7 +29,7 @@ class FmOrder
             //Is only set if box is ticked.
             return isset($_POST['_fyndiq_handled_order']);
             //Otherwise, look in the metadata.
-        } elseif (!get_post_meta($this->getPostID(), '_fyndiq_handled_order', true)) {
+        } elseif (!get_post_meta($this->getPostID(), FmOrder::FYNDIQ_HANDLED_ORDER_META_FIELD, true)) {
             return 0;
         }
         return 1;
@@ -36,8 +40,8 @@ class FmOrder
         /**
          * This might seem inadequate in terms of input sanity,
          * but actually would be no different than an if statement.
-         * */
-        update_post_meta($this->getPostID(), '_fyndiq_handled_order', (bool)$value);
+         */
+        update_post_meta($this->getPostID(), FmOrder::FYNDIQ_HANDLED_ORDER_META_FIELD, (bool)$value);
 
         $markPair = new stdClass();
         $markPair->id = $this->getFyndiqOrderID();
@@ -60,11 +64,11 @@ class FmOrder
 
     public function getFyndiqOrderID()
     {
-        return get_post_meta($this->getPostID(), 'fyndiq_id', true);
+        return get_post_meta($this->getPostID(), FmOrder::FYNDIQ_ID_META_FIELD, true);
     }
 
     public function setFyndiqOrderID($fyndiqID)
     {
-        return update_post_meta($this->getPostID(), 'fyndiq_id', $fyndiqID);
+        return update_post_meta($this->getPostID(), FmOrder::FYNDIQ_ID_META_FIELD, $fyndiqID);
     }
 }

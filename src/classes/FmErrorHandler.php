@@ -8,17 +8,18 @@ class FmError
 {
     public function __construct()
     {
+        add_action('admin_notices', array(&$this, 'renderError'));
+    }
 
-        add_action('admin_notices', function () {
-
-            if (isset($_REQUEST['fyndiqMessageType'])) {
-                echo sprintf(
-                    "<div class='%s'><p>%s</p></div>",
-                    htmlspecialchars(urldecode($_REQUEST['fyndiqMessageType'])),
-                    htmlspecialchars(urldecode($_REQUEST['fyndiqMessage']))
-                );
-            }
-        });
+    public function renderError()
+    {
+        if (isset($_REQUEST['fyndiqMessageType'])) {
+            echo sprintf(
+                "<div class='%s'><p>%s</p></div>",
+                htmlspecialchars(urldecode($_REQUEST['fyndiqMessageType'])),
+                htmlspecialchars(urldecode($_REQUEST['fyndiqMessage']))
+            );
+        }
     }
 
     public static function handleError($errorMessage)

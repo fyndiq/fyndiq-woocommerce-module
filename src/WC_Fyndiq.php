@@ -60,7 +60,7 @@ class WC_Fyndiq
         //products
         add_action('woocommerce_process_product_meta', array(&$this, 'fyndiq_product_save'));
 
-        add_action('woocommerce_process_shop_order_meta', array(&$this, 'fyndiq_order_save'));
+        add_action('woocommerce_process_shop_order_meta', array(&$this, 'fyndiq_order_handled_save'));
 
         add_action('woocommerce_admin_order_data_after_order_details', array(&$this, 'fyndiq_add_order_field'));
         add_action('woocommerce_product_write_panel_tabs', array(&$this, 'fyndiq_product_tab'));
@@ -740,18 +740,14 @@ EOS;
 
     /**
      *
-     * Hooked action for saving orders (woocommerce_process_shop_order_meta)
+     * Hooked action for saving orders handled status (woocommerce_process_shop_order_meta)
      *
      * @param int $orderId
      */
-    public function fyndiq_order_save($orderId)
+    public function fyndiq_order_handled_save($orderId)
     {
-        $this->setIsHandled(array(
-            array(
-                'id' => $orderId,
-                'marked' => $this->getIsHandled()
-            )
-        ));
+        $orderObject = new FmOrder($orderId);
+        $orderObject->setIsHandled($orderObject->getIsHandled());
     }
 
     //Hooked action for saving products (woocommerce_process_product_meta)
@@ -1318,16 +1314,6 @@ EOS;
     public function getExportState()
     {
         return isset($_POST['_fyndiq_export']) ? self::EXPORTED : self::NOT_EXPORTED;
-    }
-
-    public function getFyndiqOrderID($orderID)
-    {
-        return get_post_meta($orderID, 'fyndiq_id', true);
-    }
-
-    public function getIsHandled()
-    {
-        return (bool) isset($_POST['_fyndiq_handled_order']);
     }
 
 
