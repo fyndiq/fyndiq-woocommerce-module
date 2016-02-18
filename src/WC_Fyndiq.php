@@ -1348,7 +1348,7 @@ EOS;
 
         //Try to send the data to the API
         try {
-            FmHelpers::callApi('POST', 'orders/markded/', $data);
+            FmHelpers::callApi('POST', 'orders/marked/', $data);
         } catch (Exception $e) {
             FmError::handleError(urlencode($e->getMessage()));
         }
