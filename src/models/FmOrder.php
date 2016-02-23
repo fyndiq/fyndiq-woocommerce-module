@@ -17,8 +17,8 @@ class FmOrder extends FmPost
     public function getIsHandled()
     {
         //If we're saving the post, look in the HTTP POST data.
-        if ((isset($_POST['action']) and isset($_POST['post_type'])) and
-            ($_POST['action'] == 'editpost' and $_POST['post_type'] == 'shop_order')) {
+        if ((isset($_POST['action']) && isset($_POST['post_type'])) &&
+            ($_POST['action'] == 'editpost' && $_POST['post_type'] == 'shop_order')) {
             //Is only set if box is ticked.
             return isset($_POST['_fyndiq_handled_order']);
             //Otherwise, look in the metadata.
