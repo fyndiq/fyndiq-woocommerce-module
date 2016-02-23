@@ -1002,10 +1002,12 @@ EOS;
         if (!empty($this->getRequestPost())) {
             $posts = array();
             foreach ($this->getRequestPost() as $post) {
-                $posts[] = array(
+                $dataRow = array(
                     'id' => $post,
                     'marked' => $markStatus
                 );
+
+                $posts[$post][] = $dataRow;
             }
             $this->setIsHandled($posts);
         }
@@ -1334,17 +1336,9 @@ EOS;
     public function setIsHandled($orders)
     {
         $data = new stdClass();
-        $dataOrders = array();
-        $orderObjects = array();
 
-        //Generates the data sent to the API
-        foreach ($orders as $order) {
-            $orderObjects[] = new FmOrder($order['id']);
-            $dataOrder['id'] = end($orderObjects)->getFyndiqOrderID();
-            $dataOrder['marked'] = $order['marked'];
-            $dataOrders[] = (object) $dataOrder;
-        }
-        $data->orders = $dataOrders;
+
+        $data->orders = $orders;
 
         //Try to send the data to the API
         try {
@@ -1354,8 +1348,9 @@ EOS;
         }
 
         //If the API call worked, update the orders on WC
-        foreach ($orderObjects as $orderObject) {
-            $orderObject->setIsHandled(1);
+        foreach ($orders as $order) {
+            $orderObject = new FmOrder($order['id']);
+            $orderObject->setIsHandled((bool) $order['marked']);
         }
     }
 
