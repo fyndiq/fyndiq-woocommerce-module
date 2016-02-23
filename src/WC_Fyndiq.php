@@ -18,9 +18,9 @@ class WC_Fyndiq
 
         $this->currencies = array_combine(FyndiqUtils::$allowedCurrencies, FyndiqUtils::$allowedCurrencies);
 
-        add_action('wp_loaded', function () {
-            new FmError();
-        });
+        //Load the error handler VERY early.
+        add_action('wp_loaded', array(&$this, 'initiateErrorHandler'));
+
 
         //Load locale in init
         add_action('init', array(&$this, 'locale_load'));
@@ -40,6 +40,11 @@ class WC_Fyndiq
     {
         // Localization
         load_plugin_textdomain('fyndiq', false, dirname(plugin_basename(__FILE__)) . '/translations/');
+    }
+
+    public function initiateErrorHandler()
+    {
+        new FmError();
     }
 
     /**
