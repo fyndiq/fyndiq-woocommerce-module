@@ -86,7 +86,7 @@ class FmProduct extends FmPost
      * Here be dragons. By dragons, I mean static methods.
      */
 
-    static public function getExportedProducts()
+    public static function getExportedProducts()
     {
         $args = array(
             'numberposts' => -1,
@@ -101,17 +101,16 @@ class FmProduct extends FmPost
         return get_posts($args);
     }
 
-    static public function updateStatus($product_id, $status)
+    public static function updateStatus($product_id, $status)
     {
         return update_post_meta($product_id, '_fyndiq_status', $status);
     }
 
-    static public function updateStatusAllProducts($status)
+    public static function updateStatusAllProducts($status)
     {
         $posts_array = FmProduct::getExportedProducts();
         foreach ($posts_array as $product) {
             FmProduct::updateStatus($product->ID, $status);
         }
     }
-
 }

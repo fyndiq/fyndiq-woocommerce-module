@@ -19,7 +19,8 @@ class FmPost
         return $this->post->ID;
     }
 
-    protected function setMetaData($key, $value, $method='update') {
+    protected function setMetaData($key, $value, $method = 'update')
+    {
         switch ($method) {
             case 'update':
                 return update_post_meta($this->getPostID(), $key, $value);

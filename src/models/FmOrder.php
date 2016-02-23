@@ -17,8 +17,8 @@ class FmOrder extends FmPost
     public function getIsHandled()
     {
         //If we're saving the post, look in the HTTP POST data.
-        if ((isset($_POST['action']) AND isset($_POST['post_type'])) AND
-            ($_POST['action'] == 'editpost' AND $_POST['post_type'] == 'shop_order')) {
+        if ((isset($_POST['action']) and isset($_POST['post_type'])) and
+            ($_POST['action'] == 'editpost' and $_POST['post_type'] == 'shop_order')) {
             //Is only set if box is ticked.
             return isset($_POST['_fyndiq_handled_order']);
             //Otherwise, look in the metadata.
@@ -66,7 +66,7 @@ class FmOrder extends FmPost
      * Here be dragons. By dragons, I mean static methods.
      */
 
-    static public function orderExists($fyndiq_id)
+    public static function orderExists($fyndiq_id)
     {
         $args = array(
             'meta_key' => '',
@@ -79,7 +79,7 @@ class FmOrder extends FmPost
         return count($posts) > 0;
     }
 
-    static public function createOrder($order)
+    public static function createOrder($order)
     {
         $status = get_option('wcfyndiq_create_order_status');
 
@@ -201,7 +201,7 @@ class FmOrder extends FmPost
         $wc_order->calculate_totals();
     }
 
-    static public function getProductBySku($sku)
+    public static function getProductBySku($sku)
     {
         global $wpdb;
 
@@ -218,7 +218,7 @@ class FmOrder extends FmPost
         return null;
     }
 
-    static public function getProductById($product_id)
+    public static function getProductById($product_id)
     {
         $product = new WC_Product($product_id);
         if (!is_null($product->post)) {
@@ -227,7 +227,7 @@ class FmOrder extends FmPost
         return null;
     }
 
-    static public function getProductByReference($reference)
+    public static function getProductByReference($reference)
     {
         $option = get_option('wcfyndiq_reference_picker');
         if (empty($reference)) {
