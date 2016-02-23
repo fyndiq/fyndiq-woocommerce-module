@@ -657,7 +657,7 @@ EOS;
     public function fyndiq_show_order_error_notice()
     {
         $this->fmOutput->output(sprintf(
-            '<div class=\'error\'><p>%s</p></div>',
+            '<div class="error"><p>%s</p></div>',
             __('Some Fyndiq Orders failed to be imported, most likely due to
             stock or couldn\'t find product on Reference.', 'fyndiq')
         ));
