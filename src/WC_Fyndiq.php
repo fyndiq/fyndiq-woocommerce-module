@@ -510,7 +510,7 @@ EOS;
 
     public function fyndiq_product_tab()
     {
-        echo '<li class="fyndiq_tab"><a href="#fyndiq_tab">' . __('Fyndiq', 'fyndiq') . '</a></li>';
+        echo sprintf("<li class='fyndiq_tab'><a href='#fyndiq_tab'>%s</a></li>", __('Fyndiq', 'fyndiq'));
     }
 
     /**
