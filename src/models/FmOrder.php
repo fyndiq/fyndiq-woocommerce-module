@@ -1,12 +1,76 @@
 <?php
 
-class FmOrder
+
+/**
+ * Class FmOrder
+ *
+ * Object model for orders
+ */
+class FmOrder extends FmPost
 {
-    public function orderExists($fyndiq_id)
+
+    const FYNDIQ_ID_META_FIELD = 'fyndiq_id';
+
+    const FYNDIQ_HANDLED_ORDER_META_FIELD = '_fyndiq_handled_order';
+
+
+    public function getIsHandled()
+    {
+        //If we're saving the post, look in the HTTP POST data.
+        if ((isset($_POST['action']) && isset($_POST['post_type'])) &&
+            ($_POST['action'] == 'editpost' && $_POST['post_type'] == 'shop_order')) {
+            //Is only set if box is ticked.
+            return isset($_POST['_fyndiq_handled_order']);
+            //Otherwise, look in the metadata.
+        } elseif (!get_post_meta($this->getPostId(), self::FYNDIQ_HANDLED_ORDER_META_FIELD, true)) {
+            return 0;
+        }
+        return 1;
+    }
+
+    public function setIsHandled($value)
+    {
+        /**
+         * This might seem inadequate in terms of input sanity,
+         * but actually would be no different than an if statement.
+         */
+        update_post_meta($this->getPostId(), self::FYNDIQ_HANDLED_ORDER_META_FIELD, (bool)$value);
+
+        $markPair = new stdClass();
+        $markPair->id = $this->getFyndiqOrderId();
+        $markPair->marked = (bool)$value;
+
+        $data = new stdClass();
+        $data->orders = array($markPair);
+        try {
+            FmHelpers::callApi('POST', 'orders/marked/', $data);
+        } catch (Exception $e) {
+            FmError::handleError($e->getMessage());
+        }
+    }
+
+
+    public function getFyndiqOrderId()
+    {
+        return get_post_meta($this->getPostId(), self::FYNDIQ_ID_META_FIELD, true);
+    }
+
+    public function setFyndiqOrderId($fyndiqId)
+    {
+        $this->setMetaData(self::FYNDIQ_ID_META_FIELD, $fyndiqId);
+    }
+
+
+
+    /**
+     * Here be dragons. By dragons, I mean static methods.
+     */
+
+    public static function orderExists($fyndiqId)
     {
         $args = array(
             'meta_key' => '',
-            'meta_value' => $fyndiq_id,
+            'meta_value' => $fyndiqId,
             'post_type' => 'shop_order',
             'posts_per_page' => -1,
             'post_status' => array_keys(wc_get_order_statuses())
@@ -15,7 +79,7 @@ class FmOrder
         return count($posts) > 0;
     }
 
-    public function createOrder($order)
+    public static function createOrder($order)
     {
         $status = get_option('wcfyndiq_create_order_status');
 
@@ -26,7 +90,7 @@ class FmOrder
 
         foreach ($order->order_rows as $order_row) {
             // get product by item_id
-            $product = $this->getProductByReference($order_row->sku);
+            $product = FmOrder::getProductByReference($order_row->sku);
             if (!isset($product)) {
                 throw new Exception(sprintf(__('Product SKU ( %s ) not found.', 'fyndiq'), $order_row->sku));
             }
@@ -41,21 +105,21 @@ class FmOrder
                     'woocommerce_register_post_type_shop_order',
                     array(
                         'labels'              => array(
-                                'name'               => __('Orders', 'woocommerce'),
-                                'singular_name'      => __('Order', 'woocommerce'),
-                                'add_new'            => __('Add Order', 'woocommerce'),
-                                'add_new_item'       => __('Add New Order', 'woocommerce'),
-                                'edit'               => __('Edit', 'woocommerce'),
-                                'edit_item'          => __('Edit Order', 'woocommerce'),
-                                'new_item'           => __('New Order', 'woocommerce'),
-                                'view'               => __('View Order', 'woocommerce'),
-                                'view_item'          => __('View Order', 'woocommerce'),
-                                'search_items'       => __('Search Orders', 'woocommerce'),
-                                'not_found'          => __('No Orders found', 'woocommerce'),
-                                'not_found_in_trash' => __('No Orders found in trash', 'woocommerce'),
-                                'parent'             => __('Parent Orders', 'woocommerce'),
-                                'menu_name'          => _x('Orders', 'Admin menu name', 'woocommerce')
-                            ),
+                            'name'               => __('Orders', 'woocommerce'),
+                            'singular_name'      => __('Order', 'woocommerce'),
+                            'add_new'            => __('Add Order', 'woocommerce'),
+                            'add_new_item'       => __('Add New Order', 'woocommerce'),
+                            'edit'               => __('Edit', 'woocommerce'),
+                            'edit_item'          => __('Edit Order', 'woocommerce'),
+                            'new_item'           => __('New Order', 'woocommerce'),
+                            'view'               => __('View Order', 'woocommerce'),
+                            'view_item'          => __('View Order', 'woocommerce'),
+                            'search_items'       => __('Search Orders', 'woocommerce'),
+                            'not_found'          => __('No Orders found', 'woocommerce'),
+                            'not_found_in_trash' => __('No Orders found in trash', 'woocommerce'),
+                            'parent'             => __('Parent Orders', 'woocommerce'),
+                            'menu_name'          => _x('Orders', 'Admin menu name', 'woocommerce')
+                        ),
                         'description'         => __('This is where store orders are stored.', 'woocommerce'),
                         'public'              => false,
                         'show_ui'             => true,
@@ -106,7 +170,7 @@ class FmOrder
 
         foreach ($order->order_rows as $order_row) {
             // get product by item_id
-            $product = $this->getProductByReference($order_row->sku);
+            $product = FmOrder::getProductByReference($order_row->sku);
 
             if (isset($product)) {
                 // if downloadable
@@ -115,9 +179,9 @@ class FmOrder
                 }
                 // add item
                 $args = array(
-                  'totals' => array(
-                    'taxdata' => array()
-                  )
+                    'totals' => array(
+                        'taxdata' => array()
+                    )
                 );
 
                 $product_total = ($order_row->unit_price_amount * $order_row->quantity)  / ((100+intval($order_row->vat_percent)) / 100);
@@ -137,7 +201,7 @@ class FmOrder
         $wc_order->calculate_totals();
     }
 
-    public function getProductBySku($sku)
+    public static function getProductBySku($sku)
     {
         global $wpdb;
 
@@ -154,7 +218,7 @@ class FmOrder
         return null;
     }
 
-    public function getProductById($product_id)
+    public static function getProductById($product_id)
     {
         $product = new WC_Product($product_id);
         if (!is_null($product->post)) {
@@ -163,7 +227,7 @@ class FmOrder
         return null;
     }
 
-    public function getProductByReference($reference)
+    public static function getProductByReference($reference)
     {
         $option = get_option('wcfyndiq_reference_picker');
         if (empty($reference)) {
@@ -172,9 +236,9 @@ class FmOrder
         switch ($option) {
             case FmExport::REF_ID:
                 $id = explode(FmExport::REF_DELIMITER, $reference);
-                return (count($id) == 2) ? $this->getProductById(end($id)) : $this->getProductById(reset($id));
+                return (count($id) == 2) ? FmOrder::getProductById(end($id)) : FmOrder::getProductById(reset($id));
             default:
-                return $this->getProductBySku($reference);
+                return FmOrder::getProductBySku($reference);
         }
     }
 }

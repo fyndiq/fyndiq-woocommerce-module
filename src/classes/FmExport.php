@@ -88,8 +88,7 @@ class FmExport
     protected function writeFeed($feedWriter)
     {
         global $wpdb;
-        $fmProduct = new FmProduct();
-        $products = $fmProduct->getExportedProducts();
+        $products = FmProduct::getExportedProducts();
         $wcFyndiqCurrency = get_option('wcfyndiq_currency');
         $currency = !empty($wcFyndiqCurrency) ? $wcFyndiqCurrency : get_woocommerce_currency();
         $percentage_discount = get_option('wcfyndiq_price_percentage');

@@ -2,13 +2,7 @@
 
 class FmProductFetch extends FyndiqPaginatedFetch
 {
-    private $fmProduct = null;
 
-
-    public function __construct()
-    {
-        $this->fmProduct = new FmProduct();
-    }
 
     public function getInitialPath()
     {
@@ -48,14 +42,14 @@ class FmProductFetch extends FyndiqPaginatedFetch
                 $status = FmProduct::STATUS_PENDING;
             }
 
-            $result &= $this->fmProduct->updateStatus($statusRow->product_id, $status);
+            $result &= FmProduct::updateStatus($statusRow->product_id, $status);
         }
         return $result;
     }
 
     public function getAll()
     {
-        $this->fmProduct->updateStatusAllProducts(FmProduct::STATUS_PENDING);
+        FmProduct::updateStatusAllProducts(FmProduct::STATUS_PENDING);
         return parent::getAll();
     }
 }
