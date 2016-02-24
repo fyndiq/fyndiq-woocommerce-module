@@ -22,7 +22,7 @@ class FmOrder extends FmPost
             //Is only set if box is ticked.
             return isset($_POST['_fyndiq_handled_order']);
             //Otherwise, look in the metadata.
-        } elseif (!get_post_meta($this->getPostID(), self::FYNDIQ_HANDLED_ORDER_META_FIELD, true)) {
+        } elseif (!get_post_meta($this->getPostId(), self::FYNDIQ_HANDLED_ORDER_META_FIELD, true)) {
             return 0;
         }
         return 1;
@@ -34,10 +34,10 @@ class FmOrder extends FmPost
          * This might seem inadequate in terms of input sanity,
          * but actually would be no different than an if statement.
          */
-        update_post_meta($this->getPostID(), self::FYNDIQ_HANDLED_ORDER_META_FIELD, (bool)$value);
+        update_post_meta($this->getPostId(), self::FYNDIQ_HANDLED_ORDER_META_FIELD, (bool)$value);
 
         $markPair = new stdClass();
-        $markPair->id = $this->getFyndiqOrderID();
+        $markPair->id = $this->getFyndiqOrderId();
         $markPair->marked = (bool)$value;
 
         $data = new stdClass();
@@ -50,14 +50,14 @@ class FmOrder extends FmPost
     }
 
 
-    public function getFyndiqOrderID()
+    public function getFyndiqOrderId()
     {
-        return get_post_meta($this->getPostID(), self::FYNDIQ_ID_META_FIELD, true);
+        return get_post_meta($this->getPostId(), self::FYNDIQ_ID_META_FIELD, true);
     }
 
-    public function setFyndiqOrderID($fyndiqID)
+    public function setFyndiqOrderId($fyndiqId)
     {
-        $this->setMetaData(self::FYNDIQ_ID_META_FIELD, $fyndiqID);
+        $this->setMetaData(self::FYNDIQ_ID_META_FIELD, $fyndiqId);
     }
 
 
@@ -66,11 +66,11 @@ class FmOrder extends FmPost
      * Here be dragons. By dragons, I mean static methods.
      */
 
-    public static function orderExists($fyndiq_id)
+    public static function orderExists($fyndiqId)
     {
         $args = array(
             'meta_key' => '',
-            'meta_value' => $fyndiq_id,
+            'meta_value' => $fyndiqId,
             'post_type' => 'shop_order',
             'posts_per_page' => -1,
             'post_status' => array_keys(wc_get_order_statuses())

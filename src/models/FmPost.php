@@ -9,12 +9,12 @@ class FmPost
 {
     protected $post;
 
-    public function __construct($postID)
+    public function __construct($postId)
     {
-        $this->post = get_post($postID);
+        $this->post = get_post($postId);
     }
 
-    public function getPostID()
+    public function getPostId()
     {
         return $this->post->ID;
     }
@@ -23,11 +23,11 @@ class FmPost
     {
         switch ($method) {
             case 'update':
-                return update_post_meta($this->getPostID(), $key, $value);
+                return update_post_meta($this->getPostId(), $key, $value);
                 break;
 
             case 'add':
-                return add_post_meta($this->getPostID(), $key, $value, true);
+                return add_post_meta($this->getPostId(), $key, $value, true);
                 break;
 
             default:

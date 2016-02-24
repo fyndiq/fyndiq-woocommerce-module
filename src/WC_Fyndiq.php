@@ -313,7 +313,6 @@ EOS;
                     FmExport::REF_ID => __('Product and Article ID', 'fyndiq'),
                 ),
                 'desc' => __('If this value is changed, products already existing on Fyndiq will be removed and uploaded again and orders might not be able to be imported with old SKU.', 'fyndiq'),
-
             );
         }
 
@@ -332,8 +331,8 @@ EOS;
 
         );
 
-            //Minimum Quantity limit
-            $settings_slider[] = array(
+        //Minimum Quantity limit
+        $settings_slider[] = array(
 
             'name' => __('Minimum Quantity Limit', 'fyndiq'),
             'desc_tip' => __(
@@ -345,10 +344,10 @@ EOS;
             'default' => '0',
             'desc' => __('Stay on 0 if you want to send all stock to Fyndiq.', 'fyndiq'),
 
-            );
+        );
 
         // Add Description picker
-            $settings_slider[] = array(
+        $settings_slider[] = array(
 
             'name' => __('Enable Orders', 'fyndiq'),
             'desc_tip' => __(
@@ -364,40 +363,40 @@ EOS;
             'desc' => __('Default is to have orders enabled', 'fyndiq'),
 
 
-        // Add order status setting
+            // Add order status setting
             $settings_slider[] = array(
 
-            'name' => __('Order Status', 'fyndiq'),
-            'desc_tip' => __(
-                'When a order is imported from fyndiq, this status will be applied.',
-                'fyndiq'
-            ),
-            'id' => 'wcfyndiq_create_order_status',
-            'type' => 'select',
-            'options' => array(
-                'completed' => 'completed',
-                'processing' => 'processing',
-                'pending' => 'pending',
-                'on-hold' => 'on-hold'
-            ),
-            'desc' => __('This must be picked accurate', 'fyndiq')
+                'name' => __('Order Status', 'fyndiq'),
+                'desc_tip' => __(
+                    'When a order is imported from fyndiq, this status will be applied.',
+                    'fyndiq'
+                ),
+                'id' => 'wcfyndiq_create_order_status',
+                'type' => 'select',
+                'options' => array(
+                    'completed' => 'completed',
+                    'processing' => 'processing',
+                    'pending' => 'pending',
+                    'on-hold' => 'on-hold'
+                ),
+                'desc' => __('This must be picked accurate', 'fyndiq')
             ));
 
-            $settings_slider[] = array(
+        $settings_slider[] = array(
             'type' => 'sectionend',
             'id' => 'wc_settings_wcfyndiq_section_end'
-            );
+        );
 
-            $settings_slider[] = array(
+        $settings_slider[] = array(
             'name'     => __('Field Mappings', 'fyndiq'),
             'type'     => 'title',
             'desc'     => '',
             'id'       => 'wc_settings_wcfyndiq_section_title'
-            );
+        );
 
 
         // Add Description picker
-            $settings_slider[] = array(
+        $settings_slider[] = array(
             'name' => __('Description to use', 'fyndiq'),
             'desc_tip' => __(
                 'Set how you want your description to be exported to Fyndiq.',
@@ -411,10 +410,10 @@ EOS;
                 FmExport::DESCRIPTION_SHORT_LONG => __('Short and Long Description', 'fyndiq'),
             ),
             'desc' => __('Default is Long Description', 'fyndiq'),
-            );
+        );
 
         // Map Field for EAN
-            $settings_slider[] = array(
+        $settings_slider[] = array(
             'name' => __('EAN', 'fyndiq'),
             'desc_tip' => __(
                 'EAN',
@@ -424,10 +423,10 @@ EOS;
             'type' => 'select',
             'options' => $attributes,
             'desc' => __('This must be picked accurate', 'fyndiq'),
-            );
+        );
 
         // Map Field for ISBN
-            $settings_slider[] = array(
+        $settings_slider[] = array(
             'name' => __('ISBN', 'fyndiq'),
             'desc_tip' => __(
                 'ISBN',
@@ -437,10 +436,10 @@ EOS;
             'type' => 'select',
             'options' => $attributes,
             'desc' => __('This must be picked accurate', 'fyndiq'),
-            );
+        );
 
         // Map Field for MPN
-            $settings_slider[] = array(
+        $settings_slider[] = array(
             'name' => __('MPN', 'fyndiq'),
             'desc_tip' => __(
                 'MPN',
@@ -450,10 +449,10 @@ EOS;
             'type' => 'select',
             'options' => $attributes,
             'desc' => __('This must be picked accurate', 'fyndiq'),
-            );
+        );
 
         // Map Field for MPN
-            $settings_slider[] = array(
+        $settings_slider[] = array(
             'name' => __('Brand', 'fyndiq'),
             'desc_tip' => __(
                 'Brand',
@@ -463,14 +462,14 @@ EOS;
             'type' => 'select',
             'options' => $attributes,
             'desc' => __('This must be picked accurate', 'fyndiq'),
-            );
+        );
 
-            $settings_slider[] = array(
+        $settings_slider[] = array(
             'type' => 'sectionend',
             'id' => 'wc_settings_wcfyndiq_section_end'
-            );
+        );
 
-            return apply_filters('wc_settings_tab_wcfyndiq', $settings_slider);
+        return apply_filters('wc_settings_tab_wcfyndiq', $settings_slider);
     }
 
     public function fyndiq_add_settings_tab($settings_tabs)
@@ -526,7 +525,7 @@ EOS;
             woocommerce_form_field($fieldName, $array, $value);
             return;
         }
-            $this->fmOutput->output(sprintf("
+        $this->fmOutput->output(sprintf("
                 <p class='form-field' 'id'=%s>
                     <label for='%s'>%s</label>
                     <input type='%s' class='input-%s' name='%s' id='%s value='%s'/>
