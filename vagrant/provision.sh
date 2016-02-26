@@ -92,6 +92,6 @@ PHP
      mysql -uroot -p123 --database=woocommerce -e "UPDATE wp_options SET option_value = 'SEK' WHERE option_name = 'woocommerce_currency'"
 
     ## Add hosts to file
-    echo "192.168.44.44  fyndiq.local" >> /etc/hosts
+    echo "192.168.44.45  fyndiq.local" >> /etc/hosts
     echo "127.0.0.1  woocommerce.local" >> /etc/hosts
 fi
