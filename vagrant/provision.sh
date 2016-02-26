@@ -87,6 +87,10 @@ PHP
     chown -R vagrant:www-data $WC_PATH
     chmod -R 775 $WC_PATH
 
+    ## Automatically set the currency and country in WooCommerce
+     mysql -uroot -p123 --database=woocommerce -e "UPDATE wp_options SET option_value = 'SE' WHERE option_name = 'woocommerce_default_country'"
+     mysql -uroot -p123 --database=woocommerce -e "UPDATE wp_options SET option_value = 'SEK' WHERE option_name = 'woocommerce_currency'"
+
     ## Add hosts to file
     echo "192.168.44.44  fyndiq.local" >> /etc/hosts
     echo "127.0.0.1  woocommerce.local" >> /etc/hosts
