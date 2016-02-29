@@ -632,13 +632,6 @@ EOS;
                 )
             ));
         }
-
-        $this->fmOutput->output(sprintf(
-            '<p>%s %s %s</p></div>',
-            __('Fyndiq Price with set Discount percentage: ', 'fyndiq'),
-            $price,
-            get_woocommerce_currency()
-        ));
         echo '</div></div>';
     }
 
