@@ -13,6 +13,9 @@ class WC_Fyndiq
     const ORDERS_DISABLE = 1;
     const ORDERS_ENABLE = 2;
 
+    const SETTING_TAB_PRIORITY = 50;
+    const SHOW_CONTENT_PRIORITY = 70;
+
     public function __construct($fmOutput, $mainfile)
     {
 
@@ -58,7 +61,7 @@ class WC_Fyndiq
 
 
         //Settings
-        add_filter('woocommerce_settings_tabs_array', array(&$this, 'fyndiq_add_settings_tab'), 50);
+        add_filter('woocommerce_settings_tabs_array', array(&$this, 'fyndiq_add_settings_tab'), self::SETTING_TAB_PRIORITY);
         add_action('woocommerce_settings_tabs_wcfyndiq', array(&$this, 'settings_tab'));
         add_action('woocommerce_update_options_wcfyndiq', array(&$this, 'update_settings'));
 
@@ -69,7 +72,7 @@ class WC_Fyndiq
 
         add_action('woocommerce_admin_order_data_after_order_details', array(&$this, 'fyndiq_add_order_field'));
         add_action('woocommerce_product_write_panel_tabs', array(&$this, 'fyndiq_product_tab'));
-        add_action('woocommerce_product_write_panels', array(&$this, 'fyndiq_product_tab_content'));
+        add_action('woocommerce_product_write_panels', array(&$this, 'fyndiq_product_tab_content'), self::SHOW_CONTENT_PRIORITY);
 
 
         //product list
@@ -382,21 +385,21 @@ EOS;
                 'desc' => __('This must be picked accurate', 'fyndiq')
             ));
 
-        $settings_slider[] = array(
+            $settings_slider[] = array(
             'type' => 'sectionend',
             'id' => 'wc_settings_wcfyndiq_section_end'
-        );
+            );
 
-        $settings_slider[] = array(
+            $settings_slider[] = array(
             'name'     => __('Field Mappings', 'fyndiq'),
             'type'     => 'title',
             'desc'     => '',
             'id'       => 'wc_settings_wcfyndiq_section_title'
-        );
+            );
 
 
         // Add Description picker
-        $settings_slider[] = array(
+            $settings_slider[] = array(
             'name' => __('Description to use', 'fyndiq'),
             'desc_tip' => __(
                 'Set how you want your description to be exported to Fyndiq.',
@@ -410,10 +413,10 @@ EOS;
                 FmExport::DESCRIPTION_SHORT_LONG => __('Short and Long Description', 'fyndiq'),
             ),
             'desc' => __('Default is Long Description', 'fyndiq'),
-        );
+            );
 
         // Map Field for EAN
-        $settings_slider[] = array(
+            $settings_slider[] = array(
             'name' => __('EAN', 'fyndiq'),
             'desc_tip' => __(
                 'EAN',
@@ -423,10 +426,10 @@ EOS;
             'type' => 'select',
             'options' => $attributes,
             'desc' => __('This must be picked accurate', 'fyndiq'),
-        );
+            );
 
         // Map Field for ISBN
-        $settings_slider[] = array(
+            $settings_slider[] = array(
             'name' => __('ISBN', 'fyndiq'),
             'desc_tip' => __(
                 'ISBN',
@@ -436,10 +439,10 @@ EOS;
             'type' => 'select',
             'options' => $attributes,
             'desc' => __('This must be picked accurate', 'fyndiq'),
-        );
+            );
 
         // Map Field for MPN
-        $settings_slider[] = array(
+            $settings_slider[] = array(
             'name' => __('MPN', 'fyndiq'),
             'desc_tip' => __(
                 'MPN',
@@ -449,10 +452,10 @@ EOS;
             'type' => 'select',
             'options' => $attributes,
             'desc' => __('This must be picked accurate', 'fyndiq'),
-        );
+            );
 
         // Map Field for MPN
-        $settings_slider[] = array(
+            $settings_slider[] = array(
             'name' => __('Brand', 'fyndiq'),
             'desc_tip' => __(
                 'Brand',
@@ -462,14 +465,14 @@ EOS;
             'type' => 'select',
             'options' => $attributes,
             'desc' => __('This must be picked accurate', 'fyndiq'),
-        );
+            );
 
-        $settings_slider[] = array(
+            $settings_slider[] = array(
             'type' => 'sectionend',
             'id' => 'wc_settings_wcfyndiq_section_end'
-        );
+            );
 
-        return apply_filters('wc_settings_tab_wcfyndiq', $settings_slider);
+            return apply_filters('wc_settings_tab_wcfyndiq', $settings_slider);
     }
 
     public function fyndiq_add_settings_tab($settings_tabs)
@@ -559,7 +562,6 @@ EOS;
     {
         $product = get_product($this->getPostId());
         $version = FmHelpers::get_woocommerce_version();
-        $price = $this->fmExport->getPrice($product->id, $product->price);
         $absolutePrice = get_post_meta($product->id, '_fyndiq_price_absolute', true);
 
         echo '<div id="fyndiq_tab" class="panel woocommerce_options_panel"><div class="fyndiq_tab">';
@@ -632,7 +634,7 @@ EOS;
                 )
             ));
         }
-        echo '</div></div>';
+        echo '</div></div></div>';
     }
 
     public function fyndiq_show_order_error()
@@ -751,17 +753,11 @@ EOS;
     public function fyndiq_product_save($productId)
     {
         $woocommerce_checkbox = $this->getExportState();
-
         $woocommerce_price = $this->getAbsolutePrice();
-        update_post_meta($post_id, '_fyndiq_export', $woocommerce_checkbox);
 
-        update_post_meta($post_id, '_fyndiq_price_absolute', $woocommerce_price);
+        update_post_meta($productId, '_fyndiq_export', $woocommerce_checkbox);
+        update_post_meta($productId, '_fyndiq_price_absolute', $woocommerce_price);
 
-        if ($woocommerce_checkbox == self::EXPORTED && !update_post_meta($post_id, '_fyndiq_status', FmProduct::STATUS_PENDING)) {
-            add_post_meta($post_id, '_fyndiq_status', FmProduct::STATUS_PENDING, true);
-        } elseif ($woocommerce_checkbox == self::NOT_EXPORTED && !update_post_meta($post_id, '_fyndiq_status', '')) {
-            add_post_meta($post_id, '_fyndiq_status', '', true);
-        }
         $this->fyndiq_product_validate($productId);
     }
 
@@ -956,7 +952,7 @@ EOS;
                         $bulkActionArray[$post_type]['fyndiq-order-import'] . "</a>\");
                                     }";
                 }
-            }
+                }
                 break;
         }
 
