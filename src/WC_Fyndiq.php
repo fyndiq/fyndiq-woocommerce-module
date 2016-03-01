@@ -634,7 +634,7 @@ EOS;
                 )
             ));
         }
-        echo '</div></div>';
+        echo '</div></div></div>';
     }
 
     public function fyndiq_show_order_error()
