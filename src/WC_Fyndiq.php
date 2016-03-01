@@ -69,7 +69,7 @@ class WC_Fyndiq
 
         add_action('woocommerce_admin_order_data_after_order_details', array(&$this, 'fyndiq_add_order_field'));
         add_action('woocommerce_product_write_panel_tabs', array(&$this, 'fyndiq_product_tab'));
-        add_action('woocommerce_product_write_panels', array(&$this, 'fyndiq_product_tab_content'));
+        add_action('woocommerce_product_write_panels', array(&$this, 'fyndiq_product_tab_content'),70);
 
 
         //product list
@@ -559,7 +559,6 @@ EOS;
     {
         $product = get_product($this->getPostId());
         $version = FmHelpers::get_woocommerce_version();
-        $price = $this->fmExport->getPrice($product->id, $product->price);
         $absolutePrice = get_post_meta($product->id, '_fyndiq_price_absolute', true);
 
         echo '<div id="fyndiq_tab" class="panel woocommerce_options_panel"><div class="fyndiq_tab">';
@@ -751,17 +750,11 @@ EOS;
     public function fyndiq_product_save($productId)
     {
         $woocommerce_checkbox = $this->getExportState();
-
         $woocommerce_price = $this->getAbsolutePrice();
-        update_post_meta($post_id, '_fyndiq_export', $woocommerce_checkbox);
 
-        update_post_meta($post_id, '_fyndiq_price_absolute', $woocommerce_price);
+        update_post_meta($productId, '_fyndiq_export', $woocommerce_checkbox);
+        update_post_meta($productId, '_fyndiq_price_absolute', $woocommerce_price);
 
-        if ($woocommerce_checkbox == self::EXPORTED && !update_post_meta($post_id, '_fyndiq_status', FmProduct::STATUS_PENDING)) {
-            add_post_meta($post_id, '_fyndiq_status', FmProduct::STATUS_PENDING, true);
-        } elseif ($woocommerce_checkbox == self::NOT_EXPORTED && !update_post_meta($post_id, '_fyndiq_status', '')) {
-            add_post_meta($post_id, '_fyndiq_status', '', true);
-        }
         $this->fyndiq_product_validate($productId);
     }
 
