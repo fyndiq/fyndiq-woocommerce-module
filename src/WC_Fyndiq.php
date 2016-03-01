@@ -13,6 +13,9 @@ class WC_Fyndiq
     const ORDERS_DISABLE = 1;
     const ORDERS_ENABLE = 2;
 
+    const SETTING_TAB_PRIORITY = 50;
+    const SHOW_CONTENT_PRIORITY = 70;
+
     public function __construct($fmOutput, $mainfile)
     {
 
@@ -58,7 +61,7 @@ class WC_Fyndiq
 
 
         //Settings
-        add_filter('woocommerce_settings_tabs_array', array(&$this, 'fyndiq_add_settings_tab'), 50);
+        add_filter('woocommerce_settings_tabs_array', array(&$this, 'fyndiq_add_settings_tab'), self::SETTING_TAB_PRIORITY);
         add_action('woocommerce_settings_tabs_wcfyndiq', array(&$this, 'settings_tab'));
         add_action('woocommerce_update_options_wcfyndiq', array(&$this, 'update_settings'));
 
@@ -69,7 +72,7 @@ class WC_Fyndiq
 
         add_action('woocommerce_admin_order_data_after_order_details', array(&$this, 'fyndiq_add_order_field'));
         add_action('woocommerce_product_write_panel_tabs', array(&$this, 'fyndiq_product_tab'));
-        add_action('woocommerce_product_write_panels', array(&$this, 'fyndiq_product_tab_content'),70);
+        add_action('woocommerce_product_write_panels', array(&$this, 'fyndiq_product_tab_content'),self::SHOW_CONTENT_PRIORITY);
 
 
         //product list
