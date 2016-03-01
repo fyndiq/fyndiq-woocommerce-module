@@ -19,6 +19,11 @@ class FmPost
         return $this->post->ID;
     }
 
+    public function getPost()
+    {
+        return $this->post;
+    }
+
     protected function setMetaData($key, $value, $method = 'update')
     {
         switch ($method) {
@@ -33,5 +38,15 @@ class FmPost
             default:
                 return null;
         }
+    }
+
+    protected function getMetaData($key)
+    {
+        return get_post_meta($this->getPostId(), $key);
+    }
+
+    static public function getWordpressCurrentPostID()
+    {
+        return get_the_ID();
     }
 }

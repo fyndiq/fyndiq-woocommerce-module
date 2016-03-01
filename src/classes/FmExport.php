@@ -369,7 +369,7 @@ class FmExport
         }
     }
 
-    function getDescriptionPOST()
+    static public function getDescriptionPOST()
     {
         $option = get_option('wcfyndiq_description_picker');
         if (!isset($option) || $option == false) {

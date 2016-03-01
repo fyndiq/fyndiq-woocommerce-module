@@ -6,12 +6,12 @@
  */
 class FmError
 {
-    public function __construct()
+    static public function setHooks()
     {
-        add_action('admin_notices', array(&$this, 'renderError'));
+        add_action('admin_notices', array(__CLASS__, 'renderError'));
     }
 
-    public function renderError()
+    public static function renderError()
     {
         if (isset($_REQUEST['fyndiqMessageType'])) {
             echo sprintf(

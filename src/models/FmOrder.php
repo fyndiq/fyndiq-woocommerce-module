@@ -10,10 +10,10 @@ class FmOrder extends FmPost
 {
 
     const FYNDIQ_ID_META_FIELD = 'fyndiq_id';
-
     const FYNDIQ_HANDLED_ORDER_META_FIELD = '_fyndiq_handled_order';
 
 
+    //Getter for whether the order is handled. Takes into account $_POST when called.
     public function getIsHandled()
     {
         //If we're saving the post, look in the HTTP POST data.
@@ -240,5 +240,75 @@ class FmOrder extends FmPost
             default:
                 return FmOrder::getProductBySku($reference);
         }
+    }
+
+    static public function getWordpressCurrentOrderID()
+    {
+        return get_the_ID();
+    }
+
+    /**
+     *
+     * Sets whether the given orders are marked as processed to Fyndiq or not
+     *
+     * @param $orders - an array of orders in the structure:
+     *
+     * array(
+     *        array(
+     *              id => postIDvalue,
+     *              marked => boolean
+     *              ),
+     *                  ...
+     * )
+     * @throws Exception
+     *
+     */
+    static public function setIsHandledBulk($orders)
+    {
+        $data = new stdClass();
+
+
+        $data->orders = $orders;
+
+        //Try to send the data to the API
+        try {
+            FmHelpers::callApi('POST', 'orders/marked/', $data);
+        } catch (Exception $e) {
+            FmError::handleError(urlencode($e->getMessage()));
+        }
+
+        //If the API call worked, update the orders on WC
+        foreach ($orders as $order) {
+            $orderObject = new FmOrder($order['id']);
+            $orderObject->setIsHandled((bool) $order['marked']);
+        }
+    }
+
+
+    //This probably can be removed with some refactoring.
+    static public function setOrderError()
+    {
+        if (get_option('wcfyndiq_order_error') !== false) {
+            update_option('wcfyndiq_order_error', true);
+        } else {
+            add_option('wcfyndiq_order_error', true, null, false);
+        }
+    }
+
+    static public function generateOrders()
+    {
+        $fmOutput = new FyndiqOutput();
+
+        define('DOING_AJAX', true);
+        try {
+            $orderFetch = new FmOrderFetch(false, true);
+            $result = $orderFetch->getAll();
+            update_option('wcfyndiq_order_time', time());
+        } catch (Exception $e) {
+            $result = $e->getMessage();
+            FmOrder::setOrderError();
+        }
+        $fmOutput->outputJSON($result);
+        wp_die();
     }
 }

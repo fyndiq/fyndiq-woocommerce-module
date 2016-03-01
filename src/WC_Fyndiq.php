@@ -6,37 +6,34 @@ class WC_Fyndiq
     private $productImages = null;
     private $categoryCache = array();
 
-    const EXPORTED = 'exported';
-    const NOT_EXPORTED = 'not exported';
     const NOTICES = 'fyndiq_notices';
 
     const ORDERS_DISABLE = 1;
     const ORDERS_ENABLE = 2;
 
     const SETTING_TAB_PRIORITY = 50;
-    const SHOW_CONTENT_PRIORITY = 70;
 
-    public function __construct($fmOutput, $mainfile)
+
+    public function __construct($mainFile)
     {
-
         $this->currencies = array_combine(FyndiqUtils::$allowedCurrencies, FyndiqUtils::$allowedCurrencies);
 
         //Load the error handler VERY early.
-        add_action('wp_loaded', array(&$this, 'initiateErrorHandler'));
-
+        add_action('wp_loaded', array(&$this, 'initiateClassHooks'));
 
         //Load locale in init
         add_action('init', array(&$this, 'locale_load'));
+
         // called only after woocommerce has finished loading
         add_action('init', array(&$this, 'woocommerce_loaded'), 250);
 
         $upload_dir = wp_upload_dir();
         $this->filepath = $upload_dir['basedir'] . '/fyndiq-feed.csv';
 
-        $this->fmOutput = $fmOutput;
+        $this->fmOutput = new FyndiqOutput();
         $this->fmUpdate = new FmUpdate();
         $this->fmExport = new FmExport($this->filepath, $this->fmOutput);
-        $this->mainfile = $mainfile;
+        $this->mainfile = $mainFile;
     }
 
     public function locale_load()
@@ -45,9 +42,11 @@ class WC_Fyndiq
         load_plugin_textdomain('fyndiq', false, dirname(plugin_basename(__FILE__)) . '/translations/');
     }
 
-    public function initiateErrorHandler()
+    public function initiateClassHooks()
     {
-        new FmError();
+        FmError::setHooks();
+        FmProduct::setHooks();
+        new FmField();
     }
 
     /**
@@ -66,13 +65,12 @@ class WC_Fyndiq
         add_action('woocommerce_update_options_wcfyndiq', array(&$this, 'update_settings'));
 
         //products
-        add_action('woocommerce_process_product_meta', array(&$this, 'fyndiq_product_save'));
+
 
         add_action('woocommerce_process_shop_order_meta', array(&$this, 'fyndiq_order_handled_save'));
 
         add_action('woocommerce_admin_order_data_after_order_details', array(&$this, 'fyndiq_add_order_field'));
         add_action('woocommerce_product_write_panel_tabs', array(&$this, 'fyndiq_product_tab'));
-        add_action('woocommerce_product_write_panels', array(&$this, 'fyndiq_product_tab_content'), self::SHOW_CONTENT_PRIORITY);
 
 
         //product list
@@ -152,8 +150,7 @@ class WC_Fyndiq
 
     public function fyndiq_order_meta_boxes()
     {
-        global $post;
-        $meta = get_post_custom($this->getPostId());
+        $meta = get_post_custom(FmOrder::getWordpressCurrentPostID());
         if (isset($meta['fyndiq_delivery_note']) && isset($meta['fyndiq_delivery_note'][0]) && $meta['fyndiq_delivery_note'][0] != '') {
             add_meta_box(
                 'woocommerce-order-fyndiq-delivery-note',
@@ -168,7 +165,7 @@ class WC_Fyndiq
 
     public function order_meta_box_delivery_note()
     {
-        $meta = get_post_custom($this->getPostId());
+        $meta = get_post_custom(FmOrder::getWordpressCurrentPostID());
         $this->fmOutput->output('<a href="' . $meta['fyndiq_delivery_note'][0] . '" class="button button-primary">Get Fyndiq Delivery Note</a>');
     }
 
@@ -515,26 +512,7 @@ EOS;
         echo sprintf("<li class='fyndiq_tab'><a href='#fyndiq_tab'>%s</a></li>", __('Fyndiq', 'fyndiq'));
     }
 
-    /**
-     * This generates the code for fields, compensating for old versions
-     *
-     * @param $fieldName - the name of the field to be added
-     * @param $array - the array that would usually be passed to woocommerce_form_field()
-     * @param $value - the value of the field
-     */
-    private function fyndiq_generate_field($fieldName, $array, $value)
-    {
-        if (version_compare(FmHelpers::get_woocommerce_version(), '2.3.8') >= 0) {
-            woocommerce_form_field($fieldName, $array, $value);
-            return;
-        }
-        $this->fmOutput->output(sprintf("
-                <p class='form-field' 'id'=%s>
-                    <label for='%s'>%s</label>
-                    <input type='%s' class='input-%s' name='%s' id='%s value='%s'/>
-                    <span class='description'>" . $array['description'] . "</span>
-                </p>"), $fieldName, $fieldName, $array['label'], $array['type'], $array['type'], $fieldName, $fieldName, $fieldName, $array['description']);
-    }
+
 
 
     /**
@@ -544,98 +522,16 @@ EOS;
      */
     public function fyndiq_add_order_field()
     {
-        $this->fyndiq_generate_field('_fyndiq_handled_order', array(
+        $order = new FmOrder(FmOrder::getWordpressCurrentOrderID());
+
+        FmField::fyndiq_generate_field(FmOrder::FYNDIQ_HANDLED_ORDER_META_FIELD, array(
             'type' => 'checkbox',
             'class' => array('input-checkbox'),
             'label' => __('Order handled', 'fyndiq'),
             'description' => __('Report this order as handled to Fyndiq', 'fyndiq'),
-        ), (bool)get_post_meta($this->getPostId(), '_fyndiq_handled_order', true));
+        ), (bool)$order->getIsHandled());
     }
 
-    /**
-     *
-     * This is the hooked function for fields on the product pages
-     * @todo make this function use fyndiq_generate_field
-     *
-     */
-    public function fyndiq_product_tab_content()
-    {
-        $product = get_product($this->getPostId());
-        $version = FmHelpers::get_woocommerce_version();
-        $absolutePrice = get_post_meta($product->id, '_fyndiq_price_absolute', true);
-
-        echo '<div id="fyndiq_tab" class="panel woocommerce_options_panel"><div class="fyndiq_tab">';
-
-        if (!$this->isProductExportable($product)) {
-            $this->fmOutput->output(sprintf(
-                '<div class="options_group"><p>%s</p></div>',
-                __('Can\'t export this product to Fyndiq', 'fyndiq')
-            ));
-            return;
-        }
-        $this->fmOutput->output('<div class="options_group">');
-        if (version_compare($version, '2.3.8') >= 0) {
-            // Checkbox for exporting to fyndiq
-            $value = (get_post_meta($product->id, '_fyndiq_export', true) == self::EXPORTED) ? 1 : 0;
-
-            woocommerce_form_field(
-                '_fyndiq_export',
-                array(
-                    'type' => 'checkbox',
-                    'class' => array('form-field', 'input-checkbox'),
-                    'label' => __('Export to Fyndiq', 'fyndiq'),
-                    'description' => __('mark this as true if you want to export to Fyndiq', 'fyndiq'),
-                ),
-                $value
-            );
-
-            //The absolute price for fyndiq for this specific product.
-            woocommerce_form_field(
-                '_fyndiq_price_absolute',
-                array(
-                    'type' => 'text',
-                    'class' => array('form-field', 'short'),
-                    'label' => __('Fyndiq Absolute Price', 'fyndiq'),
-                    'description' => __(
-                        'Set this price to make this the price to be set on the product when exporting to Fyndiq',
-                        'fyndiq'
-                    ),
-                    'required' => false,
-                ),
-                $absolutePrice
-            );
-        } else {
-            // If the woocommerce is older or the same as 2.2.11 it needs to
-            // use raw html becuase woocommerce_form_field doesn't exist
-            $exported = (get_post_meta($product->id, '_fyndiq_export', true) == self::EXPORTED) ? ' checked' : '';
-
-            // Checkbox for exporting to fyndiq
-            $this->fmOutput->output(sprintf(
-                '<p class="form-field" id="_fyndiq_export_field">
-                <label for="_fyndiq_export"> %s</label>
-                <input type="checkbox" class="input-checkbox " name="_fyndiq_export" id="_fyndiq_export" value="1"%s>
-                <span class="description">%s</span></p>',
-                __('Export to Fyndiq', 'fyndiq'),
-                $exported,
-                __('mark this as true if you want to export to Fyndiq', 'fyndiq')
-            ));
-
-            // Absolute Price that will overwrite the price of the product when exporting
-            $this->fmOutput->output(sprintf(
-                '<p class="form-row form-row form-field short" id="_fyndiq_price_absolute_field">
-                <label for="_fyndiq_price_absolute" class="">%s</label>
-                <input type="text" class="short wc_input_price" name="_fyndiq_price_absolute" id="_fyndiq_price_absolute" placeholder="" value="%s">
-                <span class="description">%s</span></p>',
-                __('Fyndiq Absolute Price', 'fyndiq'),
-                $absolutePrice,
-                __(
-                    'Set this price to make this the price to be set on the product when exporting to Fyndiq.',
-                    'fyndiq'
-                )
-            ));
-        }
-        echo '</div></div></div>';
-    }
 
     public function fyndiq_show_order_error()
     {
@@ -666,78 +562,6 @@ EOS;
     }
 
     /**
-     * This is validating product data and show error if
-     * it is not following the fyndiq validations
-     */
-    public function fyndiq_product_validate($productId)
-    {
-        if ($this->getExportState() == self::EXPORTED) {
-            $error = false;
-            $postTitleLength = mb_strlen($_POST['post_title']);
-            if ($postTitleLength < FyndiqFeedWriter::$minLength[FyndiqFeedWriter::PRODUCT_TITLE] ||
-                $postTitleLength > FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::PRODUCT_TITLE]) {
-                $this->add_fyndiq_notice(
-                    sprintf(
-                        __('Title needs to be between %s and %s in length, now it is: %s', 'fyndiq'),
-                        FyndiqFeedWriter::$minLength[FyndiqFeedWriter::PRODUCT_TITLE],
-                        FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::PRODUCT_TITLE],
-                        $postTitleLength
-                    ),
-                    'error'
-                );
-                $error = true;
-            }
-
-            $postDescriptionLength = mb_strlen($this->fmExport->getDescriptionPOST());
-            if ($postDescriptionLength < FyndiqFeedWriter::$minLength[FyndiqFeedWriter::PRODUCT_DESCRIPTION] ||
-                $postDescriptionLength > FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::PRODUCT_DESCRIPTION]) {
-                $this->add_fyndiq_notice(
-                    sprintf(
-                        __('Description needs to be between %s and %s in length, now it is: %s', 'fyndiq'),
-                        FyndiqFeedWriter::$minLength[FyndiqFeedWriter::PRODUCT_DESCRIPTION],
-                        FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::PRODUCT_DESCRIPTION],
-                        $postDescriptionLength
-                    ),
-                    'error'
-                );
-                $error = true;
-            }
-
-            $postSKULength = mb_strlen($_POST['_sku']);
-            if ($postSKULength < FyndiqFeedWriter::$minLength[FyndiqFeedWriter::ARTICLE_SKU] ||
-                $postSKULength > FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::ARTICLE_SKU]) {
-                $this->add_fyndiq_notice(
-                    sprintf(
-                        __('SKU needs to be between %s and %s in length, now it is: %s', 'fyndiq'),
-                        FyndiqFeedWriter::$minLength[FyndiqFeedWriter::ARTICLE_SKU],
-                        FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::ARTICLE_SKU],
-                        $postSKULength
-                    ),
-                    'error'
-                );
-                $error = true;
-            }
-
-            $postRegularPrice = intval($_POST['_regular_price']);
-            $type = $_POST['product-type'];
-            if ($type != 'variable' && $postRegularPrice <= 0) {
-                $this->add_fyndiq_notice(
-                    sprintf(
-                        __('Regular Price needs to be set above 0, now it is: %s', 'fyndiq'),
-                        $postRegularPrice
-                    ),
-                    'error'
-                );
-                $error = true;
-            }
-
-            if ($error) {
-                update_post_meta($productId, '_fyndiq_export', self::NOT_EXPORTED);
-            }
-        }
-    }
-
-    /**
      *
      * Hooked action for saving orders handled status (woocommerce_process_shop_order_meta)
      *
@@ -748,19 +572,6 @@ EOS;
         $orderObject = new FmOrder($orderId);
         $orderObject->setIsHandled($orderObject->getIsHandled());
     }
-
-    //Hooked action for saving products (woocommerce_process_product_meta)
-    public function fyndiq_product_save($productId)
-    {
-        $woocommerce_checkbox = $this->getExportState();
-        $woocommerce_price = $this->getAbsolutePrice();
-
-        update_post_meta($productId, '_fyndiq_export', $woocommerce_checkbox);
-        update_post_meta($productId, '_fyndiq_price_absolute', $woocommerce_price);
-
-        $this->fyndiq_product_validate($productId);
-    }
-
 
     //Hooked function for adding columns to the products page (manage_edit-shop_order_columns)
     public function fyndiq_order_add_column($defaults)
@@ -829,23 +640,17 @@ EOS;
         }
     }
 
-    public function fyndiq_product_column_export($column, $postid)
+    public function fyndiq_product_column_export($column, $postId)
     {
-        $product = get_product($postid);
+        $product = new FmProduct($postId);
 
         if ($column == 'fyndiq_export') {
-            if ($this->isProductExportable($product)) {
-                $exported = get_post_meta($postid, '_fyndiq_export', true);
-                if ($exported != '') {
-                    if ($exported == self::EXPORTED) {
+            if ($product->isProductExportable()) {
+                    if ($product->getIsExported()) {
                         _e('Exported', 'fyndiq');
                     } else {
                         _e('Not exported', 'fyndiq');
                     }
-                } else {
-                    update_post_meta($postid, '_fyndiq_export', self::NOT_EXPORTED);
-                    _e('Not exported', 'fyndiq');
-                }
             } else {
                 _e('Can\'t be exported', 'fyndiq');
             }
@@ -1002,7 +807,7 @@ EOS;
 
                 $posts[$post][] = $dataRow;
             }
-            $this->setIsHandled($posts);
+            FmOrder::setIsHandledBulk($posts);
         }
     }
 
@@ -1038,18 +843,18 @@ EOS;
         if (!is_null($posts)) {
             if ($exporting) {
                 foreach ($posts as $post_id) {
-                    $product = get_product($post_id);
-                    if ($this->isProductExportable($product)) {
-                        $this->perform_export($post_id);
+                    $product = new FmProduct($post_id);
+                    if ($product->isProductExportable()) {
+                        $product->setIsExported(true);
                         $post_ids[] = $post_id;
                         $changed++;
                     }
                 }
             } else {
                 foreach ($posts as $post_id) {
-                    $product = get_product($post_id);
-                    if ($this->isProductExportable($product)) {
-                        $this->perform_no_export($post_id);
+                    $product = new FmProduct($post_id);
+                    if ($product->isProductExportable()) {
+                        $product->setIsExported(false);
                         $post_ids[] = $post_id;
                         $changed++;
                     }
@@ -1138,20 +943,6 @@ EOS;
         exit();
     }
 
-    private function perform_export($productId)
-    {
-        if (!update_post_meta($productId, '_fyndiq_export', self::EXPORTED)) {
-            add_post_meta($productId, '_fyndiq_export', self::EXPORTED, true);
-        };
-    }
-
-    private function perform_no_export($productId)
-    {
-        if (!update_post_meta($productId, '_fyndiq_export', self::NOT_EXPORTED)) {
-            add_post_meta($productId, '_fyndiq_export', self::NOT_EXPORTED, true);
-        };
-    }
-
     public function notification_handle()
     {
         define('DOING_AJAX', true);
@@ -1233,7 +1024,7 @@ EOS;
 
         $info = FyndiqUtils::getInfo(
             FmHelpers::PLATFORM,
-            FmHelpers::get_woocommerce_version(),
+            WC_VERSION,
             FmHelpers::get_plugin_version(),
             FmHelpers::COMMIT
         );
@@ -1241,20 +1032,7 @@ EOS;
         wp_die();
     }
 
-    public function generate_orders()
-    {
-        define('DOING_AJAX', true);
-        try {
-            $orderFetch = new FmOrderFetch(false, true);
-            $result = $orderFetch->getAll();
-            update_option('wcfyndiq_order_time', time());
-        } catch (Exception $e) {
-            $result = $e->getMessage();
-            $this->setOrderError();
-        }
-        $this->fmOutput->outputJSON($result);
-        wp_die();
-    }
+
 
     private function update_product_info()
     {
@@ -1289,70 +1067,6 @@ EOS;
         exit();
     }
 
-    public function getPostId()
-    {
-        return get_the_ID();
-    }
-
-    public function getOrderId()
-    {
-        return get_the_ID();
-    }
-
-    public function getProductId()
-    {
-        return get_the_ID();
-    }
-
-    public function getExportState()
-    {
-        return isset($_POST['_fyndiq_export']) ? self::EXPORTED : self::NOT_EXPORTED;
-    }
-
-
-    /**
-     *
-     * Sets whether the given orders are marked as processed to Fyndiq or not
-     *
-     * @param $orders - an array of orders in the structure:
-     *
-     * array(
-     *        array(
-     *              id => postIDvalue,
-     *              marked => boolean
-     *              ),
-     *                  ...
-     * )
-     * @throws Exception
-     *
-     */
-    public function setIsHandled($orders)
-    {
-        $data = new stdClass();
-
-
-        $data->orders = $orders;
-
-        //Try to send the data to the API
-        try {
-            FmHelpers::callApi('POST', 'orders/marked/', $data);
-        } catch (Exception $e) {
-            FmError::handleError(urlencode($e->getMessage()));
-        }
-
-        //If the API call worked, update the orders on WC
-        foreach ($orders as $order) {
-            $orderObject = new FmOrder($order['id']);
-            $orderObject->setIsHandled((bool) $order['marked']);
-        }
-    }
-
-
-    public function getAbsolutePrice()
-    {
-        return isset($_POST['_fyndiq_price_absolute']) ? $_POST['_fyndiq_price_absolute'] : '';
-    }
-
     public function checkCurrency()
     {
         $currency = get_woocommerce_currency();
@@ -1371,11 +1085,6 @@ EOS;
         $token = get_option('wcfyndiq_apitoken');
 
         return (empty($username) || empty($token));
-    }
-
-    private function isProductExportable($product)
-    {
-        return (!$product->is_downloadable() && !$product->is_virtual() && !$product->is_type('external') && !$product->is_type('grouped'));
     }
 
     function check_page()
@@ -1414,22 +1123,6 @@ EOS;
         update_option('wcfyndiq_ping_token', '');
         update_option('wcfyndiq_username', '');
         update_option('wcfyndiq_apitoken', '');
-    }
-
-    private function add_fyndiq_notice($message, $type = 'update')
-    {
-        $notices = array();
-        if (isset($_SESSION[self::NOTICES])) {
-            $notices = $_SESSION[self::NOTICES];
-        }
-
-        if (!isset($notices[$type])) {
-            $notices[$type] = array();
-        }
-
-        $notices[$type][] = $message;
-
-        $_SESSION[self::NOTICES] = $notices;
     }
 
     private function checkToken()
@@ -1553,14 +1246,6 @@ EOS;
         return ($setting == self::ORDERS_ENABLE);
     }
 
-    private function setOrderError()
-    {
-        if (get_option('wcfyndiq_order_error') !== false) {
-            update_option('wcfyndiq_order_error', true);
-        } else {
-            add_option('wcfyndiq_order_error', true, null, false);
-        }
-    }
 
 
     private function getAllTerms()
