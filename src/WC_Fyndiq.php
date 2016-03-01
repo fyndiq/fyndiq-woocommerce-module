@@ -72,7 +72,7 @@ class WC_Fyndiq
 
         add_action('woocommerce_admin_order_data_after_order_details', array(&$this, 'fyndiq_add_order_field'));
         add_action('woocommerce_product_write_panel_tabs', array(&$this, 'fyndiq_product_tab'));
-        add_action('woocommerce_product_write_panels', array(&$this, 'fyndiq_product_tab_content'),self::SHOW_CONTENT_PRIORITY);
+        add_action('woocommerce_product_write_panels', array(&$this, 'fyndiq_product_tab_content'), self::SHOW_CONTENT_PRIORITY);
 
 
         //product list
@@ -385,21 +385,21 @@ EOS;
                 'desc' => __('This must be picked accurate', 'fyndiq')
             ));
 
-        $settings_slider[] = array(
+            $settings_slider[] = array(
             'type' => 'sectionend',
             'id' => 'wc_settings_wcfyndiq_section_end'
-        );
+            );
 
-        $settings_slider[] = array(
+            $settings_slider[] = array(
             'name'     => __('Field Mappings', 'fyndiq'),
             'type'     => 'title',
             'desc'     => '',
             'id'       => 'wc_settings_wcfyndiq_section_title'
-        );
+            );
 
 
         // Add Description picker
-        $settings_slider[] = array(
+            $settings_slider[] = array(
             'name' => __('Description to use', 'fyndiq'),
             'desc_tip' => __(
                 'Set how you want your description to be exported to Fyndiq.',
@@ -413,10 +413,10 @@ EOS;
                 FmExport::DESCRIPTION_SHORT_LONG => __('Short and Long Description', 'fyndiq'),
             ),
             'desc' => __('Default is Long Description', 'fyndiq'),
-        );
+            );
 
         // Map Field for EAN
-        $settings_slider[] = array(
+            $settings_slider[] = array(
             'name' => __('EAN', 'fyndiq'),
             'desc_tip' => __(
                 'EAN',
@@ -426,10 +426,10 @@ EOS;
             'type' => 'select',
             'options' => $attributes,
             'desc' => __('This must be picked accurate', 'fyndiq'),
-        );
+            );
 
         // Map Field for ISBN
-        $settings_slider[] = array(
+            $settings_slider[] = array(
             'name' => __('ISBN', 'fyndiq'),
             'desc_tip' => __(
                 'ISBN',
@@ -439,10 +439,10 @@ EOS;
             'type' => 'select',
             'options' => $attributes,
             'desc' => __('This must be picked accurate', 'fyndiq'),
-        );
+            );
 
         // Map Field for MPN
-        $settings_slider[] = array(
+            $settings_slider[] = array(
             'name' => __('MPN', 'fyndiq'),
             'desc_tip' => __(
                 'MPN',
@@ -452,10 +452,10 @@ EOS;
             'type' => 'select',
             'options' => $attributes,
             'desc' => __('This must be picked accurate', 'fyndiq'),
-        );
+            );
 
         // Map Field for MPN
-        $settings_slider[] = array(
+            $settings_slider[] = array(
             'name' => __('Brand', 'fyndiq'),
             'desc_tip' => __(
                 'Brand',
@@ -465,14 +465,14 @@ EOS;
             'type' => 'select',
             'options' => $attributes,
             'desc' => __('This must be picked accurate', 'fyndiq'),
-        );
+            );
 
-        $settings_slider[] = array(
+            $settings_slider[] = array(
             'type' => 'sectionend',
             'id' => 'wc_settings_wcfyndiq_section_end'
-        );
+            );
 
-        return apply_filters('wc_settings_tab_wcfyndiq', $settings_slider);
+            return apply_filters('wc_settings_tab_wcfyndiq', $settings_slider);
     }
 
     public function fyndiq_add_settings_tab($settings_tabs)
@@ -952,7 +952,7 @@ EOS;
                         $bulkActionArray[$post_type]['fyndiq-order-import'] . "</a>\");
                                     }";
                 }
-            }
+                }
                 break;
         }
 
