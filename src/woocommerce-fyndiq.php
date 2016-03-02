@@ -14,7 +14,7 @@ defined('ABSPATH') || exit;
 
 
 //Loads the dependency library
-require_once('dependency.php');
+require_once('include/dependency.php');
 
 
 //Include plugin.php so that is_plugin_inactive() works
@@ -60,7 +60,6 @@ require_once('models/FmOrder.php');
 require_once('models/FmOrderFetch.php');
 require_once('models/FmProduct.php');
 require_once('models/FmProductFetch.php');
-require_once('deactivate.php');
 require_once('WC_Fyndiq.php');
 
 

@@ -10,10 +10,8 @@ defined('ABSPATH') || exit;
 
 class FmOrder extends FmPost
 {
-
     const FYNDIQ_ID_META_FIELD = 'fyndiq_id';
     const FYNDIQ_HANDLED_ORDER_META_FIELD = '_fyndiq_handled_order';
-
 
     //Getter for whether the order is handled. Takes into account $_POST when called.
     public function getIsHandled()
