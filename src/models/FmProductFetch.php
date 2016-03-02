@@ -1,4 +1,6 @@
 <?php
+//Boilerplate security. Doesn't allow this file to be directly executed by the browser.
+defined('ABSPATH') || exit;
 
 class FmProductFetch extends FyndiqPaginatedFetch
 {

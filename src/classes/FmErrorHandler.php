@@ -1,9 +1,12 @@
 <?php
-
 /**
  * Handles showing errors on admin pages
  *
  */
+
+//Boilerplate security. Doesn't allow this file to be directly executed by the browser.
+defined('ABSPATH') || exit;
+
 class FmError
 {
     static public function setHooks()

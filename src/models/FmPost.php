@@ -5,6 +5,9 @@
  * Parent class that handles Wordpress post related stuff that both orders and products use
  */
 
+//Boilerplate security. Doesn't allow this file to be directly executed by the browser.
+defined('ABSPATH') || exit;
+
 class FmPost
 {
     protected $post;

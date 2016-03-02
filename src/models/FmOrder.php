@@ -1,11 +1,13 @@
 <?php
-
-
 /**
  * Class FmOrder
  *
  * Object model for orders
  */
+
+//Boilerplate security. Doesn't allow this file to be directly executed by the browser.
+defined('ABSPATH') || exit;
+
 class FmOrder extends FmPost
 {
 

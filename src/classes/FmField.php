@@ -1,5 +1,8 @@
 <?php
 
+//Boilerplate security. Doesn't allow this file to be directly executed by the browser.
+defined('ABSPATH') || exit;
+
 /**
  * Class FmField
  *
@@ -77,7 +80,7 @@ class FmField
     {
         $fmOutput = new FyndiqOutput();
 
-        if (version_compare(WC_VERSION, '2.3.8') >= 0) {
+        if (version_compare(FmHelpers::get_woocommerce_version(), '2.3.8') >= 0) {
             woocommerce_form_field($fieldName, $array, $value);
             return;
         }

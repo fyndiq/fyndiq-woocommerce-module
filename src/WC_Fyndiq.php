@@ -1,4 +1,7 @@
 <?php
+//Boilerplate security. Doesn't allow this file to be directly executed by the browser.
+defined('ABSPATH') || exit;
+
 class WC_Fyndiq
 {
     private $filepath = null;
@@ -14,11 +17,11 @@ class WC_Fyndiq
     const SETTING_TAB_PRIORITY = 50;
 
 
-    public function __construct($mainFile)
+    public function __construct()
     {
         $this->currencies = array_combine(FyndiqUtils::$allowedCurrencies, FyndiqUtils::$allowedCurrencies);
 
-        //Load the error handler VERY early.
+        //Register class hooks as early as possible
         add_action('wp_loaded', array(&$this, 'initiateClassHooks'));
 
         //Load locale in init
@@ -27,13 +30,11 @@ class WC_Fyndiq
         // called only after woocommerce has finished loading
         add_action('init', array(&$this, 'woocommerce_loaded'), 250);
 
-        $upload_dir = wp_upload_dir();
-        $this->filepath = $upload_dir['basedir'] . '/fyndiq-feed.csv';
+        $this->filepath = wp_upload_dir()['basedir'] . '/fyndiq-feed.csv';
 
         $this->fmOutput = new FyndiqOutput();
         $this->fmUpdate = new FmUpdate();
         $this->fmExport = new FmExport($this->filepath, $this->fmOutput);
-        $this->mainfile = $mainFile;
     }
 
     public function locale_load()
@@ -56,6 +57,7 @@ class WC_Fyndiq
     public function woocommerce_loaded()
     {
         //javascript
+        //@todo Fix JS loading
         add_action('admin_head', array(&$this, 'get_url'));
 
 
@@ -81,8 +83,6 @@ class WC_Fyndiq
         add_action('admin_notices', array(&$this, 'fyndiq_bulk_notices'));
         add_action('admin_notices', array(&$this, 'do_bulk_action_messages'));
 
-        //Deactivation
-        register_deactivation_hook($this->mainfile, array(&$this, 'deactivate'));
 
         //order list
         if ($this->ordersEnabled()) {
@@ -822,9 +822,13 @@ EOS;
 
     public function fyndiq_product_export_bulk_action()
     {
-        $action = $this->getAction('WP_Posts_List_Table');
 
-        switch ($action) {
+        //If there is no action, we're done.
+        if (!$this->getAction('WP_Posts_List_Table')) {
+            return false;
+        }
+
+        switch ($this->getAction('WP_Posts_List_Table')) {
             case 'fyndiq_export':
                 $report_action = 'fyndiq_exported';
                 $exporting = true;
@@ -834,7 +838,7 @@ EOS;
                 $exporting = false;
                 break;
             default:
-                return;
+                throw new Exception('Unexpected bulk action value: ' . $this->getAction('WP_Posts_List_Table'));
         }
 
         $changed = 0;
@@ -861,6 +865,7 @@ EOS;
                 }
             }
         }
+
         return $this->bulkRedirect($report_action, $changed, $post_ids);
     }
 
@@ -1064,7 +1069,7 @@ EOS;
             ''
         );
         wp_redirect($sendback);
-        exit();
+        return exit();
     }
 
     public function checkCurrency()
@@ -1105,25 +1110,6 @@ EOS;
         echo $this->probe_plugins();
     }
 
-    function deactivate()
-    {
-        //First empty the settings on fyndiq
-        if (!$this->checkCredentials()) {
-            $data = array(
-                FyndiqUtils::NAME_PRODUCT_FEED_URL => '',
-                FyndiqUtils::NAME_PING_URL => '',
-                FyndiqUtils::NAME_NOTIFICATION_URL => ''
-            );
-            try {
-                FmHelpers::callApi('PATCH', 'settings/', $data);
-            } catch (Exception $e) {
-            }
-        }
-        //Empty all settings
-        update_option('wcfyndiq_ping_token', '');
-        update_option('wcfyndiq_username', '');
-        update_option('wcfyndiq_apitoken', '');
-    }
 
     private function checkToken()
     {

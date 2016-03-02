@@ -1,10 +1,13 @@
 <?php
-
 /**
  * Class FmProduct
  *
  * Object model for products
  */
+
+//Boilerplate security. Doesn't allow this file to be directly executed by the browser.
+defined('ABSPATH') || exit;
+
 class FmProduct extends FmPost
 {
 
@@ -20,7 +23,7 @@ class FmProduct extends FmPost
     const FYNDIQ_EXPORT_META_FIELD = '_fyndiq_export';
     const FYNDIQ_ABSOLUTE_PRICE_FIELD = '_fyndiq_price_absolute';
 
-    public function getProductObject()
+    protected function getProductObject()
     {
         return get_product($this->getPostID());
     }
