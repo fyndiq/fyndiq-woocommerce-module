@@ -55,9 +55,14 @@ class FmProduct extends FmPost
      */
     const FYNDIQ_ABSOLUTE_PRICE_FIELD = '_fyndiq_price_absolute';
 
+    /**
+     * Gets the product object that WooCommerce uses
+     *
+     * @return object(WC_Product)|void - The WC_Product object for the product or void for a bad ID
+     */
     public function getWooCommerceProductObject()
     {
-         return get_product($this->getPostID());
+         return wc_get_product($this->getPostID());
     }
 
 
