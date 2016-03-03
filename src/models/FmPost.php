@@ -35,7 +35,7 @@ class FmPost
                 break;
 
             case 'add':
-                return add_post_meta($this->getPostId(), $key, $value, true);
+                return add_post_meta($this->getPostId(), $key, $value, TRUE);
                 break;
 
             default:
@@ -45,7 +45,7 @@ class FmPost
 
     protected function getMetaData($key)
     {
-        return get_post_meta($this->getPostId(), $key);
+        return get_post_meta($this->getPostId(), $key, TRUE);
     }
 
     public static function getWordpressCurrentPostID()

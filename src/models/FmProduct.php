@@ -155,7 +155,7 @@ class FmProduct extends FmPost
      */
     public function setIsExported($value)
     {
-        if (FmError::enforceTypeSafety($value, 'bool')) {
+        if (FmError::enforceTypeSafety($value, 'boolean')) {
 
             //This part ensures that the price percentage is set, and if it isn't set, updates it.
             $percentage = get_post_meta($this->getPostID(), self::FYNDIQ_PRICE_PERCENTAGE_META_KEY, true);
@@ -178,7 +178,7 @@ class FmProduct extends FmPost
     private function setInternalExportedStatus($isSet)
     {
         //enforceTypeSafety returns passed variable if type is OK
-        if (FmError::enforceTypeSafety($isSet, 'bool')) {
+        if (FmError::enforceTypeSafety($isSet, 'boolean')) {
             return $this->setMetaData(self::FYNDIQ_EXPORT_META_KEY, self::EXPORTED);
         }
             return $this->setMetaData(self::FYNDIQ_EXPORT_META_KEY, self::NOT_EXPORTED, 'add');
@@ -192,9 +192,9 @@ class FmProduct extends FmPost
     public function getAbsolutePrice()
     {
         if (isset($_POST[self::FYNDIQ_ABSOLUTE_PRICE_FIELD])) {
-            return FmError::enforceTypeSafety($_POST[self::FYNDIQ_ABSOLUTE_PRICE_FIELD], 'int');
+            return (int)$_POST[self::FYNDIQ_ABSOLUTE_PRICE_FIELD];
         }
-        return FmError::enforceTypeSafety($this->getMetaData(self::FYNDIQ_ABSOLUTE_PRICE_FIELD), 'int');
+        return (int)$this->getMetaData(self::FYNDIQ_ABSOLUTE_PRICE_FIELD);
     }
 
     /**
@@ -205,7 +205,7 @@ class FmProduct extends FmPost
      */
     public function setAbsolutePrice($price)
     {
-        return $this->setMetaData(self::FYNDIQ_ABSOLUTE_PRICE_FIELD, FmError::enforceTypeSafety($price, 'int'));
+        return $this->setMetaData(self::FYNDIQ_ABSOLUTE_PRICE_FIELD, FmError::enforceTypeSafety($price, 'integer'));
     }
 
     /**
