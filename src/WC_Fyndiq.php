@@ -838,7 +838,7 @@ EOS;
                 $exporting = false;
                 break;
             default:
-                throw new Exception('Unexpected bulk action value: ' . $this->getAction('WP_Posts_List_Table'));
+                throw new Exception(sprintf('Unexpected bulk action value: %', $this->getAction('WP_Posts_List_Table')));
         }
 
         $changed = 0;
