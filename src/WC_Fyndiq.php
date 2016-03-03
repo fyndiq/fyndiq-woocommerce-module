@@ -119,7 +119,7 @@ class WC_Fyndiq
             $this->fmExport->generate_feed();
         }
         if (isset($_GET['fyndiq_orders'])) {
-            $this->generate_orders();
+            FmOrder::generateOrders();
         }
         if (isset($_GET['fyndiq_products'])) {
             define('DOING_AJAX', true);
@@ -867,7 +867,7 @@ EOS;
             }
         }
 
-        //TODO: this should not ve a void return
+        //TODO: this should not be a void return
         return $this->bulkRedirect($report_action, $changed, $post_ids);
     }
 
@@ -950,21 +950,6 @@ EOS;
         exit();
     }
 
-    private function generate_orders()
-    {
-        define('DOING_AJAX', true);
-        try {
-            $orderFetch = new FmOrderFetch(false, true);
-            $result = $orderFetch->getAll();
-            update_option('wcfyndiq_order_time', time());
-        } catch (Exception $e) {
-            $result = $e->getMessage();
-              $this->setOrderError();
-        }
-        $this->fmOutput->outputJSON($result);
-         wp_die();
-    }
-
     public function notification_handle()
     {
         define('DOING_AJAX', true);
@@ -999,7 +984,7 @@ EOS;
                     FmOrder::createOrder($fyndiqOrder);
                 }
             } catch (Exception $e) {
-                $this->setOrderError();
+                FmOrder::setOrderError();
                 $this->fmOutput->showError(500, 'Internal Server Error', $e);
             }
 
