@@ -28,7 +28,7 @@ class FmField
     {
         $fmOutput = new FyndiqOutput();
 
-        $product = new FmProduct(FmProduct::getWordpressCurrentProductId());
+        $product = new FmProduct(FmProduct::getWordpressCurrentPostId());
 
         // Renders the Fyndiq tab
         $fmOutput->output('<div id="fyndiq_tab" class="panel woocommerce_options_panel"><div class="fyndiq_tab">');

@@ -7,7 +7,7 @@
 //Boilerplate security. Doesn't allow this file to be directly executed by the browser.
 defined('ABSPATH') || exit;
 
-require_once('include/tgm-plugin-activation/class-tgm-plugin-activation.php');
+require_once('tgm-plugin-activation/class-tgm-plugin-activation.php');
 add_action( 'tgmpa_register', 'fyndiq_register_required_plugins' );
 function fyndiq_register_required_plugins() {
     tgmpa(array(

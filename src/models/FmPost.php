@@ -14,7 +14,7 @@ class FmPost
 
     public function __construct($postId)
     {
-        $this->post = get_post($postId);
+        $this->post = get_post(FmError::enforceTypeSafety($postId, 'int'));
     }
 
     public function getPostId()

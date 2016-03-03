@@ -44,14 +44,22 @@ class FmProductFetch extends FyndiqPaginatedFetch
                 $status = FmProduct::STATUS_PENDING;
             }
 
-            $result &= FmProduct::updateStatus($statusRow->product_id, $status);
+            $product = new FmProduct($statusRow->product_id);
+            $product->setStatus($status);
         }
         return $result;
     }
 
+
+    //Not sure what this does
+    //TODO: find out
     public function getAll()
     {
-        FmProduct::updateStatusAllProducts(FmProduct::STATUS_PENDING);
+        $posts_array = FmProduct::getExportedProducts();
+        foreach ($posts_array as $product) {
+            $product = new FmProduct($product);
+            $product->setStatus(FmProduct::STATUS_PENDING);
+        }
         return parent::getAll();
     }
 }
