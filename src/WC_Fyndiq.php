@@ -1029,7 +1029,7 @@ EOS;
 
         $info = FyndiqUtils::getInfo(
             FmHelpers::PLATFORM,
-            WC_VERSION,
+            FmHelpers::get_woocommerce_version(),
             FmHelpers::get_plugin_version(),
             FmHelpers::COMMIT
         );
