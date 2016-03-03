@@ -23,12 +23,12 @@ class FmProduct extends FmPost
     /**
      * The status code for items that are selected to be exported to Fyndiq
      */
-    const EXPORTED = TRUE;
+    const EXPORTED = true;
 
     /**
      * The status code for items that are not selected to be exported to Fyndiq
      */
-    const NOT_EXPORTED = FALSE;
+    const NOT_EXPORTED = false;
 
     /**
      * Flag set in $_SESSION for indicating that notices are to be shown on the admin pages
@@ -100,18 +100,20 @@ class FmProduct extends FmPost
         foreach ($exportCriteria as $exportCriterionCatName => $exportCriterionArray) {
             switch ($exportCriterionCatName) {
                 case 'forbiddenProperties': {
-                    foreach ($exportCriterionArray as $forbiddenProperty)
-                        if($product->$forbiddenProperty($product)) {
+                    foreach ($exportCriterionArray as $forbiddenProperty) {
+                        if ($product->$forbiddenProperty($product)) {
                             return false;
-                        };
+                        }
+                    };
                     break;
                 }
 
                 case 'forbiddenTypes': {
-                    foreach ($exportCriterionArray as $forbiddenType)
+                    foreach ($exportCriterionArray as $forbiddenType) {
                         if ($product->is_type($forbiddenType)) {
                             return false;
                         }
+                    }
                     break;
                 }
 
@@ -129,7 +131,7 @@ class FmProduct extends FmPost
      * @param bool $saving - TRUE if a post is being saved
      * @return bool - Returns true if product is exported, inverse applies
      */
-    public function getIsExported($saving = FALSE)
+    public function getIsExported($saving = false)
     {
         if ($saving) {
             if (isset($_POST[self::FYNDIQ_EXPORT_META_KEY])) {
@@ -162,7 +164,7 @@ class FmProduct extends FmPost
         if (empty($percentage)) {
             $this->setMetaData(self::FYNDIQ_PRICE_PERCENTAGE_META_KEY, get_option('wcfyndiq_price_percentage'));
         }
-        
+
         if (FmError::enforceTypeSafety($value, 'boolean')) {
 
             return $this->setInternalExportedStatus(true);

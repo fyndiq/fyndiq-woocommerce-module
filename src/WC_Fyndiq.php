@@ -950,6 +950,21 @@ EOS;
         exit();
     }
 
+    private function generate_orders()
+    {
+        define('DOING_AJAX', true);
+        try {
+            $orderFetch = new FmOrderFetch(false, true);
+            $result = $orderFetch->getAll();
+            update_option('wcfyndiq_order_time', time());
+        } catch (Exception $e) {
+            $result = $e->getMessage();
+              $this->setOrderError();
+        }
+        $this->fmOutput->outputJSON($result);
+         wp_die();
+    }
+
     public function notification_handle()
     {
         define('DOING_AJAX', true);

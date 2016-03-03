@@ -36,11 +36,15 @@ class FmError
         exit;
     }
 
-    static function enforceTypeSafety(&$variable, $type) {
+    static function enforceTypeSafety(&$variable, $type)
+    {
         if (gettype($variable) !== $type) {
-            throw new Exception (sprintf('Error - variable %s has incorrect type of %s. Type should be %s.',
-                var_export($variable, TRUE),
-                gettype($variable), $type));
+            throw new Exception(sprintf(
+                'Error - variable %s has incorrect type of %s. Type should be %s.',
+                var_export($variable, true),
+                gettype($variable),
+                $type
+            ));
         }
         return $variable;
     }
