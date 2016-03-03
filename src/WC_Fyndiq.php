@@ -732,7 +732,7 @@ EOS;
         );
 
 
-        //We need this JS header in any case. Initialises output var too. TODO: why is the IDE marking this as wrong?
+        //We need this JS header in any case. Initialises output var too.
         $scriptOutput = '<script type="text/javascript">jQuery(document).ready(function () {';
 
 
@@ -867,6 +867,7 @@ EOS;
             }
         }
 
+        //TODO: this should not ve a void return
         return $this->bulkRedirect($report_action, $changed, $post_ids);
     }
 
@@ -924,7 +925,7 @@ EOS;
                 }
             }
 
-            $ret = FmHelpers::callApi('POST', 'delivery_notes/', $orders, true);
+            $ret = FmHelpers::callApi('POST', 'delivery_notes/', $orders);
 
             if ($ret['status'] == 200) {
                 $fileName = 'delivery_notes-' . implode('-', $_REQUEST['post']) . '.pdf';
@@ -933,18 +934,18 @@ EOS;
                 $this->fmOutput->streamFile($file, $fileName, 'application/pdf', strlen($ret['data']));
                 fclose($file);
             } else {
-                $sendback = add_query_arg(
+                $sendBack = add_query_arg(
                     array('post_type' => 'shop_order', $report_action => $changed, 'ids' => join(',', $post_ids)),
                     ''
                 );
-                wp_redirect($sendback);
+                wp_redirect($sendBack);
             }
         } catch (Exception $e) {
-            $sendback = add_query_arg(
+            $sendBack = add_query_arg(
                 array('post_type' => 'shop_order', $report_action => $changed, 'ids' => join(',', $post_ids), 'error' => $e->getMessage()),
                 ''
             );
-            wp_redirect($sendback);
+            wp_redirect($sendBack);
         }
         exit();
     }
@@ -1065,11 +1066,11 @@ EOS;
 
     public function bulkRedirect($report_action, $changed, $post_ids)
     {
-        $sendback = add_query_arg(
+        $sendBack = add_query_arg(
             array('post_type' => 'product', $report_action => $changed, 'ids' => join(',', $post_ids)),
             ''
         );
-        wp_redirect($sendback);
+        wp_redirect($sendBack);
         return exit();
     }
 
@@ -1148,7 +1149,6 @@ EOS;
             }
             fwrite($file, $testMessage);
             fclose($file);
-            $content = file_get_contents($tempFileName);
             if ($testMessage == file_get_contents($tempFileName)) {
                 $messages[] = sprintf(__('File `%s` successfully read.', 'fyndiq'), $tempFileName);
             }
