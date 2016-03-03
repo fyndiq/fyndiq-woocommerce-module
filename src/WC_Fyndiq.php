@@ -4,10 +4,8 @@ defined('ABSPATH') || exit;
 
 class WC_Fyndiq
 {
-    private $filepath = null;
+    private $filePath = null;
     private $fmOutput = null;
-    private $productImages = null;
-    private $categoryCache = array();
 
     const NOTICES = 'fyndiq_notices';
 
@@ -30,11 +28,11 @@ class WC_Fyndiq
         // called only after woocommerce has finished loading
         add_action('init', array(&$this, 'woocommerce_loaded'), 250);
 
-        $this->filepath = wp_upload_dir()['basedir'] . '/fyndiq-feed.csv';
+        $this->filePath = wp_upload_dir()['basedir'] . '/fyndiq-feed.csv';
 
         $this->fmOutput = new FyndiqOutput();
         $this->fmUpdate = new FmUpdate();
-        $this->fmExport = new FmExport($this->filepath, $this->fmOutput);
+        $this->fmExport = new FmExport($this->filePath, $this->fmOutput);
     }
 
     public function locale_load()
@@ -492,7 +490,7 @@ EOS;
 
     public function updateUrls()
     {
-        //Generate pingtoken
+        //Generate ping token
         $pingToken = md5(uniqid());
         update_option('wcfyndiq_ping_token', $pingToken);
 
@@ -507,6 +505,7 @@ EOS;
         return FmHelpers::callApi('PATCH', 'settings/', $data);
     }
 
+    //Hooked to woocommerce_product_write_panel_tabs
     public function fyndiq_product_tab()
     {
         echo sprintf("<li class='fyndiq_tab'><a href='#fyndiq_tab'>%s</a></li>", __('Fyndiq', 'fyndiq'));
@@ -593,6 +592,7 @@ EOS;
         }
     }
 
+    //Hooked to manage_edit-shop_order_sortable_columns
     public function fyndiq_order_column_sort()
     {
         return array(
@@ -600,6 +600,7 @@ EOS;
         );
     }
 
+    //TODO: find out how this function is called
     public function fyndiq_order_column_sort_by($query)
     {
         if (!is_admin()) {
@@ -679,13 +680,13 @@ EOS;
         }
         if ($this->checkCredentials()) {
             $url = admin_url('admin.php?page=wc-settings&tab=wcfyndiq');
-            printf(
+            $this->$this->fmOutput->output(sprintf(
                 '<div class="error"><p><strong>%s</strong>: %s <a href="%s">%s</a></p></div>',
                 __('Fyndiq Credentials', 'fyndiq'),
                 __('You need to set Fyndiq Credentials to make it work. Do it in ', 'fyndiq'),
                 $url,
                 __('Woocommerce Settings > Fyndiq', 'fyndiq')
-            );
+            ));
         }
         if (isset($_SESSION[self::NOTICES])) {
             $notices = $_SESSION[self::NOTICES];
@@ -801,11 +802,11 @@ EOS;
             $posts = array();
             foreach ($this->getRequestPost() as $post) {
                 $dataRow = array(
-                    'id' => $post,
+                    'id' => $post->ID,
                     'marked' => $markStatus
                 );
 
-                $posts[$post][] = $dataRow;
+                $posts[$post->ID][] = $dataRow;
             }
             FmOrder::setIsHandledBulk($posts);
         }
@@ -998,7 +999,7 @@ EOS;
         FyndiqUtils::debug('language', $languageId);
         FyndiqUtils::debug('taxonomy', $this->getAllTerms());
         $return = $this->fmExport->feedFileHandling();
-        $result = file_get_contents($this->filepath);
+        $result = file_get_contents($this->filePath);
         FyndiqUtils::debug('$result', $result, true);
         FyndiqUtils::debugStop();
         wp_die();
@@ -1128,7 +1129,7 @@ EOS;
         $messages = array();
         $testMessage = time();
         try {
-            $fileName = $this->filepath;
+            $fileName = $this->filePath;
             $exists =  file_exists($fileName) ?
                 __('exists', 'fyndiq') :
                 __('does not exist', 'fyndiq');
