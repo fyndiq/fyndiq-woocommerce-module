@@ -55,6 +55,12 @@ class FmProduct extends FmPost
      */
     const FYNDIQ_ABSOLUTE_PRICE_FIELD = '_fyndiq_price_absolute';
 
+    public function getWooCommerceProductObject()
+    {
+         return get_product($this->getPostID());
+    }
+
+
     /**
      * Uses various criteria defined in array to decide whether instantiated product is exportable
      *
@@ -63,7 +69,7 @@ class FmProduct extends FmPost
      */
     public function isProductExportable()
     {
-        $product = $this->getPost();
+        $product = $this->getWooCommerceProductObject();
 
         /*
          * Defines the criteria we use to decide whether a product is exportable. This would ideally be a
