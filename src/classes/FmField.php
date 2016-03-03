@@ -46,7 +46,7 @@ class FmField
         $fmOutput->output('<div class="options_group">');
 
         // 'Export to Fyndiq' checkbox
-        FmField::fyndiq_generate_field(FmProduct::FYNDIQ_EXPORT_META_FIELD, array(
+        FmField::fyndiq_generate_field(FmProduct::FYNDIQ_EXPORT_META_KEY, array(
             'type' => 'checkbox',
             'class' => array('form-field', 'input-checkbox'),
             'label' => __('Export to Fyndiq', 'fyndiq'),
@@ -63,7 +63,7 @@ class FmField
                 'fyndiq'
             ),
             'required' => false,
-        ), (bool)$product->getAbsolutePrice());
+        ), $product->getAbsolutePrice());
 
         // Close the wrapper for the rendered code
         $fmOutput->output('</div></div></div>');

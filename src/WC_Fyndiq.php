@@ -798,9 +798,9 @@ EOS;
      */
     private function fyndiq_order_handle_bulk_action($markStatus)
     {
-        if (!empty($this->getRequestPost())) {
+        if (!empty($this->getRequestPostsArray())) {
             $posts = array();
-            foreach ($this->getRequestPost() as $post) {
+            foreach ($this->getRequestPostsArray() as $post) {
                 $dataRow = array(
                     'id' => $post->ID,
                     'marked' => $markStatus
@@ -844,22 +844,22 @@ EOS;
 
         $changed = 0;
         $post_ids = array();
-        $posts = $this->getRequestPost();
+        $posts = $this->getRequestPostsArray();
         if (!is_null($posts)) {
             if ($exporting) {
                 foreach ($posts as $post_id) {
-                    $product = new FmProduct($post_id);
+                    $product = new FmProduct((int) $post_id);
                     if ($product->isProductExportable()) {
-                        $product->setIsExported(true);
+                        $product->setIsExported(FmProduct::EXPORTED);
                         $post_ids[] = $post_id;
                         $changed++;
                     }
                 }
             } else {
                 foreach ($posts as $post_id) {
-                    $product = new FmProduct($post_id);
+                    $product = new FmProduct((int) $post_id);
                     if ($product->isProductExportable()) {
-                        $product->setIsExported(false);
+                        $product->setIsExported(FmProduct::NOT_EXPORTED);
                         $post_ids[] = $post_id;
                         $changed++;
                     }
@@ -1054,9 +1054,12 @@ EOS;
         return $wp_list_table->current_action();
     }
 
-    public function getRequestPost()
+    public function getRequestPostsArray()
     {
-        return isset($_REQUEST['post']) ? $_REQUEST['post'] : null;
+        if (isset($_REQUEST['post'])) {
+            return $_REQUEST['post'];
+        }
+        throw new Exception('Request post requested when one not present');
     }
 
     public function returnAndDie($return)

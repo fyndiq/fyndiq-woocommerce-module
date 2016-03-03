@@ -126,25 +126,27 @@ class FmProduct extends FmPost
      * Checks the post metadata to see if the Product is marked as exported.
      * Takes into account that a flag in $_POST might have been set.
      *
+     * @param bool $saving - TRUE if a post is being saved
      * @return bool - Returns true if product is exported, inverse applies
      */
-    public function getIsExported()
+    public function getIsExported($saving = FALSE)
     {
-        if (isset($_POST['_fyndiq_export'])) {
-            return FmProduct::EXPORTED;
+        if ($saving) {
+            if (isset($_POST[self::FYNDIQ_EXPORT_META_KEY])) {
+                return FmProduct::EXPORTED;
+            }
+            return FmProduct::NOT_EXPORTED;
         }
 
         //This code handles legacy situations where EXPORT constants have been strings. Some upgrade code will be written.
 
         switch ($this->getMetaData(self::FYNDIQ_EXPORT_META_KEY)) {
-            case true:
-                return FmProduct::EXPORTED;
             case 'exported':
                 return FmProduct::EXPORTED;
             case 'not exported':
                 return FmProduct::NOT_EXPORTED;
         }
-        return $this->getMetaData(self::FYNDIQ_EXPORT_META_KEY);
+        return (bool)$this->getMetaData(self::FYNDIQ_EXPORT_META_KEY);
     }
 
     /**
@@ -155,13 +157,13 @@ class FmProduct extends FmPost
      */
     public function setIsExported($value)
     {
+        //This part ensures that the price percentage is set, and if it isn't set, updates it.
+        $percentage = get_post_meta($this->getPostID(), self::FYNDIQ_PRICE_PERCENTAGE_META_KEY, true);
+        if (empty($percentage)) {
+            $this->setMetaData(self::FYNDIQ_PRICE_PERCENTAGE_META_KEY, get_option('wcfyndiq_price_percentage'));
+        }
+        
         if (FmError::enforceTypeSafety($value, 'boolean')) {
-
-            //This part ensures that the price percentage is set, and if it isn't set, updates it.
-            $percentage = get_post_meta($this->getPostID(), self::FYNDIQ_PRICE_PERCENTAGE_META_KEY, true);
-            if (empty($percentage)) {
-                $this->setMetaData(self::FYNDIQ_PRICE_PERCENTAGE_META_KEY, get_option('wcfyndiq_price_percentage'));
-            }
 
             return $this->setInternalExportedStatus(true);
         }
@@ -181,7 +183,7 @@ class FmProduct extends FmPost
         if (FmError::enforceTypeSafety($isSet, 'boolean')) {
             return $this->setMetaData(self::FYNDIQ_EXPORT_META_KEY, self::EXPORTED);
         }
-            return $this->setMetaData(self::FYNDIQ_EXPORT_META_KEY, self::NOT_EXPORTED, 'add');
+            return $this->setMetaData(self::FYNDIQ_EXPORT_META_KEY, self::NOT_EXPORTED);
     }
 
     /**
@@ -335,8 +337,12 @@ class FmProduct extends FmPost
     {
         $product = new FmProduct($productId);
 
-        $product->setIsExported($product->getIsExported());
-        $product->setAbsolutePrice($product->getAbsolutePrice());
+        $isExported = $product->getIsExported(true);
+        $isExported = FmError::enforceTypeSafety($isExported, 'boolean');
+        $product->setIsExported($isExported);
+        $absolutePrice = $product->getAbsolutePrice();
+        $absolutePrice = FmError::enforceTypeSafety($absolutePrice, 'integer');
+        $product->setAbsolutePrice($absolutePrice);
 
         $product->validateProduct();
     }
