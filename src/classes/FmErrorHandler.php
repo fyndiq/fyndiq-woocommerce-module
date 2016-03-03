@@ -9,7 +9,7 @@ defined('ABSPATH') || exit;
 
 class FmError
 {
-    static public function setHooks()
+    public static function setHooks()
     {
         add_action('admin_notices', array(__CLASS__, 'renderError'));
     }

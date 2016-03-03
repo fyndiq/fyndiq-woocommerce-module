@@ -646,11 +646,11 @@ EOS;
 
         if ($column == 'fyndiq_export') {
             if ($product->isProductExportable()) {
-                    if ($product->getIsExported()) {
-                        _e('Exported', 'fyndiq');
-                    } else {
-                        _e('Not exported', 'fyndiq');
-                    }
+                if ($product->getIsExported()) {
+                    _e('Exported', 'fyndiq');
+                } else {
+                    _e('Not exported', 'fyndiq');
+                }
             } else {
                 _e('Can\'t be exported', 'fyndiq');
             }
@@ -757,7 +757,7 @@ EOS;
                         $bulkActionArray[$post_type]['fyndiq-order-import'] . "</a>\");
                                     }";
                 }
-                }
+            }
                 break;
         }
 

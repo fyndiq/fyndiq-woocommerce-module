@@ -48,7 +48,7 @@ class FmPost
         return get_post_meta($this->getPostId(), $key);
     }
 
-    static public function getWordpressCurrentPostID()
+    public static function getWordpressCurrentPostID()
     {
         return get_the_ID();
     }

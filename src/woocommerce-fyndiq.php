@@ -18,7 +18,7 @@ require_once('include/dependency.php');
 
 
 //Include plugin.php so that is_plugin_inactive() works
-include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+include_once(ABSPATH . 'wp-admin/includes/plugin.php');
 if (is_plugin_inactive('woocommerce/woocommerce.php')) {
     // We're not going further if there's no WooCommerce plugin.
     return;
@@ -26,8 +26,9 @@ if (is_plugin_inactive('woocommerce/woocommerce.php')) {
 
 
 // Handle deactivating the module.
-register_deactivation_hook( __FILE__, 'fyndiq_deactivate' );
-function fyndiq_deactivate() {
+register_deactivation_hook(__FILE__, 'fyndiq_deactivate');
+function fyndiq_deactivate()
+{
 //First empty the settings on fyndiq
     if (!$this->checkCredentials()) {
         $data = array(

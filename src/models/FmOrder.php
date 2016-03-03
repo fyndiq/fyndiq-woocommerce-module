@@ -242,7 +242,7 @@ class FmOrder extends FmPost
         }
     }
 
-    static public function getWordpressCurrentOrderID()
+    public static function getWordpressCurrentOrderID()
     {
         return get_the_ID();
     }
@@ -263,7 +263,7 @@ class FmOrder extends FmPost
      * @throws Exception
      *
      */
-    static public function setIsHandledBulk($orders)
+    public static function setIsHandledBulk($orders)
     {
         $data = new stdClass();
 
@@ -286,7 +286,7 @@ class FmOrder extends FmPost
 
 
     //This probably can be removed with some refactoring.
-    static public function setOrderError()
+    public static function setOrderError()
     {
         if (get_option('wcfyndiq_order_error') !== false) {
             update_option('wcfyndiq_order_error', true);
@@ -295,7 +295,7 @@ class FmOrder extends FmPost
         }
     }
 
-    static public function generateOrders()
+    public static function generateOrders()
     {
         $fmOutput = new FyndiqOutput();
 

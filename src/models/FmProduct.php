@@ -90,7 +90,7 @@ class FmProduct extends FmPost
 
     public function setAbsolutePrice($price)
     {
-        return $this->setMetaData(self::FYNDIQ_ABSOLUTE_PRICE_FIELD,$price);
+        return $this->setMetaData(self::FYNDIQ_ABSOLUTE_PRICE_FIELD, $price);
     }
 
     private function exportToFyndiq()
@@ -129,8 +129,9 @@ class FmProduct extends FmPost
                         FyndiqFeedWriter::$minLength[FyndiqFeedWriter::PRODUCT_TITLE],
                         FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::PRODUCT_TITLE],
                         $postTitleLength
-                    ));
-                $error = true;
+                    )
+                );
+                    $error = true;
             }
 
             $postDescriptionLength = mb_strlen(FmExport::getDescriptionPOST());
@@ -142,8 +143,9 @@ class FmProduct extends FmPost
                         FyndiqFeedWriter::$minLength[FyndiqFeedWriter::PRODUCT_DESCRIPTION],
                         FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::PRODUCT_DESCRIPTION],
                         $postDescriptionLength
-                    ));
-                $error = true;
+                    )
+                );
+                    $error = true;
             }
 
             $postSKULength = mb_strlen($_POST['_sku']);
@@ -155,8 +157,9 @@ class FmProduct extends FmPost
                         FyndiqFeedWriter::$minLength[FyndiqFeedWriter::ARTICLE_SKU],
                         FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::ARTICLE_SKU],
                         $postSKULength
-                    ));
-                $error = true;
+                    )
+                );
+                    $error = true;
             }
 
             $postRegularPrice = intval($_POST['_regular_price']);
@@ -166,8 +169,9 @@ class FmProduct extends FmPost
                     sprintf(
                         __('Regular Price needs to be set above 0, now it is: %s', 'fyndiq'),
                         $postRegularPrice
-                    ));
-                $error = true;
+                    )
+                );
+                    $error = true;
             }
 
             if ($error) {
@@ -208,17 +212,18 @@ class FmProduct extends FmPost
         }
     }
 
-    static public function getWordpressCurrentProductId()
+    public static function getWordpressCurrentProductId()
     {
         return get_the_ID();
     }
 
-    static public function setHooks() {
+    public static function setHooks()
+    {
         add_action('woocommerce_process_product_meta', array(__CLASS__, 'saveFyndiqProduct'));
     }
 
     //Hooked action for saving products (woocommerce_process_product_meta)
-    static public function saveFyndiqProduct($productId)
+    public static function saveFyndiqProduct($productId)
     {
         $product = new FmProduct($productId);
 

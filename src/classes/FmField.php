@@ -13,10 +13,10 @@ class FmField
     const SHOW_CONTENT_PRIORITY = 70;
 
    //Making an instance of this class just attaches the hooks.
-   function __construct()
-   {
-    add_action('woocommerce_product_write_panels', array(&$this, 'fyndiq_product_tab_content'), self::SHOW_CONTENT_PRIORITY);
-   }
+    function __construct()
+    {
+        add_action('woocommerce_product_write_panels', array(&$this, 'fyndiq_product_tab_content'), self::SHOW_CONTENT_PRIORITY);
+    }
 
 
     /**
@@ -24,7 +24,7 @@ class FmField
      * This is the hooked function for fields on the product pages
      *
      */
-    static public function fyndiq_product_tab_content()
+    public static function fyndiq_product_tab_content()
     {
         $fmOutput = new FyndiqOutput();
 
@@ -76,7 +76,7 @@ class FmField
      * @param $array - the array that would usually be passed to woocommerce_form_field()
      * @param $value - the value of the field
      */
-    static public function fyndiq_generate_field($fieldName, $array, $value)
+    public static function fyndiq_generate_field($fieldName, $array, $value)
     {
         $fmOutput = new FyndiqOutput();
 
@@ -91,6 +91,4 @@ class FmField
                     <span class='description'>" . $array['description'] . "</span>
                 </p>"), $fieldName, $fieldName, $array['label'], $array['type'], $array['type'], $fieldName, $fieldName, $fieldName, $array['description']);
     }
-
-
 }
