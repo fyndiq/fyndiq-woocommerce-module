@@ -242,11 +242,6 @@ class FmOrder extends FmPost
         }
     }
 
-    public static function getWordpressCurrentOrderID()
-    {
-        return get_the_ID();
-    }
-
     /**
      *
      * Sets whether the given orders are marked as processed to Fyndiq or not

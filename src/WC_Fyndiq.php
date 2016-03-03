@@ -522,7 +522,7 @@ EOS;
      */
     public function fyndiq_add_order_field()
     {
-        $order = new FmOrder(FmOrder::getWordpressCurrentOrderID());
+        $order = new FmOrder(FmOrder::getWordpressCurrentPostID());
 
         FmField::fyndiq_generate_field(FmOrder::FYNDIQ_HANDLED_ORDER_META_FIELD, array(
             'type' => 'checkbox',
