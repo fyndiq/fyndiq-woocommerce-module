@@ -20,12 +20,12 @@ class FmOrder extends FmPost
         if ((isset($_POST['action']) && isset($_POST['post_type'])) &&
             ($_POST['action'] == 'editpost' && $_POST['post_type'] == 'shop_order')) {
             //Is only set if box is ticked.
-            return isset($_POST['_fyndiq_handled_order']);
+            return (bool)isset($_POST['_fyndiq_handled_order']);
             //Otherwise, look in the metadata.
         } elseif (!get_post_meta($this->getPostId(), self::FYNDIQ_HANDLED_ORDER_META_FIELD, true)) {
-            return 0;
+            return FALSE;
         }
-        return 1;
+        return TRUE;
     }
 
     public function setIsHandled($value)
@@ -34,8 +34,11 @@ class FmOrder extends FmPost
          * This might seem inadequate in terms of input sanity,
          * but actually would be no different than an if statement.
          */
-        update_post_meta($this->getPostId(), self::FYNDIQ_HANDLED_ORDER_META_FIELD, (bool)$value);
+        $this->setMetaData(self::FYNDIQ_HANDLED_ORDER_META_FIELD, (bool)$value);
 
+        if (!$this->getFyndiqOrderId())  {
+            return;
+        }
         $markPair = new stdClass();
         $markPair->id = $this->getFyndiqOrderId();
         $markPair->marked = (bool)$value;
@@ -52,7 +55,14 @@ class FmOrder extends FmPost
 
     public function getFyndiqOrderId()
     {
-        return get_post_meta($this->getPostId(), self::FYNDIQ_ID_META_FIELD, true);
+        $orderID = $this->getMetaData(self::FYNDIQ_ID_META_FIELD);
+
+        switch ($orderID) {
+            case '-':
+                return FALSE;
+        }
+
+        return $orderID;
     }
 
     public function setFyndiqOrderId($fyndiqId)
@@ -269,7 +279,7 @@ class FmOrder extends FmPost
         try {
             FmHelpers::callApi('POST', 'orders/marked/', $data);
         } catch (Exception $e) {
-            FmError::handleError(urlencode($e->getMessage()));
+            FmError::handleError($e->getMessage());
         }
 
         //If the API call worked, update the orders on WC

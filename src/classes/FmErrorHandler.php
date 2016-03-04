@@ -27,7 +27,7 @@ class FmError
 
     public static function handleError($errorMessage)
     {
-        $errorMessage = sprintf("An error occurred: %s", $errorMessage);
+        $errorMessage = sprintf("An error occurred: %s", urlencode($errorMessage));
         $redirect = add_query_arg(
             array('fyndiqMessageType' => 'error', 'fyndiqMessage' => urlencode($errorMessage)),
             wp_get_referer()
