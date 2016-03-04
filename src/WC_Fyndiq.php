@@ -1050,7 +1050,7 @@ EOS;
         if (isset($_REQUEST['post'])) {
             return $_REQUEST['post'];
         }
-        throw new Exception('Request post requested when one not present');
+        throw new Exception('getRequestPostsArray() called when there are no requested posts');
     }
 
     public function returnAndDie($return)
