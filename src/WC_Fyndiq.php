@@ -798,7 +798,8 @@ EOS;
      */
     private function fyndiq_order_handle_bulk_action($markStatus)
     {
-        if (!empty($this->getRequestPostsArray())) {
+        $postsArray = $this->getRequestPostsArray();
+        if (!empty($postsArray)) {
             $posts = array();
             foreach ($this->getRequestPostsArray() as $post) {
                 $dataRow = array(
@@ -832,39 +833,29 @@ EOS;
         switch ($this->getAction('WP_Posts_List_Table')) {
             case 'fyndiq_export':
                 $report_action = 'fyndiq_exported';
-                $exporting = true;
+                $exporting = FmProduct::EXPORTED;
                 break;
             case 'fyndiq_no_export':
                 $report_action = 'fyndiq_removed';
-                $exporting = false;
+                $exporting = FmProduct::NOT_EXPORTED;
                 break;
             default:
-                throw new Exception(sprintf('Unexpected bulk action value: %', $this->getAction('WP_Posts_List_Table')));
+                throw new Exception(sprintf('Unexpected bulk action value: %s', $this->getAction('WP_Posts_List_Table')));
         }
 
         $changed = 0;
         $post_ids = array();
         $posts = $this->getRequestPostsArray();
         if (!is_null($posts)) {
-            if ($exporting) {
+
                 foreach ($posts as $post_id) {
                     $product = new FmProduct((int) $post_id);
                     if ($product->isProductExportable()) {
-                        $product->setIsExported(FmProduct::EXPORTED);
+                        $product->setIsExported(FmError::enforceTypeSafety($exporting, 'boolean'));
                         $post_ids[] = $post_id;
                         $changed++;
                     }
                 }
-            } else {
-                foreach ($posts as $post_id) {
-                    $product = new FmProduct((int) $post_id);
-                    if ($product->isProductExportable()) {
-                        $product->setIsExported(FmProduct::NOT_EXPORTED);
-                        $post_ids[] = $post_id;
-                        $changed++;
-                    }
-                }
-            }
         }
 
         //TODO: this should not be a void return
