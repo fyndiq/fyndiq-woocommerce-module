@@ -45,7 +45,7 @@ class WC_Fyndiq
     {
         FmError::setHooks();
         FmProduct::setHooks();
-        new FmField();
+        FmField::setHooks();
     }
 
     /**

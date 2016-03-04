@@ -12,12 +12,15 @@ class FmField
 {
     const SHOW_CONTENT_PRIORITY = 70;
 
-   //Making an instance of this class just attaches the hooks.
-    function __construct()
-    {
-        add_action('woocommerce_product_write_panels', array(&$this, 'fyndiq_product_tab_content'), self::SHOW_CONTENT_PRIORITY);
+    /**
+     * This sets all WordPress hooks related to the Fields
+     *
+     * @return bool - Always returns true because add_action() aways returns true TODO: abstraction layer
+     */
+    static public function setHooks() {
+        add_action('woocommerce_product_write_panels', array(__CLASS__, 'fyndiq_product_tab_content'), self::SHOW_CONTENT_PRIORITY);
+        return true;
     }
-
 
     /**
      *
