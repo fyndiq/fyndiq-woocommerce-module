@@ -29,7 +29,7 @@ class FmError
     {
         $errorMessage = sprintf("An error occurred: %s", urlencode($errorMessage));
         $redirect = add_query_arg(
-            array('fyndiqMessageType' => 'error', 'fyndiqMessage' => urlencode($errorMessage)),
+            array('fyndiqMessageType' => 'error', 'fyndiqMessage' => $errorMessage),
             wp_get_referer()
         );
         wp_redirect($redirect);

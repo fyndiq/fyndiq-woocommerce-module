@@ -20,7 +20,7 @@ class FmOrder extends FmPost
         if ((isset($_POST['action']) && isset($_POST['post_type'])) &&
             ($_POST['action'] == 'editpost' && $_POST['post_type'] == 'shop_order')) {
             //Is only set if box is ticked.
-            return (bool)isset($_POST['_fyndiq_handled_order']);
+            return isset($_POST['_fyndiq_handled_order']);
             //Otherwise, look in the metadata.
         } elseif (!get_post_meta($this->getPostId(), self::FYNDIQ_HANDLED_ORDER_META_FIELD, true)) {
             return FALSE;
