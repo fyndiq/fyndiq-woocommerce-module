@@ -12,11 +12,6 @@
 //Boilerplate security. Doesn't allow this file to be directly executed by the browser.
 defined('ABSPATH') || exit;
 
-
-//Loads the dependency library
-require_once('include/dependency.php');
-
-
 //Include plugin.php so that is_plugin_inactive() works
 include_once(ABSPATH . 'wp-admin/includes/plugin.php');
 if (is_plugin_inactive('woocommerce/woocommerce.php')) {
