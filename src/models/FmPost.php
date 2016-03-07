@@ -56,4 +56,12 @@ class FmPost
     {
         return get_the_ID();
     }
+    
+    public static function getRequestPostsArray()
+    {
+        if (isset($_REQUEST['post'])) {
+            return $_REQUEST['post'];
+        }
+        throw new Exception(__('Oops! An error occurred getting a list of posts - tell Fyndiq this: getRequestPostsArray() called when there are no requested posts'));
+    }
 }

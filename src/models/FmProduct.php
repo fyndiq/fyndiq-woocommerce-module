@@ -344,4 +344,28 @@ class FmProduct extends FmPost
         $product->setAbsolutePrice($absolutePrice);
         $product->validateProduct();
     }
+
+    public static function productExportBulkAction($export, $action)
+    {
+        $changed = 0;
+        $postIds = array();
+        $posts = FmPost::getRequestPostsArray();
+        if (!is_null($posts)) {
+
+            foreach ($posts as $postId) {
+                $product = new FmProduct((int) $postId);
+                if ($product->isProductExportable()) {
+                    $product->setIsExported($export);
+                    $postIds[] = $postId;
+                    $changed++;
+                }
+            }
+        }
+        $sendBack = add_query_arg(
+            array('post_type' => 'product', $action=> $changed, 'ids' => join(',', $postIds)),
+            ''
+        );
+        wp_redirect($sendBack);
+        return exit();
+    }
 }

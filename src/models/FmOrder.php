@@ -317,4 +317,66 @@ class FmOrder extends FmPost
         $fmOutput->outputJSON($result);
         wp_die();
     }
+
+    /**
+     * Function that handles bulk actions related to setting order handling status
+     *
+     * @param bool $markStatus - whether the orders are handled or not
+     * @throws Exception
+     */
+    public static function orderHandleBulkAction($markStatus)
+    {
+        $postsArray = FmPost::getRequestPostsArray();
+        if (!empty($postsArray)) {
+            $posts = array();
+            foreach ($postsArray as $post) {
+                $dataRow = array(
+                    'id' => $post->ID,
+                    'marked' => $markStatus
+                );
+
+                $posts[$post->ID][] = $dataRow;
+            }
+            FmOrder::setIsHandledBulk($posts);
+        }
+    }
+
+    public static function deliveryNoteBulkAction()
+    {
+        try {
+            $output = new FyndiqOutput();
+
+            $wp_list_table = _get_list_table('WP_Posts_List_Table');
+            $action = $wp_list_table->current_action();
+
+            $orders = array(
+                'orders' => array()
+            );
+            if (!isset($_REQUEST['post'])) {
+                throw new Exception(__('Pick at least one Order', 'fyndiq'));
+            }
+
+            foreach ($_REQUEST['post'] as $order) {
+                $meta = get_post_custom($order);
+                if (isset($meta['fyndiq_id']) && isset($meta['fyndiq_id'][0]) && $meta['fyndiq_id'][0] != '') {
+                    $orders['orders'][] = array('order' => intval($meta['fyndiq_id'][0]));
+                }
+            }
+
+            $ret = FmHelpers::callApi('POST', 'delivery_notes/', $orders);
+
+            if ($ret['status'] == 200) {
+                $fileName = 'delivery_notes-' . implode('-', $_REQUEST['post']) . '.pdf';
+                $file = fopen('php://temp', 'wb+');
+                fputs($file, $ret['data']);
+                $output->streamFile($file, $fileName, 'application/pdf', strlen($ret['data']));
+                fclose($file);
+            } else {
+                throw new Exception($ret['data']);
+            }
+        } catch (Exception $e) {
+            FmError::handleError($e->getMessage());
+        }
+        exit();
+    }
 }

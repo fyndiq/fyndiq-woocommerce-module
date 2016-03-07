@@ -87,15 +87,13 @@ class WC_Fyndiq
             add_filter('manage_edit-shop_order_columns', array(&$this, 'fyndiq_order_add_column'));
             add_action('manage_shop_order_posts_custom_column', array(&$this, 'fyndiq_order_column'), 5, 2);
             add_filter('manage_edit-shop_order_sortable_columns', array(&$this, 'fyndiq_order_column_sort'));
-            add_action('load-edit.php', array(&$this, 'fyndiq_order_delivery_note_bulk_action'));
         }
 
         //bulk action
         //Inserts the JS for the appropriate dropdown items
         add_action('admin_footer-edit.php', array(&$this, 'fyndiq_add_bulk_action'));
 
-        //The actual actions behind the bulk actions. Ought to be coalesced into a dispatcher
-        add_action('load-edit.php', array(&$this, 'fyndiq_product_export_bulk_action'));
+        //Dispatcher for different bulk actions
         add_action('load-edit.php', array(&$this, 'fyndiq_bulk_action_dispatcher'));
 
         //add_action('post_submitbox_misc_actions', array( &$this, 'fyndiq_order_edit_action'));
@@ -113,6 +111,7 @@ class WC_Fyndiq
 
         //orders
         add_action('load-edit.php', array(&$this, 'fyndiq_show_order_error'));
+
 
         //functions
         if (isset($_GET['fyndiq_feed'])) {
@@ -668,7 +667,7 @@ EOS;
                 __('Wrong Currency', 'fyndiq'),
                 __('Fyndiq only works in EUR and SEK. change to correct currency. Current Currency:', 'fyndiq'),
                 get_woocommerce_currency()
-            );
+            ));
         }
         if ($this->checkCountry()) {
             $this->fmOutput->output(sprintf(
@@ -676,7 +675,7 @@ EOS;
                 __('Wrong Country', 'fyndiq'),
                 __('Fyndiq only works in Sweden and Germany. change to correct country. Current Country:', 'fyndiq'),
                 WC()->countries->get_base_country()
-            );
+            ));
         }
         if ($this->checkCredentials()) {
             $url = admin_url('admin.php?page=wc-settings&tab=wcfyndiq');
@@ -777,44 +776,29 @@ EOS;
      */
     public function fyndiq_bulk_action_dispatcher()
     {
+        $action = $this->getAction('WP_Posts_List_Table');
         switch ($this->getAction('WP_Posts_List_Table')) {
             case 'fyndiq_handle_order':
-                $this->fyndiq_order_handle_bulk_action(1);
+                FmOrder::orderHandleBulkAction(true);
                 break;
             case 'fyndiq_unhandle_order':
-                $this->fyndiq_order_handle_bulk_action(0);
+                FmOrder::orderHandleBulkAction(false);
                 break;
             case 'fyndiq_order_handle_bulk_action':
+                break;
+            case 'fyndiq_delivery':
+                FmOrder::deliveryNoteBulkaction();
+                break;
+            case 'fyndiq_export':
+                FmProduct::productExportBulkAction(FmProduct::EXPORTED, $action);
+                break;
+            case 'fyndiq_no_export':
+                FmProduct::productExportBulkAction(FmProduct::NOT_EXPORTED, $action);
                 break;
             default:
                 break;
         }
     }
-
-
-    /**
-     * Function that handles bulk actions related to setting order handling status
-     *
-     * @param bool $markStatus - whether the orders are handled or not
-     * @throws Exception
-     */
-    private function fyndiq_order_handle_bulk_action($markStatus)
-    {
-        $postsArray = $this->getRequestPostsArray();
-        if (!empty($postsArray)) {
-            $posts = array();
-            foreach ($postsArray as $post) {
-                $dataRow = array(
-                    'id' => $post->ID,
-                    'marked' => $markStatus
-                );
-
-                $posts[$post->ID][] = $dataRow;
-            }
-            FmOrder::setIsHandledBulk($posts);
-        }
-    }
-
 
     public function do_bulk_action_messages()
     {
@@ -824,52 +808,11 @@ EOS;
         }
     }
 
-    public function fyndiq_product_export_bulk_action()
-    {
-        $action = $this->getAction('WP_Posts_List_Table');
-
-        //If there is no action, we're done.
-        if (!$action) {
-            return false;
-        }
-
-        switch ($action) {
-            case 'fyndiq_export':
-                $report_action = 'fyndiq_exported';
-                $exporting = FmProduct::EXPORTED;
-                break;
-            case 'fyndiq_no_export':
-                $report_action = 'fyndiq_removed';
-                $exporting = FmProduct::NOT_EXPORTED;
-                break;
-            default:
-                throw new Exception(sprintf('Unexpected bulk action value: %s', $action);
-        }
-
-        $changed = 0;
-        $post_ids = array();
-        $posts = $this->getRequestPostsArray();
-        if (!is_null($posts)) {
-
-            foreach ($posts as $post_id) {
-                $product = new FmProduct((int) $post_id);
-                if ($product->isProductExportable()) {
-                    $product->setIsExported($exporting);
-                    $post_ids[] = $post_id;
-                    $changed++;
-                }
-            }
-        }
-
-        //TODO: this should not be a void return
-        return $this->bulkRedirect($report_action, $changed, $post_ids);
-    }
-
     public function fyndiq_bulk_notices()
     {
-        global $post_type, $pagenow;
+        global $post_type, $pageNow;
 
-        if ($pagenow == 'edit.php' && isset($_REQUEST['fyndiq_removed']) && (int)$_REQUEST['fyndiq_removed']) {
+        if ($pageNow == 'edit.php' && isset($_REQUEST['fyndiq_removed']) && (int)$_REQUEST['fyndiq_removed']) {
             $message = sprintf(
                 _n(
                     'Products removed from Fyndiq.',
@@ -880,7 +823,7 @@ EOS;
             );
             $this->fmOutput->output('<div class="updated"><p>' . $message . '</p></div>');
         }
-        if ($pagenow == 'edit.php' && isset($_REQUEST['fyndiq_exported']) && (int)$_REQUEST['fyndiq_exported']) {
+        if ($pageNow == 'edit.php' && isset($_REQUEST['fyndiq_exported']) && (int)$_REQUEST['fyndiq_exported']) {
             $message = sprintf(
                 _n(
                     'Products exported to Fyndiq.',
@@ -891,57 +834,6 @@ EOS;
             );
             $this->fmOutput->output('<div class="updated"><p>' . $message . '</p></div>');
         }
-    }
-
-    public function fyndiq_order_delivery_note_bulk_action()
-    {
-        try {
-            $wp_list_table = _get_list_table('WP_Posts_List_Table');
-            $action = $wp_list_table->current_action();
-
-            switch ($action) {
-                case 'fyndiq_delivery':
-                    break;
-                default:
-                    return;
-            }
-
-            $orders = array(
-                'orders' => array()
-            );
-            if (!isset($_REQUEST['post'])) {
-                throw new Exception(__('Pick at least one Order', 'fyndiq'));
-            }
-            foreach ($_REQUEST['post'] as $order) {
-                $meta = get_post_custom($order);
-                if (isset($meta['fyndiq_id']) && isset($meta['fyndiq_id'][0]) && $meta['fyndiq_id'][0] != '') {
-                    $orders['orders'][] = array('order' => intval($meta['fyndiq_id'][0]));
-                }
-            }
-
-            $ret = FmHelpers::callApi('POST', 'delivery_notes/', $orders);
-
-            if ($ret['status'] == 200) {
-                $fileName = 'delivery_notes-' . implode('-', $_REQUEST['post']) . '.pdf';
-                $file = fopen('php://temp', 'wb+');
-                fputs($file, $ret['data']);
-                $this->fmOutput->streamFile($file, $fileName, 'application/pdf', strlen($ret['data']));
-                fclose($file);
-            } else {
-                $sendBack = add_query_arg(
-                    array('post_type' => 'shop_order', $report_action => $changed, 'ids' => join(',', $post_ids)),
-                    ''
-                );
-                wp_redirect($sendBack);
-            }
-        } catch (Exception $e) {
-            $sendBack = add_query_arg(
-                array('post_type' => 'shop_order', $report_action => $changed, 'ids' => join(',', $post_ids), 'error' => $e->getMessage()),
-                ''
-            );
-            wp_redirect($sendBack);
-        }
-        exit();
     }
 
     public function notification_handle()
@@ -1047,27 +939,9 @@ EOS;
         return $wp_list_table->current_action();
     }
 
-    public function getRequestPostsArray()
-    {
-        if (isset($_REQUEST['post'])) {
-            return $_REQUEST['post'];
-        }
-        throw new Exception(__('Oops! An error occurred getting a list of posts - tell Fyndiq this: getRequestPostsArray() called when there are no requested posts'));
-    }
-
     public function returnAndDie($return)
     {
         die($return);
-    }
-
-    public function bulkRedirect($report_action, $changed, $post_ids)
-    {
-        $sendBack = add_query_arg(
-            array('post_type' => 'product', $report_action => $changed, 'ids' => join(',', $post_ids)),
-            ''
-        );
-        wp_redirect($sendBack);
-        return exit();
     }
 
     public function checkCurrency()
