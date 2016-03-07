@@ -191,14 +191,14 @@ class FmProduct extends FmPost
     /**
      * Gets the absolute price (price of item with Fyndiq discount applied) of instantiated product
      *
-     * @return int - The absolute price of the product
+     * @return double - The absolute price of the product
      */
     public function getAbsolutePrice()
     {
         if (isset($_POST[self::FYNDIQ_ABSOLUTE_PRICE_FIELD])) {
-            return (int)$_POST[self::FYNDIQ_ABSOLUTE_PRICE_FIELD];
+            return (double)$_POST[self::FYNDIQ_ABSOLUTE_PRICE_FIELD];
         }
-        return (int)$this->getMetaData(self::FYNDIQ_ABSOLUTE_PRICE_FIELD);
+        return (double)$this->getMetaData(self::FYNDIQ_ABSOLUTE_PRICE_FIELD);
     }
 
     /**
