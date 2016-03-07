@@ -36,11 +36,13 @@ class FmOrder extends FmPost
          */
         $this->setMetaData(self::FYNDIQ_HANDLED_ORDER_META_FIELD, (bool)$value);
 
-        if (!$this->getFyndiqOrderId())  {
+        $fyndiqId = $this->getFyndiqOrderId();
+
+        if (!$fyndiqId)  {
             return;
         }
         $markPair = new stdClass();
-        $markPair->id = $this->getFyndiqOrderId();
+        $markPair->id = $fyndiqId;
         $markPair->marked = (bool)$value;
 
         $data = new stdClass();
@@ -57,8 +59,7 @@ class FmOrder extends FmPost
     {
         $orderID = $this->getMetaData(self::FYNDIQ_ID_META_FIELD);
 
-        switch ($orderID) {
-            case '-':
+        if ($orderID === '-') {
                 return FALSE;
         }
 
