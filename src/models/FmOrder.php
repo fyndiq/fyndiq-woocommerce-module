@@ -295,9 +295,9 @@ class FmOrder extends FmPost
     public static function setOrderError()
     {
         if (get_option('wcfyndiq_order_error') !== false) {
-            update_option('wcfyndiq_order_error', true);
+            return update_option('wcfyndiq_order_error', true);
         } else {
-            add_option('wcfyndiq_order_error', true, null, false);
+            return add_option('wcfyndiq_order_error', true, null, false);
         }
     }
 
