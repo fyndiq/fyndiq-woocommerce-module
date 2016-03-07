@@ -165,7 +165,7 @@ class FmProduct extends FmPost
             $this->setMetaData(self::FYNDIQ_PRICE_PERCENTAGE_META_KEY, get_option('wcfyndiq_price_percentage'));
         }
 
-        if (FmError::enforceTypeSafety($value, 'boolean')) {
+        if ($value) {
 
             return $this->setInternalExportedStatus(true);
         }
@@ -182,7 +182,7 @@ class FmProduct extends FmPost
     private function setInternalExportedStatus($isSet)
     {
         //enforceTypeSafety returns passed variable if type is OK
-        if (FmError::enforceTypeSafety($isSet, 'boolean')) {
+        if ($isSet) {
             return $this->setMetaData(self::FYNDIQ_EXPORT_META_KEY, self::EXPORTED);
         }
             return $this->setMetaData(self::FYNDIQ_EXPORT_META_KEY, self::NOT_EXPORTED);
@@ -209,7 +209,7 @@ class FmProduct extends FmPost
      */
     public function setAbsolutePrice($price)
     {
-        return $this->setMetaData(self::FYNDIQ_ABSOLUTE_PRICE_FIELD, FmError::enforceTypeSafety($price, 'integer'));
+        return $this->setMetaData(self::FYNDIQ_ABSOLUTE_PRICE_FIELD, $price);
     }
 
     /**
@@ -220,7 +220,7 @@ class FmProduct extends FmPost
      */
     public function setStatus($status)
     {
-        return $this->setMetaData(self::FYNDIQ_STATUS_META_KEY, FmError::enforceTypeSafety($status, 'string'));
+        return $this->setMetaData(self::FYNDIQ_STATUS_META_KEY, $status);
     }
 
     /**
@@ -340,12 +340,9 @@ class FmProduct extends FmPost
         $product = new FmProduct($productId);
 
         $isExported = $product->getIsExported(true);
-        $isExported = FmError::enforceTypeSafety($isExported, 'boolean');
         $product->setIsExported($isExported);
         $absolutePrice = $product->getAbsolutePrice();
-        $absolutePrice = FmError::enforceTypeSafety($absolutePrice, 'integer');
         $product->setAbsolutePrice($absolutePrice);
-
         $product->validateProduct();
     }
 }

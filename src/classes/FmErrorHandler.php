@@ -27,25 +27,12 @@ class FmError
 
     public static function handleError($errorMessage)
     {
-        $errorMessage = sprintf("An error occurred: %s", urlencode($errorMessage));
+        $errorMessage = sprintf("An error occurred: %s", $errorMessage);
         $redirect = add_query_arg(
-            array('fyndiqMessageType' => 'error', 'fyndiqMessage' => $errorMessage),
+            array('fyndiqMessageType' => 'error', 'fyndiqMessage' => urlencode($errorMessage)),
             wp_get_referer()
         );
         wp_redirect($redirect);
         exit;
-    }
-
-    static function enforceTypeSafety(&$variable, $type)
-    {
-        if (gettype($variable) !== $type) {
-            throw new Exception(sprintf(
-                'Error - variable %s has incorrect type of %s. Type should be %s.',
-                var_export($variable, true),
-                gettype($variable),
-                $type
-            ));
-        }
-        return $variable;
     }
 }

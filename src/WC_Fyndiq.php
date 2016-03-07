@@ -784,6 +784,8 @@ EOS;
             case 'fyndiq_unhandle_order':
                 $this->fyndiq_order_handle_bulk_action(0);
                 break;
+            case 'fyndiq_order_handle_bulk_action':
+                break;
             default:
                 break;
         }
@@ -851,7 +853,7 @@ EOS;
                 foreach ($posts as $post_id) {
                     $product = new FmProduct((int) $post_id);
                     if ($product->isProductExportable()) {
-                        $product->setIsExported(FmError::enforceTypeSafety($exporting, 'boolean'));
+                        $product->setIsExported($exporting);
                         $post_ids[] = $post_id;
                         $changed++;
                     }
