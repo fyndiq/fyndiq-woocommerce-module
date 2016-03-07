@@ -784,8 +784,6 @@ EOS;
             case 'fyndiq_unhandle_order':
                 FmOrder::orderHandleBulkAction(false);
                 break;
-            case 'fyndiq_order_handle_bulk_action':
-                break;
             case 'fyndiq_delivery':
                 FmOrder::deliveryNoteBulkaction();
                 break;
@@ -810,9 +808,9 @@ EOS;
 
     public function fyndiq_bulk_notices()
     {
-        global $post_type, $pageNow;
+        global $post_type, $pagenow;
 
-        if ($pageNow == 'edit.php' && isset($_REQUEST['fyndiq_removed']) && (int)$_REQUEST['fyndiq_removed']) {
+        if ($pagenow == 'edit.php' && isset($_REQUEST['fyndiq_removed']) && (int)$_REQUEST['fyndiq_removed']) {
             $message = sprintf(
                 _n(
                     'Products removed from Fyndiq.',
@@ -823,7 +821,7 @@ EOS;
             );
             $this->fmOutput->output('<div class="updated"><p>' . $message . '</p></div>');
         }
-        if ($pageNow == 'edit.php' && isset($_REQUEST['fyndiq_exported']) && (int)$_REQUEST['fyndiq_exported']) {
+        if ($pagenow == 'edit.php' && isset($_REQUEST['fyndiq_exported']) && (int)$_REQUEST['fyndiq_exported']) {
             $message = sprintf(
                 _n(
                     'Products exported to Fyndiq.',

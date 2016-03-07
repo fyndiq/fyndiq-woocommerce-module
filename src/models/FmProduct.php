@@ -165,26 +165,7 @@ class FmProduct extends FmPost
             $this->setMetaData(self::FYNDIQ_PRICE_PERCENTAGE_META_KEY, get_option('wcfyndiq_price_percentage'));
         }
 
-        if ($value) {
-            return $this->setInternalExportedStatus(true);
-        }
-            return $this->setInternalExportedStatus(false);
-    }
-
-
-    /**
-     * Internal logic for setting whether an item has been exported to Fyndiq or not
-     *
-     * @param bool $isSet - true if the product is to be marked as exported to Fyndiq, inverse applies
-     * @return bool|int|null - whatever the native WP function spits out @todo - write abstraction class
-     */
-    private function setInternalExportedStatus($isSet)
-    {
-        //enforceTypeSafety returns passed variable if type is OK
-        if ($isSet) {
-            return $this->setMetaData(self::FYNDIQ_EXPORT_META_KEY, self::EXPORTED);
-        }
-            return $this->setMetaData(self::FYNDIQ_EXPORT_META_KEY, self::NOT_EXPORTED);
+        return $this->setMetaData(self::FYNDIQ_EXPORT_META_KEY, $value ? self::EXPORTED : self::NOT_EXPORTED);
     }
 
     /**
