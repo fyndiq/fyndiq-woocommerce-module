@@ -663,7 +663,7 @@ EOS;
     public function my_admin_notice()
     {
         if ($this->checkCurrency()) {
-            printf(
+            $this->fmOutput->output(sprintf(
                 '<div class="error"><p><strong>%s</strong>: %s %s</p></div>',
                 __('Wrong Currency', 'fyndiq'),
                 __('Fyndiq only works in EUR and SEK. change to correct currency. Current Currency:', 'fyndiq'),
@@ -671,7 +671,7 @@ EOS;
             );
         }
         if ($this->checkCountry()) {
-            printf(
+            $this->fmOutput->output(sprintf(
                 '<div class="error"><p><strong>%s</strong>: %s %s</p></div>',
                 __('Wrong Country', 'fyndiq'),
                 __('Fyndiq only works in Sweden and Germany. change to correct country. Current Country:', 'fyndiq'),
@@ -680,7 +680,7 @@ EOS;
         }
         if ($this->checkCredentials()) {
             $url = admin_url('admin.php?page=wc-settings&tab=wcfyndiq');
-            $this->$this->fmOutput->output(sprintf(
+            $this->fmOutput->output(sprintf(
                 '<div class="error"><p><strong>%s</strong>: %s <a href="%s">%s</a></p></div>',
                 __('Fyndiq Credentials', 'fyndiq'),
                 __('You need to set Fyndiq Credentials to make it work. Do it in ', 'fyndiq'),
@@ -803,7 +803,7 @@ EOS;
         $postsArray = $this->getRequestPostsArray();
         if (!empty($postsArray)) {
             $posts = array();
-            foreach ($this->getRequestPostsArray() as $post) {
+            foreach ($postsArray as $post) {
                 $dataRow = array(
                     'id' => $post->ID,
                     'marked' => $markStatus
@@ -826,13 +826,14 @@ EOS;
 
     public function fyndiq_product_export_bulk_action()
     {
+        $action = $this->getAction('WP_Posts_List_Table');
 
         //If there is no action, we're done.
-        if (!$this->getAction('WP_Posts_List_Table')) {
+        if (!$action) {
             return false;
         }
 
-        switch ($this->getAction('WP_Posts_List_Table')) {
+        switch ($action) {
             case 'fyndiq_export':
                 $report_action = 'fyndiq_exported';
                 $exporting = FmProduct::EXPORTED;
@@ -842,7 +843,7 @@ EOS;
                 $exporting = FmProduct::NOT_EXPORTED;
                 break;
             default:
-                throw new Exception(sprintf('Unexpected bulk action value: %s', $this->getAction('WP_Posts_List_Table')));
+                throw new Exception(sprintf('Unexpected bulk action value: %s', $action);
         }
 
         $changed = 0;
@@ -850,14 +851,14 @@ EOS;
         $posts = $this->getRequestPostsArray();
         if (!is_null($posts)) {
 
-                foreach ($posts as $post_id) {
-                    $product = new FmProduct((int) $post_id);
-                    if ($product->isProductExportable()) {
-                        $product->setIsExported($exporting);
-                        $post_ids[] = $post_id;
-                        $changed++;
-                    }
+            foreach ($posts as $post_id) {
+                $product = new FmProduct((int) $post_id);
+                if ($product->isProductExportable()) {
+                    $product->setIsExported($exporting);
+                    $post_ids[] = $post_id;
+                    $changed++;
                 }
+            }
         }
 
         //TODO: this should not be a void return
@@ -1043,7 +1044,6 @@ EOS;
     public function getAction($table)
     {
         $wp_list_table = _get_list_table($table);
-
         return $wp_list_table->current_action();
     }
 
@@ -1052,7 +1052,7 @@ EOS;
         if (isset($_REQUEST['post'])) {
             return $_REQUEST['post'];
         }
-        throw new Exception('getRequestPostsArray() called when there are no requested posts');
+        throw new Exception(__('Oops! An error occurred getting a list of posts - tell Fyndiq this: getRequestPostsArray() called when there are no requested posts'));
     }
 
     public function returnAndDie($return)

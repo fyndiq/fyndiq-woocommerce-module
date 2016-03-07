@@ -15,6 +15,10 @@ class FmPost
     public function __construct($postId)
     {
         $this->post = get_post($postId);
+
+        if (is_null($this->post)) {
+            
+        }
     }
 
     public function getPostId()

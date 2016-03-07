@@ -17,7 +17,8 @@ class FmField
      *
      * @return bool - Always returns true because add_action() aways returns true TODO: abstraction layer
      */
-    static public function setHooks() {
+    public static function setHooks()
+    {
         add_action('woocommerce_product_write_panels', array(__CLASS__, 'fyndiq_product_tab_content'), self::SHOW_CONTENT_PRIORITY);
         return true;
     }

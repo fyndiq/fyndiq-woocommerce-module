@@ -128,7 +128,7 @@ class FmProduct extends FmPost
      * Checks the post metadata to see if the Product is marked as exported.
      * Takes into account that a flag in $_POST might have been set.
      *
-     * @param bool $saving - TRUE if a post is being saved
+     * @param bool $saving - true if a post is being saved
      * @return bool - Returns true if product is exported, inverse applies
      */
     public function getIsExported($saving = false)
@@ -244,7 +244,7 @@ class FmProduct extends FmPost
                         $postTitleLength
                     )
                 );
-                    $error = true;
+                $error = true;
             }
 
             $postDescriptionLength = mb_strlen(FmExport::getDescriptionPOST());
@@ -258,7 +258,7 @@ class FmProduct extends FmPost
                         $postDescriptionLength
                     )
                 );
-                    $error = true;
+                $error = true;
             }
 
             $postSKULength = mb_strlen($_POST['_sku']);
@@ -272,7 +272,7 @@ class FmProduct extends FmPost
                         $postSKULength
                     )
                 );
-                    $error = true;
+                $error = true;
             }
 
             $postRegularPrice = intval($_POST['_regular_price']);
@@ -284,7 +284,7 @@ class FmProduct extends FmPost
                         $postRegularPrice
                     )
                 );
-                    $error = true;
+                $error = true;
             }
 
             if ($error) {

@@ -23,9 +23,9 @@ class FmOrder extends FmPost
             return isset($_POST['_fyndiq_handled_order']);
             //Otherwise, look in the metadata.
         } elseif (!get_post_meta($this->getPostId(), self::FYNDIQ_HANDLED_ORDER_META_FIELD, true)) {
-            return FALSE;
+            return false;
         }
-        return TRUE;
+        return true;
     }
 
     public function setIsHandled($value)
@@ -38,7 +38,7 @@ class FmOrder extends FmPost
 
         $fyndiqId = $this->getFyndiqOrderId();
 
-        if (!$fyndiqId)  {
+        if (!$fyndiqId) {
             return;
         }
         $markPair = new stdClass();
@@ -60,7 +60,7 @@ class FmOrder extends FmPost
         $orderID = $this->getMetaData(self::FYNDIQ_ID_META_FIELD);
 
         if ($orderID === '-') {
-                return FALSE;
+                return false;
         }
 
         return $orderID;
