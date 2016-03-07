@@ -159,14 +159,13 @@ class FmProduct extends FmPost
      */
     public function setIsExported($value)
     {
-        //This part ensures that the price percentage is set, and if it isn't set, updates it.
+        //This part ensures that the price percentage is set, and if it isn't set, updates it. TODO: move this somewhere better
         $percentage = get_post_meta($this->getPostID(), self::FYNDIQ_PRICE_PERCENTAGE_META_KEY, true);
         if (empty($percentage)) {
             $this->setMetaData(self::FYNDIQ_PRICE_PERCENTAGE_META_KEY, get_option('wcfyndiq_price_percentage'));
         }
 
         if ($value) {
-
             return $this->setInternalExportedStatus(true);
         }
             return $this->setInternalExportedStatus(false);

@@ -17,7 +17,7 @@ class FmPost
         $this->post = get_post($postId);
 
         if (is_null($this->post)) {
-            
+            throw new Exception(__('Whoops. An error occurred when generating a post. Please tell Fyndiq: FmPost instantiated with bad ID', 'fyndiq'));
         }
     }
 
@@ -56,7 +56,7 @@ class FmPost
     {
         return get_the_ID();
     }
-    
+
     public static function getRequestPostsArray()
     {
         if (isset($_REQUEST['post'])) {

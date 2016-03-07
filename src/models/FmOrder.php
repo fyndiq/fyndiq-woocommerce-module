@@ -39,7 +39,7 @@ class FmOrder extends FmPost
         $fyndiqId = $this->getFyndiqOrderId();
 
         if (!$fyndiqId) {
-            return;
+            return false;
         }
         $markPair = new stdClass();
         $markPair->id = $fyndiqId;
@@ -63,7 +63,7 @@ class FmOrder extends FmPost
                 return false;
         }
 
-        return $orderID;
+        return (int)$orderID;
     }
 
     public function setFyndiqOrderId($fyndiqId)
@@ -296,9 +296,8 @@ class FmOrder extends FmPost
     {
         if (get_option('wcfyndiq_order_error') !== false) {
             return update_option('wcfyndiq_order_error', true);
-        } else {
-            return add_option('wcfyndiq_order_error', true, null, false);
         }
+        return add_option('wcfyndiq_order_error', true, null, false);
     }
 
     public static function generateOrders()
@@ -314,6 +313,10 @@ class FmOrder extends FmPost
             $result = $e->getMessage();
             FmOrder::setOrderError();
         }
+        if (!isset($result)) {
+            throw new Exception(__('No orders to generate', 'fyndiq'));
+        }
+
         $fmOutput->outputJSON($result);
         wp_die();
     }
