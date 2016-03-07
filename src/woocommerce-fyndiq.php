@@ -24,7 +24,7 @@ if (is_plugin_inactive('woocommerce/woocommerce.php')) {
 register_deactivation_hook(__FILE__, 'fyndiq_deactivate');
 function fyndiq_deactivate()
 {
-//First empty the settings on fyndiq
+    //First empty the settings on fyndiq
     if (!$this->checkCredentials()) {
         $data = array(
             FyndiqUtils::NAME_PRODUCT_FEED_URL => '',

@@ -326,8 +326,7 @@ class FmProduct extends FmPost
      */
     public static function setHooks()
     {
-        add_action('woocommerce_process_product_meta', array(__CLASS__, 'saveFyndiqProduct'));
-        return true;
+        return add_action('woocommerce_process_product_meta', array(__CLASS__, 'saveFyndiqProduct'));
     }
 
     /**
