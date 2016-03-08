@@ -314,11 +314,11 @@ class FmOrder extends FmPost
             FmOrder::setOrderError();
         }
         if (!isset($result)) {
-            throw new Exception(__('No orders to generate', 'fyndiq'));
+            return false;
         }
 
         $fmOutput->outputJSON($result);
-        wp_die();
+        return wp_die();
     }
 
     /**
