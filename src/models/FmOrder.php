@@ -273,7 +273,6 @@ class FmOrder extends FmPost
     {
         $data = new stdClass();
 
-
         $data->orders = $orders;
 
         //Try to send the data to the API
@@ -331,11 +330,10 @@ class FmOrder extends FmPost
             $posts = array();
             foreach ($postsArray as $post) {
                 $dataRow = array(
-                    'id' => $post->ID,
+                    'id' => $post,
                     'marked' => $markStatus
                 );
-
-                $posts[$post->ID][] = $dataRow;
+                $posts[$post][] = $dataRow;
             }
             FmOrder::setIsHandledBulk($posts);
         }
