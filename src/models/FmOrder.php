@@ -349,9 +349,6 @@ class FmOrder extends FmPost
         try {
             $output = new FyndiqOutput();
 
-            $wp_list_table = _get_list_table('WP_Posts_List_Table');
-            $action = $wp_list_table->current_action();
-
             $orders = array(
                 'orders' => array()
             );
