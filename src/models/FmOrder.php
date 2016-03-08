@@ -313,9 +313,6 @@ class FmOrder extends FmPost
             $result = $e->getMessage();
             FmOrder::setOrderError();
         }
-        if (!isset($result)) {
-            return false;
-        }
 
         $fmOutput->outputJSON($result);
         return wp_die();
