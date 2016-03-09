@@ -1,19 +1,19 @@
 <?php
-
-
 /**
  * Class FmOrder
  *
  * Object model for orders
  */
+
+//Boilerplate security. Doesn't allow this file to be directly executed by the browser.
+defined('ABSPATH') || exit;
+
 class FmOrder extends FmPost
 {
-
     const FYNDIQ_ID_META_FIELD = 'fyndiq_id';
-
     const FYNDIQ_HANDLED_ORDER_META_FIELD = '_fyndiq_handled_order';
 
-
+    //Getter for whether the order is handled. Takes into account $_POST when called.
     public function getIsHandled()
     {
         //If we're saving the post, look in the HTTP POST data.
@@ -23,9 +23,9 @@ class FmOrder extends FmPost
             return isset($_POST['_fyndiq_handled_order']);
             //Otherwise, look in the metadata.
         } elseif (!get_post_meta($this->getPostId(), self::FYNDIQ_HANDLED_ORDER_META_FIELD, true)) {
-            return 0;
+            return false;
         }
-        return 1;
+        return true;
     }
 
     public function setIsHandled($value)
@@ -34,10 +34,15 @@ class FmOrder extends FmPost
          * This might seem inadequate in terms of input sanity,
          * but actually would be no different than an if statement.
          */
-        update_post_meta($this->getPostId(), self::FYNDIQ_HANDLED_ORDER_META_FIELD, (bool)$value);
+        $this->setMetaData(self::FYNDIQ_HANDLED_ORDER_META_FIELD, (bool)$value);
 
+        $fyndiqId = $this->getFyndiqOrderId();
+
+        if (!$fyndiqId) {
+            return false;
+        }
         $markPair = new stdClass();
-        $markPair->id = $this->getFyndiqOrderId();
+        $markPair->id = $fyndiqId;
         $markPair->marked = (bool)$value;
 
         $data = new stdClass();
@@ -52,7 +57,13 @@ class FmOrder extends FmPost
 
     public function getFyndiqOrderId()
     {
-        return get_post_meta($this->getPostId(), self::FYNDIQ_ID_META_FIELD, true);
+        $orderID = $this->getMetaData(self::FYNDIQ_ID_META_FIELD);
+
+        if ($orderID === '-') {
+                return false;
+        }
+
+        return (int)$orderID;
     }
 
     public function setFyndiqOrderId($fyndiqId)
@@ -240,5 +251,124 @@ class FmOrder extends FmPost
             default:
                 return FmOrder::getProductBySku($reference);
         }
+    }
+
+    /**
+     *
+     * Sets whether the given orders are marked as processed to Fyndiq or not
+     *
+     * @param $orders - an array of orders in the structure:
+     *
+     * array(
+     *        array(
+     *              id => postIDvalue,
+     *              marked => boolean
+     *              ),
+     *                  ...
+     * )
+     * @throws Exception
+     *
+     */
+    public static function setIsHandledBulk($orders)
+    {
+        //Try to send the data to the API
+        try {
+            FmHelpers::callApi('POST', 'orders/marked/', $orders);
+        } catch (Exception $e) {
+            FmError::handleError($e->getMessage());
+        }
+
+        //If the API call worked, update the orders on WC
+        foreach ($orders as $order) {
+            $orderObject = new FmOrder($order['id']);
+            $orderObject->setIsHandled((bool) $order['marked']);
+        }
+    }
+
+
+    //This probably can be removed with some refactoring.
+    public static function setOrderError()
+    {
+        if (get_option('wcfyndiq_order_error') !== false) {
+            return update_option('wcfyndiq_order_error', true);
+        }
+        return add_option('wcfyndiq_order_error', true, null, false);
+    }
+
+    public static function generateOrders()
+    {
+        $fmOutput = new FyndiqOutput();
+
+        define('DOING_AJAX', true);
+        try {
+            $orderFetch = new FmOrderFetch(false, true);
+            $result = $orderFetch->getAll();
+            update_option('wcfyndiq_order_time', time());
+        } catch (Exception $e) {
+            $result = $e->getMessage();
+            FmOrder::setOrderError();
+        }
+
+        $fmOutput->outputJSON($result);
+        return wp_die();
+    }
+
+    /**
+     * Function that handles bulk actions related to setting order handling status
+     *
+     * @param bool $markStatus - whether the orders are handled or not
+     * @throws Exception
+     */
+    public static function orderHandleBulkAction($markStatus)
+    {
+        $postsArray = FmPost::getRequestPostsArray();
+
+        $data = new stdClass();
+
+        if (!empty($postsArray)) {
+            foreach ($postsArray as $postId) {
+                $markPair = new stdClass();
+                $markPair->id = $postId;
+                $markPair->marked = (bool)$markStatus;
+                $data->orders[] = $markPair;
+            }
+        }
+            FmOrder::setIsHandledBulk($data);
+    }
+
+    public static function deliveryNoteBulkAction()
+    {
+        try {
+            $output = new FyndiqOutput();
+
+            $orders = array(
+                'orders' => array()
+            );
+            if (!isset($_REQUEST['post'])) {
+                throw new Exception(__('Pick at least one Order', 'fyndiq'));
+            }
+
+            foreach ($_REQUEST['post'] as $order) {
+                $meta = get_post_custom($order);
+                if (isset($meta['fyndiq_id']) && isset($meta['fyndiq_id'][0]) && $meta['fyndiq_id'][0] != '') {
+                    $orders['orders'][] = array('order' => intval($meta['fyndiq_id'][0]));
+                }
+            }
+
+            $ret = FmHelpers::callApi('POST', 'delivery_notes/', $orders);
+
+            if ($ret['status'] == 200) {
+                $fileName = 'delivery_notes-' . implode('-', $_REQUEST['post']) . '.pdf';
+                $file = fopen('php://temp', 'wb+');
+                fputs($file, $ret['data']);
+                $output->streamFile($file, $fileName, 'application/pdf', strlen($ret['data']));
+                fclose($file);
+            } else {
+                throw new Exception($ret['data']);
+            }
+        } catch (Exception $e) {
+            FmError::handleError($e->getMessage());
+        }
+        exit();
     }
 }

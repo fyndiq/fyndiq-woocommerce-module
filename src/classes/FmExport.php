@@ -1,4 +1,8 @@
 <?php
+
+//Boilerplate security. Doesn't allow this file to be directly executed by the browser.
+defined('ABSPATH') || exit;
+
 class FmExport
 {
 
@@ -369,7 +373,7 @@ class FmExport
         }
     }
 
-    function getDescriptionPOST()
+    public static function getDescriptionPOST()
     {
         $option = get_option('wcfyndiq_description_picker');
         if (!isset($option) || $option == false) {

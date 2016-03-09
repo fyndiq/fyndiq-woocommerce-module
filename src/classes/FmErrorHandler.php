@@ -1,17 +1,20 @@
 <?php
-
 /**
  * Handles showing errors on admin pages
  *
  */
+
+//Boilerplate security. Doesn't allow this file to be directly executed by the browser.
+defined('ABSPATH') || exit;
+
 class FmError
 {
-    public function __construct()
+    public static function setHooks()
     {
-        add_action('admin_notices', array(&$this, 'renderError'));
+        add_action('admin_notices', array(__CLASS__, 'renderError'));
     }
 
-    public function renderError()
+    public static function renderError()
     {
         if (isset($_REQUEST['fyndiqMessageType'])) {
             echo sprintf(

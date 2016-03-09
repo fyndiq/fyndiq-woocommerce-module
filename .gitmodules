@@ -4,3 +4,6 @@
 [submodule "src/include/api"]
 	path = src/include/api
 	url = git@github.com:fyndiq/fyndiq-api-wrapper-php.git
+[submodule "src/include/tgm"]
+	path = src/include/tgm
+	url = https://github.com/TGMPA/TGM-Plugin-Activation.git
