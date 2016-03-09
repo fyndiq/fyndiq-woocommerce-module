@@ -271,13 +271,9 @@ class FmOrder extends FmPost
      */
     public static function setIsHandledBulk($orders)
     {
-        $data = new stdClass();
-
-        $data->orders = $orders;
-
         //Try to send the data to the API
         try {
-            FmHelpers::callApi('POST', 'orders/marked/', $data);
+            FmHelpers::callApi('POST', 'orders/marked/', $orders);
         } catch (Exception $e) {
             FmError::handleError($e->getMessage());
         }
@@ -326,17 +322,18 @@ class FmOrder extends FmPost
     public static function orderHandleBulkAction($markStatus)
     {
         $postsArray = FmPost::getRequestPostsArray();
+
+        $data = new stdClass();
+
         if (!empty($postsArray)) {
-            $posts = array();
-            foreach ($postsArray as $post) {
-                $dataRow = array(
-                    'id' => $post,
-                    'marked' => $markStatus
-                );
-                $posts[$post][] = $dataRow;
+            foreach ($postsArray as $postId) {
+                $markPair = new stdClass();
+                $markPair->id = $postId;
+                $markPair->marked = (bool)$markStatus;
+                $data->orders[] = $markPair;
             }
-            FmOrder::setIsHandledBulk($posts);
         }
+            FmOrder::setIsHandledBulk($data);
     }
 
     public static function deliveryNoteBulkAction()
