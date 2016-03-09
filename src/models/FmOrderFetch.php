@@ -5,6 +5,10 @@ defined('ABSPATH') || exit;
 
 class FmOrderFetch extends FyndiqPaginatedFetch
 {
+    
+    protected $settingExists;
+    protected $storeId;
+
     public function __construct($settingExists = false)
     {
         $this->storeId = 0;
