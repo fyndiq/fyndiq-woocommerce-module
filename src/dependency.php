@@ -8,7 +8,9 @@
 defined('ABSPATH') || exit;
 
 require_once('include/tgm/class-tgm-plugin-activation.php');
+
 add_action('tgmpa_register', 'fyndiq_register_required_plugins');
+
 function fyndiq_register_required_plugins()
 {
     tgmpa(
