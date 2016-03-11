@@ -14,6 +14,7 @@ apt-get install -y git
 apt-get install -y curl
 apt-get install -y build-essential vim-nox
 apt-get install -y unzip
+apt-get install -y subversion
 
 ## Setup locales
 export LANGUAGE=en_GB.UTF-8
@@ -94,4 +95,8 @@ PHP
     ## Add hosts to file
     echo "192.168.44.45  fyndiq.local" >> /etc/hosts
     echo "127.0.0.1  woocommerce.local" >> /etc/hosts
+
+    ## Installing the tests
+    sudo -u vagrant -i -- /opt/fyndiq-woocommerce-module/bin/install-wp-tests.sh
+    svn co --quiet https://develop.svn.wordpress.org/tags/4.4.2/tests/phpunit/includes/ /tmp/wordpress-tests-lib/includes
 fi
