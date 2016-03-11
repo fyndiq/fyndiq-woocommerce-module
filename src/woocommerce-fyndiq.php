@@ -15,6 +15,8 @@ defined('ABSPATH') || exit;
 //Include plugin.php so that is_plugin_inactive() works
 include_once(ABSPATH . 'wp-admin/includes/plugin.php');
 
+require_once('dependency.php');
+
 if (is_plugin_active('woocommerce/woocommerce.php')) {
 
     // Handle deactivating the module.
