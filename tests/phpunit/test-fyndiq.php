@@ -9,7 +9,7 @@ class FyndiqTest extends WP_UnitTestCase {
         set_current_screen();
         $this->wc_fyndiq = $this->getMockBuilder('WC_Fyndiq')->setMethods(array('getAction','getRequestPost', 'bulkRedirect', 'returnAndDie', 'getProductId', 'getExportState', 'checkCurrency', 'checkCountry'))->getMock();
         $this->wc_fyndiq->woocommerce_loaded();
-        $this->wc_fyndiq->plugins_loaded();
+        //$this->wc_fyndiq->plugins_loaded();
     }
 
 	function test_fyndiq_class_should_exist() {
@@ -414,4 +414,3 @@ class FyndiqTest extends WP_UnitTestCase {
         return $order_id;
     }
 }
-
