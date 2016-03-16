@@ -901,7 +901,6 @@ EOS;
             update_option('wcfyndiq_ping_time', time());
             try {
                 $this->fmExport->feedFileHandling();
-                $this->update_product_info();
             } catch (Exception $e) {
                 error_log($e->getMessage());
             }
