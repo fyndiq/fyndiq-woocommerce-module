@@ -20,7 +20,6 @@ function _manually_load_plugin() {
     require_once(dirname( __FILE__ ) . '/../src/models/FmOrder.php');
     require_once(dirname( __FILE__ ) . '/../src/models/FmOrderFetch.php');
     require_once(dirname( __FILE__ ) . '/../src/models/FmProduct.php');
-    require_once(dirname( __FILE__ ) . '/../src/models/FmProductFetch.php');
     require_once(dirname( __FILE__ ) . '/../src/WC_Fyndiq.php');
 }
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
