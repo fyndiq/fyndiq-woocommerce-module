@@ -54,6 +54,8 @@ if (is_plugin_active('woocommerce/woocommerce.php')) {
     require_once('models/FmOrderFetch.php');
     require_once('models/FmProduct.php');
     require_once('models/FmProductFetch.php');
+    require_once('classes/FmSettings.php');
+    require_once('classes/FmDiagnostics.php');
     require_once('WC_Fyndiq.php');
 
     //Let's get the ball rolling.
