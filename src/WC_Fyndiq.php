@@ -120,11 +120,6 @@ class WC_Fyndiq
         if (isset($_GET['fyndiq_orders'])) {
             FmOrder::generateOrders();
         }
-        if (isset($_GET['fyndiq_products'])) {
-            define('DOING_AJAX', true);
-            $this->fmOutput->outputJSON(array('status' => 'ok'));
-            wp_die();
-        }
         if (isset($_GET['fyndiq_notification'])) {
             $this->notification_handle();
         }
