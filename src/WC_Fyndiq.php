@@ -122,7 +122,6 @@ class WC_Fyndiq
         }
         if (isset($_GET['fyndiq_products'])) {
             define('DOING_AJAX', true);
-            $this->update_product_info();
             $this->fmOutput->outputJSON(array('status' => 'ok'));
             wp_die();
         }
@@ -921,14 +920,6 @@ EOS;
         );
         $this->fmOutput->outputJSON($info);
         wp_die();
-    }
-
-
-
-    private function update_product_info()
-    {
-        $productFetch = new FmProductFetch();
-        $productFetch->getAll();
     }
 
     public function getAction($table)
