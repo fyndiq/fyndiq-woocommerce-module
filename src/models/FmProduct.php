@@ -46,11 +46,6 @@ class FmProduct extends FmPost
     const FYNDIQ_EXPORT_META_KEY = '_fyndiq_export';
 
     /**
-     * Name of the metadata field that contains the product status on Fyndiq
-     */
-    const FYNDIQ_STATUS_META_KEY = '_fyndiq_status';
-
-    /**
      * Name of the metadata field that contains the absolute price (price after discount) of the item sold on Fyndiq
      */
     const FYNDIQ_ABSOLUTE_PRICE_FIELD = '_fyndiq_price_absolute';
@@ -190,17 +185,6 @@ class FmProduct extends FmPost
     public function setAbsolutePrice($price)
     {
         return $this->setMetaData(self::FYNDIQ_ABSOLUTE_PRICE_FIELD, $price);
-    }
-
-    /**
-     * Sets the status on Fyndiq of instantiated product
-     *
-     * @param string $status - Status of the item on fyndiq
-     * @return bool|int|null - whatever the native WP function spits out @todo - write abstraction class
-     */
-    public function setStatus($status)
-    {
-        return $this->setMetaData(self::FYNDIQ_STATUS_META_KEY, $status);
     }
 
     /**
