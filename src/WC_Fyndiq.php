@@ -182,14 +182,6 @@ EOS;
 
     }
 
-
-
-        
-
-
-
-
-
     //Hooked to woocommerce_product_write_panel_tabs
     public function fyndiq_product_tab()
     {
