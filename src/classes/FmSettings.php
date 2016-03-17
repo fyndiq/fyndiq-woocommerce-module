@@ -29,7 +29,7 @@ class FmSettings
         woocommerce_admin_fields(self::fyndiqAllSettings());
     }
 
-    static public function pluginActionLink($links)
+    public static function pluginActionLink($links)
     {
         $settingUrl = esc_url(get_admin_url(null, 'admin.php?page=wc-settings&tab=products&section=wcfyndiq'));
         $links[] = '<a href="'.$settingUrl.'">'.__('Settings', 'fyndiq').'</a>';
