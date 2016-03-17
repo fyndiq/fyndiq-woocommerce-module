@@ -21,9 +21,9 @@ class FyndiqTest extends WP_UnitTestCase {
      * @group ignore
      */
     function test_setting_action_should_exist() {
-        $fakeSections = array();
-        //$this->assertTrue(isset($this->wc_fyndiq->fyndiq_settings_action($fakeSections)['wcfyndiq']));
         $this->markTestIncomplete('This test has not been completed yet.');
+        $fakeSections = array();
+        $this->assertTrue(isset($this->wc_fyndiq->fyndiq_settings_action($fakeSections)['wcfyndiq']));
     }
 
     // Columnable' );
@@ -53,12 +53,13 @@ class FyndiqTest extends WP_UnitTestCase {
      * @group ignore
      */
     function test_fyndiq_product_add_bulk_action_product() {
+        $this->markTestIncomplete('This test has not been completed yet.');
         $contributor_id = $this->factory->user->create( array( 'role' => 'editor' ) );
         wp_set_current_user( $contributor_id );
         global $post_type;
         $post_type = 'product';
-        //$this->wc_fyndiq->fyndiq_product_add_bulk_action();
-        /**$this->expectOutputString("                    <script type=\"text/javascript\">
+        $this->wc_fyndiq->fyndiq_product_add_bulk_action();
+        $this->expectOutputString("                    <script type=\"text/javascript\">
                         jQuery(document).ready(function () {
                             jQuery('<option>').val('fyndiq_export').text('Export to Fyndiq').appendTo(\"select[name='action']\");
                             jQuery('<option>').val('fyndiq_export').text('Export to Fyndiq').appendTo(\"select[name='action2']\");
@@ -66,28 +67,27 @@ class FyndiqTest extends WP_UnitTestCase {
                             jQuery('<option>').val('fyndiq_no_export').text('Remove from Fyndiq').appendTo(\"select[name='action2']\");
                         });
                     </script>
-                ");*/
-        $this->markTestIncomplete('This test has not been completed yet.');
+                ");
     }
 
     /**
      * @group ignore
      */
     function test_fyndiq_product_add_bulk_action_order() {
+        $this->markTestIncomplete('This test has not been completed yet.');
         $contributor_id = $this->factory->user->create( array( 'role' => 'editor' ) );
         wp_set_current_user( $contributor_id );
         global $post_type;
         $post_type = 'shop_order';
-        //$this->wc_fyndiq->fyndiq_product_add_bulk_action();
-        /**$this->expectOutputString("                    <script type=\"text/javascript\">
+        $this->wc_fyndiq->fyndiq_product_add_bulk_action();
+        $this->expectOutputString("                    <script type=\"text/javascript\">
                         jQuery(document).ready(function () {
                             jQuery('<option>').val('fyndiq_delivery').text('Get Fyndiq Delivery Note').appendTo(\"select[name='action']\");
                             jQuery('<option>').val('fyndiq_delivery').text('Get Fyndiq Delivery Note').appendTo(\"select[name='action2']\");
                             jQuery(jQuery(\".wrap h2\")[0]).append(\"<a href='#' id='fyndiq-order-import' class='add-new-h2'>Import From Fyndiq</a>\");
                         });
                     </script>
-                ");*/
-        $this->markTestIncomplete('This test has not been completed yet.');
+                ");
     }
 
 
