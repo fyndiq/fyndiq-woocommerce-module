@@ -17,6 +17,7 @@ function _manually_load_plugin()
     require_once(dirname(__FILE__) . '/../src/classes/FmUpdate.php');
     require_once(dirname(__FILE__) . '/../src/classes/FmExport.php');
     require_once(dirname(__FILE__) . '/../src/classes/FmField.php');
+    require_once(dirname(__FILE__) . '/../src/classes/FmSettings.php');
     require_once(dirname(__FILE__) . '/../src/include/shared/src/init.php');
     require_once(dirname(__FILE__) . '/../src/models/FmOrder.php');
     require_once(dirname(__FILE__) . '/../src/models/FmOrderFetch.php');

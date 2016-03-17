@@ -8,24 +8,25 @@
 
 class FmDiagnostics
 {
-    public static function setHooks() {
+    public static function setHooks()
+    {
         add_action('admin_menu', array(__CLASS__, 'addDiagnosticMenuItem'));
         add_filter('plugin_action_links_' . plugin_basename(dirname(__FILE__).'/woocommerce-fyndiq.php'), array(__CLASS__, 'pluginActionLink'));
     }
 
-    static public function addDiagnosticMenuItem()
+    public static function addDiagnosticMenuItem()
     {
         add_submenu_page(null, 'Fyndiq Checker Page', 'Fyndiq', 'manage_options', 'fyndiq-check', array(__CLASS__, 'diagPage'));
     }
 
-    static public function pluginActionLink($links)
+    public static function pluginActionLink($links)
     {
         $checkUrl = esc_url(get_admin_url(null, 'admin.php?page=fyndiq-check'));
         $links[] = '<a href="'.$checkUrl.'">'.__('Fyndiq Check', 'fyndiq').'</a>';
         return $links;
     }
 
-    static public function diagPage()
+    public static function diagPage()
     {
         echo "<h1>".__('Fyndiq Checker Page', 'fyndiq')."</h1>";
         echo "<p>".__('This is a page to check all the important requirements to make the Fyndiq work.', 'fyndiq')."</p>";
@@ -141,6 +142,4 @@ class FmDiagnostics
         }
         return implode('<br />', $installed_plugin);
     }
-
-
 }

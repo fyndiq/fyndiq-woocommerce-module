@@ -152,10 +152,12 @@ class FyndiqTest extends WP_UnitTestCase
         $this->expectOutputString("Can't be exported");
     }
 
+
+
     function test_fyndiq_all_settings_correct_section()
     {
         $settings = array();
-        $return = $this->wc_fyndiq->fyndiq_all_settings($settings, 'wcfyndiq');
+        $return = FmSettings::fyndiqAllSettings($settings, 'wcfyndiq');
 
         $expected = array(
             array('name' => 'Fyndiq',

@@ -26,7 +26,7 @@ class FmSettings
 
     public static function settings_tab()
     {
-        woocommerce_admin_fields(self::fyndiq_all_settings());
+        woocommerce_admin_fields(self::fyndiqAllSettings());
     }
 
     static public function pluginActionLink($links)
@@ -38,7 +38,7 @@ class FmSettings
 
     public static function update_settings()
     {
-        woocommerce_update_options(self::fyndiq_all_settings());
+        woocommerce_update_options(self::fyndiqAllSettings());
         try {
             self::updateUrls();
         } catch (Exception $e) {
@@ -65,11 +65,13 @@ class FmSettings
         return FmHelpers::callApi('PATCH', 'settings/', $data);
     }
 
-    public function fyndiq_all_settings()
+
+    public static function fyndiqAllSettings()
     {
+        $currencies = array_combine(FyndiqUtils::$allowedCurrencies, FyndiqUtils::$allowedCurrencies);
 
         //Get options for attributes
-        $attributes = $this->getAllTerms();
+        $attributes = FmHelpers::getAllTerms();
 
         /**
          * Check the current section is what we want
@@ -172,7 +174,7 @@ class FmSettings
             ),
             'id' => 'wcfyndiq_currency',
             'type' => 'select',
-            'options' => $this->currencies,
+            'options' => $currencies,
             'desc' => __('This must be picked accurate', 'fyndiq'),
 
         );
@@ -194,7 +196,6 @@ class FmSettings
 
         // Add Description picker
         $settings_slider[] = array(
-
             'name' => __('Enable Orders', 'fyndiq'),
             'desc_tip' => __(
                 'This will disable all order logic for Fyndiq',
@@ -203,30 +204,29 @@ class FmSettings
             'id' => 'wcfyndiq_order_enable',
             'type' => 'select',
             'options' => array(
-                self::ORDERS_ENABLE => __('Enable', 'fyndiq'),
-                self::ORDERS_DISABLE => __('Disable', 'fyndiq'),
+                FmOrder::ORDERS_ENABLE => __('Enable', 'fyndiq'),
+                FmOrder::ORDERS_DISABLE => __('Disable', 'fyndiq'),
             ),
             'desc' => __('Default is to have orders enabled', 'fyndiq'),
+        );
 
-
-            // Add order status setting
-            $settings_slider[] = array(
-
-                'name' => __('Order Status', 'fyndiq'),
-                'desc_tip' => __(
-                    'When a order is imported from fyndiq, this status will be applied.',
-                    'fyndiq'
-                ),
-                'id' => 'wcfyndiq_create_order_status',
-                'type' => 'select',
-                'options' => array(
-                    'completed' => 'completed',
-                    'processing' => 'processing',
-                    'pending' => 'pending',
-                    'on-hold' => 'on-hold'
-                ),
-                'desc' => __('This must be picked accurate', 'fyndiq')
-            ));
+        // Add order status setting
+        $settings_slider[] = array(
+            'name' => __('Order Status', 'fyndiq'),
+            'desc_tip' => __(
+                'When a order is imported from fyndiq, this status will be applied.',
+                'fyndiq'
+            ),
+            'id' => 'wcfyndiq_create_order_status',
+            'type' => 'select',
+            'options' => array(
+                'completed' => 'completed',
+                'processing' => 'processing',
+                'pending' => 'pending',
+                'on-hold' => 'on-hold'
+            ),
+            'desc' => __('This must be picked accurate', 'fyndiq')
+        );
 
         $settings_slider[] = array(
             'type' => 'sectionend',
@@ -317,6 +317,4 @@ class FmSettings
 
         return apply_filters('wc_settings_tab_wcfyndiq', $settings_slider);
     }
-
-
 }

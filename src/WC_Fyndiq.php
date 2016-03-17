@@ -14,7 +14,6 @@ class WC_Fyndiq
 
     public function __construct()
     {
-        $this->currencies = array_combine(FyndiqUtils::$allowedCurrencies, FyndiqUtils::$allowedCurrencies);
 
         //Register class hooks as early as possible
         add_action('wp_loaded', array(&$this, 'initiateClassHooks'));
@@ -25,7 +24,9 @@ class WC_Fyndiq
         // called only after woocommerce has finished loading
         add_action('init', array(&$this, 'woocommerce_loaded'), 250);
 
-        $this->filePath = wp_upload_dir()['basedir'] . '/fyndiq-feed.csv';
+        //This needs to be two-step to ensure compatibility with < PHP5.5
+        $uploadDir = wp_upload_dir();
+        $this->filePath = $uploadDir['basedir'] . '/fyndiq-feed.csv';
 
         $this->fmOutput = new FyndiqOutput();
         $this->fmUpdate = new FmUpdate();
@@ -182,7 +183,7 @@ EOS;
 
     }
 
-    //Hooked to woocommerce_product_write_panel_tabs
+    //Hooked to WooCommerce_product_write_panel_tabs
     public function fyndiq_product_tab()
     {
         echo sprintf("<li class='fyndiq_tab'><a href='#fyndiq_tab'>%s</a></li>", __('Fyndiq', 'fyndiq'));
@@ -542,7 +543,7 @@ EOS;
         FyndiqUtils::debug('USER AGENT', FmHelpers::get_user_agent());
         $languageId = WC()->countries->get_base_country();
         FyndiqUtils::debug('language', $languageId);
-        FyndiqUtils::debug('taxonomy', $this->getAllTerms());
+        FyndiqUtils::debug('taxonomy', FmHelpers::getAllTerms());
         $return = $this->fmExport->feedFileHandling();
         $result = file_get_contents($this->filePath);
         FyndiqUtils::debug('$result', $result, true);
@@ -613,9 +614,6 @@ EOS;
         return (empty($username) || empty($token));
     }
 
-
-
-
     private function checkToken()
     {
         $pingToken = get_option('wcfyndiq_ping_token');
@@ -626,35 +624,5 @@ EOS;
             $this->fmOutput->showError(400, 'Bad Request', '400 Bad Request');
             wp_die();
         }
-    }
-
-    
-
-
-
-
-
-    private function getAllTerms()
-    {
-        $attributes = array('' => '');
-        $attribute_taxonomies = wc_get_attribute_taxonomies();
-
-        if ($attribute_taxonomies) {
-            foreach ($attribute_taxonomies as $tax) {
-                $attributes[$tax->attribute_name] = $tax->attribute_label;
-            }
-        }
-
-        // Get products attributes
-        // This can be set per product and some product can have no attributes at all
-        global $wpdb;
-        $results = $wpdb->get_results('SELECT * FROM wp_postmeta WHERE meta_key = "_product_attributes" AND meta_value != "a:0:{}"', OBJECT);
-        foreach ($results as $meta) {
-            $data = unserialize($meta->meta_value);
-            foreach ($data as $key => $attribute) {
-                $attributes[$key] = $attribute['name'];
-            }
-        }
-        return $attributes;
     }
 }
