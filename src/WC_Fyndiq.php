@@ -351,7 +351,8 @@ EOS;
                 self::ORDERS_ENABLE => __('Enable', 'fyndiq'),
                 self::ORDERS_DISABLE => __('Disable', 'fyndiq'),
             ),
-            'desc' => __('Default is to have orders enabled', 'fyndiq'),
+            'desc' => __('Default is to have orders enabled', 'fyndiq')
+        );
 
 
             // Add order status setting
@@ -371,7 +372,7 @@ EOS;
                     'on-hold' => 'on-hold'
                 ),
                 'desc' => __('This must be picked accurate', 'fyndiq')
-            ));
+            );
 
             $settings_slider[] = array(
             'type' => 'sectionend',
