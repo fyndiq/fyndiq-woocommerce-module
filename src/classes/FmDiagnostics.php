@@ -11,7 +11,8 @@ class FmDiagnostics
     public static function setHooks()
     {
         add_action('admin_menu', array(__CLASS__, 'addDiagnosticMenuItem'));
-        add_filter('plugin_action_links_' . plugin_basename(dirname(__FILE__).'/woocommerce-fyndiq.php'), array(__CLASS__, 'pluginActionLink'));
+        add_filter('plugin_action_links_' . plugin_basename(dirname(__FILE__) . '/woocommerce-fyndiq.php'),
+            array(__CLASS__, 'pluginActionLink'));
     }
 
     public static function addDiagnosticMenuItem()
@@ -22,34 +23,37 @@ class FmDiagnostics
     public static function pluginActionLink($links)
     {
         $checkUrl = esc_url(get_admin_url(null, 'admin.php?page=fyndiq-check'));
-        $links[] = '<a href="'.$checkUrl.'">'.__('Fyndiq Check', 'fyndiq').'</a>';
+        $links[] = '<a href="' . $checkUrl . '">' . __('Fyndiq Check', 'fyndiq') . '</a>';
         return $links;
     }
 
     public static function diagPage()
     {
-        echo "<h1>".__('Fyndiq Checker Page', 'fyndiq')."</h1>";
-        echo "<p>".__('This is a page to check all the important requirements to make the Fyndiq work.', 'fyndiq')."</p>";
+        echo "<h1>" . __('Fyndiq Checker Page', 'fyndiq') . "</h1>";
+        echo "<p>" . __('This is a page to check all the important requirements to make the Fyndiq work.', 'fyndiq') . "</p>";
 
-        echo "<h2>".__('File Permission', 'fyndiq')."</h2>";
+        echo "<h2>" . __('File Permission', 'fyndiq') . "</h2>";
         echo self::probeFilePermissions();
 
-        echo "<h2>".__('Classes', 'fyndiq')."</h2>";
+        echo "<h2>" . __('Classes', 'fyndiq') . "</h2>";
         echo self::probeModuleIntegrity();
 
-        echo "<h2>".__('API Connection', 'fyndiq')."</h2>";
+        echo "<h2>" . __('API Connection', 'fyndiq') . "</h2>";
         echo self::probeConnection();
 
-        echo "<h2>".__('Installed Plugins', 'fyndiq')."</h2>";
+        echo "<h2>" . __('Installed Plugins', 'fyndiq') . "</h2>";
         echo self::probePlugins();
     }
 
-    private function probeFilePermissions()
+    private static function probeFilePermissions()
     {
+        //This needs to be two-step to ensure compatibility with < PHP5.5
+        $uploadDir = wp_upload_dir();
+        $fileName = $uploadDir['basedir'] . '/fyndiq-feed.csv';
+
         $messages = array();
         $testMessage = time();
         try {
-            $fileName = $this->filePath;
             $exists =  file_exists($fileName) ?
                 __('exists', 'fyndiq') :
                 __('does not exist', 'fyndiq');
@@ -80,7 +84,7 @@ class FmDiagnostics
         }
     }
 
-    private function probeModuleIntegrity()
+    private static function probeModuleIntegrity()
     {
         $messages = array();
         $missing = array();
@@ -114,7 +118,7 @@ class FmDiagnostics
             return implode('<br />', $messages);
         }
     }
-    private function probeConnection()
+    private static function probeConnection()
     {
         $messages = array();
         try {
@@ -133,7 +137,7 @@ class FmDiagnostics
         }
     }
 
-    private function probePlugins()
+    private static function probePlugins()
     {
         $all_plugins = get_plugins();
         $installed_plugin = array();

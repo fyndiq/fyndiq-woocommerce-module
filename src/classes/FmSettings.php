@@ -42,8 +42,8 @@ class FmSettings
         try {
             self::updateUrls();
         } catch (Exception $e) {
-            if ($e->getMessage() == 'Unauthorized') {
-                FmError::handleError('Uh-oh. It looks like your Fyndiq credentials aren\'t correct.');
+            if ($e->getMessage() === 'Unauthorized') {
+                FmError::handleError(__('Uh-oh. It looks like your Fyndiq credentials aren\'t correct.'), 'fyndiq');
             }
         }
     }
@@ -95,18 +95,15 @@ class FmSettings
 
         // Add second text field option
         $settings_slider[] = array(
-
             'name' => __('Username', 'fyndiq'),
             'desc_tip' => __('This is the username you use for login on Fyndiq Merchant', 'fyndiq'),
             'id' => 'wcfyndiq_username',
             'type' => 'text',
             'desc' => __('Must be your username', 'fyndiq'),
-
         );
 
         // Add second text field option
         $settings_slider[] = array(
-
             'name' => __('API-token', 'fyndiq'),
             'desc_tip' => __('This is the API V2 Token on Fyndiq', 'fyndiq'),
             'id' => 'wcfyndiq_apitoken',
@@ -117,7 +114,6 @@ class FmSettings
 
         //Price Percentage
         $settings_slider[] = array(
-
             'name' => __('Global Price Percentage', 'fyndiq'),
             'desc_tip' => __(
                 'The percentage that will be removed from the price when sending to fyndiq.',
@@ -127,12 +123,10 @@ class FmSettings
             'type' => 'text',
             'default' => '10',
             'desc' => __('Can be 0 if the price should be the same as in your shop.', 'fyndiq'),
-
         );
 
         //Price Discount
         $settings_slider[] = array(
-
             'name' => __('Global Price Discount', 'fyndiq'),
             'desc_tip' => __(
                 'The amount that will be removed from the price when sending to fyndiq.',
@@ -142,13 +136,11 @@ class FmSettings
             'type' => 'text',
             'default' => '0',
             'desc' => __('Can be 0 if the price should not change', 'fyndiq'),
-
         );
 
         if (isset($_GET['set_sku'])) {
             // Add SKU picker
             $settings_slider[] = array(
-
                 'name' => __('Reference to be in use', 'fyndiq'),
                 'desc_tip' => __(
                     'If you have multi SKU as in variations changing this will make it work better',
@@ -166,7 +158,6 @@ class FmSettings
 
         // Add currency setting
         $settings_slider[] = array(
-
             'name' => __('Used Currency', 'fyndiq'),
             'desc_tip' => __(
                 'Choose currency to be used for Fyndiq.',
@@ -181,7 +172,6 @@ class FmSettings
 
         //Minimum Quantity limit
         $settings_slider[] = array(
-
             'name' => __('Minimum Quantity Limit', 'fyndiq'),
             'desc_tip' => __(
                 'this quantity will be reserved by you and will be removed from the quantity that is sent to Fyndiq.',
@@ -191,7 +181,6 @@ class FmSettings
             'type' => 'text',
             'default' => '0',
             'desc' => __('Stay on 0 if you want to send all stock to Fyndiq.', 'fyndiq'),
-
         );
 
         // Add Description picker
@@ -239,7 +228,6 @@ class FmSettings
             'desc'     => '',
             'id'       => 'wc_settings_wcfyndiq_section_title'
         );
-
 
         // Add Description picker
         $settings_slider[] = array(
