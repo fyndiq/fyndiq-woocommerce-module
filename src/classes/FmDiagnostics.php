@@ -8,6 +8,9 @@
 
 class FmDiagnostics
 {
+    /**
+     * This registers the various hooks with WordPress
+     */
     public static function setHooks()
     {
         add_action('admin_menu', array(__CLASS__, 'addDiagnosticMenuItem'));
@@ -15,11 +18,20 @@ class FmDiagnostics
             array(__CLASS__, 'pluginActionLink'));
     }
 
+    /**
+     * Adds the diagnostic page as a menu item
+     */
     public static function addDiagnosticMenuItem()
     {
         add_submenu_page(null, 'Fyndiq Checker Page', 'Fyndiq', 'manage_options', 'fyndiq-check', array(__CLASS__, 'diagPage'));
     }
 
+    /**
+     * Filter function that adds an action link in the WordPress plugin page for the diagnostic page
+     *
+     * @param $links - the existing action link array
+     * @return array - $links, with an added action link
+     */
     public static function pluginActionLink($links)
     {
         $checkUrl = esc_url(get_admin_url(null, 'admin.php?page=fyndiq-check'));
@@ -27,24 +39,33 @@ class FmDiagnostics
         return $links;
     }
 
+    /**
+     * Outputs the raw HTML for the diagnostic page's body
+     */
     public static function diagPage()
     {
-        echo "<h1>" . __('Fyndiq Checker Page', 'fyndiq') . "</h1>";
-        echo "<p>" . __('This is a page to check all the important requirements to make the Fyndiq work.', 'fyndiq') . "</p>";
+        $fmOutput = new FyndiqOutput();
+        $fmOutput->output("<h1>" . __('Fyndiq Checker Page', 'fyndiq') . "</h1>");
+        $fmOutput->output("<p>" . __('This is a page to check all the important requirements to make the Fyndiq work.', 'fyndiq') . "</p>");
 
-        echo "<h2>" . __('File Permission', 'fyndiq') . "</h2>";
-        echo self::probeFilePermissions();
+        $fmOutput->output("<h2>" . __('File Permission', 'fyndiq') . "</h2>");
+        $fmOutput->output(self::probeFilePermissions());
 
-        echo "<h2>" . __('Classes', 'fyndiq') . "</h2>";
-        echo self::probeModuleIntegrity();
+        $fmOutput->output("<h2>" . __('Classes', 'fyndiq') . "</h2>");
+        $fmOutput->output(self::probeModuleIntegrity());
 
-        echo "<h2>" . __('API Connection', 'fyndiq') . "</h2>";
-        echo self::probeConnection();
+        $fmOutput->output("<h2>" . __('API Connection', 'fyndiq') . "</h2>");
+        $fmOutput->output(self::probeConnection());
 
-        echo "<h2>" . __('Installed Plugins', 'fyndiq') . "</h2>";
-        echo self::probePlugins();
+        $fmOutput->output("<h2>" . __('Installed Plugins', 'fyndiq') . "</h2>");
+        $fmOutput->output(self::probePlugins());
     }
 
+    /**
+     * Checks that the feed can be successfully written to and read back
+     *
+     * @return string - HTML output of log data from the function
+     */
     private static function probeFilePermissions()
     {
         //This needs to be two-step to ensure compatibility with < PHP5.5
@@ -84,6 +105,11 @@ class FmDiagnostics
         }
     }
 
+    /**
+     * Checks that all of the classes that we expect to be loaded are
+     *
+     * @return string - HTML output of log data from the function
+     */
     private static function probeModuleIntegrity()
     {
         $messages = array();
@@ -96,7 +122,18 @@ class FmDiagnostics
             'FyndiqOutput',
             'FyndiqPaginatedFetch',
             'FyndiqUtils',
-            'FmHelpers'
+            'FmHelpers',
+            'FmDiagnostics',
+            'FmErrorHandler',
+            'FmExport',
+            'FmField',
+            'FmSettings',
+            'FmUpdate',
+            'FmOrder',
+            'FmOrderFetch',
+            'FmPost',
+            'FmProduct',
+            'TGM_Plugin_Activation',
         );
         try {
             foreach ($checkClasses as $className) {
@@ -118,6 +155,12 @@ class FmDiagnostics
             return implode('<br />', $messages);
         }
     }
+
+    /**
+     * Checks whether the plugin has successfully connected/authenticated to/with the Fyndiq backend
+     *
+     * @return string - HTML output of log data from the function
+     */
     private static function probeConnection()
     {
         $messages = array();
@@ -137,6 +180,11 @@ class FmDiagnostics
         }
     }
 
+    /**
+     * Gets a list of the installed plugins and their version
+     *
+     * @return string - HTML output of log data from the function
+     */
     private static function probePlugins()
     {
         $all_plugins = get_plugins();
