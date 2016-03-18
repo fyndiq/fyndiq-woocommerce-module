@@ -1,6 +1,6 @@
 <?php
 
-class HelperTest extends WP_UnitTestCase
+class FmHelperTest extends WP_UnitTestCase
 {
 
     public function setUp()
