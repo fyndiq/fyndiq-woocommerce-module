@@ -601,7 +601,7 @@ class FyndiqTest extends WP_UnitTestCase
             'comment_status' => 'open'
         );
 
-// create order
+        // create order
         $order_id = wp_insert_post($order_data, true);
 
         if (!is_wp_error($order_id)) {

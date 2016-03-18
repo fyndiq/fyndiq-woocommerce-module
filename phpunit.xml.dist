@@ -8,7 +8,15 @@
 	>
 	<testsuites>
 		<testsuite>
-			<directory prefix="test-" suffix=".php">./tests/</directory>
+			<directory suffix=".php">./tests/phpunit/</directory>
 		</testsuite>
 	</testsuites>
+	<filter>
+		<whitelist>
+			<directory suffix=".php">src/</directory>
+			<exclude>
+				<directory suffix=".php">src/include/</directory>
+			</exclude>
+		</whitelist>
+	</filter>
 </phpunit>
