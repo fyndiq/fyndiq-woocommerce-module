@@ -121,14 +121,26 @@ class WC_Fyndiq
             FmOrder::generateOrders();
         }
         if (isset($_GET['fyndiq_products'])) {
-            define('DOING_AJAX', true);
+            $this->setAJAX();
             $this->update_product_info();
             $this->fmOutput->outputJSON(array('status' => 'ok'));
-            wp_die();
+            $this->wpDie();
         }
         if (isset($_GET['fyndiq_notification'])) {
-            $this->notification_handle();
+            $this->setAJAX();
+            $this->handleNotification($_GET);
+            $this->wpDie();
         }
+    }
+
+    protected function wpDie($message = '')
+    {
+        return wp_die($message = '');
+    }
+
+    protected function setAJAX()
+    {
+        define('DOING_AJAX', true);
     }
 
     function fyndiq_add_menu()
@@ -834,29 +846,42 @@ EOS;
         }
     }
 
-    public function notification_handle()
+    /**
+     * handleNotification handles notification calls
+     * @param array $get $_GET array
+     * @return bool
+     */
+    public function handleNotification($get)
     {
-        define('DOING_AJAX', true);
-        if (isset($_GET['event'])) {
-            $event = $_GET['event'];
-            $eventName = $event ? 'notice_' . $event : false;
-            if ($eventName) {
-                if ($eventName[0] != '_' && method_exists($this, $eventName)) {
-                    $this->checkToken();
-                    return $this->$eventName();
-                }
+        if (isset($get['event'])) {
+            switch($get['event']) {
+                case 'order_created':
+                    return $this->orderCreated($get);
+                case 'ping':
+                    $this->checkToken($get);
+                    return $this->ping();
+                case 'debug':
+                    $this->checkToken($get);
+                    return $this->debug();
+                case 'info':
+                    $this->checkToken($get);
+                    return $this->info();
             }
         }
-        $this->fmOutput->showError(400, 'Bad Request', '400 Bad Request');
-        wp_die();
+        return $this->fmOutput->showError(400, 'Bad Request', '400 Bad Request');
     }
 
-    private function notice_order_created()
+    /**
+     * orderCreated handles new order notification
+     * @param array $get $_GET array
+     * @return bool
+     */
+    private function orderCreated($get)
     {
         if (!$this->ordersEnabled()) {
-            wp_die('Orders is disabled');
+            $this->wpDie('Orders is disabled');
         }
-        $order_id = $_GET['order_id'];
+        $order_id = $get['order_id'];
         $orderId = is_numeric($order_id) ? intval($order_id) : 0;
         if ($orderId > 0) {
             try {
@@ -870,13 +895,17 @@ EOS;
             } catch (Exception $e) {
                 FmOrder::setOrderError();
                 $this->fmOutput->showError(500, 'Internal Server Error', $e);
+                return false;
             }
-
-            wp_die();
         }
+        return true;
     }
 
-    private function notice_debug()
+    /**
+     * debug handles the debug page
+     * @return bool
+     */
+    private function debug()
     {
         FyndiqUtils::debugStart();
         FyndiqUtils::debug('USER AGENT', FmHelpers::get_user_agent());
@@ -887,10 +916,14 @@ EOS;
         $result = file_get_contents($this->filePath);
         FyndiqUtils::debug('$result', $result, true);
         FyndiqUtils::debugStop();
-        wp_die();
+        return true;
     }
 
-    private function notice_ping()
+    /**
+     * ping handles ping notification
+     * @return bool
+     */
+    private function ping()
     {
         $this->fmOutput->flushHeader('OK');
 
@@ -905,25 +938,26 @@ EOS;
                 $this->update_product_info();
             } catch (Exception $e) {
                 error_log($e->getMessage());
+                return false;
             }
         }
-        wp_die();
+        return true;
     }
 
-    private function notice_info()
+    /**
+     * info handles information report
+     * @return bool
+     */
+    private function info()
     {
-
         $info = FyndiqUtils::getInfo(
             FmHelpers::PLATFORM,
             FmHelpers::get_woocommerce_version(),
             FmHelpers::get_plugin_version(),
             FmHelpers::COMMIT
         );
-        $this->fmOutput->outputJSON($info);
-        wp_die();
+        return $this->fmOutput->outputJSON($info);
     }
-
-
 
     private function update_product_info()
     {
@@ -981,15 +1015,15 @@ EOS;
     }
 
 
-    private function checkToken()
+    private function checkToken($get)
     {
         $pingToken = get_option('wcfyndiq_ping_token');
 
-        $token = isset($_GET['pingToken']) ? $_GET['pingToken'] : null;
+        $token = isset($get['pingToken']) ? $get['pingToken'] : null;
 
         if (is_null($token) || $token != $pingToken) {
             $this->fmOutput->showError(400, 'Bad Request', '400 Bad Request');
-            wp_die();
+            $this->wpDie();
         }
     }
 
