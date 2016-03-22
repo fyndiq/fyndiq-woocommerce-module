@@ -16,12 +16,12 @@ class WC_Fyndiq
     const EXPORT = 'fyndiq_export_column';
 
     // Handle the key for the bulk action in export / Not export
-    const HANDLE_EXPORT = 'fyndiq_handle_export';
-    CONST HANDLE_NO_EXPORT = 'fyndiq_handle_no_export';
+    const EXPORT_HANDLE = 'fyndiq_handle_export';
+    CONST EXPORT_UNHANDLE = 'fyndiq_handle_no_export';
 
-    // Handle imported orders as handled / unhandled
-    CONST HANDLE_ORDER = 'fyndiq_handle_order';
-    CONST UNHANDLE_ORDER = 'fyndiq_unhandle_order';
+    // Mark imported orders as handled / unhandled
+    CONST ORDER_HANDLE = 'fyndiq_handle_order';
+    CONST ORDER_UNHANDLE = 'fyndiq_unhandle_order';
 
     // Delivery note action
     CONST DELIVERY_NOTE = 'fyndiq_delivery';
@@ -735,14 +735,14 @@ EOS;
         //Define bulk actions for the various page types
         $bulkActionArray = array(
             'product' => array(
-                self::HANDLE_EXPORT => __('Export to Fyndiq', 'fyndiq'),
-                self::HANDLE_NO_EXPORT => __('Remove from Fyndiq', 'fyndiq'),
+                self::EXPORT_HANDLE => __('Export to Fyndiq', 'fyndiq'),
+                self::EXPORT_UNHANDLE => __('Remove from Fyndiq', 'fyndiq'),
             ),
             'shop_order' => array(
                 self::DELIVERY_NOTE => __('Get Fyndiq Delivery Note', 'fyndiq'),
                 self::ORDER_IMPORT => __('Import From Fyndiq', 'fyndiq'),
-                self::HANDLE_ORDER => __('Mark order(s) as handled', 'fyndiq'),
-                self::UNHANDLE_ORDER => __('Mark order(s) as not handled', 'fyndiq')
+                self::ORDER_HANDLE => __('Mark order(s) as handled', 'fyndiq'),
+                self::ORDER_UNHANDLE => __('Mark order(s) as not handled', 'fyndiq')
             )
         );
 
@@ -794,19 +794,19 @@ EOS;
     {
         $action = $this->getAction('WP_Posts_List_Table');
         switch ($this->getAction('WP_Posts_List_Table')) {
-            case self::HANDLE_ORDER:
+            case self::ORDER_HANDLE:
                 FmOrder::orderHandleBulkAction(true);
                 break;
-            case self::UNHANDLE_ORDER:
+            case self::ORDER_UNHANDLE:
                 FmOrder::orderHandleBulkAction(false);
                 break;
             case self::DELIVERY_NOTE:
                 FmOrder::deliveryNoteBulkaction();
                 break;
-            case self::HANDLE_EXPORT:
+            case self::EXPORT_HANDLE:
                 FmProduct::productExportBulkAction(FmProduct::EXPORTED, $action);
                 break;
-            case self::HANDLE_NO_EXPORT:
+            case self::EXPORT_UNHANDLE:
                 FmProduct::productExportBulkAction(FmProduct::NOT_EXPORTED, $action);
                 break;
             default:
