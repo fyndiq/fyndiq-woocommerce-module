@@ -10,6 +10,9 @@ class WC_Fyndiq
     const NOTICES = 'fyndiq_notices';
     const ORDERS = 'fyndiq_order';
     const EXPORT = 'fyndiq_export_column';
+    const HANDLE_EXPORT = 'fyndiq_handle_export';
+    CONST HANDLE_NO_EXPORT = 'fyndiq_handle_no_export';
+    CONST HANDLE_ORDER = 'fyndiq_handle_order';
 
     const ORDERS_DISABLE = 1;
     const ORDERS_ENABLE = 2;
@@ -592,7 +595,7 @@ EOS;
     public function fyndiq_order_column_sort()
     {
         return array(
-            self::ORDERS => 'fyndiq_order'
+            self::ORDERS => self::ORDERS
         );
     }
 
@@ -621,7 +624,7 @@ EOS;
     public function fyndiq_product_column_sort()
     {
         return array(
-            self::EXPORT => 'fyndiq_export',
+            self::EXPORT => self::EXPORT,
         );
     }
 
@@ -636,6 +639,7 @@ EOS;
             $query->set('orderby', 'meta_value');
         }
     }
+
 
     public function fyndiq_product_column_export($column, $postId)
     {
@@ -716,13 +720,13 @@ EOS;
         //Define bulk actions for the various page types
         $bulkActionArray = array(
             'product' => array(
-                'fyndiq_export' => __('Export to Fyndiq', 'fyndiq'),
-                'fyndiq_no_export' => __('Remove from Fyndiq', 'fyndiq'),
+                self::HANDLE_EXPORT => __('Export to Fyndiq', 'fyndiq'),
+                self::HANDLE_NO_EXPORT => __('Remove from Fyndiq', 'fyndiq'),
             ),
             'shop_order' => array(
                 'fyndiq_delivery' => __('Get Fyndiq Delivery Note', 'fyndiq'),
                 'fyndiq-order-import' => __('Import From Fyndiq', 'fyndiq'),
-                'fyndiq_handle_order' => __('Mark order(s) as handled', 'fyndiq'),
+                self::HANDLE_ORDER => __('Mark order(s) as handled', 'fyndiq'),
                 'fyndiq_unhandle_order' => __('Mark order(s) as not handled', 'fyndiq')
             )
         );
@@ -775,7 +779,7 @@ EOS;
     {
         $action = $this->getAction('WP_Posts_List_Table');
         switch ($this->getAction('WP_Posts_List_Table')) {
-            case 'fyndiq_handle_order':
+            case self::HANDLE_ORDER:
                 FmOrder::orderHandleBulkAction(true);
                 break;
             case 'fyndiq_unhandle_order':
@@ -784,10 +788,10 @@ EOS;
             case 'fyndiq_delivery':
                 FmOrder::deliveryNoteBulkaction();
                 break;
-            case 'fyndiq_export':
+            case self::HANDLE_EXPORT:
                 FmProduct::productExportBulkAction(FmProduct::EXPORTED, $action);
                 break;
-            case 'fyndiq_no_export':
+            case self::HANDLE_NO_EXPORT:
                 FmProduct::productExportBulkAction(FmProduct::NOT_EXPORTED, $action);
                 break;
             default:
