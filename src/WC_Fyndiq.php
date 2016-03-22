@@ -8,11 +8,26 @@ class WC_Fyndiq
     private $fmOutput = null;
 
     const NOTICES = 'fyndiq_notices';
+
+    // Handle fyndiq order column in orders list
     const ORDERS = 'fyndiq_order';
+
+    // Handle fyndiq export column in product list
     const EXPORT = 'fyndiq_export_column';
+
+    // Handle the key for the bulk action in export / Not export
     const HANDLE_EXPORT = 'fyndiq_handle_export';
     CONST HANDLE_NO_EXPORT = 'fyndiq_handle_no_export';
+
+    // Handle imported orders as handled / unhandled
     CONST HANDLE_ORDER = 'fyndiq_handle_order';
+    CONST UNHANDLE_ORDER = 'fyndiq_unhandle_order';
+
+    // Delivery note action
+    CONST DELIVERY_NOTE = 'fyndiq_delivery';
+
+    // Import Orders
+    CONST ORDER_IMPORT = 'order_import';
 
     const ORDERS_DISABLE = 1;
     const ORDERS_ENABLE = 2;
@@ -724,10 +739,10 @@ EOS;
                 self::HANDLE_NO_EXPORT => __('Remove from Fyndiq', 'fyndiq'),
             ),
             'shop_order' => array(
-                'fyndiq_delivery' => __('Get Fyndiq Delivery Note', 'fyndiq'),
-                'fyndiq-order-import' => __('Import From Fyndiq', 'fyndiq'),
+                self::DELIVERY_NOTE => __('Get Fyndiq Delivery Note', 'fyndiq'),
+                self::ORDER_IMPORT => __('Import From Fyndiq', 'fyndiq'),
                 self::HANDLE_ORDER => __('Mark order(s) as handled', 'fyndiq'),
-                'fyndiq_unhandle_order' => __('Mark order(s) as not handled', 'fyndiq')
+                self::UNHANDLE_ORDER => __('Mark order(s) as not handled', 'fyndiq')
             )
         );
 
@@ -751,11 +766,11 @@ EOS;
             case 'shop_order': {
                 if ($this->ordersEnabled()) {
                     $scriptOutput .= "if( jQuery('.wrap h2').length && jQuery(jQuery('.wrap h2')[0]).text() != 'Filter posts list' ) {
-                                        jQuery(jQuery('.wrap h2')[0]).append(\"<a href='#' id='fyndiq-order-import' class='add-new-h2'>" .
-                        $bulkActionArray[$post_type]['fyndiq-order-import'] . "</a>\");
+                                        jQuery(jQuery('.wrap h2')[0]).append(\"<a href='#' id='".self::ORDER_IMPORT."' class='add-new-h2'>" .
+                        $bulkActionArray[$post_type][self::ORDER_IMPORT] . "</a>\");
                                     } else if (jQuery('.wrap h1').length ){
-                                        jQuery(jQuery('.wrap h1')[0]).append(\"<a href='#' id='fyndiq-order-import' class='page-title-action'>" .
-                        $bulkActionArray[$post_type]['fyndiq-order-import'] . "</a>\");
+                                        jQuery(jQuery('.wrap h1')[0]).append(\"<a href='#' id='".self::ORDER_IMPORT."' class='page-title-action'>" .
+                        $bulkActionArray[$post_type][self::ORDER_IMPORT] . "</a>\");
                                     }";
                 }
             }
@@ -782,10 +797,10 @@ EOS;
             case self::HANDLE_ORDER:
                 FmOrder::orderHandleBulkAction(true);
                 break;
-            case 'fyndiq_unhandle_order':
+            case self::UNHANDLE_ORDER:
                 FmOrder::orderHandleBulkAction(false);
                 break;
-            case 'fyndiq_delivery':
+            case self::DELIVERY_NOTE:
                 FmOrder::deliveryNoteBulkaction();
                 break;
             case self::HANDLE_EXPORT:
