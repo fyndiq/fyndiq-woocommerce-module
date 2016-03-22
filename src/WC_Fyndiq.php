@@ -8,6 +8,8 @@ class WC_Fyndiq
     private $fmOutput = null;
 
     const NOTICES = 'fyndiq_notices';
+    const ORDERS = 'fyndiq_order';
+    const EXPORT = 'fyndiq_export_column';
 
     const ORDERS_DISABLE = 1;
     const ORDERS_ENABLE = 2;
@@ -569,13 +571,13 @@ EOS;
     //Hooked function for adding columns to the products page (manage_edit-shop_order_columns)
     public function fyndiq_order_add_column($defaults)
     {
-        $defaults['fyndiq_order'] = __('Fyndiq Order', 'fyndiq');
+        $defaults[self::ORDERS] = __('Fyndiq Order', 'fyndiq');
         return $defaults;
     }
 
     public function fyndiq_order_column($column, $orderId)
     {
-        if ($column === 'fyndiq_order') {
+        if ($column === self::ORDERS) {
             $fyndiq_order = get_post_meta($orderId, 'fyndiq_id', true);
             if ($fyndiq_order != '') {
                 $this->fmOutput->output($fyndiq_order);
@@ -590,7 +592,7 @@ EOS;
     public function fyndiq_order_column_sort()
     {
         return array(
-            'fyndiq_order' => 'fyndiq_order'
+            self::ORDERS => 'fyndiq_order'
         );
     }
 
@@ -601,7 +603,7 @@ EOS;
             return;
         }
         $orderby = $query->get('orderby');
-        if ('fyndiq_order' === $orderby) {
+        if ($orderby === self::ORDERS) {
             $query->set('meta_key', 'fyndiq_id');
             $query->set('orderby', 'meta_value_integer');
         }
@@ -612,14 +614,14 @@ EOS;
     //Hooked function for adding columns to the products page (manage_edit-product_columns)
     public function fyndiq_product_add_column($defaults)
     {
-        $defaults['fyndiq_export'] = __('Fyndiq', 'fyndiq');
+        $defaults[self::EXPORT] = __('Fyndiq', 'fyndiq');
         return $defaults;
     }
 
     public function fyndiq_product_column_sort()
     {
         return array(
-            'fyndiq_export' => 'fyndiq_export',
+            self::EXPORT => 'fyndiq_export',
         );
     }
 
@@ -629,7 +631,7 @@ EOS;
             return;
         }
         $orderby = $query->get('orderby');
-        if ('fyndiq_export' == $orderby) {
+        if ($orderby === self::EXPORT) {
             $query->set('meta_key', '_fyndiq_export');
             $query->set('orderby', 'meta_value');
         }
@@ -639,7 +641,7 @@ EOS;
     {
         $product = new FmProduct($postId);
 
-        if ($column == 'fyndiq_export') {
+        if ($column == self::EXPORT) {
             if ($product->isProductExportable()) {
                 if ($product->getIsExported()) {
                     _e('Exported', 'fyndiq');
