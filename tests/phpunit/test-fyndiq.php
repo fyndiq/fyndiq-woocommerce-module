@@ -43,7 +43,7 @@ class FyndiqTest extends WP_UnitTestCase
     function test_fyndiq_product_column_sort_return_array()
     {
         $data = array(
-            'fyndiq_export' => 'fyndiq_export'
+            'fyndiq_export_column' => 'fyndiq_export'
         );
         $this->assertEquals($data, $this->wc_fyndiq->fyndiq_product_column_sort());
     }
@@ -120,8 +120,8 @@ class FyndiqTest extends WP_UnitTestCase
     {
         $defaults = array();
         $return = $this->wc_fyndiq->fyndiq_product_add_column($defaults);
-        $correct = array('fyndiq_export' => 'Fyndiq');
-        $this->assertEquals($return, $correct);
+        $correct = array('fyndiq_export_column' => 'Fyndiq');
+        $this->assertEquals($correct, $return);
     }
 
     function test_fyndiq_product_column_export()
@@ -131,11 +131,11 @@ class FyndiqTest extends WP_UnitTestCase
 
         $p = $this->createProduct();
 
-        $this->wc_fyndiq->fyndiq_product_column_export('fyndiq_export', $p);
+        $this->wc_fyndiq->fyndiq_product_column_export('fyndiq_export_column', $p);
 
         $this->expectOutputString("not exported");
 
-        $this->wc_fyndiq->fyndiq_product_column_export('fyndiq_export', $p);
+        $this->wc_fyndiq->fyndiq_product_column_export('fyndiq_export_column', $p);
 
         $this->expectOutputString("Can't be exportedCan't be exported");
     }
@@ -147,7 +147,7 @@ class FyndiqTest extends WP_UnitTestCase
 
         $p = $this->createProduct(true);
 
-        $this->wc_fyndiq->fyndiq_product_column_export('fyndiq_export', $p);
+        $this->wc_fyndiq->fyndiq_product_column_export('fyndiq_export_column', $p);
 
         $this->expectOutputString("Can't be exported");
     }
