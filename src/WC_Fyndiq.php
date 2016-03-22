@@ -19,19 +19,19 @@ class WC_Fyndiq
     const EXPORT_HANDLE = 'fyndiq_handle_export';
 
     /** @var string the key for the bulk action in not export */
-    CONST EXPORT_UNHANDLE = 'fyndiq_handle_no_export';
+    const EXPORT_UNHANDLE = 'fyndiq_handle_no_export';
 
     /** @var string the key for mark imported orders as handled */
-    CONST ORDER_HANDLE = 'fyndiq_handle_order';
+    const ORDER_HANDLE = 'fyndiq_handle_order';
 
     /** @var string the key for mark imported orders as unhandled */
-    CONST ORDER_UNHANDLE = 'fyndiq_unhandle_order';
+    const ORDER_UNHANDLE = 'fyndiq_unhandle_order';
 
     /** @var string the key for delivery note action */
-    CONST DELIVERY_NOTE = 'fyndiq_delivery';
+    const DELIVERY_NOTE = 'fyndiq_delivery';
 
     /** @var string the key for order import action */
-    CONST ORDER_IMPORT = 'order_import';
+    const ORDER_IMPORT = 'order_import';
 
     const ORDERS_DISABLE = 1;
     const ORDERS_ENABLE = 2;
