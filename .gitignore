@@ -9,3 +9,5 @@ composer.lock
 *.sublime-project
 *.sublime-workspace
 .vagrant/
+.DS_Store
+tests/wordpress-tests

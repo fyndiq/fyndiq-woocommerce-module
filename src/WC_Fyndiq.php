@@ -120,12 +120,6 @@ class WC_Fyndiq
         if (isset($_GET['fyndiq_orders'])) {
             FmOrder::generateOrders();
         }
-        if (isset($_GET['fyndiq_products'])) {
-            $this->setAJAX();
-            $this->update_product_info();
-            $this->fmOutput->outputJSON(array('status' => 'ok'));
-            $this->wpDie();
-        }
         if (isset($_GET['fyndiq_notification'])) {
             $this->setAJAX();
             $this->handleNotification($_GET);
@@ -369,7 +363,8 @@ EOS;
                 self::ORDERS_ENABLE => __('Enable', 'fyndiq'),
                 self::ORDERS_DISABLE => __('Disable', 'fyndiq'),
             ),
-            'desc' => __('Default is to have orders enabled', 'fyndiq'),
+            'desc' => __('Default is to have orders enabled', 'fyndiq')
+        );
 
 
             // Add order status setting
@@ -389,7 +384,7 @@ EOS;
                     'on-hold' => 'on-hold'
                 ),
                 'desc' => __('This must be picked accurate', 'fyndiq')
-            ));
+            );
 
             $settings_slider[] = array(
             'type' => 'sectionend',
@@ -935,7 +930,6 @@ EOS;
             update_option('wcfyndiq_ping_time', time());
             try {
                 $this->fmExport->feedFileHandling();
-                $this->update_product_info();
             } catch (Exception $e) {
                 error_log($e->getMessage());
                 return false;
@@ -957,12 +951,6 @@ EOS;
             FmHelpers::COMMIT
         );
         return $this->fmOutput->outputJSON($info);
-    }
-
-    private function update_product_info()
-    {
-        $productFetch = new FmProductFetch();
-        $productFetch->getAll();
     }
 
     public function getAction($table)
