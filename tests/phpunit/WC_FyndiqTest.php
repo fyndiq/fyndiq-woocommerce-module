@@ -677,4 +677,25 @@ class FyndiqTest extends WP_UnitTestCase
         $result = $wC_Fyndiq->handleNotification($get);
         $this->assertTrue($result);
     }
+
+    public function testHandleNotificationDebug()
+    {
+        $get = array('event' => 'debug');
+        $wC_Fyndiq = $this->getMockBuilder('WC_Fyndiq')
+            ->setConstructorArgs(array($this->fmOuptut))
+            ->setMethods(array('debug', 'checkToken'))
+            ->getMock();
+
+        $wC_Fyndiq->expects($this->once())
+            ->method('debug')
+            ->willReturn(true);
+
+        $wC_Fyndiq->expects($this->once())
+            ->method('checkToken')
+            ->with($get)
+            ->willReturn(true);
+
+        $result = $wC_Fyndiq->handleNotification($get);
+        $this->assertTrue($result);
+    }
 }
