@@ -6,6 +6,7 @@ class WC_Fyndiq
 {
     private $filePath = null;
     private $fmOutput = null;
+    private $fmExport = null;
 
     const NOTICES = 'fyndiq_notices';
 
@@ -15,7 +16,7 @@ class WC_Fyndiq
     const SETTING_TAB_PRIORITY = 50;
 
 
-    public function __construct()
+    public function __construct($fmOutput)
     {
         $this->currencies = array_combine(FyndiqUtils::$allowedCurrencies, FyndiqUtils::$allowedCurrencies);
 
@@ -30,7 +31,7 @@ class WC_Fyndiq
 
         $this->filePath = wp_upload_dir()['basedir'] . '/fyndiq-feed.csv';
 
-        $this->fmOutput = new FyndiqOutput();
+        $this->fmOutput = $fmOutput;
         $this->fmUpdate = new FmUpdate();
         $this->fmExport = new FmExport($this->filePath, $this->fmOutput);
     }
@@ -517,9 +518,6 @@ EOS;
         echo sprintf("<li class='fyndiq_tab'><a href='#fyndiq_tab'>%s</a></li>", __('Fyndiq', 'fyndiq'));
     }
 
-
-
-
     /**
      *
      * This is the hooked function for fields on the order pages
@@ -536,7 +534,6 @@ EOS;
             'description' => __('Report this order as handled to Fyndiq', 'fyndiq'),
         ), (bool)$order->getIsHandled());
     }
-
 
     public function fyndiq_show_order_error()
     {
@@ -871,7 +868,7 @@ EOS;
      * @param array $get $_GET array
      * @return bool
      */
-    private function orderCreated($get)
+    protected function orderCreated($get)
     {
         if (!$this->ordersEnabled()) {
             $this->wpDie('Orders is disabled');
@@ -900,7 +897,7 @@ EOS;
      * debug handles the debug page
      * @return bool
      */
-    private function debug()
+    protected function debug()
     {
         FyndiqUtils::debugStart();
         FyndiqUtils::debug('USER AGENT', FmHelpers::get_user_agent());
@@ -918,7 +915,7 @@ EOS;
      * ping handles ping notification
      * @return bool
      */
-    private function ping()
+    protected function ping()
     {
         $this->fmOutput->flushHeader('OK');
 
@@ -942,7 +939,7 @@ EOS;
      * info handles information report
      * @return bool
      */
-    private function info()
+    protected function info()
     {
         $info = FyndiqUtils::getInfo(
             FmHelpers::PLATFORM,
