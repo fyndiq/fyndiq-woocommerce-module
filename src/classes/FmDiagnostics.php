@@ -13,9 +13,9 @@ class FmDiagnostics
      */
     public static function setHooks()
     {
-        add_action('admin_menu', array(__CLASS__, 'addDiagnosticMenuItem'));
-        add_filter('plugin_action_links_' . plugin_basename(dirname(__FILE__) . '/woocommerce-fyndiq.php'),
-            array(__CLASS__, 'pluginActionLink'));
+        add_action('admin_menu', array(get_called_class(), 'addDiagnosticMenuItem'));
+        $basename =  plugin_basename( plugin_dir_path( dirname( __FILE__) ) . 'woocommerce-fyndiq.php' );
+        add_filter('plugin_action_links_' . $basename, array(get_called_class(), 'pluginActionLink'));
     }
 
     /**
@@ -23,7 +23,7 @@ class FmDiagnostics
      */
     public static function addDiagnosticMenuItem()
     {
-        add_submenu_page(null, 'Fyndiq Checker Page', 'Fyndiq', 'manage_options', 'fyndiq-check', array(__CLASS__, 'diagPage'));
+        return add_submenu_page('tools.php', 'Fyndiq Checker Page', 'Fyndiq', 'manage_options', 'fyndiq-check', array(get_called_class(), 'diagPage'));
     }
 
     /**
@@ -45,10 +45,11 @@ class FmDiagnostics
     public static function diagPage()
     {
         $fmOutput = new FyndiqOutput();
-        $fmOutput->output("<h1>" . __('Fyndiq Checker Page', 'fyndiq') . "</h1>");
-        $fmOutput->output("<p>" . __('This is a page to check all the important requirements to make the Fyndiq work.', 'fyndiq') . "</p>");
+        $fmOutput->output("<h1>" . __('Fyndiq Integration Diagnostic Page', 'fyndiq') . "</h1>");
+        $fmOutput->output("<p>" . __('This page contains diagnostic information that may be useful in the 
+        event that the Fyndiq WooCommerce integration plugin runs in to problems.', 'fyndiq') . "</p>");
 
-        $fmOutput->output("<h2>" . __('File Permission', 'fyndiq') . "</h2>");
+        $fmOutput->output("<h2>" . __('File Permissions', 'fyndiq') . "</h2>");
         $fmOutput->output(self::probeFilePermissions());
 
         $fmOutput->output("<h2>" . __('Classes', 'fyndiq') . "</h2>");
@@ -124,7 +125,7 @@ class FmDiagnostics
             'FyndiqUtils',
             'FmHelpers',
             'FmDiagnostics',
-            'FmErrorHandler',
+            'FmError',
             'FmExport',
             'FmField',
             'FmSettings',
@@ -141,7 +142,7 @@ class FmDiagnostics
                     $messages[] = sprintf(__('Class `%s` is found.', 'fyndiq'), $className);
                     continue;
                 }
-                $messages[] = sprintf(__('Class `%s` is NOT found.', 'fyndiq'), $className);
+                $messages[] = sprintf(__('Class `%s` is <strong>NOT</strong> found.', 'fyndiq'), $className);
             }
             if ($missing) {
                 throw new Exception(sprintf(
@@ -172,7 +173,7 @@ class FmDiagnostics
                     throw new Exception(__('Module is not authorized.', 'fyndiq'));
                 }
             }
-            $messages[] = __('Connection to Fyndiq successfully tested', 'fyndiq');
+            $messages[] = __('Successfully connected to the Fyndiq API', 'fyndiq');
             return implode('<br />', $messages);
         } catch (Exception $e) {
             $messages[] = $e->getMessage();

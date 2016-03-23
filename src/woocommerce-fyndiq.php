@@ -43,7 +43,7 @@ if (is_plugin_active('woocommerce/woocommerce.php')) {
 
     // Require the necessary files
     require_once('models/FmPost.php');
-    require_once('classes/FmErrorHandler.php');
+    require_once('classes/FmError.php');
     require_once('include/api/fyndiqAPI.php');
     require_once('classes/FmHelpers.php');
     require_once('classes/FmUpdate.php');

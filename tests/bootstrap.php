@@ -11,7 +11,7 @@ function _manually_load_plugin()
     require '/var/www/html/woocommerce/wp-content/plugins/woocommerce/woocommerce.php';
     // Require the necessary files
     require_once(dirname(__FILE__) . '/../src/models/FmPost.php');
-    require_once(dirname(__FILE__) . '/../src/classes/FmErrorHandler.php');
+    require_once(dirname(__FILE__) . '/../src/classes/FmError.php');
     require_once(dirname(__FILE__) . '/../src/include/api/fyndiqAPI.php');
     require_once(dirname(__FILE__) . '/../src/classes/FmHelpers.php');
     require_once(dirname(__FILE__) . '/../src/classes/FmUpdate.php');

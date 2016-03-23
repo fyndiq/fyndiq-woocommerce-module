@@ -42,9 +42,9 @@ class WC_Fyndiq
     public function initiateClassHooks()
     {
         FmError::setHooks();
+        FmDiagnostics::setHooks();
         FmProduct::setHooks();
         FmField::setHooks();
-        FmDiagnostics::setHooks();
         FmSettings::setHooks();
     }
 
