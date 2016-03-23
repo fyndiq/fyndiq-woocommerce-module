@@ -627,10 +627,33 @@ class FyndiqTest extends WP_UnitTestCase
         return $order_id;
     }
 
-
-    public function testHandleNotification()
+    public function testHandleNotificationError()
     {
+        $this->fmOuptut->expects($this->once())
+            ->method('showError')
+            ->with(
+                $this->equalTo(400),
+                $this->equalTo('Bad Request'),
+                $this->equalTo('400 Bad Request')
+            );
         $result = $this->wc_fyndiq->handleNotification(array());
+        $this->assertTrue($result);
+    }
+
+    public function testHandleNotificationOrderCreated()
+    {
+        $get = array('event' => 'order_created');
+        $wC_Fyndiq = $this->getMockBuilder('WC_Fyndiq')
+            ->setConstructorArgs(array($this->fmOuptut))
+            ->setMethods(array('orderCreated'))
+            ->getMock();
+
+        $wC_Fyndiq->expects($this->once())
+            ->method('orderCreated')
+            ->with($get)
+            ->willReturn(true);
+
+        $result = $wC_Fyndiq->handleNotification($get);
         $this->assertTrue($result);
     }
 }
