@@ -1000,7 +1000,7 @@ EOS;
     }
 
 
-    private function checkToken($get)
+    protected function checkToken($get)
     {
         $pingToken = get_option('wcfyndiq_ping_token');
 
