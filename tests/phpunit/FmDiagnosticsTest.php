@@ -7,21 +7,28 @@
  */
 class FmDiagnosticsTest extends WP_UnitTestCase
 {
-    public function setUp()
+
+    public function test_setHooks()
     {
-        parent::setUp();
-        $hook = parse_url('edit.php?post_type=product');
-        $GLOBALS['hook_suffix'] = $hook['path'];
-        set_current_screen();
-        $this->wc_fyndiq = $this->getMockBuilder('WC_Fyndiq')->setMethods(array('getAction','getRequestPost', 'bulkRedirect', 'returnAndDie', 'getProductId', 'getExportState', 'checkCurrency', 'checkCountry'))->getMock();
-        $this->wc_fyndiq->woocommerce_loaded();
-        //$this->wc_fyndiq->plugins_loaded();
+        $this->assertTrue(FmDiagnostics::setHooks());
     }
 
     public function test_pluginActionLink()
     {
         $actionLinks = array();
         $return = FmDiagnostics::pluginActionLink($actionLinks);
+
+        $expected = array (
+            0 => '<a href="http://example.org/wp-admin/admin.php?page=fyndiq-check">Fyndiq Check</a>'
+        );
         $this->assertEquals($expected, $return);
+    }
+
+    public function test_addDiagnosticMenuItem()
+    {
+        $user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+        wp_set_current_user( $user_id );
+        $return = FmDiagnostics::addDiagnosticMenuItem();
+        $this->assertEquals('admin_page_fyndiq-check', $return);
     }
 }

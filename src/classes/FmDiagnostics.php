@@ -15,7 +15,7 @@ class FmDiagnostics
     {
         add_action('admin_menu', array(get_called_class(), 'addDiagnosticMenuItem'));
         $basename =  plugin_basename( plugin_dir_path( dirname( __FILE__) ) . 'woocommerce-fyndiq.php' );
-        add_filter('plugin_action_links_' . $basename, array(get_called_class(), 'pluginActionLink'));
+        return add_filter('plugin_action_links_' . $basename, array(get_called_class(), 'pluginActionLink'));
     }
 
     /**
