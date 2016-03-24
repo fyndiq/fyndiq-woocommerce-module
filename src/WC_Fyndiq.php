@@ -66,7 +66,7 @@ class WC_Fyndiq
     public function locale_load()
     {
         // Localization
-        load_plugin_textdomain('fyndiq', false, dirname(plugin_basename(__FILE__)) . '/translations/');
+        load_plugin_textdomain('fyndiq', false, dirname($this->fmWoo->pluginBasename(__FILE__)) . '/translations/');
     }
 
     public function initiateClassHooks()
@@ -169,7 +169,7 @@ class WC_Fyndiq
         //Checker Page
         $this->fmWoo->addAction('admin_menu', array(&$this, 'fyndiq_add_menu'));
         $this->fmWoo->addFilter(
-            'plugin_action_links_' . plugin_basename(dirname(__FILE__).'/woocommerce-fyndiq.php'),
+            'plugin_action_links_' . $this->fmWoo->pluginBasename(dirname(__FILE__).'/woocommerce-fyndiq.php'),
             array(&$this, 'fyndiq_action_links')
         );
 
