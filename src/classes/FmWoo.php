@@ -1,6 +1,7 @@
 <?php
 
-class FmWoo {
+class FmWoo
+{
 
     public function addAction($tag, $function_to_add, $priority = 10, $accepted_args = 1)
     {
@@ -34,7 +35,7 @@ class FmWoo {
 
     public function getAdminURL($blog_id, $path = '', $scheme = 'admin')
     {
-        return get_admin_url($blog_id, $path,$scheme);
+        return get_admin_url($blog_id, $path, $scheme);
     }
 
     public function getPostCustom($post_id)
@@ -44,10 +45,11 @@ class FmWoo {
 
     public function addMetaBox($id, $title, $callback, $screen = null, $context = 'advanced', $priority = 'default', $callback_args = null)
     {
-        return add_meta_box ($id, $title, $callback, $screen = null, $context, $priority, $callback_args);
+        return add_meta_box($id, $title, $callback, $screen = null, $context, $priority, $callback_args);
     }
 
-    public function __($text, $domain = 'default') {
+    public function __($text, $domain = 'default')
+    {
         return __($text, $domain);
     }
 
@@ -61,8 +63,23 @@ class FmWoo {
         return wp_upload_dir($time);
     }
 
-    public function wpDie($message = '', $title = '', $args = array()) {
-        return wp_die ($message, $title, $args);
+    public function wpDie($message = '', $title = '', $args = array())
+    {
+        return wp_die($message, $title, $args);
     }
 
+    public function getPostMeta($post_id, $key = '', $single = false)
+    {
+        return get_post_meta($post_id, $key, $single);
+    }
+
+    public function updatePostMeta($post_id, $meta_key, $meta_value, $prev_value = '')
+    {
+        return update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
+    }
+
+    public function isAdmin()
+    {
+        return is_admin();
+    }
 }

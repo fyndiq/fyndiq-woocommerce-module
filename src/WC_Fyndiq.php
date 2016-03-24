@@ -675,11 +675,11 @@ EOS;
     public function fyndiq_order_column($column, $orderId)
     {
         if ($column === self::ORDERS) {
-            $fyndiq_order = get_post_meta($orderId, 'fyndiq_id', true);
+            $fyndiq_order = $this->fmWoo->getPostMeta($orderId, 'fyndiq_id', true);
             if ($fyndiq_order != '') {
                 $this->fmOutput->output($fyndiq_order);
             } else {
-                update_post_meta($orderId, 'fyndiq_id', '-');
+                $this->fmWoo->updatePostMeta($orderId, 'fyndiq_id', '-');
                 $this->fmOutput->output('-');
             }
         }
@@ -696,7 +696,7 @@ EOS;
     //TODO: find out how this function is called
     public function fyndiq_order_column_sort_by($query)
     {
-        if (!is_admin()) {
+        if (!$this->fmWoo->isAdmin()) {
             return;
         }
         $orderby = $query->get('orderby');
@@ -705,8 +705,6 @@ EOS;
             $query->set('orderby', 'meta_value_integer');
         }
     }
-
-
 
     //Hooked function for adding columns to the products page (manage_edit-product_columns)
     public function fyndiq_product_add_column($defaults)
@@ -724,7 +722,7 @@ EOS;
 
     public function fyndiq_product_column_sort_by($query)
     {
-        if (!is_admin()) {
+        if (!$this->fmWoo->isAdmin()) {
             return;
         }
         $orderby = $query->get('orderby');
@@ -936,7 +934,7 @@ EOS;
     public function handleNotification($get)
     {
         if (isset($get['event'])) {
-            switch($get['event']) {
+            switch ($get['event']) {
                 case 'order_created':
                     return $this->orderCreated($get);
                 case 'ping':
@@ -1044,11 +1042,6 @@ EOS;
     {
         $wp_list_table = _get_list_table($table);
         return $wp_list_table->current_action();
-    }
-
-    public function returnAndDie($return)
-    {
-        die($return);
     }
 
     public function checkCurrency()
