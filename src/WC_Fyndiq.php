@@ -322,9 +322,9 @@ EOS;
         /**
          * Check the current section is what we want
          **/
-        $settings_slider = array();
+        $settings = array();
 
-        $settings_slider[] = array(
+        $settings[] = array(
             'name'     => $this->fmWoo->__('Fyndiq', 'fyndiq'),
             'type'     => 'title',
             'desc'     => '',
@@ -332,7 +332,7 @@ EOS;
         );
 
         // Add Title to the Settings
-        $settings_slider[] = array(
+        $settings[] = array(
             'name' => $this->fmWoo->__('General Settings', 'fyndiq'),
             'type' => 'title',
             'desc' => $this->fmWoo->__('The following options are used to configure Fyndiq', 'fyndiq'),
@@ -340,19 +340,16 @@ EOS;
         );
 
         // Add second text field option
-        $settings_slider[] = array(
-
+        $settings[] = array(
             'name' => $this->fmWoo->__('Username', 'fyndiq'),
             'desc_tip' => $this->fmWoo->__('This is the username you use for login on Fyndiq Merchant', 'fyndiq'),
             'id' => 'wcfyndiq_username',
             'type' => 'text',
             'desc' => $this->fmWoo->__('Must be your username', 'fyndiq'),
-
         );
 
         // Add second text field option
-        $settings_slider[] = array(
-
+        $settings[] = array(
             'name' => $this->fmWoo->__('API-token', 'fyndiq'),
             'desc_tip' => $this->fmWoo->__('This is the API V2 Token on Fyndiq', 'fyndiq'),
             'id' => 'wcfyndiq_apitoken',
@@ -362,8 +359,7 @@ EOS;
 
 
         //Price Percentage
-        $settings_slider[] = array(
-
+        $settings[] = array(
             'name' => $this->fmWoo->__('Global Price Percentage', 'fyndiq'),
             'desc_tip' => $this->fmWoo->__(
                 'The percentage that will be removed from the price when sending to fyndiq.',
@@ -373,12 +369,10 @@ EOS;
             'type' => 'text',
             'default' => '10',
             'desc' => $this->fmWoo->__('Can be 0 if the price should be the same as in your shop.', 'fyndiq'),
-
         );
 
         //Price Discount
-        $settings_slider[] = array(
-
+        $settings[] = array(
             'name' => $this->fmWoo->__('Global Price Discount', 'fyndiq'),
             'desc_tip' => $this->fmWoo->__(
                 'The amount that will be removed from the price when sending to fyndiq.',
@@ -388,13 +382,11 @@ EOS;
             'type' => 'text',
             'default' => '0',
             'desc' => $this->fmWoo->__('Can be 0 if the price should not change', 'fyndiq'),
-
         );
 
         if (isset($_GET['set_sku'])) {
             // Add SKU picker
-            $settings_slider[] = array(
-
+            $settings[] = array(
                 'name' => $this->fmWoo->__('Reference to be in use', 'fyndiq'),
                 'desc_tip' => $this->fmWoo->__(
                     'If you have multi SKU as in variations changing this will make it work better',
@@ -411,7 +403,7 @@ EOS;
         }
 
         // Add currency setting
-        $settings_slider[] = array(
+        $settings[] = array(
             'name' => $this->fmWoo->__('Used Currency', 'fyndiq'),
             'desc_tip' => $this->fmWoo->__(
                 'Choose currency to be used for Fyndiq.',
@@ -424,7 +416,7 @@ EOS;
         );
 
         //Minimum Quantity limit
-        $settings_slider[] = array(
+        $settings[] = array(
 
             'name' => $this->fmWoo->__('Minimum Quantity Limit', 'fyndiq'),
             'desc_tip' => $this->fmWoo->__(
@@ -439,7 +431,7 @@ EOS;
         );
 
         // Add Description picker
-        $settings_slider[] = array(
+        $settings[] = array(
 
             'name' => $this->fmWoo->__('Enable Orders', 'fyndiq'),
             'desc_tip' => $this->fmWoo->__(
@@ -457,7 +449,7 @@ EOS;
 
 
         // Add order status setting
-        $settings_slider[] = array(
+        $settings[] = array(
 
             'name' => $this->fmWoo->__('Order Status', 'fyndiq'),
             'desc_tip' => $this->fmWoo->__(
@@ -475,12 +467,12 @@ EOS;
             'desc' => $this->fmWoo->__('This must be picked accurate', 'fyndiq')
         );
 
-        $settings_slider[] = array(
+        $settings[] = array(
             'type' => 'sectionend',
-            'id' => 'wc_settings_wcfyndiq_section_end'
-            );
+            'id' => 'wc_settings_wcfyndiq_section_end',
+        );
 
-            $settings_slider[] = array(
+        $settings[] = array(
             'name'     => $this->fmWoo->__('Field Mappings', 'fyndiq'),
             'type'     => 'title',
             'desc'     => '',
@@ -489,7 +481,7 @@ EOS;
 
 
         // Add Description picker
-        $settings_slider[] = array(
+        $settings[] = array(
             'name' => $this->fmWoo->__('Description to use', 'fyndiq'),
             'desc_tip' => $this->fmWoo->__(
                 'Set how you want your description to be exported to Fyndiq.',
@@ -507,7 +499,7 @@ EOS;
         );
 
         // Map Field for EAN
-        $settings_slider[] = array(
+        $settings[] = array(
             'name' => $this->fmWoo->__('EAN', 'fyndiq'),
             'desc_tip' => $this->fmWoo->__('EAN', 'fyndiq'),
             'id' => 'wcfyndiq_field_map_ean',
@@ -517,7 +509,7 @@ EOS;
         );
 
         // Map Field for ISBN
-        $settings_slider[] = array(
+        $settings[] = array(
             'name' => $this->fmWoo->__('ISBN', 'fyndiq'),
             'desc_tip' => $this->fmWoo->__('ISBN', 'fyndiq'),
             'id' => 'wcfyndiq_field_map_isbn',
@@ -527,7 +519,7 @@ EOS;
         );
 
         // Map Field for MPN
-        $settings_slider[] = array(
+        $settings[] = array(
             'name' => $this->fmWoo->__('MPN', 'fyndiq'),
             'desc_tip' => $this->fmWoo->__('MPN', 'fyndiq'),
             'id' => 'wcfyndiq_field_map_mpn',
@@ -537,7 +529,7 @@ EOS;
         );
 
         // Map Field for Brand
-        $settings_slider[] = array(
+        $settings[] = array(
             'name' => $this->fmWoo->__('Brand', 'fyndiq'),
             'desc_tip' => $this->fmWoo->__('Brand', 'fyndiq'),
             'id' => 'wcfyndiq_field_map_brand',
@@ -546,12 +538,12 @@ EOS;
             'desc' => $this->fmWoo->__('This must be picked accurate', 'fyndiq'),
         );
 
-        $settings_slider[] = array(
+        $settings[] = array(
             'type' => 'sectionend',
             'id' => 'wc_settings_wcfyndiq_section_end'
         );
 
-        return apply_filters('wc_settings_tab_wcfyndiq', $settings_slider);
+        return apply_filters('wc_settings_tab_wcfyndiq', $settings);
     }
 
     public function fyndiq_add_settings_tab($settings_tabs)
@@ -741,7 +733,6 @@ EOS;
     }
 
 
-
     public function my_admin_notice()
     {
         if ($this->checkCurrency()) {
@@ -788,8 +779,6 @@ EOS;
         }
     }
 
-
-
     /**
      *
      * Adds bulk actions to the dropdown by reading array and generating relevant JS
@@ -812,7 +801,6 @@ EOS;
                 self::ORDER_UNHANDLE => $this->fmWoo->__('Mark order(s) as not handled', 'fyndiq')
             )
         );
-
 
         //We need this JS header in any case. Initialises output var too.
         $scriptOutput = '<script type="text/javascript">jQuery(document).ready(function () {';
@@ -839,7 +827,7 @@ EOS;
                                     }";
                 }
             }
-                break;
+            break;
         }
 
         //We also need this footer in all cases too
