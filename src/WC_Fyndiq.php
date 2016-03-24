@@ -882,15 +882,15 @@ EOS;
                 $fyndiqOrder = $ret['data'];
 
                 if (!FmOrder::orderExists($fyndiqOrder->id)) {
-                    FmOrder::createOrder($fyndiqOrder);
+                    return FmOrder::createOrder($fyndiqOrder);
                 }
+                return true;
             } catch (Exception $e) {
                 FmOrder::setOrderError();
                 $this->fmOutput->showError(500, 'Internal Server Error', $e);
-                return false;
             }
         }
-        return true;
+        return false;
     }
 
     /**
