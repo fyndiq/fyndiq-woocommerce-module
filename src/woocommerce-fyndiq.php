@@ -18,7 +18,6 @@ include_once(ABSPATH . 'wp-admin/includes/plugin.php');
 require_once('dependency.php');
 
 if (is_plugin_active('woocommerce/woocommerce.php')) {
-
     // Handle deactivating the module.
     register_deactivation_hook(__FILE__, 'fyndiq_deactivate');
     function fyndiq_deactivate()
