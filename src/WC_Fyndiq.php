@@ -628,7 +628,7 @@ EOS;
     public function fyndiq_show_order_error()
     {
         if (isset($_GET['post_type']) && $_GET['post_type'] == 'shop_order') {
-            $error = get_option('wcfyndiq_order_error');
+            $error = $this->fmWoo->getOption('wcfyndiq_order_error');
             if ($error) {
                 $this->fmWoo->addAction('admin_notices', array(&$this, 'fyndiq_show_order_error_notice'));
                 update_option('wcfyndiq_order_error', false);
@@ -1008,7 +1008,7 @@ EOS;
         $this->fmOutput->flushHeader('OK');
 
         $locked = false;
-        $lastPing = get_option('wcfyndiq_ping_time');
+        $lastPing = $this->fmWoo->getOption('wcfyndiq_ping_time');
         $lastPing = $lastPing ? $lastPing : false;
         $locked = $lastPing && $lastPing > strtotime('15 minutes ago');
         if (!$locked) {
@@ -1058,8 +1058,8 @@ EOS;
 
     public function checkCredentials()
     {
-        $username = get_option('wcfyndiq_username');
-        $token = get_option('wcfyndiq_apitoken');
+        $username = $this->fmWoo->getOption('wcfyndiq_username');
+        $token = $this->fmWoo->getOption('wcfyndiq_apitoken');
 
         return (empty($username) || empty($token));
     }
@@ -1085,7 +1085,7 @@ EOS;
 
     protected function checkToken($get)
     {
-        $pingToken = get_option('wcfyndiq_ping_token');
+        $pingToken = $this->fmWoo->getOption('wcfyndiq_ping_token');
 
         $token = isset($get['pingToken']) ? $get['pingToken'] : null;
 
@@ -1196,7 +1196,7 @@ EOS;
 
     private function ordersEnabled()
     {
-        $setting = get_option('wcfyndiq_order_enable');
+        $setting = $this->fmWoo->getOption('wcfyndiq_order_enable');
         if (!isset($setting) || $setting == false) {
             return true;
         }

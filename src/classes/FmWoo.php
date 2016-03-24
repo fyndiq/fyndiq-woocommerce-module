@@ -82,4 +82,9 @@ class FmWoo
     {
         return is_admin();
     }
+
+    public function getOption($option, $default = false)
+    {
+        return get_option($option, $default)
+    }
 }
