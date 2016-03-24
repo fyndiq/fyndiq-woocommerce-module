@@ -89,6 +89,8 @@ class FmWoo
     }
 
 
+
+
     /** WooCommerce specific functions */
 
     public function WC()
@@ -99,5 +101,10 @@ class FmWoo
     public function getWoocommerceCurrency()
     {
         return get_woocommerce_currency();
+    }
+
+    public function woocommerceAdminFields($options)
+    {
+        return woocommerce_admin_fields($options);
     }
 }

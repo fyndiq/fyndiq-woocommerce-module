@@ -11,10 +11,10 @@ class WC_Fyndiq
 
     const NOTICES = 'fyndiq_notices';
 
-    /** @var string key value for fyndiq order column */
+    /** @var string key value for Fyndiq order column */
     const ORDERS = 'fyndiq_order';
 
-    /** @var string key value for fyndiq product column */
+    /** @var string key value for Fyndiq product column */
     const EXPORT = 'fyndiq_export_column';
 
     /** @var string the key for the bulk action in export */
@@ -26,7 +26,7 @@ class WC_Fyndiq
     /** @var string the key for mark imported orders as handled */
     const ORDER_HANDLE = 'fyndiq_handle_order';
 
-    /** @var string the key for mark imported orders as unhandled */
+    /** @var string the key for mark imported orders as not handled */
     const ORDER_UNHANDLE = 'fyndiq_unhandle_order';
 
     /** @var string the key for delivery note action */
@@ -308,9 +308,9 @@ EOS;
 
     }
 
-    function settings_tab()
+    public function settings_tab()
     {
-        woocommerce_admin_fields($this->fyndiq_all_settings());
+        $this->fmWoo->woocommerceAdminFields($this->fyndiq_all_settings());
     }
 
     public function fyndiq_all_settings()
