@@ -40,33 +40,42 @@ class WC_Fyndiq
 
     const SETTING_TAB_PRIORITY = 50;
 
+    const TEXT_DOMAIN = 'fyndiq';
 
     public function __construct($fmWoo, $fmOutput)
     {
         $this->fmWoo = $fmWoo;
         $this->fmOutput = $fmOutput;
 
-        $this->currencies = array_combine(FyndiqUtils::$allowedCurrencies, FyndiqUtils::$allowedCurrencies);
+        $this->currencies = array_combine(
+            FyndiqUtils::$allowedCurrencies,
+            FyndiqUtils::$allowedCurrencies
+        );
 
         //Register class hooks as early as possible
         $this->fmWoo->addAction('wp_loaded', array(&$this, 'initiateClassHooks'));
 
         //Load locale in init
-        $this->fmWoo->addAction('init', array(&$this, 'locale_load'));
+        $this->fmWoo->addAction('init', array(&$this, 'localeLoad'));
 
         // called only after woocommerce has finished loading
-        $this->fmWoo->addAction('init', array(&$this, 'woocommerce_loaded'), 250);
+        $this->fmWoo->addAction('init', array(&$this, 'woocommerceLoaded'), 250);
 
-        $this->filePath = wp_upload_dir()['basedir'] . '/fyndiq-feed.csv';
+        $uploadDir = $this->fmWoo->wpUploadDir();
+        $this->filePath = $uploadDir['basedir'] . '/fyndiq-feed.csv';
 
         $this->fmUpdate = new FmUpdate();
         $this->fmExport = new FmExport($this->filePath, $this->fmOutput);
     }
 
-    public function locale_load()
+    public function localeLoad()
     {
         // Localization
-        load_plugin_textdomain('fyndiq', false, dirname($this->fmWoo->pluginBasename(__FILE__)) . '/translations/');
+        return $this->fmWoo->loadPluginTextdomain(
+            self::TEXT_DOMAIN,
+            false,
+            dirname($this->fmWoo->pluginBasename(__FILE__)) . '/translations/'
+        );
     }
 
     public function initiateClassHooks()
@@ -77,10 +86,10 @@ class WC_Fyndiq
     }
 
     /**
-     * Take care of anything that needs woocommerce to be loaded.
+     * Take care of anything that needs WooCommerce to be loaded.
      * For instance, if you need access to the $woocommerce global
      */
-    public function woocommerce_loaded()
+    public function woocommerceLoaded()
     {
         //javascript
         //@todo Fix JS loading
@@ -161,16 +170,16 @@ class WC_Fyndiq
         $this->fmWoo->addAction('load-edit.php', array(&$this, 'fyndiq_bulk_action_dispatcher'));
 
         //add_action('post_submitbox_misc_actions', array( &$this, 'fyndiq_order_edit_action'));
-        $this->fmWoo->addAction('add_meta_boxes', array(&$this, 'fyndiq_order_meta_boxes'));
+        $this->fmWoo->addAction('add_meta_boxes', array(&$this, 'fyndiqOrderMetaBoxes'));
 
         //notice for currency check
         $this->fmWoo->addAction('admin_notices', array(&$this, 'my_admin_notice'));
 
         //Checker Page
-        $this->fmWoo->addAction('admin_menu', array(&$this, 'fyndiq_add_menu'));
+        $this->fmWoo->addAction('admin_menu', array(&$this, 'fyndiqAddMenu'));
         $this->fmWoo->addFilter(
             'plugin_action_links_' . $this->fmWoo->pluginBasename(dirname(__FILE__).'/woocommerce-fyndiq.php'),
-            array(&$this, 'fyndiq_action_links')
+            array(&$this, 'fyndiqActionLinks')
         );
 
         //index
@@ -188,41 +197,49 @@ class WC_Fyndiq
             FmOrder::generateOrders();
         }
         if (isset($_GET['fyndiq_notification'])) {
-            $this->setAJAX();
+            $this->fmWoo->setDoingAJAX($value);
             $this->handleNotification($_GET);
-            $this->wpDie();
+            $this->fmWoo->wpDie();
         }
     }
 
-    protected function wpDie($message = '')
+    public function fyndiqAddMenu()
     {
-        return wp_die($message = '');
+        $this->fmWoo->addSubmenuPage(
+            null,
+            'Fyndiq Checker Page',
+            'Fyndiq',
+            'manage_options',
+            'fyndiq-check',
+            array(&$this, 'check_page')
+        );
     }
 
-    protected function setAJAX()
+    public function fyndiqActionLinks($links)
     {
-        define('DOING_AJAX', true);
+        $checkUrl = $this->fmWoo->escURL(
+            $this->fmWoo->getAdminURL(null, 'admin.php?page=fyndiq-check')
+        );
+        $settingUrl = $this->fmWoo->escURL(
+            $this->fmWoo->getAdminURL(
+                null,
+                'admin.php?page=wc-settings&tab=products&section=wcfyndiq'
+            )
+        );
+        return array(
+            '<a href="'. $settingUrl . '">' . __('Settings', 'fyndiq') . '</a>',
+            '<a href="'. $checkUrl . '">' . __('Fyndiq Check', 'fyndiq') . '</a>'
+        );
     }
 
-    function fyndiq_add_menu()
+    public function fyndiqOrderMetaBoxes()
     {
-        add_submenu_page(null, 'Fyndiq Checker Page', 'Fyndiq', 'manage_options', 'fyndiq-check', array(&$this, 'check_page'));
-    }
-
-    function fyndiq_action_links($links)
-    {
-        $checkUrl = esc_url(get_admin_url(null, 'admin.php?page=fyndiq-check'));
-        $settingUrl = esc_url(get_admin_url(null, 'admin.php?page=wc-settings&tab=products&section=wcfyndiq'));
-        $links[] = '<a href="'.$settingUrl.'">'.__('Settings', 'fyndiq').'</a>';
-        $links[] = '<a href="'.$checkUrl.'">'.__('Fyndiq Check', 'fyndiq').'</a>';
-        return $links;
-    }
-
-    public function fyndiq_order_meta_boxes()
-    {
-        $meta = get_post_custom(FmOrder::getWordpressCurrentPostID());
-        if (isset($meta['fyndiq_delivery_note']) && isset($meta['fyndiq_delivery_note'][0]) && $meta['fyndiq_delivery_note'][0] != '') {
-            add_meta_box(
+        $meta = $this->fmWoo->getPostCustom(FmOrder::getWordpressCurrentPostID());
+        if (isset($meta['fyndiq_delivery_note']) &&
+            isset($meta['fyndiq_delivery_note'][0]) &&
+            $meta['fyndiq_delivery_note'][0] != ''
+        ) {
+            return $this->fmWoo->addMetaBox(
                 'woocommerce-order-fyndiq-delivery-note',
                 __('Fyndiq', 'fyndiq'),
                 array(&$this, 'order_meta_box_delivery_note'),
@@ -231,12 +248,19 @@ class WC_Fyndiq
                 'default'
             );
         }
+        return false;
     }
 
     public function order_meta_box_delivery_note()
     {
-        $meta = get_post_custom(FmOrder::getWordpressCurrentPostID());
-        $this->fmOutput->output('<a href="' . $meta['fyndiq_delivery_note'][0] . '" class="button button-primary">Get Fyndiq Delivery Note</a>');
+        $meta = $this->fmWoo->getPostCustom(FmOrder::getWordpressCurrentPostID());
+        $this->fmOutput->output(
+            sprintf(
+                '<a href="%s" class="button button-primary">%s</a>',
+                $meta['fyndiq_delivery_note'][0],
+                $this->fmWoo->__('Get Fyndiq Delivery Note', 'fyndiq')
+            )
+        );
     }
 
     public function get_url()
@@ -937,7 +961,7 @@ EOS;
     protected function orderCreated($get)
     {
         if (!$this->ordersEnabled()) {
-            $this->wpDie('Orders is disabled');
+            $this->fmWoo->wpDie('Orders is disabled');
         }
         $order_id = $get['order_id'];
         $orderId = is_numeric($order_id) ? intval($order_id) : 0;
@@ -1074,7 +1098,7 @@ EOS;
 
         if (is_null($token) || $token != $pingToken) {
             $this->fmOutput->showError(400, 'Bad Request', '400 Bad Request');
-            $this->wpDie();
+            $this->fmWoo->wpDie();
         }
     }
 
