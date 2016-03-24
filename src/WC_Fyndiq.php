@@ -659,7 +659,6 @@ EOS;
         }
     }
 
-
     public function fyndiq_product_column_export($column, $postId)
     {
         $product = new FmProduct($postId);
