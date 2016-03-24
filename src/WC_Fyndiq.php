@@ -10,6 +10,30 @@ class WC_Fyndiq
 
     const NOTICES = 'fyndiq_notices';
 
+    /** @var string key value for fyndiq order column */
+    const ORDERS = 'fyndiq_order';
+
+    /** @var string key value for fyndiq product column */
+    const EXPORT = 'fyndiq_export_column';
+
+    /** @var string the key for the bulk action in export */
+    const EXPORT_HANDLE = 'fyndiq_handle_export';
+
+    /** @var string the key for the bulk action in not export */
+    const EXPORT_UNHANDLE = 'fyndiq_handle_no_export';
+
+    /** @var string the key for mark imported orders as handled */
+    const ORDER_HANDLE = 'fyndiq_handle_order';
+
+    /** @var string the key for mark imported orders as unhandled */
+    const ORDER_UNHANDLE = 'fyndiq_unhandle_order';
+
+    /** @var string the key for delivery note action */
+    const DELIVERY_NOTE = 'fyndiq_delivery';
+
+    /** @var string the key for order import action */
+    const ORDER_IMPORT = 'order_import';
+
     const ORDERS_DISABLE = 1;
     const ORDERS_ENABLE = 2;
 
@@ -578,13 +602,13 @@ EOS;
     //Hooked function for adding columns to the products page (manage_edit-shop_order_columns)
     public function fyndiq_order_add_column($defaults)
     {
-        $defaults['fyndiq_order'] = __('Fyndiq Order', 'fyndiq');
+        $defaults[self::ORDERS] = __('Fyndiq Order', 'fyndiq');
         return $defaults;
     }
 
     public function fyndiq_order_column($column, $orderId)
     {
-        if ($column === 'fyndiq_order') {
+        if ($column === self::ORDERS) {
             $fyndiq_order = get_post_meta($orderId, 'fyndiq_id', true);
             if ($fyndiq_order != '') {
                 $this->fmOutput->output($fyndiq_order);
@@ -599,7 +623,7 @@ EOS;
     public function fyndiq_order_column_sort()
     {
         return array(
-            'fyndiq_order' => 'fyndiq_order'
+            self::ORDERS => self::ORDERS
         );
     }
 
@@ -610,7 +634,7 @@ EOS;
             return;
         }
         $orderby = $query->get('orderby');
-        if ('fyndiq_order' === $orderby) {
+        if ($orderby === self::ORDERS) {
             $query->set('meta_key', 'fyndiq_id');
             $query->set('orderby', 'meta_value_integer');
         }
@@ -621,14 +645,14 @@ EOS;
     //Hooked function for adding columns to the products page (manage_edit-product_columns)
     public function fyndiq_product_add_column($defaults)
     {
-        $defaults['fyndiq_export'] = __('Fyndiq', 'fyndiq');
+        $defaults[self::EXPORT] = __('Fyndiq', 'fyndiq');
         return $defaults;
     }
 
     public function fyndiq_product_column_sort()
     {
         return array(
-            'fyndiq_export' => 'fyndiq_export',
+            self::EXPORT => self::EXPORT,
         );
     }
 
@@ -638,7 +662,7 @@ EOS;
             return;
         }
         $orderby = $query->get('orderby');
-        if ('fyndiq_export' == $orderby) {
+        if ($orderby === self::EXPORT) {
             $query->set('meta_key', '_fyndiq_export');
             $query->set('orderby', 'meta_value');
         }
@@ -648,7 +672,7 @@ EOS;
     {
         $product = new FmProduct($postId);
 
-        if ($column == 'fyndiq_export') {
+        if ($column == self::EXPORT) {
             if ($product->isProductExportable()) {
                 if ($product->getIsExported()) {
                     _e('Exported', 'fyndiq');
@@ -723,14 +747,14 @@ EOS;
         //Define bulk actions for the various page types
         $bulkActionArray = array(
             'product' => array(
-                'fyndiq_export' => __('Export to Fyndiq', 'fyndiq'),
-                'fyndiq_no_export' => __('Remove from Fyndiq', 'fyndiq'),
+                self::EXPORT_HANDLE => __('Export to Fyndiq', 'fyndiq'),
+                self::EXPORT_UNHANDLE => __('Remove from Fyndiq', 'fyndiq'),
             ),
             'shop_order' => array(
-                'fyndiq_delivery' => __('Get Fyndiq Delivery Note', 'fyndiq'),
-                'fyndiq-order-import' => __('Import From Fyndiq', 'fyndiq'),
-                'fyndiq_handle_order' => __('Mark order(s) as handled', 'fyndiq'),
-                'fyndiq_unhandle_order' => __('Mark order(s) as not handled', 'fyndiq')
+                self::DELIVERY_NOTE => __('Get Fyndiq Delivery Note', 'fyndiq'),
+                self::ORDER_IMPORT => __('Import From Fyndiq', 'fyndiq'),
+                self::ORDER_HANDLE => __('Mark order(s) as handled', 'fyndiq'),
+                self::ORDER_UNHANDLE => __('Mark order(s) as not handled', 'fyndiq')
             )
         );
 
@@ -754,11 +778,11 @@ EOS;
             case 'shop_order': {
                 if ($this->ordersEnabled()) {
                     $scriptOutput .= "if( jQuery('.wrap h2').length && jQuery(jQuery('.wrap h2')[0]).text() != 'Filter posts list' ) {
-                                        jQuery(jQuery('.wrap h2')[0]).append(\"<a href='#' id='fyndiq-order-import' class='add-new-h2'>" .
-                        $bulkActionArray[$post_type]['fyndiq-order-import'] . "</a>\");
+                                        jQuery(jQuery('.wrap h2')[0]).append(\"<a href='#' id='".self::ORDER_IMPORT."' class='add-new-h2'>" .
+                        $bulkActionArray[$post_type][self::ORDER_IMPORT] . "</a>\");
                                     } else if (jQuery('.wrap h1').length ){
-                                        jQuery(jQuery('.wrap h1')[0]).append(\"<a href='#' id='fyndiq-order-import' class='page-title-action'>" .
-                        $bulkActionArray[$post_type]['fyndiq-order-import'] . "</a>\");
+                                        jQuery(jQuery('.wrap h1')[0]).append(\"<a href='#' id='".self::ORDER_IMPORT."' class='page-title-action'>" .
+                        $bulkActionArray[$post_type][self::ORDER_IMPORT] . "</a>\");
                                     }";
                 }
             }
@@ -782,19 +806,19 @@ EOS;
     {
         $action = $this->getAction('WP_Posts_List_Table');
         switch ($this->getAction('WP_Posts_List_Table')) {
-            case 'fyndiq_handle_order':
+            case self::ORDER_HANDLE:
                 FmOrder::orderHandleBulkAction(true);
                 break;
-            case 'fyndiq_unhandle_order':
+            case self::ORDER_UNHANDLE:
                 FmOrder::orderHandleBulkAction(false);
                 break;
-            case 'fyndiq_delivery':
+            case self::DELIVERY_NOTE:
                 FmOrder::deliveryNoteBulkaction();
                 break;
-            case 'fyndiq_export':
+            case self::EXPORT_HANDLE:
                 FmProduct::productExportBulkAction(FmProduct::EXPORTED, $action);
                 break;
-            case 'fyndiq_no_export':
+            case self::EXPORT_UNHANDLE:
                 FmProduct::productExportBulkAction(FmProduct::NOT_EXPORTED, $action);
                 break;
             default:
