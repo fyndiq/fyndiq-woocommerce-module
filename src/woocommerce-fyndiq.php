@@ -41,6 +41,7 @@ if (is_plugin_active('woocommerce/woocommerce.php')) {
     }
 
     // Require the necessary files
+    require_once('classes/FmWoo.php');
     require_once('models/FmPost.php');
     require_once('classes/FmErrorHandler.php');
     require_once('include/api/fyndiqAPI.php');
@@ -55,6 +56,7 @@ if (is_plugin_active('woocommerce/woocommerce.php')) {
     require_once('WC_Fyndiq.php');
 
     //Let's get the ball rolling.
+    $fmWoo = new FmWoo();
     $fmOutput = new FyndiqOutput();
-    new WC_Fyndiq($fmOutput);
+    new WC_Fyndiq($fmWoo, $fmOutput);
 }

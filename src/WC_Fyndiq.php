@@ -5,6 +5,7 @@ defined('ABSPATH') || exit;
 class WC_Fyndiq
 {
     private $filePath = null;
+    private $fmWoo = null;
     private $fmOutput = null;
     private $fmExport = null;
 
@@ -40,22 +41,24 @@ class WC_Fyndiq
     const SETTING_TAB_PRIORITY = 50;
 
 
-    public function __construct($fmOutput)
+    public function __construct($fmWoo, $fmOutput)
     {
+        $this->fmWoo = $fmWoo;
+        $this->fmOutput = $fmOutput;
+
         $this->currencies = array_combine(FyndiqUtils::$allowedCurrencies, FyndiqUtils::$allowedCurrencies);
 
         //Register class hooks as early as possible
-        add_action('wp_loaded', array(&$this, 'initiateClassHooks'));
+        $this->fmWoo->add_action('wp_loaded', array(&$this, 'initiateClassHooks'));
 
         //Load locale in init
-        add_action('init', array(&$this, 'locale_load'));
+        $this->fmWoo->add_action('init', array(&$this, 'locale_load'));
 
         // called only after woocommerce has finished loading
-        add_action('init', array(&$this, 'woocommerce_loaded'), 250);
+        $this->fmWoo->add_action('init', array(&$this, 'woocommerce_loaded'), 250);
 
         $this->filePath = wp_upload_dir()['basedir'] . '/fyndiq-feed.csv';
 
-        $this->fmOutput = $fmOutput;
         $this->fmUpdate = new FmUpdate();
         $this->fmExport = new FmExport($this->filePath, $this->fmOutput);
     }
@@ -81,61 +84,100 @@ class WC_Fyndiq
     {
         //javascript
         //@todo Fix JS loading
-        add_action('admin_head', array(&$this, 'get_url'));
+        $this->fmWoo->add_action('admin_head', array(&$this, 'get_url'));
 
 
         //Settings
-        add_filter('woocommerce_settings_tabs_array', array(&$this, 'fyndiq_add_settings_tab'), self::SETTING_TAB_PRIORITY);
-        add_action('woocommerce_settings_tabs_wcfyndiq', array(&$this, 'settings_tab'));
-        add_action('woocommerce_update_options_wcfyndiq', array(&$this, 'update_settings'));
+        $this->fmWoo->add_filter(
+            'woocommerce_settings_tabs_array',
+            array(&$this, 'fyndiq_add_settings_tab'),
+            self::SETTING_TAB_PRIORITY
+        );
+        $this->fmWoo->add_action(
+            'woocommerce_settings_tabs_wcfyndiq',
+            array(&$this, 'settings_tab')
+        );
+        $this->fmWoo->add_action(
+            'woocommerce_update_options_wcfyndiq',
+            array(&$this, 'update_settings')
+        );
 
         //products
+        $this->fmWoo->add_action(
+            'woocommerce_process_shop_order_meta',
+            array(&$this, 'fyndiq_order_handled_save')
+        );
 
-
-        add_action('woocommerce_process_shop_order_meta', array(&$this, 'fyndiq_order_handled_save'));
-
-        add_action('woocommerce_admin_order_data_after_order_details', array(&$this, 'fyndiq_add_order_field'));
-        add_action('woocommerce_product_write_panel_tabs', array(&$this, 'fyndiq_product_tab'));
+        $this->fmWoo->add_action(
+            'woocommerce_admin_order_data_after_order_details',
+            array(&$this, 'fyndiq_add_order_field')
+        );
+        $this->fmWoo->add_action(
+            'woocommerce_product_write_panel_tabs',
+            array(&$this, 'fyndiq_product_tab')
+        );
 
 
         //product list
-        add_filter('manage_edit-product_columns', array(&$this, 'fyndiq_product_add_column'));
-        add_action('manage_product_posts_custom_column', array(&$this, 'fyndiq_product_column_export'), 5, 2);
-        add_filter('manage_edit-product_sortable_columns', array(&$this, 'fyndiq_product_column_sort'));
-        add_action('pre_get_posts', array(&$this, 'fyndiq_product_column_sort_by'));
-        add_action('admin_notices', array(&$this, 'fyndiq_bulk_notices'));
-        add_action('admin_notices', array(&$this, 'do_bulk_action_messages'));
+        $this->fmWoo->add_filter(
+            'manage_edit-product_columns',
+            array(&$this, 'fyndiq_product_add_column')
+        );
+        $this->fmWoo->add_action(
+            'manage_product_posts_custom_column',
+            array(&$this, 'fyndiq_product_column_export'),
+            5,
+            2
+        );
+        $this->fmWoo->add_filter(
+            'manage_edit-product_sortable_columns',
+            array(&$this, 'fyndiq_product_column_sort')
+        );
+        $this->fmWoo->add_action('pre_get_posts', array(&$this, 'fyndiq_product_column_sort_by'));
+        $this->fmWoo->add_action('admin_notices', array(&$this, 'fyndiq_bulk_notices'));
+        $this->fmWoo->add_action('admin_notices', array(&$this, 'do_bulk_action_messages'));
 
 
         //order list
         if ($this->ordersEnabled()) {
-            add_filter('manage_edit-shop_order_columns', array(&$this, 'fyndiq_order_add_column'));
-            add_action('manage_shop_order_posts_custom_column', array(&$this, 'fyndiq_order_column'), 5, 2);
-            add_filter('manage_edit-shop_order_sortable_columns', array(&$this, 'fyndiq_order_column_sort'));
+            $this->fmWoo->add_filter('manage_edit-shop_order_columns', array(&$this, 'fyndiq_order_add_column'));
+            $this->fmWoo->add_action(
+                'manage_shop_order_posts_custom_column',
+                array(&$this, 'fyndiq_order_column'),
+                5,
+                2
+            );
+            $this->fmWoo->add_filter(
+                'manage_edit-shop_order_sortable_columns',
+                array(&$this, 'fyndiq_order_column_sort')
+            );
         }
 
         //bulk action
         //Inserts the JS for the appropriate dropdown items
-        add_action('admin_footer-edit.php', array(&$this, 'fyndiq_add_bulk_action'));
+        $this->fmWoo->add_action('admin_footer-edit.php', array(&$this, 'fyndiq_add_bulk_action'));
 
         //Dispatcher for different bulk actions
-        add_action('load-edit.php', array(&$this, 'fyndiq_bulk_action_dispatcher'));
+        $this->fmWoo->add_action('load-edit.php', array(&$this, 'fyndiq_bulk_action_dispatcher'));
 
         //add_action('post_submitbox_misc_actions', array( &$this, 'fyndiq_order_edit_action'));
-        add_action('add_meta_boxes', array(&$this, 'fyndiq_order_meta_boxes'));
+        $this->fmWoo->add_action('add_meta_boxes', array(&$this, 'fyndiq_order_meta_boxes'));
 
         //notice for currency check
-        add_action('admin_notices', array(&$this, 'my_admin_notice'));
+        $this->fmWoo->add_action('admin_notices', array(&$this, 'my_admin_notice'));
 
         //Checker Page
-        add_action('admin_menu', array(&$this, 'fyndiq_add_menu'));
-        add_filter('plugin_action_links_' . plugin_basename(dirname(__FILE__).'/woocommerce-fyndiq.php'), array(&$this, 'fyndiq_action_links'));
+        $this->fmWoo->add_action('admin_menu', array(&$this, 'fyndiq_add_menu'));
+        $this->fmWoo->add_filter(
+            'plugin_action_links_' . plugin_basename(dirname(__FILE__).'/woocommerce-fyndiq.php'),
+            array(&$this, 'fyndiq_action_links')
+        );
 
         //index
-        add_action('load-index.php', array($this->fmUpdate, 'updateNotification'));
+        $this->fmWoo->add_action('load-index.php', array($this->fmUpdate, 'updateNotification'));
 
         //orders
-        add_action('load-edit.php', array(&$this, 'fyndiq_show_order_error'));
+        $this->fmWoo->add_action('load-edit.php', array(&$this, 'fyndiq_show_order_error'));
 
 
         //functions
@@ -564,7 +606,7 @@ EOS;
         if (isset($_GET['post_type']) && $_GET['post_type'] == 'shop_order') {
             $error = get_option('wcfyndiq_order_error');
             if ($error) {
-                add_action('admin_notices', array(&$this, 'fyndiq_show_order_error_notice'));
+                $this->fmWoo->add_action('admin_notices', array(&$this, 'fyndiq_show_order_error_notice'));
                 update_option('wcfyndiq_order_error', false);
             }
         }
