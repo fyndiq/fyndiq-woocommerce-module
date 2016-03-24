@@ -766,7 +766,7 @@ EOS;
                 '<div class="error"><p><strong>%s</strong>: %s %s</p></div>',
                 __('Wrong Country', 'fyndiq'),
                 __('Fyndiq only works in Sweden and Germany. change to correct country. Current Country:', 'fyndiq'),
-                WC()->countries->get_base_country()
+                $this->fmWoo->WC()->countries->get_base_country()
             ));
         }
         if ($this->checkCredentials()) {
@@ -989,7 +989,7 @@ EOS;
     {
         FyndiqUtils::debugStart();
         FyndiqUtils::debug('USER AGENT', FmHelpers::get_user_agent());
-        $languageId = WC()->countries->get_base_country();
+        $languageId = $this->fmWoo->WC()->countries->get_base_country();
         FyndiqUtils::debug('language', $languageId);
         FyndiqUtils::debug('taxonomy', $this->getAllTerms());
         $return = $this->fmExport->feedFileHandling();
@@ -1052,7 +1052,7 @@ EOS;
 
     public function checkCountry()
     {
-        $country = WC()->countries->get_base_country();
+        $country = $this->fmWoo->WC()->countries->get_base_country();
         return !in_array($country, FyndiqUtils::$allowedMarkets);
     }
 

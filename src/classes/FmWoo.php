@@ -85,6 +85,14 @@ class FmWoo
 
     public function getOption($option, $default = false)
     {
-        return get_option($option, $default)
+        return get_option($option, $default);
+    }
+
+
+    /** WooCommerce specific functions */
+
+    public function WC()
+    {
+        return WC();
     }
 }
