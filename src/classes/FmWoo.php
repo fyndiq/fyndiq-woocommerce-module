@@ -95,4 +95,9 @@ class FmWoo
     {
         return WC();
     }
+
+    public function getWoocommerceCurrency()
+    {
+        return get_woocommerce_currency();
+    }
 }

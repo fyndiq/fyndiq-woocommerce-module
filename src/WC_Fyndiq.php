@@ -758,7 +758,7 @@ EOS;
                 '<div class="error"><p><strong>%s</strong>: %s %s</p></div>',
                 __('Wrong Currency', 'fyndiq'),
                 __('Fyndiq only works in EUR and SEK. change to correct currency. Current Currency:', 'fyndiq'),
-                get_woocommerce_currency()
+                $this->fmWoo->getWoocommerceCurrency()
             ));
         }
         if ($this->checkCountry()) {
@@ -1046,7 +1046,7 @@ EOS;
 
     public function checkCurrency()
     {
-        $currency = get_woocommerce_currency();
+        $currency = $this->fmWoo->getWoocommerceCurrency();
         return !in_array($currency, FyndiqUtils::$allowedCurrencies);
     }
 
