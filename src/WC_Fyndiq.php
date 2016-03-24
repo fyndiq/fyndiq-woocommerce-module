@@ -6,6 +6,7 @@ class WC_Fyndiq
 {
     private $filePath = null;
     private $fmOutput = null;
+    private $fmExport = null;
 
     const NOTICES = 'fyndiq_notices';
 
@@ -39,7 +40,7 @@ class WC_Fyndiq
     const SETTING_TAB_PRIORITY = 50;
 
 
-    public function __construct()
+    public function __construct($fmOutput)
     {
         $this->currencies = array_combine(FyndiqUtils::$allowedCurrencies, FyndiqUtils::$allowedCurrencies);
 
@@ -54,7 +55,7 @@ class WC_Fyndiq
 
         $this->filePath = wp_upload_dir()['basedir'] . '/fyndiq-feed.csv';
 
-        $this->fmOutput = new FyndiqOutput();
+        $this->fmOutput = $fmOutput;
         $this->fmUpdate = new FmUpdate();
         $this->fmExport = new FmExport($this->filePath, $this->fmOutput);
     }
@@ -145,8 +146,20 @@ class WC_Fyndiq
             FmOrder::generateOrders();
         }
         if (isset($_GET['fyndiq_notification'])) {
-            $this->notification_handle();
+            $this->setAJAX();
+            $this->handleNotification($_GET);
+            $this->wpDie();
         }
+    }
+
+    protected function wpDie($message = '')
+    {
+        return wp_die($message = '');
+    }
+
+    protected function setAJAX()
+    {
+        define('DOING_AJAX', true);
     }
 
     function fyndiq_add_menu()
@@ -529,9 +542,6 @@ EOS;
         echo sprintf("<li class='fyndiq_tab'><a href='#fyndiq_tab'>%s</a></li>", __('Fyndiq', 'fyndiq'));
     }
 
-
-
-
     /**
      *
      * This is the hooked function for fields on the order pages
@@ -548,7 +558,6 @@ EOS;
             'description' => __('Report this order as handled to Fyndiq', 'fyndiq'),
         ), (bool)$order->getIsHandled());
     }
-
 
     public function fyndiq_show_order_error()
     {
@@ -853,29 +862,42 @@ EOS;
         }
     }
 
-    public function notification_handle()
+    /**
+     * handleNotification handles notification calls
+     * @param array $get $_GET array
+     * @return bool
+     */
+    public function handleNotification($get)
     {
-        define('DOING_AJAX', true);
-        if (isset($_GET['event'])) {
-            $event = $_GET['event'];
-            $eventName = $event ? 'notice_' . $event : false;
-            if ($eventName) {
-                if ($eventName[0] != '_' && method_exists($this, $eventName)) {
-                    $this->checkToken();
-                    return $this->$eventName();
-                }
+        if (isset($get['event'])) {
+            switch($get['event']) {
+                case 'order_created':
+                    return $this->orderCreated($get);
+                case 'ping':
+                    $this->checkToken($get);
+                    return $this->ping();
+                case 'debug':
+                    $this->checkToken($get);
+                    return $this->debug();
+                case 'info':
+                    $this->checkToken($get);
+                    return $this->info();
             }
         }
-        $this->fmOutput->showError(400, 'Bad Request', '400 Bad Request');
-        wp_die();
+        return $this->fmOutput->showError(400, 'Bad Request', '400 Bad Request');
     }
 
-    private function notice_order_created()
+    /**
+     * orderCreated handles new order notification
+     * @param array $get $_GET array
+     * @return bool
+     */
+    protected function orderCreated($get)
     {
         if (!$this->ordersEnabled()) {
-            wp_die('Orders is disabled');
+            $this->wpDie('Orders is disabled');
         }
-        $order_id = $_GET['order_id'];
+        $order_id = $get['order_id'];
         $orderId = is_numeric($order_id) ? intval($order_id) : 0;
         if ($orderId > 0) {
             try {
@@ -884,18 +906,22 @@ EOS;
                 $fyndiqOrder = $ret['data'];
 
                 if (!FmOrder::orderExists($fyndiqOrder->id)) {
-                    FmOrder::createOrder($fyndiqOrder);
+                    return FmOrder::createOrder($fyndiqOrder);
                 }
+                return true;
             } catch (Exception $e) {
                 FmOrder::setOrderError();
                 $this->fmOutput->showError(500, 'Internal Server Error', $e);
             }
-
-            wp_die();
         }
+        return false;
     }
 
-    private function notice_debug()
+    /**
+     * debug handles the debug page
+     * @return bool
+     */
+    protected function debug()
     {
         FyndiqUtils::debugStart();
         FyndiqUtils::debug('USER AGENT', FmHelpers::get_user_agent());
@@ -906,10 +932,14 @@ EOS;
         $result = file_get_contents($this->filePath);
         FyndiqUtils::debug('$result', $result, true);
         FyndiqUtils::debugStop();
-        wp_die();
+        return true;
     }
 
-    private function notice_ping()
+    /**
+     * ping handles ping notification
+     * @return bool
+     */
+    protected function ping()
     {
         $this->fmOutput->flushHeader('OK');
 
@@ -923,22 +953,25 @@ EOS;
                 $this->fmExport->feedFileHandling();
             } catch (Exception $e) {
                 error_log($e->getMessage());
+                return false;
             }
         }
-        wp_die();
+        return true;
     }
 
-    private function notice_info()
+    /**
+     * info handles information report
+     * @return bool
+     */
+    protected function info()
     {
-
         $info = FyndiqUtils::getInfo(
             FmHelpers::PLATFORM,
             FmHelpers::get_woocommerce_version(),
             FmHelpers::get_plugin_version(),
             FmHelpers::COMMIT
         );
-        $this->fmOutput->outputJSON($info);
-        wp_die();
+        return $this->fmOutput->outputJSON($info);
     }
 
     public function getAction($table)
@@ -991,15 +1024,15 @@ EOS;
     }
 
 
-    private function checkToken()
+    protected function checkToken($get)
     {
         $pingToken = get_option('wcfyndiq_ping_token');
 
-        $token = isset($_GET['pingToken']) ? $_GET['pingToken'] : null;
+        $token = isset($get['pingToken']) ? $get['pingToken'] : null;
 
         if (is_null($token) || $token != $pingToken) {
             $this->fmOutput->showError(400, 'Bad Request', '400 Bad Request');
-            wp_die();
+            $this->wpDie();
         }
     }
 

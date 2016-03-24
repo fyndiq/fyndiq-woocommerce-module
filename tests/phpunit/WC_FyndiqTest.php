@@ -9,7 +9,18 @@ class FyndiqTest extends WP_UnitTestCase
         $hook = parse_url('edit.php?post_type=product');
         $GLOBALS['hook_suffix'] = $hook['path'];
         set_current_screen();
-        $this->wc_fyndiq = $this->getMockBuilder('WC_Fyndiq')->setMethods(array('getAction','getRequestPost', 'bulkRedirect', 'returnAndDie', 'getProductId', 'getExportState', 'checkCurrency', 'checkCountry'))->getMock();
+
+        $this->fmOuptut = $this->getMockBuilder('stdClass')
+            ->setMethods(array('output', 'showError'))
+            ->getMock();
+
+        $this->fmOuptut->method('output')->willReturn(true);
+        $this->fmOuptut->method('showError')->willReturn(true);
+
+        $this->wc_fyndiq = $this->getMockBuilder('WC_Fyndiq')
+            ->setConstructorArgs(array($this->fmOuptut))
+            ->setMethods(array('getAction','getRequestPost', 'bulkRedirect', 'returnAndDie', 'getProductId', 'getExportState', 'checkCurrency', 'checkCountry'))
+            ->getMock();
         $this->wc_fyndiq->woocommerce_loaded();
         //$this->wc_fyndiq->plugins_loaded();
     }
@@ -113,7 +124,9 @@ class FyndiqTest extends WP_UnitTestCase
 
         $this->wc_fyndiq->order_meta_box_delivery_note();
 
-        $this->expectOutputString('<a href="https://fyndiq.se/merchant/fake/delivery/note/32" class="button button-primary">Get Fyndiq Delivery Note</a>');
+        $this->fmOuptut->method('output')
+            ->with('<a href="https://fyndiq.se/merchant/fake/delivery/note/32" class="button button-primary">Get Fyndiq Delivery Note</a>')
+            ->willReturn(true);
     }
 
     function test_fyndiq_product_add_column_return_right_array()
@@ -515,7 +528,10 @@ class FyndiqTest extends WP_UnitTestCase
         $this->wc_fyndiq->expects($this->once())->method('checkCurrency')->willReturn(true);
 
         $this->wc_fyndiq->my_admin_notice();
-        $this->expectOutputString('<div class="error"><p><strong>Wrong Currency</strong>: Fyndiq only works in EUR and SEK. change to correct currency. Current Currency: GBP</p></div><div class="error"><p><strong>Fyndiq Credentials</strong>: You need to set Fyndiq Credentials to make it work. Do it in  <a href="http://example.org/wp-admin/admin.php?page=wc-settings&tab=wcfyndiq">Woocommerce Settings > Fyndiq</a></p></div>');
+
+        $this->fmOuptut->method('output')
+            ->with('<div class="error"><p><strong>Wrong Currency</strong>: Fyndiq only works in EUR and SEK. change to correct currency. Current Currency: GBP</p></div><div class="error"><p><strong>Fyndiq Credentials</strong>: You need to set Fyndiq Credentials to make it work. Do it in  <a href="http://example.org/wp-admin/admin.php?page=wc-settings&tab=wcfyndiq">Woocommerce Settings > Fyndiq</a></p></div>')
+            ->willReturn(true);
     }
 
     function test_fyndiq_notice_country()
@@ -526,7 +542,9 @@ class FyndiqTest extends WP_UnitTestCase
         $this->wc_fyndiq->expects($this->once())->method('checkCountry')->willReturn(true);
 
         $this->wc_fyndiq->my_admin_notice();
-        $this->expectOutputString('<div class="error"><p><strong>Wrong Country</strong>: Fyndiq only works in Sweden and Germany. change to correct country. Current Country: GB</p></div><div class="error"><p><strong>Fyndiq Credentials</strong>: You need to set Fyndiq Credentials to make it work. Do it in  <a href="http://example.org/wp-admin/admin.php?page=wc-settings&tab=wcfyndiq">Woocommerce Settings > Fyndiq</a></p></div>');
+        $this->fmOuptut->method('output')
+            ->with('<div class="error"><p><strong>Wrong Country</strong>: Fyndiq only works in Sweden and Germany. change to correct country. Current Country: GB</p></div><div class="error"><p><strong>Fyndiq Credentials</strong>: You need to set Fyndiq Credentials to make it work. Do it in  <a href="http://example.org/wp-admin/admin.php?page=wc-settings&tab=wcfyndiq">Woocommerce Settings > Fyndiq</a></p></div>')
+            ->willReturn(true);
     }
 
 
@@ -607,5 +625,77 @@ class FyndiqTest extends WP_UnitTestCase
             add_post_meta($order_id, 'fyndiq_delivery_note', 'https://fyndiq.se' . "/merchant/fake/delivery/note/32", true);
         }
         return $order_id;
+    }
+
+    public function testHandleNotificationError()
+    {
+        $this->fmOuptut->expects($this->once())
+            ->method('showError')
+            ->with(
+                $this->equalTo(400),
+                $this->equalTo('Bad Request'),
+                $this->equalTo('400 Bad Request')
+            );
+        $result = $this->wc_fyndiq->handleNotification(array());
+        $this->assertTrue($result);
+    }
+
+    public function testHandleNotificationOrderCreated()
+    {
+        $get = array('event' => 'order_created');
+        $wC_Fyndiq = $this->getMockBuilder('WC_Fyndiq')
+            ->setConstructorArgs(array($this->fmOuptut))
+            ->setMethods(array('orderCreated'))
+            ->getMock();
+
+        $wC_Fyndiq->expects($this->once())
+            ->method('orderCreated')
+            ->with($get)
+            ->willReturn(true);
+
+        $result = $wC_Fyndiq->handleNotification($get);
+        $this->assertTrue($result);
+    }
+
+    public function testHandleNotificationPing()
+    {
+        $get = array('event' => 'ping');
+        $wC_Fyndiq = $this->getMockBuilder('WC_Fyndiq')
+            ->setConstructorArgs(array($this->fmOuptut))
+            ->setMethods(array('ping', 'checkToken'))
+            ->getMock();
+
+        $wC_Fyndiq->expects($this->once())
+            ->method('ping')
+            ->willReturn(true);
+
+        $wC_Fyndiq->expects($this->once())
+            ->method('checkToken')
+            ->with($get)
+            ->willReturn(true);
+
+        $result = $wC_Fyndiq->handleNotification($get);
+        $this->assertTrue($result);
+    }
+
+    public function testHandleNotificationDebug()
+    {
+        $get = array('event' => 'debug');
+        $wC_Fyndiq = $this->getMockBuilder('WC_Fyndiq')
+            ->setConstructorArgs(array($this->fmOuptut))
+            ->setMethods(array('debug', 'checkToken'))
+            ->getMock();
+
+        $wC_Fyndiq->expects($this->once())
+            ->method('debug')
+            ->willReturn(true);
+
+        $wC_Fyndiq->expects($this->once())
+            ->method('checkToken')
+            ->with($get)
+            ->willReturn(true);
+
+        $result = $wC_Fyndiq->handleNotification($get);
+        $this->assertTrue($result);
     }
 }

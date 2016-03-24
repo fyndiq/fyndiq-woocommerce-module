@@ -55,5 +55,6 @@ if (is_plugin_active('woocommerce/woocommerce.php')) {
     require_once('WC_Fyndiq.php');
 
     //Let's get the ball rolling.
-    new WC_Fyndiq();
+    $fmOutput = new FyndiqOutput();
+    new WC_Fyndiq($fmOutput);
 }
