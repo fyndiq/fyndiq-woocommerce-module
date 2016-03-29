@@ -6,13 +6,39 @@ class WC_Fyndiq
 {
     private $filePath = null;
     private $fmOutput = null;
+    private $fmExport = null;
 
     const NOTICES = 'fyndiq_notices';
 
+    /** @var string key value for fyndiq order column */
+    const ORDERS = 'fyndiq_order';
+
+    /** @var string key value for fyndiq product column */
+    const EXPORT = 'fyndiq_export_column';
+
+    /** @var string the key for the bulk action in export */
+    const EXPORT_HANDLE = 'fyndiq_handle_export';
+
+    /** @var string the key for the bulk action in not export */
+    const EXPORT_UNHANDLE = 'fyndiq_handle_no_export';
+
+    /** @var string the key for mark imported orders as handled */
+    const ORDER_HANDLE = 'fyndiq_handle_order';
+
+    /** @var string the key for mark imported orders as unhandled */
+    const ORDER_UNHANDLE = 'fyndiq_unhandle_order';
+
+    /** @var string the key for delivery note action */
+    const DELIVERY_NOTE = 'fyndiq_delivery';
+
+    /** @var string the key for order import action */
+    const ORDER_IMPORT = 'order_import';
+
+    const ORDERS_DISABLE = 1;
+    const ORDERS_ENABLE = 2;
 
 
-
-    public function __construct()
+    public function __construct($fmOutput)
     {
 
         //Register class hooks as early as possible
@@ -28,7 +54,7 @@ class WC_Fyndiq
         $uploadDir = wp_upload_dir();
         $this->filePath = $uploadDir['basedir'] . '/fyndiq-feed.csv';
 
-        $this->fmOutput = new FyndiqOutput();
+        $this->fmOutput = $fmOutput;
         $this->fmUpdate = new FmUpdate();
         $this->fmExport = new FmExport($this->filePath, $this->fmOutput);
     }
@@ -111,11 +137,27 @@ class WC_Fyndiq
             FmOrder::generateOrders();
         }
         if (isset($_GET['fyndiq_notification'])) {
-            $this->notification_handle();
+            $this->setAJAX();
+            $this->handleNotification($_GET);
+            $this->wpDie();
         }
     }
 
 
+    protected function wpDie($message = '')
+    {
+        return wp_die($message = '');
+    }
+
+    protected function setAJAX()
+    {
+        define('DOING_AJAX', true);
+    }
+
+    function fyndiq_add_menu()
+    {
+        add_submenu_page(null, 'Fyndiq Checker Page', 'Fyndiq', 'manage_options', 'fyndiq-check', array(&$this, 'check_page'));
+    }
 
     public function fyndiq_order_meta_boxes()
     {
@@ -189,15 +231,11 @@ EOS;
         echo sprintf("<li class='fyndiq_tab'><a href='#fyndiq_tab'>%s</a></li>", __('Fyndiq', 'fyndiq'));
     }
 
-
-
-
     /**
      *
      * This is the hooked function for fields on the order pages
      *
      */
-
 
 
     public function fyndiq_show_order_error()
@@ -235,13 +273,13 @@ EOS;
     //Hooked function for adding columns to the products page (manage_edit-shop_order_columns)
     public function fyndiq_order_add_column($defaults)
     {
-        $defaults['fyndiq_order'] = __('Fyndiq Order', 'fyndiq');
+        $defaults[self::ORDERS] = __('Fyndiq Order', 'fyndiq');
         return $defaults;
     }
 
     public function fyndiq_order_column($column, $orderId)
     {
-        if ($column === 'fyndiq_order') {
+        if ($column === self::ORDERS) {
             $fyndiq_order = get_post_meta($orderId, 'fyndiq_id', true);
             if ($fyndiq_order != '') {
                 $this->fmOutput->output($fyndiq_order);
@@ -256,7 +294,7 @@ EOS;
     public function fyndiq_order_column_sort()
     {
         return array(
-            'fyndiq_order' => 'fyndiq_order'
+            self::ORDERS => self::ORDERS
         );
     }
 
@@ -267,7 +305,7 @@ EOS;
             return;
         }
         $orderby = $query->get('orderby');
-        if ('fyndiq_order' === $orderby) {
+        if ($orderby === self::ORDERS) {
             $query->set('meta_key', 'fyndiq_id');
             $query->set('orderby', 'meta_value_integer');
         }
@@ -278,14 +316,14 @@ EOS;
     //Hooked function for adding columns to the products page (manage_edit-product_columns)
     public function fyndiq_product_add_column($defaults)
     {
-        $defaults['fyndiq_export'] = __('Fyndiq', 'fyndiq');
+        $defaults[self::EXPORT] = __('Fyndiq', 'fyndiq');
         return $defaults;
     }
 
     public function fyndiq_product_column_sort()
     {
         return array(
-            'fyndiq_export' => 'fyndiq_export',
+            self::EXPORT => self::EXPORT,
         );
     }
 
@@ -295,7 +333,7 @@ EOS;
             return;
         }
         $orderby = $query->get('orderby');
-        if ('fyndiq_export' == $orderby) {
+        if ($orderby === self::EXPORT) {
             $query->set('meta_key', '_fyndiq_export');
             $query->set('orderby', 'meta_value');
         }
@@ -305,7 +343,7 @@ EOS;
     {
         $product = new FmProduct($postId);
 
-        if ($column == 'fyndiq_export') {
+        if ($column == self::EXPORT) {
             if ($product->isProductExportable()) {
                 if ($product->getIsExported()) {
                     _e('Exported', 'fyndiq');
@@ -380,14 +418,14 @@ EOS;
         //Define bulk actions for the various page types
         $bulkActionArray = array(
             'product' => array(
-                'fyndiq_export' => __('Export to Fyndiq', 'fyndiq'),
-                'fyndiq_no_export' => __('Remove from Fyndiq', 'fyndiq'),
+                self::EXPORT_HANDLE => __('Export to Fyndiq', 'fyndiq'),
+                self::EXPORT_UNHANDLE => __('Remove from Fyndiq', 'fyndiq'),
             ),
             'shop_order' => array(
-                'fyndiq_delivery' => __('Get Fyndiq Delivery Note', 'fyndiq'),
-                'fyndiq-order-import' => __('Import From Fyndiq', 'fyndiq'),
-                'fyndiq_handle_order' => __('Mark order(s) as handled', 'fyndiq'),
-                'fyndiq_unhandle_order' => __('Mark order(s) as not handled', 'fyndiq')
+                self::DELIVERY_NOTE => __('Get Fyndiq Delivery Note', 'fyndiq'),
+                self::ORDER_IMPORT => __('Import From Fyndiq', 'fyndiq'),
+                self::ORDER_HANDLE => __('Mark order(s) as handled', 'fyndiq'),
+                self::ORDER_UNHANDLE => __('Mark order(s) as not handled', 'fyndiq')
             )
         );
 
@@ -411,11 +449,11 @@ EOS;
             case 'shop_order': {
                 if (FmOrder::getOrdersEnabled()) {
                     $scriptOutput .= "if( jQuery('.wrap h2').length && jQuery(jQuery('.wrap h2')[0]).text() != 'Filter posts list' ) {
-                                        jQuery(jQuery('.wrap h2')[0]).append(\"<a href='#' id='fyndiq-order-import' class='add-new-h2'>" .
-                        $bulkActionArray[$post_type]['fyndiq-order-import'] . "</a>\");
+                                        jQuery(jQuery('.wrap h2')[0]).append(\"<a href='#' id='".self::ORDER_IMPORT."' class='add-new-h2'>" .
+                        $bulkActionArray[$post_type][self::ORDER_IMPORT] . "</a>\");
                                     } else if (jQuery('.wrap h1').length ){
-                                        jQuery(jQuery('.wrap h1')[0]).append(\"<a href='#' id='fyndiq-order-import' class='page-title-action'>" .
-                        $bulkActionArray[$post_type]['fyndiq-order-import'] . "</a>\");
+                                        jQuery(jQuery('.wrap h1')[0]).append(\"<a href='#' id='".self::ORDER_IMPORT."' class='page-title-action'>" .
+                        $bulkActionArray[$post_type][self::ORDER_IMPORT] . "</a>\");
                                     }";
                 }
             }
@@ -439,19 +477,19 @@ EOS;
     {
         $action = $this->getAction('WP_Posts_List_Table');
         switch ($this->getAction('WP_Posts_List_Table')) {
-            case 'fyndiq_handle_order':
+            case self::ORDER_HANDLE:
                 FmOrder::orderHandleBulkAction(true);
                 break;
-            case 'fyndiq_unhandle_order':
+            case self::ORDER_UNHANDLE:
                 FmOrder::orderHandleBulkAction(false);
                 break;
-            case 'fyndiq_delivery':
+            case self::DELIVERY_NOTE:
                 FmOrder::deliveryNoteBulkaction();
                 break;
-            case 'fyndiq_export':
+            case self::EXPORT_HANDLE:
                 FmProduct::productExportBulkAction(FmProduct::EXPORTED, $action);
                 break;
-            case 'fyndiq_no_export':
+            case self::EXPORT_UNHANDLE:
                 FmProduct::productExportBulkAction(FmProduct::NOT_EXPORTED, $action);
                 break;
             default:
@@ -495,29 +533,42 @@ EOS;
         }
     }
 
-    public function notification_handle()
+    /**
+     * handleNotification handles notification calls
+     * @param array $get $_GET array
+     * @return bool
+     */
+    public function handleNotification($get)
     {
-        define('DOING_AJAX', true);
-        if (isset($_GET['event'])) {
-            $event = $_GET['event'];
-            $eventName = $event ? 'notice_' . $event : false;
-            if ($eventName) {
-                if ($eventName[0] != '_' && method_exists($this, $eventName)) {
-                    $this->checkToken();
-                    return $this->$eventName();
-                }
+        if (isset($get['event'])) {
+            switch($get['event']) {
+                case 'order_created':
+                    return $this->orderCreated($get);
+                case 'ping':
+                    $this->checkToken($get);
+                    return $this->ping();
+                case 'debug':
+                    $this->checkToken($get);
+                    return $this->debug();
+                case 'info':
+                    $this->checkToken($get);
+                    return $this->info();
             }
         }
-        $this->fmOutput->showError(400, 'Bad Request', '400 Bad Request');
-        wp_die();
+        return $this->fmOutput->showError(400, 'Bad Request', '400 Bad Request');
     }
 
-    private function notice_order_created()
+    /**
+     * orderCreated handles new order notification
+     * @param array $get $_GET array
+     * @return bool
+     */
+    protected function orderCreated($get)
     {
         if (!FmOrder::getOrdersEnabled()) {
             wp_die('Orders is disabled');
         }
-        $order_id = $_GET['order_id'];
+        $order_id = $get['order_id'];
         $orderId = is_numeric($order_id) ? intval($order_id) : 0;
         if ($orderId > 0) {
             try {
@@ -526,18 +577,22 @@ EOS;
                 $fyndiqOrder = $ret['data'];
 
                 if (!FmOrder::orderExists($fyndiqOrder->id)) {
-                    FmOrder::createOrder($fyndiqOrder);
+                    return FmOrder::createOrder($fyndiqOrder);
                 }
+                return true;
             } catch (Exception $e) {
                 FmOrder::setOrderError();
                 $this->fmOutput->showError(500, 'Internal Server Error', $e);
             }
-
-            wp_die();
         }
+        return false;
     }
 
-    private function notice_debug()
+    /**
+     * debug handles the debug page
+     * @return bool
+     */
+    protected function debug()
     {
         FyndiqUtils::debugStart();
         FyndiqUtils::debug('USER AGENT', FmHelpers::get_user_agent());
@@ -548,10 +603,14 @@ EOS;
         $result = file_get_contents($this->filePath);
         FyndiqUtils::debug('$result', $result, true);
         FyndiqUtils::debugStop();
-        wp_die();
+        return true;
     }
 
-    private function notice_ping()
+    /**
+     * ping handles ping notification
+     * @return bool
+     */
+    protected function ping()
     {
         $this->fmOutput->flushHeader('OK');
 
@@ -565,22 +624,25 @@ EOS;
                 $this->fmExport->feedFileHandling();
             } catch (Exception $e) {
                 error_log($e->getMessage());
+                return false;
             }
         }
-        wp_die();
+        return true;
     }
 
-    private function notice_info()
+    /**
+     * info handles information report
+     * @return bool
+     */
+    protected function info()
     {
-
         $info = FyndiqUtils::getInfo(
             FmHelpers::PLATFORM,
             FmHelpers::get_woocommerce_version(),
             FmHelpers::get_plugin_version(),
             FmHelpers::COMMIT
         );
-        $this->fmOutput->outputJSON($info);
-        wp_die();
+        return $this->fmOutput->outputJSON($info);
     }
 
     public function getAction($table)
@@ -614,15 +676,17 @@ EOS;
         return (empty($username) || empty($token));
     }
 
-    private function checkToken()
+
+
+    protected function checkToken($get)
     {
         $pingToken = get_option('wcfyndiq_ping_token');
 
-        $token = isset($_GET['pingToken']) ? $_GET['pingToken'] : null;
+        $token = isset($get['pingToken']) ? $get['pingToken'] : null;
 
         if (is_null($token) || $token != $pingToken) {
             $this->fmOutput->showError(400, 'Bad Request', '400 Bad Request');
-            wp_die();
+            $this->wpDie();
         }
     }
 }

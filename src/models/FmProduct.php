@@ -315,7 +315,6 @@ class FmProduct extends FmPost
         $postIds = array();
         $posts = FmPost::getRequestPostsArray();
         if (!is_null($posts)) {
-
             foreach ($posts as $postId) {
                 $product = new FmProduct((int) $postId);
                 if ($product->isProductExportable()) {

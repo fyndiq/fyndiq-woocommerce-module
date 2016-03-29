@@ -1,4 +1,4 @@
-jQuery(document).on('click', '#fyndiq-order-import', function(){
+jQuery(document).on('click', '#order_import', function(){
     var button = jQuery(this);
     var beforetext = button.text();
     button.text(trans_loading);
