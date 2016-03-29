@@ -156,8 +156,7 @@ EOS;
         );
 
         if ($this->ordersEnabled()) {
-            wp_register_script('fyndiq_order', plugins_url('/js/order-import.js', __FILE__), array('jquery'), null);
-            wp_enqueue_script('fyndiq_order');
+            wp_enqueue_script('fyndiq_order', plugins_url('/js/order-import.js', __FILE__), array('jquery'), null);
         }
     }
 
