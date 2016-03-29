@@ -35,9 +35,7 @@ class FmDiagnosticsTest extends WP_UnitTestCase
     public function testDiagPage() {
         $expected = "<h1>Fyndiq Integration Diagnostic Page</h1><p>This page contains diagnostic information that may be useful in the 
         event that the Fyndiq WooCommerce integration plugin runs in to problems.</p><h2>File Permissions</h2>Feed file name: `/opt/wptests/wordpress/wp-content/uploads/fyndiq-feed.csv` (does not exist)<br />Cannot create file. Please make sure that the server can create new files in `/opt/wptests/wordpress/wp-content/uploads`<h2>Classes</h2>Class `FyndiqAPI` is found.<br />Class `FyndiqAPICall` is found.<br />Class `FyndiqCSVFeedWriter` is found.<br />Class `FyndiqFeedWriter` is found.<br />Class `FyndiqOutput` is found.<br />Class `FyndiqPaginatedFetch` is found.<br />Class `FyndiqUtils` is found.<br />Class `FmHelpers` is found.<br />Class `FmDiagnostics` is found.<br />Class `FmError` is found.<br />Class `FmExport` is found.<br />Class `FmField` is found.<br />Class `FmSettings` is found.<br />Class `FmUpdate` is found.<br />Class `FmOrder` is found.<br />Class `FmOrderFetch` is found.<br />Class `FmPost` is found.<br />Class `FmProduct` is found.<br />Class `TGM_Plugin_Activation` is <strong>NOT</strong> found.<h2>API Connection</h2>Module is not authorized.<h2>Installed Plugins</h2>Akismet v. 3.1.7<br />Hello Dolly v. 1.6";
-        ob_start();
         FmDiagnostics::diagPage();
-        $return = ob_get_clean();
-        $this->assertEquals($return,$expected);
+        $this->expectOutputString($expected);
     }
 }
