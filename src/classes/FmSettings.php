@@ -11,14 +11,14 @@ class FmSettings
 
     public static function setHooks()
     {
-        add_filter('woocommerce_settings_tabs_array', array(__CLASS__, 'fyndiq_add_settings_tab'), self::SETTING_TAB_PRIORITY);
+        add_filter('woocommerce_settings_tabs_array', array(__CLASS__, 'addSettingsTab'), self::SETTING_TAB_PRIORITY);
         add_action('woocommerce_settings_tabs_wcfyndiq', array(__CLASS__, 'settings_tab'));
         add_action('woocommerce_update_options_wcfyndiq', array(__CLASS__, 'update_settings'));
         add_filter('plugin_action_links_' . plugin_basename(dirname(__FILE__).'/woocommerce-fyndiq.php'), array(__CLASS__, 'pluginActionLink'));
     }
 
 
-    public static function fyndiq_add_settings_tab($settings_tabs)
+    public static function addSettingsTab($settingsTabs)
     {
         $settings_tabs['wcfyndiq'] = __('Fyndiq', 'fyndiq');
         return $settings_tabs;

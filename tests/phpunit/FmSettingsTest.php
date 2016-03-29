@@ -7,7 +7,7 @@
  */
 class FmSettingsTest extends WP_UnitTestCase
 {
-    function test_FyndiqAllSettings_correctOutput()
+    function testFyndiqAllSettings_correctOutput()
     {
         $settings = array();
         $return = FmSettings::fyndiqAllSettings($settings, 'wcfyndiq');
@@ -165,6 +165,18 @@ class FmSettingsTest extends WP_UnitTestCase
             'id' => 'wc_settings_wcfyndiq_section_end'
         );
 
+        $this->assertEquals($expected, $return);
+    }
+
+    function testAddSettingsTab() {
+        $expected = array('wcfyndiq' => __('Fyndiq', 'fyndiq'));
+        $return = FmSettings::addSettingsTab(array());
+        $this->assertEquals($expected, $return);
+    }
+
+    function testPluginActionLink() {
+        $expected = array('<a href="http://example.org/wp-admin/admin.php?page=wc-settings&#038;tab=products&#038;section=wcfyndiq">Settings</a>');
+        $return = FmSettings::pluginActionLink(array());
         $this->assertEquals($expected, $return);
     }
 }
