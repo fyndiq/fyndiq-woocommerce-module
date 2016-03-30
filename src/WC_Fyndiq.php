@@ -80,20 +80,14 @@ class WC_Fyndiq
      */
     public function woocommerce_loaded()
     {
-        //javascript
-        //@todo Fix JS loading
-        add_action('admin_head', array(&$this, 'get_url'));
 
-        //products
-
-
+        //Products
         add_action('woocommerce_process_shop_order_meta', array(&$this, 'fyndiq_order_handled_save'));
-
         add_action('woocommerce_admin_order_data_after_order_details', array(&$this, 'fyndiq_add_order_field'));
         add_action('woocommerce_product_write_panel_tabs', array(&$this, 'fyndiq_product_tab'));
 
 
-        //product list
+        //Product list
         add_filter('manage_edit-product_columns', array(&$this, 'fyndiq_product_add_column'));
         add_action('manage_product_posts_custom_column', array(&$this, 'fyndiq_product_column_export'), 5, 2);
         add_filter('manage_edit-product_sortable_columns', array(&$this, 'fyndiq_product_column_sort'));
@@ -102,14 +96,14 @@ class WC_Fyndiq
         add_action('admin_notices', array(&$this, 'do_bulk_action_messages'));
 
 
-        //order list
+        //Order list
         if (FmOrder::getOrdersEnabled()) {
             add_filter('manage_edit-shop_order_columns', array(&$this, 'fyndiq_order_add_column'));
             add_action('manage_shop_order_posts_custom_column', array(&$this, 'fyndiq_order_column'), 5, 2);
             add_filter('manage_edit-shop_order_sortable_columns', array(&$this, 'fyndiq_order_column_sort'));
         }
 
-        //bulk action
+        //Bulk Action
         //Inserts the JS for the appropriate dropdown items
         add_action('admin_footer-edit.php', array(&$this, 'fyndiq_add_bulk_action'));
 
@@ -128,6 +122,8 @@ class WC_Fyndiq
         //orders
         add_action('load-edit.php', array(&$this, 'fyndiq_show_order_error'));
 
+        // admin javascripts
+        add_action('admin_enqueue_scripts', array(&$this, 'fyndiqLoadJavascript'));
 
         //functions
         if (isset($_GET['fyndiq_feed'])) {
@@ -154,9 +150,28 @@ class WC_Fyndiq
         define('DOING_AJAX', true);
     }
 
-    function fyndiq_add_menu()
+    function fyndiqLoadJavascript()
     {
-        add_submenu_page(null, 'Fyndiq Checker Page', 'Fyndiq', 'manage_options', 'fyndiq-check', array(&$this, 'check_page'));
+
+        $script = <<<EOS
+        <script type="text/javascript">
+            var wordpressurl = '%s';
+            var trans_error = '%s';
+            var trans_loading = '%s';
+            var trans_done = '%s';
+        </script>
+EOS;
+        printf(
+            $script,
+            get_site_url(),
+            __('Error!', 'fyndiq'),
+            __('Loading', 'fyndiq') . '...',
+            __('Done', 'fyndiq')
+        );
+
+        if ($this->ordersEnabled()) {
+            wp_enqueue_script('fyndiq_order', plugins_url('/js/order-import.js', __FILE__), array('jquery'), null);
+        }
     }
 
     public function fyndiq_order_meta_boxes()
@@ -180,63 +195,11 @@ class WC_Fyndiq
         $this->fmOutput->output('<a href="' . $meta['fyndiq_delivery_note'][0] . '" class="button button-primary">Get Fyndiq Delivery Note</a>');
     }
 
-    public function get_url()
-    {
-        if (FmOrder::getOrdersEnabled()) {
-            $script = <<<EOS
-            <script type="text/javascript">
-                var wordpressurl = '%s';
-                var trans_error = '%s';
-                var trans_loading = '%s';
-                var trans_done = '%s';
-            </script>
-            <script src="%s" type="text/javascript"></script>
-            <script src="%s" type="text/javascript"></script>
-EOS;
-            printf(
-                $script,
-                get_site_url(),
-                __('Error!', 'fyndiq'),
-                __('Loading', 'fyndiq') . '...',
-                __('Done', 'fyndiq'),
-                plugins_url('/js/order-import.js', __FILE__),
-                plugins_url('/js/product-update.js', __FILE__)
-            );
-        } else {
-            $script = <<<EOS
-            <script type="text/javascript">
-                var wordpressurl = '%s';
-                var trans_error = '%s';
-                var trans_loading = '%s';
-                var trans_done = '%s';
-            </script>
-            <script src="%s" type="text/javascript"></script>
-EOS;
-            printf(
-                $script,
-                get_site_url(),
-                __('Error!', 'fyndiq'),
-                __('Loading', 'fyndiq') . '...',
-                __('Done', 'fyndiq'),
-                plugins_url('/js/product-update.js', __FILE__)
-            );
-        }
-
-
-    }
-
     //Hooked to WooCommerce_product_write_panel_tabs
     public function fyndiq_product_tab()
     {
         echo sprintf("<li class='fyndiq_tab'><a href='#fyndiq_tab'>%s</a></li>", __('Fyndiq', 'fyndiq'));
     }
-
-    /**
-     *
-     * This is the hooked function for fields on the order pages
-     *
-     */
-
 
     public function fyndiq_show_order_error()
     {
@@ -310,8 +273,6 @@ EOS;
             $query->set('orderby', 'meta_value_integer');
         }
     }
-
-
 
     //Hooked function for adding columns to the products page (manage_edit-product_columns)
     public function fyndiq_product_add_column($defaults)
