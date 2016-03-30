@@ -79,11 +79,6 @@ class WC_Fyndiq
      */
     public function woocommerce_loaded()
     {
-        //javascript
-        //@todo Fix JS loading
-        add_action('admin_head', array(&$this, 'get_url'));
-
-
         //Settings
         add_filter('woocommerce_settings_tabs_array', array(&$this, 'fyndiq_add_settings_tab'), self::SETTING_TAB_PRIORITY);
         add_action('woocommerce_settings_tabs_wcfyndiq', array(&$this, 'settings_tab'));
@@ -137,6 +132,8 @@ class WC_Fyndiq
         //orders
         add_action('load-edit.php', array(&$this, 'fyndiq_show_order_error'));
 
+        // admin javascripts
+        add_action('admin_enqueue_scripts', array(&$this, 'fyndiqLoadJavascript'));
 
         //functions
         if (isset($_GET['fyndiq_feed'])) {
@@ -176,6 +173,30 @@ class WC_Fyndiq
         return $links;
     }
 
+    function fyndiqLoadJavascript()
+    {
+
+        $script = <<<EOS
+        <script type="text/javascript">
+            var wordpressurl = '%s';
+            var trans_error = '%s';
+            var trans_loading = '%s';
+            var trans_done = '%s';
+        </script>
+EOS;
+        printf(
+            $script,
+            get_site_url(),
+            __('Error!', 'fyndiq'),
+            __('Loading', 'fyndiq') . '...',
+            __('Done', 'fyndiq')
+        );
+
+        if ($this->ordersEnabled()) {
+            wp_enqueue_script('fyndiq_order', plugins_url('/js/order-import.js', __FILE__), array('jquery'), null);
+        }
+    }
+
     public function fyndiq_order_meta_boxes()
     {
         $meta = get_post_custom(FmOrder::getWordpressCurrentPostID());
@@ -195,51 +216,6 @@ class WC_Fyndiq
     {
         $meta = get_post_custom(FmOrder::getWordpressCurrentPostID());
         $this->fmOutput->output('<a href="' . $meta['fyndiq_delivery_note'][0] . '" class="button button-primary">Get Fyndiq Delivery Note</a>');
-    }
-
-    public function get_url()
-    {
-        if ($this->ordersEnabled()) {
-            $script = <<<EOS
-            <script type="text/javascript">
-                var wordpressurl = '%s';
-                var trans_error = '%s';
-                var trans_loading = '%s';
-                var trans_done = '%s';
-            </script>
-            <script src="%s" type="text/javascript"></script>
-            <script src="%s" type="text/javascript"></script>
-EOS;
-            printf(
-                $script,
-                get_site_url(),
-                __('Error!', 'fyndiq'),
-                __('Loading', 'fyndiq') . '...',
-                __('Done', 'fyndiq'),
-                plugins_url('/js/order-import.js', __FILE__),
-                plugins_url('/js/product-update.js', __FILE__)
-            );
-        } else {
-            $script = <<<EOS
-            <script type="text/javascript">
-                var wordpressurl = '%s';
-                var trans_error = '%s';
-                var trans_loading = '%s';
-                var trans_done = '%s';
-            </script>
-            <script src="%s" type="text/javascript"></script>
-EOS;
-            printf(
-                $script,
-                get_site_url(),
-                __('Error!', 'fyndiq'),
-                __('Loading', 'fyndiq') . '...',
-                __('Done', 'fyndiq'),
-                plugins_url('/js/product-update.js', __FILE__)
-            );
-        }
-
-
     }
 
     function settings_tab()
