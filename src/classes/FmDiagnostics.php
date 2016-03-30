@@ -161,11 +161,11 @@ class FmDiagnostics
      * Checks whether the plugin has successfully connected/authenticated to/with the Fyndiq backend
      *
      * @return string - HTML output of log data from the function
+     * @throws Exception FyndiqAPIAuthorizationFailed
      */
     private static function probeConnection()
     {
         $messages = array();
-        try {
             try {
                 FmHelpers::callApi('GET', 'settings/');
             } catch (Exception $e) {
@@ -173,12 +173,8 @@ class FmDiagnostics
                     throw new Exception(__('Module is not authorized.', 'fyndiq'));
                 }
             }
-            $messages[] = __('Successfully connected to the Fyndiq API', 'fyndiq');
-            return implode('<br />', $messages);
-        } catch (Exception $e) {
-            $messages[] = $e->getMessage();
-            return implode('<br />', $messages);
-        }
+        $messages[] = __('Successfully connected to the Fyndiq API', 'fyndiq');
+        return implode('<br />', $messages);
     }
 
     /**
