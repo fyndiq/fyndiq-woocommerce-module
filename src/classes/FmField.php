@@ -19,7 +19,8 @@ class FmField
      */
     public static function setHooks()
     {
-        add_action('woocommerce_product_write_panels', array(__CLASS__, 'fyndiq_product_tab_content'), self::SHOW_CONTENT_PRIORITY);
+        add_action('woocommerce_product_write_panels', array(__CLASS__, 'fyndiqProductTab'), self::SHOW_CONTENT_PRIORITY);
+        add_action('woocommerce_admin_order_data_after_order_details', array(__CLASS__, 'addOrderField'));
         return true;
     }
 
@@ -28,7 +29,7 @@ class FmField
      * This is the hooked function for fields on the product pages
      *
      */
-    public static function fyndiq_product_tab_content()
+    public static function fyndiqProductTab()
     {
         $fmOutput = new FyndiqOutput();
 
@@ -94,5 +95,17 @@ class FmField
                     <input type='%s' class='input-%s' name='%s' id='%s value='%s'/>
                     <span class='description'>" . $array['description'] . "</span>
                 </p>"), $fieldName, $fieldName, $array['label'], $array['type'], $array['type'], $fieldName, $fieldName, $fieldName, $array['description']);
+    }
+
+    public static function addOrderField()
+    {
+        $order = new FmOrder(FmOrder::getWordpressCurrentPostID());
+
+        FmField::fyndiq_generate_field(FmOrder::FYNDIQ_HANDLED_ORDER_META_FIELD, array(
+            'type' => 'checkbox',
+            'class' => array('input-checkbox'),
+            'label' => __('Order handled', 'fyndiq'),
+            'description' => __('Report this order as handled to Fyndiq', 'fyndiq'),
+        ), (bool)$order->getIsHandled());
     }
 }

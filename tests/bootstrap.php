@@ -23,7 +23,7 @@ class WC_Fyndiq_Unit_Tests_Bootstrap {
 		error_reporting( E_ALL );
 		$this->tests_dir    = dirname( __FILE__ );
 		$this->plugin_dir   = '/var/www/html/woocommerce/wp-content/plugins/woocommerce/';
-		$this->wp_tests_dir = getenv( 'WP_TESTS_DIR' ) ? getenv( 'WP_TESTS_DIR' ) : '/tmp/wordpress-tests-lib';
+		$this->wp_tests_dir = getenv( 'WP_TESTS_DIR' ) ? getenv( 'WP_TESTS_DIR' ) : '/opt/wptests/wordpress-tests-lib';
 		// load test function so tests_add_filter() is available
 		require_once( $this->wp_tests_dir . '/includes/functions.php' );
 		// load WC
@@ -66,14 +66,19 @@ class WC_Fyndiq_Unit_Tests_Bootstrap {
 	public function includes() {
         // Required classes in shared
         require_once(dirname(__FILE__) . '/../src/include/shared/src/init.php');
-		// classes
+
+        // Classes
         require_once(dirname(__FILE__) . '/../src/classes/FmHelpers.php');
         require_once(dirname(__FILE__) . '/../src/classes/FmUpdate.php');
         require_once(dirname(__FILE__) . '/../src/classes/FmExport.php');
         require_once(dirname(__FILE__) . '/../src/classes/FmField.php');
-        require_once(dirname(__FILE__) . '/../src/classes/FmErrorHandler.php');
+        require_once(dirname(__FILE__) . '/../src/classes/FmDiagnostics.php');
+        require_once(dirname(__FILE__) . '/../src/classes/FmSettings.php');
+        require_once(dirname(__FILE__) . '/../src/classes/FmError.php');
+
         // API
         require_once(dirname(__FILE__) . '/../src/include/api/fyndiqAPI.php');
+
         // Models
         require_once(dirname(__FILE__) . '/../src/models/FmPost.php');
         require_once(dirname(__FILE__) . '/../src/models/FmOrder.php');
@@ -85,7 +90,7 @@ class WC_Fyndiq_Unit_Tests_Bootstrap {
 	 * Get the single class instance.
 	 *
 	 * @since 2.2
-	 * @return WC_Unit_Tests_Bootstrap
+	 * @return WC_Fyndiq_Unit_Tests_Bootstrap
 	 */
 	public static function instance() {
 		if ( is_null( self::$instance ) ) {
