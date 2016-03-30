@@ -98,9 +98,6 @@ class FmWoo
         return get_option($option, $default);
     }
 
-
-
-
     /** WooCommerce specific functions */
 
     public function WC()
