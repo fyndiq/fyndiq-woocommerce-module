@@ -91,11 +91,6 @@ class WC_Fyndiq
      */
     public function woocommerceLoaded()
     {
-        //javascript
-        //@todo Fix JS loading
-        $this->fmWoo->addAction('admin_head', array(&$this, 'get_url'));
-
-
         //Settings
         $this->fmWoo->addFilter(
             'woocommerce_settings_tabs_array',
@@ -188,6 +183,8 @@ class WC_Fyndiq
         //orders
         $this->fmWoo->addAction('load-edit.php', array(&$this, 'fyndiq_show_order_error'));
 
+        // admin javascripts
+        add_action('admin_enqueue_scripts', array(&$this, 'fyndiqLoadJavascript'));
 
         //functions
         if (isset($_GET['fyndiq_feed'])) {
@@ -232,6 +229,30 @@ class WC_Fyndiq
         );
     }
 
+    function fyndiqLoadJavascript()
+    {
+
+        $script = <<<EOS
+        <script type="text/javascript">
+            var wordpressurl = '%s';
+            var trans_error = '%s';
+            var trans_loading = '%s';
+            var trans_done = '%s';
+        </script>
+EOS;
+        printf(
+            $script,
+            get_site_url(),
+            __('Error!', 'fyndiq'),
+            __('Loading', 'fyndiq') . '...',
+            __('Done', 'fyndiq')
+        );
+
+        if ($this->ordersEnabled()) {
+            wp_enqueue_script('fyndiq_order', plugins_url('/js/order-import.js', __FILE__), array('jquery'), null);
+        }
+    }
+
     public function fyndiqOrderMetaBoxes()
     {
         $meta = $this->fmWoo->getPostCustom(FmOrder::getWordpressCurrentPostID());
@@ -263,52 +284,8 @@ class WC_Fyndiq
         );
     }
 
-    public function get_url()
-    {
-        if ($this->ordersEnabled()) {
-            $script = <<<EOS
-            <script type="text/javascript">
-                var wordpressurl = '%s';
-                var trans_error = '%s';
-                var trans_loading = '%s';
-                var trans_done = '%s';
-            </script>
-            <script src="%s" type="text/javascript"></script>
-            <script src="%s" type="text/javascript"></script>
-EOS;
-            printf(
-                $script,
-                get_site_url(),
-                $this->fmWoo->__('Error!', 'fyndiq'),
-                $this->fmWoo->__('Loading', 'fyndiq') . '...',
-                $this->fmWoo->__('Done', 'fyndiq'),
-                plugins_url('/js/order-import.js', __FILE__),
-                plugins_url('/js/product-update.js', __FILE__)
-            );
-        } else {
-            $script = <<<EOS
-            <script type="text/javascript">
-                var wordpressurl = '%s';
-                var trans_error = '%s';
-                var trans_loading = '%s';
-                var trans_done = '%s';
-            </script>
-            <script src="%s" type="text/javascript"></script>
-EOS;
-            printf(
-                $script,
-                get_site_url(),
-                $this->fmWoo->__('Error!', 'fyndiq'),
-                $this->fmWoo->__('Loading', 'fyndiq') . '...',
-                $this->fmWoo->__('Done', 'fyndiq'),
-                plugins_url('/js/product-update.js', __FILE__)
-            );
-        }
-
-
-    }
-
     public function settings_tab()
+
     {
         $this->fmWoo->woocommerceAdminFields($this->fyndiq_all_settings());
     }
