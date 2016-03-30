@@ -1,19 +1,23 @@
 <?php
-/**
- * Handles showing errors on admin pages
- *
- */
-
 //Boilerplate security. Doesn't allow this file to be directly executed by the browser.
 defined('ABSPATH') || exit;
 
+/**
+ * Class FmError - Handles showing errors on admin pages
+ */
 class FmError
 {
+    /**
+     *
+     */
     public static function setHooks()
     {
-        add_action('admin_notices', array(__CLASS__, 'renderError'));
+        return add_action('admin_notices', array(__CLASS__, 'renderError'));
     }
 
+    /**
+     *
+     */
     public static function renderError()
     {
         if (isset($_REQUEST['fyndiqMessageType'])) {
@@ -25,6 +29,9 @@ class FmError
         }
     }
 
+    /**
+     * @param $errorMessage
+     */
     public static function handleError($errorMessage)
     {
         $errorMessage = sprintf("An error occurred: %s", $errorMessage);
