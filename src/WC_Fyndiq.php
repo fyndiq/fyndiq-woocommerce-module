@@ -137,9 +137,9 @@ class WC_Fyndiq
             'manage_edit-product_sortable_columns',
             array(&$this, 'fyndiq_product_column_sort')
         );
-        $this->fmWoo->addAction('pre_get_posts', array(&$this, 'fyndiq_product_column_sort_by'));
-        $this->fmWoo->addAction('admin_notices', array(&$this, 'fyndiq_bulk_notices'));
-        $this->fmWoo->addAction('admin_notices', array(&$this, 'do_bulk_action_messages'));
+        $this->fmWoo->addAction('pre_get_posts', array(&$this, 'fyndiqProductColumnSortBy'));
+        $this->fmWoo->addAction('admin_notices', array(&$this, 'fyndiqBulkNotices'));
+        $this->fmWoo->addAction('admin_notices', array(&$this, 'doBulkActionMessages'));
 
 
         //order list
@@ -663,7 +663,7 @@ EOS;
         );
     }
 
-    public function fyndiq_product_column_sort_by($query)
+    public function fyndiqProductColumnSortBy($query)
     {
         if (!$this->fmWoo->isAdmin()) {
             return;
@@ -829,7 +829,7 @@ EOS;
         }
     }
 
-    public function do_bulk_action_messages()
+    public function doBulkActionMessages()
     {
         if (isset($_SESSION['bulkMessage']) && $GLOBALS['pagenow'] === 'edit.php') {
             $this->fmOutput->output('<div class="updated"><p>' . $_SESSION['bulkMessage'] . '</p></div>');
@@ -837,7 +837,7 @@ EOS;
         }
     }
 
-    public function fyndiq_bulk_notices()
+    public function fyndiqBulkNotices()
     {
         global $post_type, $pagenow;
 
