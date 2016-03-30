@@ -131,7 +131,7 @@ class WC_Fyndiq
 
         //order list
         if (FmOrder::getOrdersEnabled()) {
-            $this->fmWoo->addFilter('manage_edit-shop_order_columns', array(&$this, 'fyndiq_order_add_column'));
+            $this->fmWoo->addFilter('manage_edit-shop_order_columns', array(&$this, 'fyndiqOrderAddColumn'));
             $this->fmWoo->addAction(
                 'manage_shop_order_posts_custom_column',
                 array(&$this, 'fyndiq_order_column'),
@@ -236,7 +236,8 @@ EOS;
     public function fyndiqOrderMetaBoxes()
     {
         $meta = $this->fmWoo->getPostCustom(FmOrder::getWordpressCurrentPostID());
-        if (array_key_exists('fyndiq_delivery_note', $meta) &&
+        if (is_array($meta) &&
+            array_key_exists('fyndiq_delivery_note', $meta) &&
             isset($meta['fyndiq_delivery_note'][0]) &&
             $meta['fyndiq_delivery_note'][0] != ''
         ) {
@@ -325,7 +326,7 @@ EOS;
     }
 
     //Hooked function for adding columns to the products page (manage_edit-shop_order_columns)
-    public function fyndiq_order_add_column($defaults)
+    public function fyndiqOrderAddColumn($defaults)
     {
         $defaults[self::ORDERS] = $this->fmWoo->__('Fyndiq Order');
         return $defaults;
