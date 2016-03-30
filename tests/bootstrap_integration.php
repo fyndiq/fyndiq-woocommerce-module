@@ -75,6 +75,7 @@ class WC_Fyndiq_Unit_Tests_Bootstrap {
         require_once(dirname(__FILE__) . '/../src/classes/FmDiagnostics.php');
         require_once(dirname(__FILE__) . '/../src/classes/FmSettings.php');
         require_once(dirname(__FILE__) . '/../src/classes/FmError.php');
+        require_once(dirname(__FILE__) . '/../src/classes/FmWoo.php');
 
         // API
         require_once(dirname(__FILE__) . '/../src/include/api/fyndiqAPI.php');

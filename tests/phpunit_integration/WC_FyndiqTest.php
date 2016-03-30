@@ -10,6 +10,10 @@ class FyndiqTest extends WP_UnitTestCase
         $GLOBALS['hook_suffix'] = $hook['path'];
         set_current_screen();
 
+        $this->fmWoo = $this->getMockBuilder('FmWoo')
+            ->setConstructorArgs(array(WC_Fyndiq::TEXT_DOMAIN))
+            ->getMock();
+
         $this->fmOuptut = $this->getMockBuilder('stdClass')
             ->setMethods(array('output', 'showError'))
             ->getMock();
@@ -18,11 +22,10 @@ class FyndiqTest extends WP_UnitTestCase
         $this->fmOuptut->method('showError')->willReturn(true);
 
         $this->wc_fyndiq = $this->getMockBuilder('WC_Fyndiq')
-            ->setConstructorArgs(array($this->fmOuptut))
+            ->setConstructorArgs(array($this->fmWoo, $this->fmOuptut))
             ->setMethods(array('getAction','getRequestPost', 'bulkRedirect', 'returnAndDie', 'getProductId', 'getExportState', 'checkCurrency', 'checkCountry'))
             ->getMock();
-        $this->wc_fyndiq->woocommerce_loaded();
-        //$this->wc_fyndiq->plugins_loaded();
+        $this->wc_fyndiq->woocommerceLoaded();
     }
 
     function test_fyndiq_class_should_exist()
@@ -47,7 +50,7 @@ class FyndiqTest extends WP_UnitTestCase
         $data = array(
             'fyndiq_order' => 'fyndiq_order'
         );
-        $this->assertEquals($data, $this->wc_fyndiq->fyndiq_order_column_sort());
+        $this->assertEquals($data, $this->wc_fyndiq->fyndiqOrderColumnSort());
     }
 
     // Columnable' );
@@ -144,11 +147,11 @@ class FyndiqTest extends WP_UnitTestCase
 
         $p = $this->createProduct();
 
-        $this->wc_fyndiq->fyndiq_product_column_export('fyndiq_export_column', $p);
+        $this->wc_fyndiq->fyndiqProductColumnExport('fyndiq_export_column', $p);
 
         $this->expectOutputString("not exported");
 
-        $this->wc_fyndiq->fyndiq_product_column_export('fyndiq_export_column', $p);
+        $this->wc_fyndiq->fyndiqProductColumnExport('fyndiq_export_column', $p);
 
         $this->expectOutputString("Can't be exportedCan't be exported");
     }
@@ -160,7 +163,7 @@ class FyndiqTest extends WP_UnitTestCase
 
         $p = $this->createProduct(true);
 
-        $this->wc_fyndiq->fyndiq_product_column_export('fyndiq_export_column', $p);
+        $this->wc_fyndiq->fyndiqProductColumnExport('fyndiq_export_column', $p);
 
         $this->expectOutputString("Can't be exported");
     }
@@ -174,7 +177,7 @@ class FyndiqTest extends WP_UnitTestCase
         global $post;
         $post = get_post($p);
 
-        $this->wc_fyndiq->fyndiq_order_meta_boxes();
+        $this->wc_fyndiq->fyndiqOrderMetaBoxes();
         global $wp_meta_boxes;
         $expected = array('shop_order' => array('side' => array('default' => array('woocommerce-order-fyndiq-delivery-note' => array(
             'id' => 'woocommerce-order-fyndiq-delivery-note',
@@ -288,15 +291,13 @@ class FyndiqTest extends WP_UnitTestCase
 
     function test_get_url()
     {
-        $this->wc_fyndiq->get_url();
-        $this->expectOutputString("            <script type=\"text/javascript\">
-                var wordpressurl = 'http://example.org';
-                var trans_error = 'Error!';
-                var trans_loading = 'Loading...';
-                var trans_done = 'Done';
-            </script>
-            <script src=\"http://example.org/wp-content/plugins/opt/fyndiq-woocommerce-module/src/js/order-import.js\" type=\"text/javascript\"></script>
-            <script src=\"http://example.org/wp-content/plugins/opt/fyndiq-woocommerce-module/src/js/product-update.js\" type=\"text/javascript\"></script>");
+        $this->wc_fyndiq->fyndiqLoadJavascript();
+        $this->expectOutputString("        <script type=\"text/javascript\">
+            var wordpressurl = 'http://example.org';
+            var trans_error = 'Error!';
+            var trans_loading = 'Loading...';
+            var trans_done = 'Done';
+        </script>");
     }
 
     /**
@@ -366,7 +367,7 @@ class FyndiqTest extends WP_UnitTestCase
 
         $this->wc_fyndiq->expects($this->once())->method('checkCurrency')->willReturn(true);
 
-        $this->wc_fyndiq->my_admin_notice();
+        $this->wc_fyndiq->fyndiqAdminNotices();
 
         $this->fmOuptut->method('output')
             ->with('<div class="error"><p><strong>Wrong Currency</strong>: Fyndiq only works in EUR and SEK. change to correct currency. Current Currency: GBP</p></div><div class="error"><p><strong>Fyndiq Credentials</strong>: You need to set Fyndiq Credentials to make it work. Do it in  <a href="http://example.org/wp-admin/admin.php?page=wc-settings&tab=wcfyndiq">Woocommerce Settings > Fyndiq</a></p></div>')
@@ -380,7 +381,7 @@ class FyndiqTest extends WP_UnitTestCase
 
         $this->wc_fyndiq->expects($this->once())->method('checkCountry')->willReturn(true);
 
-        $this->wc_fyndiq->my_admin_notice();
+        $this->wc_fyndiq->fyndiqAdminNotices();
         $this->fmOuptut->method('output')
             ->with('<div class="error"><p><strong>Wrong Country</strong>: Fyndiq only works in Sweden and Germany. change to correct country. Current Country: GB</p></div><div class="error"><p><strong>Fyndiq Credentials</strong>: You need to set Fyndiq Credentials to make it work. Do it in  <a href="http://example.org/wp-admin/admin.php?page=wc-settings&tab=wcfyndiq">Woocommerce Settings > Fyndiq</a></p></div>')
             ->willReturn(true);
