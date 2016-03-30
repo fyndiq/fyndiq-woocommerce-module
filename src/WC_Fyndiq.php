@@ -130,7 +130,7 @@ class WC_Fyndiq
 
 
         //order list
-        if ($this->ordersEnabled()) {
+        if (FmOrder::getOrdersEnabled()) {
             $this->fmWoo->addFilter('manage_edit-shop_order_columns', array(&$this, 'fyndiq_order_add_column'));
             $this->fmWoo->addAction(
                 'manage_shop_order_posts_custom_column',
