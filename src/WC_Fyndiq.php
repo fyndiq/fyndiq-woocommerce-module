@@ -161,7 +161,7 @@ class WC_Fyndiq
         $this->fmWoo->addAction('load-index.php', array($this->fmUpdate, 'updateNotification'));
 
         //orders
-        $this->fmWoo->addAction('load-edit.php', array(&$this, 'fyndiq_show_order_error'));
+        $this->fmWoo->addAction('load-edit.php', array(&$this, 'fyndiqShowOrderError'));
 
         // admin javascripts
         add_action('admin_enqueue_scripts', array(&$this, 'fyndiqLoadJavascript'));
@@ -293,7 +293,7 @@ EOS;
         ), (bool)$order->getIsHandled());
     }
 
-    public function fyndiq_show_order_error()
+    public function fyndiqShowOrderError()
     {
         if (isset($_GET['post_type']) && $_GET['post_type'] == 'shop_order') {
             $error = $this->fmWoo->getOption('wcfyndiq_order_error');
