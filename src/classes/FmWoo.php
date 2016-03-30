@@ -6,7 +6,7 @@ class FmWoo
 
     public function __construct($textDomain)
     {
-        $this->$defaultTextDomain = $textDomain;
+        $this->defaultTextDomain = $textDomain;
     }
 
     public function addAction($tag, $function_to_add, $priority = 10, $accepted_args = 1)
