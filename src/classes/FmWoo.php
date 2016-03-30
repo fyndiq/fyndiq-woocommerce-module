@@ -3,6 +3,13 @@
 class FmWoo
 {
 
+    private $defaultTextDomain = '';
+
+    public function __construct($textDomain)
+    {
+        $this->$defaultTextDomain = $textDomain;
+    }
+
     public function addAction($tag, $function_to_add, $priority = 10, $accepted_args = 1)
     {
         return add_action($tag, $function_to_add, $priority, $accepted_args);
@@ -48,8 +55,11 @@ class FmWoo
         return add_meta_box($id, $title, $callback, $screen = null, $context, $priority, $callback_args);
     }
 
-    public function __($text, $domain = 'default')
+    public function __($text, $domain = null)
     {
+        if (is_null($domain)) {
+            $domain = $this->defaultTextDomain;
+        }
         return __($text, $domain);
     }
 
