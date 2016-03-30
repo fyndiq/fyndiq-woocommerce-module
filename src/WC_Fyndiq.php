@@ -116,7 +116,7 @@ class WC_Fyndiq
         );
         $this->fmWoo->addAction(
             'manage_product_posts_custom_column',
-            array(&$this, 'fyndiq_product_column_export'),
+            array(&$this, 'fyndiqProductColumnExport'),
             5,
             2
         );
@@ -140,7 +140,7 @@ class WC_Fyndiq
             );
             $this->fmWoo->addFilter(
                 'manage_edit-shop_order_sortable_columns',
-                array(&$this, 'fyndiq_order_column_sort')
+                array(&$this, 'fyndiqOrderColumnSort')
             );
         }
 
@@ -353,7 +353,7 @@ EOS;
     }
 
     //Hooked to manage_edit-shop_order_sortable_columns
-    public function fyndiq_order_column_sort()
+    public function fyndiqOrderColumnSort()
     {
         return array(
             self::ORDERS => self::ORDERS
@@ -399,7 +399,7 @@ EOS;
         }
     }
 
-    public function fyndiq_product_column_export($column, $postId)
+    public function fyndiqProductColumnExport($column, $postId)
     {
         $product = new FmProduct($postId);
 
