@@ -166,13 +166,13 @@ class FmDiagnostics
     private static function probeConnection()
     {
         $messages = array();
-            try {
-                FmHelpers::callApi('GET', 'settings/');
-            } catch (Exception $e) {
-                if ($e instanceof FyndiqAPIAuthorizationFailed) {
-                    throw new Exception(__('Module is not authorized.', 'fyndiq'));
-                }
+        try {
+            FmHelpers::callApi('GET', 'settings/');
+        } catch (Exception $e) {
+            if ($e instanceof FyndiqAPIAuthorizationFailed) {
+                throw new Exception(__('Module is not authorized.', 'fyndiq'));
             }
+        }
         $messages[] = __('Successfully connected to the Fyndiq API', 'fyndiq');
         return implode('<br />', $messages);
     }
