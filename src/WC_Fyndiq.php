@@ -155,7 +155,7 @@ class WC_Fyndiq
         $this->fmWoo->addAction('add_meta_boxes', array(&$this, 'fyndiqOrderMetaBoxes'));
 
         //notice for currency check
-        $this->fmWoo->addAction('admin_notices', array(&$this, 'my_admin_notice'));
+        $this->fmWoo->addAction('admin_notices', array(&$this, 'fyndiqAdminNotices'));
 
         //index
         $this->fmWoo->addAction('load-index.php', array($this->fmUpdate, 'updateNotification'));
@@ -417,7 +417,7 @@ EOS;
     }
 
 
-    public function my_admin_notice()
+    public function fyndiqAdminNotices()
     {
         if ($this->checkCurrency()) {
             $this->fmOutput->output(sprintf(
