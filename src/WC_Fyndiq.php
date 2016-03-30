@@ -235,7 +235,7 @@ class WC_Fyndiq
     public function fyndiqOrderMetaBoxes()
     {
         $meta = $this->fmWoo->getPostCustom(FmOrder::getWordpressCurrentPostID());
-        if (isset($meta['fyndiq_delivery_note']) &&
+        if (array_key_exists('fyndiq_delivery_note', $meta) &&
             isset($meta['fyndiq_delivery_note'][0]) &&
             $meta['fyndiq_delivery_note'][0] != ''
         ) {
