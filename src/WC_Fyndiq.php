@@ -491,7 +491,7 @@ EOS;
         //This adds a button for importing stuff from fyndiq TODO: ask about this - it probably shouldn't be there
         //TODO: This should not rely on a translatable string
 
-        if ($post_type === 'shop_order' && $this->ordersEnabled()) {
+        if ($post_type === 'shop_order' && FmOrder::getOrdersEnabled()) {
             $scriptOutput .= sprintf(
                 "if( jQuery('.wrap h2').length && jQuery(jQuery('.wrap h2')[0]).text() != 'Filter posts list' ) {
                     jQuery(jQuery('.wrap h2')[0]).append(\"<a href='#' id='%s' class='add-new-h2'>%s</a>\");
