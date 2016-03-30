@@ -11,8 +11,8 @@ DB_PASS=$3
 DB_HOST=${4-localhost}
 WP_VERSION=${5-latest}
 
-WP_TESTS_DIR=${WP_TESTS_DIR-/tmp/wordpress-tests-lib}
-WP_CORE_DIR=${WP_CORE_DIR-/tmp/wordpress/}
+WP_TESTS_DIR=${WP_TESTS_DIR-/opt/wptests/wordpress-tests-lib}
+WP_CORE_DIR=${WP_CORE_DIR-/opt/wptests/wordpress/}
 
 download() {
     if [ `which curl` ]; then
@@ -64,6 +64,8 @@ install_wp() {
 	fi
 
 	download https://raw.github.com/markoheijnen/wp-mysqli/master/db.php $WP_CORE_DIR/wp-content/db.php
+
+	mkdir $WP_CORE_DIR/wp-content/uploads
 }
 
 install_test_suite() {

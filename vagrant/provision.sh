@@ -97,6 +97,8 @@ PHP
     echo "127.0.0.1  woocommerce.local" >> /etc/hosts
 
     ## Installing the tests
-    sudo -u vagrant -i -- /opt/fyndiq-woocommerce-module/bin/install-wp-tests.sh wp-test root 123 localhost 4.4.2
-    svn co --quiet https://develop.svn.wordpress.org/tags/4.4.2/tests/phpunit/includes/ /tmp/wordpress-tests-lib/includes
+    sudo mkdir /opt/wptests
+    sudo chown -R vagrant /opt/wptests
+    /opt/fyndiq-woocommerce-module/bin/install-wp-tests.sh wp-test root 123 localhost 4.4.2
+    svn co --quiet https://develop.svn.wordpress.org/tags/4.4.2/tests/phpunit/includes/ /opt/wptests/wordpress-tests-lib/includes
 fi

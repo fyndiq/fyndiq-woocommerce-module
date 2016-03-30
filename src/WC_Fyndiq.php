@@ -38,9 +38,8 @@ class WC_Fyndiq
     const ORDERS_DISABLE = 1;
     const ORDERS_ENABLE = 2;
 
-    const SETTING_TAB_PRIORITY = 50;
-
     const TEXT_DOMAIN = 'fyndiq';
+
 
     public function __construct($fmWoo, $fmOutput)
     {
@@ -61,6 +60,7 @@ class WC_Fyndiq
         // called only after woocommerce has finished loading
         $this->fmWoo->addAction('init', array(&$this, 'woocommerceLoaded'), 250);
 
+        //This needs to be two-step to ensure compatibility with < PHP5.5
         $uploadDir = $this->fmWoo->wpUploadDir();
         $this->filePath = $uploadDir['basedir'] . '/fyndiq-feed.csv';
 
@@ -81,8 +81,10 @@ class WC_Fyndiq
     public function initiateClassHooks()
     {
         FmError::setHooks();
+        FmDiagnostics::setHooks();
         FmProduct::setHooks();
         FmField::setHooks();
+        FmSettings::setHooks();
     }
 
     /**
@@ -91,21 +93,6 @@ class WC_Fyndiq
      */
     public function woocommerceLoaded()
     {
-        //Settings
-        $this->fmWoo->addFilter(
-            'woocommerce_settings_tabs_array',
-            array(&$this, 'fyndiq_add_settings_tab'),
-            self::SETTING_TAB_PRIORITY
-        );
-        $this->fmWoo->addAction(
-            'woocommerce_settings_tabs_wcfyndiq',
-            array(&$this, 'settings_tab')
-        );
-        $this->fmWoo->addAction(
-            'woocommerce_update_options_wcfyndiq',
-            array(&$this, 'update_settings')
-        );
-
         //products
         $this->fmWoo->addAction(
             'woocommerce_process_shop_order_meta',
@@ -157,7 +144,7 @@ class WC_Fyndiq
             );
         }
 
-        //bulk action
+        //Bulk Action
         //Inserts the JS for the appropriate dropdown items
         $this->fmWoo->addAction('admin_footer-edit.php', array(&$this, 'fyndiq_add_bulk_action'));
 
@@ -169,13 +156,6 @@ class WC_Fyndiq
 
         //notice for currency check
         $this->fmWoo->addAction('admin_notices', array(&$this, 'my_admin_notice'));
-
-        //Checker Page
-        $this->fmWoo->addAction('admin_menu', array(&$this, 'fyndiqAddMenu'));
-        $this->fmWoo->addFilter(
-            'plugin_action_links_' . $this->fmWoo->pluginBasename(dirname(__FILE__).'/woocommerce-fyndiq.php'),
-            array(&$this, 'fyndiqActionLinks')
-        );
 
         //index
         $this->fmWoo->addAction('load-index.php', array($this->fmUpdate, 'updateNotification'));
@@ -284,264 +264,8 @@ EOS;
         );
     }
 
-    public function settings_tab()
-    {
-        $this->fmWoo->woocommerceAdminFields($this->fyndiq_all_settings());
-    }
 
-    public function fyndiq_all_settings()
-    {
-
-        //Get options for attributes
-        $attributes = $this->getAllTerms();
-
-        /**
-         * Check the current section is what we want
-         **/
-        $settings = array();
-
-        $settings[] = array(
-            'name'     => $this->fmWoo->__('Fyndiq'),
-            'type'     => 'title',
-            'desc'     => '',
-            'id'       => 'wc_settings_wcfyndiq_section_title'
-        );
-
-        // Add Title to the Settings
-        $settings[] = array(
-            'name' => $this->fmWoo->__('General Settings'),
-            'type' => 'title',
-            'desc' => $this->fmWoo->__('The following options are used to configure Fyndiq'),
-            'id' => 'wcfyndiq'
-        );
-
-        // Add second text field option
-        $settings[] = array(
-            'name' => $this->fmWoo->__('Username'),
-            'desc_tip' => $this->fmWoo->__('This is the username you use for login on Fyndiq Merchant'),
-            'id' => 'wcfyndiq_username',
-            'type' => 'text',
-            'desc' => $this->fmWoo->__('Must be your username'),
-        );
-
-        // Add second text field option
-        $settings[] = array(
-            'name' => $this->fmWoo->__('API-token'),
-            'desc_tip' => $this->fmWoo->__('This is the API v2 Token on Fyndiq'),
-            'id' => 'wcfyndiq_apitoken',
-            'type' => 'text',
-            'desc' => $this->fmWoo->__('Must be API v2 token'),
-        );
-
-
-        //Price Percentage
-        $settings[] = array(
-            'name' => $this->fmWoo->__('Global Price Percentage'),
-            'desc_tip' => $this->fmWoo->__(
-                'The percentage that will be removed from the price when sending to Fyndiq.'
-            ),
-            'id' => 'wcfyndiq_price_percentage',
-            'type' => 'text',
-            'default' => '10',
-            'desc' => $this->fmWoo->__('Can be 0 if the price should be the same as in your shop.'),
-        );
-
-        //Price Discount
-        $settings[] = array(
-            'name' => $this->fmWoo->__('Global Price Discount'),
-            'desc_tip' => $this->fmWoo->__(
-                'The amount that will be removed from the price when sending to Fyndiq.'
-            ),
-            'id' => 'wcfyndiq_price_discount',
-            'type' => 'text',
-            'default' => '0',
-            'desc' => $this->fmWoo->__('Can be 0 if the price should not change'),
-        );
-
-        if (isset($_GET['set_sku'])) {
-            // Add SKU picker
-            $settings[] = array(
-                'name' => $this->fmWoo->__('Reference to be in use'),
-                'desc_tip' => $this->fmWoo->__(
-                    'If you have multi SKU as in variations changing this will make it work better'
-                ),
-                'id' => 'wcfyndiq_reference_picker',
-                'type' => 'select',
-                'options' => array(
-                    FmExport::REF_SKU => $this->fmWoo->__('SKU'),
-                    FmExport::REF_ID => $this->fmWoo->__('Product and Article ID'),
-                ),
-                'desc' => $this->fmWoo->__('If this value is changed, products already existing on Fyndiq will be removed and uploaded again and orders might not be able to be imported with old SKU.'),
-            );
-        }
-
-        // Add currency setting
-        $settings[] = array(
-            'name' => $this->fmWoo->__('Used Currency'),
-            'desc_tip' => $this->fmWoo->__('Choose currency to be used for Fyndiq.'),
-            'id' => 'wcfyndiq_currency',
-            'type' => 'select',
-            'options' => $this->currencies,
-            'desc' => $this->fmWoo->__('This must be picked accurate'),
-        );
-
-        //Minimum Quantity limit
-        $settings[] = array(
-            'name' => $this->fmWoo->__('Minimum Quantity Limit'),
-            'desc_tip' => $this->fmWoo->__(
-                'This quantity will be reserved by you and will be removed from the quantity that is sent to Fyndiq.'
-            ),
-            'id' => 'wcfyndiq_quantity_minimum',
-            'type' => 'text',
-            'default' => '0',
-            'desc' => $this->fmWoo->__('Stay on 0 if you want to send all stock to Fyndiq.'),
-        );
-
-        // Add Description picker
-        $settings[] = array(
-            'name' => $this->fmWoo->__('Enable Orders'),
-            'desc_tip' => $this->fmWoo->__('This will disable all order logic for Fyndiq'),
-            'id' => 'wcfyndiq_order_enable',
-            'type' => 'select',
-            'options' => array(
-                self::ORDERS_ENABLE => $this->fmWoo->__('Enable'),
-                self::ORDERS_DISABLE => $this->fmWoo->__('Disable'),
-            ),
-            'desc' => $this->fmWoo->__('Default is to have orders enabled')
-        );
-
-
-        // Add order status setting
-        $settings[] = array(
-            'name' => $this->fmWoo->__('Order Status'),
-            'desc_tip' => $this->fmWoo->__(
-                'When a order is imported from fyndiq, this status will be applied.'
-            ),
-            'id' => 'wcfyndiq_create_order_status',
-            'type' => 'select',
-            'options' => array(
-                'completed' => 'completed',
-                'processing' => 'processing',
-                'pending' => 'pending',
-                'on-hold' => 'on-hold'
-            ),
-            'desc' => $this->fmWoo->__('This must be picked accurate')
-        );
-
-        $settings[] = array(
-            'type' => 'sectionend',
-            'id' => 'wc_settings_wcfyndiq_section_end',
-        );
-
-        $settings[] = array(
-            'name' => $this->fmWoo->__('Field Mappings'),
-            'type' => 'title',
-            'desc' => '',
-            'id' => 'wc_settings_wcfyndiq_section_title'
-        );
-
-
-        // Add Description picker
-        $settings[] = array(
-            'name' => $this->fmWoo->__('Description to use'),
-            'desc_tip' => $this->fmWoo->__(
-                'Set how you want your description to be exported to Fyndiq.'
-            ),
-            'id' => 'wcfyndiq_description_picker',
-            'type' => 'select',
-            'options' => array(
-                FmExport::DESCRIPTION_LONG => $this->fmWoo->__('Long Description'),
-                FmExport::DESCRIPTION_SHORT => $this->fmWoo->__('Short Description'),
-                FmExport::DESCRIPTION_SHORT_LONG =>
-                    $this->fmWoo->__('Short and Long Description'),
-            ),
-            'desc' => $this->fmWoo->__('Default is Long Description'),
-        );
-
-        // Map Field for EAN
-        $settings[] = array(
-            'name' => $this->fmWoo->__('EAN'),
-            'desc_tip' => $this->fmWoo->__('EAN'),
-            'id' => 'wcfyndiq_field_map_ean',
-            'type' => 'select',
-            'options' => $attributes,
-            'desc' => $this->fmWoo->__('This must be picked accurate'),
-        );
-
-        // Map Field for ISBN
-        $settings[] = array(
-            'name' => $this->fmWoo->__('ISBN'),
-            'desc_tip' => $this->fmWoo->__('ISBN'),
-            'id' => 'wcfyndiq_field_map_isbn',
-            'type' => 'select',
-            'options' => $attributes,
-            'desc' => $this->fmWoo->__('This must be picked accurate'),
-        );
-
-        // Map Field for MPN
-        $settings[] = array(
-            'name' => $this->fmWoo->__('MPN'),
-            'desc_tip' => $this->fmWoo->__('MPN'),
-            'id' => 'wcfyndiq_field_map_mpn',
-            'type' => 'select',
-            'options' => $attributes,
-            'desc' => $this->fmWoo->__('This must be picked accurate'),
-        );
-
-        // Map Field for Brand
-        $settings[] = array(
-            'name' => $this->fmWoo->__('Brand'),
-            'desc_tip' => $this->fmWoo->__('Brand'),
-            'id' => 'wcfyndiq_field_map_brand',
-            'type' => 'select',
-            'options' => $attributes,
-            'desc' => $this->fmWoo->__('This must be picked accurate'),
-        );
-
-        $settings[] = array(
-            'type' => 'sectionend',
-            'id' => 'wc_settings_wcfyndiq_section_end'
-        );
-
-        return apply_filters('wc_settings_tab_wcfyndiq', $settings);
-    }
-
-    public function fyndiq_add_settings_tab($settings_tabs)
-    {
-        $settings_tabs['wcfyndiq'] = $this->fmWoo->__('Fyndiq');
-        return $settings_tabs;
-    }
-
-    public function update_settings()
-    {
-        woocommerce_update_options($this->fyndiq_all_settings());
-        try {
-            $this->updateUrls();
-        } catch (Exception $e) {
-            if ($e->getMessage() == 'Unauthorized') {
-                $this->fyndiq_show_setting_error_notice();
-            }
-        }
-    }
-
-    public function updateUrls()
-    {
-        //Generate ping token
-        $pingToken = md5(uniqid());
-        update_option('wcfyndiq_ping_token', $pingToken);
-
-        $data = array(
-            FyndiqUtils::NAME_PRODUCT_FEED_URL => get_site_url() . '/?fyndiq_feed&pingToken=' . $pingToken,
-            FyndiqUtils::NAME_PING_URL => get_site_url() .
-                '/?fyndiq_notification=1&event=ping&pingToken=' . $pingToken
-        );
-        if ($this->ordersEnabled()) {
-            $data[FyndiqUtils::NAME_NOTIFICATION_URL] = get_site_url() . '/?fyndiq_notification=1&event=order_created';
-        }
-        return FmHelpers::callApi('PATCH', 'settings/', $data);
-    }
-
-    //Hooked to woocommerce_product_write_panel_tabs
+    //Hooked to WooCommerce_product_write_panel_tabs
     public function fyndiq_product_tab()
     {
         $this->fmOutput->output(
@@ -774,6 +498,7 @@ EOS;
 
         //This adds a button for importing stuff from fyndiq TODO: ask about this - it probably shouldn't be there
         //TODO: This should not rely on a translatable string
+
         if ($post_type === 'shop_order' && $this->ordersEnabled()) {
             $scriptOutput .= sprintf(
                 "if( jQuery('.wrap h2').length && jQuery(jQuery('.wrap h2')[0]).text() != 'Filter posts list' ) {
@@ -897,7 +622,8 @@ EOS;
      */
     protected function orderCreated($get)
     {
-        if (!$this->ordersEnabled()) {
+
+        if (!FmOrder::getOrdersEnabled()) {
             $this->fmWoo->wpDie('Orders is disabled');
         }
         $order_id = $get['order_id'];
@@ -930,7 +656,7 @@ EOS;
         FyndiqUtils::debug('USER AGENT', FmHelpers::get_user_agent());
         $languageId = $this->fmWoo->WC()->countries->get_base_country();
         FyndiqUtils::debug('language', $languageId);
-        FyndiqUtils::debug('taxonomy', $this->getAllTerms());
+        FyndiqUtils::debug('taxonomy', FmHelpers::getAllTerms());
         $return = $this->fmExport->feedFileHandling();
         $result = file_get_contents($this->filePath);
         FyndiqUtils::debug('$result', $result, true);
@@ -1003,25 +729,6 @@ EOS;
         return (empty($username) || empty($token));
     }
 
-    function check_page()
-    {
-        echo "<h1>".__('Fyndiq Checker Page')."</h1>";
-        echo "<p>".__('This is a page to check all the important requirements to make the Fyndiq work.')."</p>";
-
-        echo "<h2>".__('File Permission')."</h2>";
-        echo $this->probe_file_permissions();
-
-        echo "<h2>".__('Classes')."</h2>";
-        echo $this->probe_module_integrity();
-
-        echo "<h2>".__('API Connection')."</h2>";
-        echo $this->probe_connection();
-
-        echo "<h2>".__('Installed Plugins')."</h2>";
-        echo $this->probe_plugins();
-    }
-
-
     protected function checkToken($get)
     {
         $pingToken = $this->fmWoo->getOption('wcfyndiq_ping_token');
@@ -1032,145 +739,5 @@ EOS;
             $this->fmOutput->showError(400, 'Bad Request', '400 Bad Request');
             $this->fmWoo->wpDie();
         }
-    }
-
-    protected function probe_file_permissions()
-    {
-        $messages = array();
-        $testMessage = time();
-        try {
-            $fileName = $this->filePath;
-            $exists =  file_exists($fileName) ?
-                $this->fmWoo->__('exists') :
-                $this->fmWoo->__('does not exist');
-            $messages[] = sprintf($this->fmWoo->__('Feed file name: `%s` (%s)'), $fileName, $exists);
-            $tempFileName = FyndiqUtils::getTempFilename(dirname($fileName));
-            if (dirname($tempFileName) !== dirname($fileName)) {
-                throw new Exception(sprintf(
-                    $this->fmWoo->__('Cannot create file. Please make sure that the server can create new files in `%s`'),
-                    dirname($fileName)
-                ));
-            }
-            $messages[] = sprintf(
-                $this->fmWoo->__('Trying to create temporary file: `%s`'),
-                $tempFileName
-            );
-            $file = fopen($tempFileName, 'w+');
-            if (!$file) {
-                throw new Exception(sprintf(
-                    $this->fmWoo->__('Cannot create file: `%s`'),
-                    $tempFileName
-                ));
-            }
-            fwrite($file, $testMessage);
-            fclose($file);
-            if ($testMessage == file_get_contents($tempFileName)) {
-                $messages[] = sprintf($this->fmWoo->__('File `%s` successfully read.'), $tempFileName);
-            }
-            FyndiqUtils::deleteFile($tempFileName);
-            $messages[] = sprintf($this->fmWoo->__('Successfully deleted temp file `%s`'), $tempFileName);
-            return implode('<br />', $messages);
-        } catch (Exception $e) {
-            $messages[] = $e->getMessage();
-            return implode('<br />', $messages);
-        }
-    }
-
-    protected function probe_module_integrity()
-    {
-        $messages = array();
-        $missing = array();
-        $checkClasses = array(
-            'FyndiqAPI',
-            'FyndiqAPICall',
-            'FyndiqCSVFeedWriter',
-            'FyndiqFeedWriter',
-            'FyndiqOutput',
-            'FyndiqPaginatedFetch',
-            'FyndiqUtils',
-            'FmHelpers'
-        );
-        try {
-            foreach ($checkClasses as $className) {
-                if (class_exists($className)) {
-                    $messages[] = sprintf($this->fmWoo->__('Class `%s` is found.'), $className);
-                    continue;
-                }
-                $messages[] = sprintf($this->fmWoo->__('Class `%s` is NOT found.'), $className);
-            }
-            if ($missing) {
-                throw new Exception(sprintf(
-                    $this->fmWoo->__('Required classes `%s` are missing.'),
-                    implode(',', $missing)
-                ));
-            }
-            return implode('<br />', $messages);
-        } catch (Exception $e) {
-            $messages[] = $e->getMessage();
-            return implode('<br />', $messages);
-        }
-    }
-    protected function probe_connection()
-    {
-        $messages = array();
-        try {
-            try {
-                FmHelpers::callApi('GET', 'settings/');
-            } catch (Exception $e) {
-                if ($e instanceof FyndiqAPIAuthorizationFailed) {
-                    throw new Exception($this->fmWoo->__('Module is not authorized.'));
-                }
-            }
-            $messages[] = $this->fmWoo->__('Connection to Fyndiq successfully tested');
-            return implode('<br />', $messages);
-        } catch (Exception $e) {
-            $messages[] = $e->getMessage();
-            return implode('<br />', $messages);
-        }
-    }
-
-    protected function probe_plugins()
-    {
-        $all_plugins = get_plugins();
-        $installed_plugin = array();
-        foreach ($all_plugins as $plugin) {
-            $installed_plugin[] = $plugin['Name'] . ' v. ' . $plugin['Version'];
-        }
-        return implode('<br />', $installed_plugin);
-    }
-
-    private function ordersEnabled()
-    {
-        $setting = $this->fmWoo->getOption('wcfyndiq_order_enable');
-        if (!isset($setting) || $setting == false) {
-            return true;
-        }
-        return ($setting == self::ORDERS_ENABLE);
-    }
-
-
-
-    private function getAllTerms()
-    {
-        $attributes = array('' => '');
-        $attribute_taxonomies = wc_get_attribute_taxonomies();
-
-        if ($attribute_taxonomies) {
-            foreach ($attribute_taxonomies as $tax) {
-                $attributes[$tax->attribute_name] = $tax->attribute_label;
-            }
-        }
-
-        // Get products attributes
-        // This can be set per product and some product can have no attributes at all
-        global $wpdb;
-        $results = $wpdb->get_results('SELECT * FROM wp_postmeta WHERE meta_key = "_product_attributes" AND meta_value != "a:0:{}"', OBJECT);
-        foreach ($results as $meta) {
-            $data = unserialize($meta->meta_value);
-            foreach ($data as $key => $attribute) {
-                $attributes[$key] = $attribute['name'];
-            }
-        }
-        return $attributes;
     }
 }
