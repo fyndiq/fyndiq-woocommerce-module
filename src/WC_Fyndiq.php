@@ -101,7 +101,7 @@ class WC_Fyndiq
 
         $this->fmWoo->addAction(
             'woocommerce_admin_order_data_after_order_details',
-            array(&$this, 'fyndiq_add_order_field')
+            array(&$this, 'fyndiqAddOrderField')
         );
         $this->fmWoo->addAction(
             'woocommerce_product_write_panel_tabs',
@@ -281,7 +281,7 @@ EOS;
      * This is the hooked function for fields on the order pages
      *
      */
-    public function fyndiq_add_order_field()
+    public function fyndiqAddOrderField()
     {
         $order = new FmOrder(FmOrder::getWordpressCurrentPostID());
 

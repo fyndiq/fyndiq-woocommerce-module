@@ -2,7 +2,6 @@
 
 class FmWoo
 {
-
     private $defaultTextDomain = '';
 
     public function __construct($textDomain)
