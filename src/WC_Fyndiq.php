@@ -312,14 +312,6 @@ EOS;
         ));
     }
 
-    public function fyndiq_show_setting_error_notice()
-    {
-        $this->fmOutput->output(sprintf(
-            '<div class="error"><p>%s</p></div>',
-            $this->fmWoo->__('Fyndiq credentials was wrong, try again.')
-        ));
-    }
-
     /**
      *
      * Hooked action for saving orders handled status (woocommerce_process_shop_order_meta)
