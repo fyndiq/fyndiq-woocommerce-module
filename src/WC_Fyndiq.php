@@ -228,7 +228,7 @@ EOS;
             __('Done')
         );
 
-        if ($this->ordersEnabled()) {
+        if (FmOrder::getOrdersEnabled()) {
             wp_enqueue_script('fyndiq_order', plugins_url('/js/order-import.js', __FILE__), array('jquery'), null);
         }
     }
