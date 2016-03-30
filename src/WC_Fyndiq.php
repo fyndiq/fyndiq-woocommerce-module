@@ -285,7 +285,6 @@ EOS;
     }
 
     public function settings_tab()
-
     {
         $this->fmWoo->woocommerceAdminFields($this->fyndiq_all_settings());
     }
@@ -763,38 +762,40 @@ EOS;
             )
         );
 
-        //We need this JS header in any case. Initialises output var too.
-        $scriptOutput = '<script type="text/javascript">jQuery(document).ready(function () {';
+        $scriptOutput = '';
 
         //Goes through the corresponding array for the page type and writes JS needed for dropdown
         if (isset($bulkActionArray[$post_type])) {
             foreach ($bulkActionArray[$post_type] as $key => $value) {
                 $scriptOutput .= "jQuery('<option>').val('$key').text('$value').appendTo('select[name=\"action\"]');
-                              jQuery('<option>').val('$key').text('$value').appendTo('select[name=\"action2\"]');";
+                    jQuery('<option>').val('$key').text('$value').appendTo('select[name=\"action2\"]');";
             }
         }
 
         //This adds a button for importing stuff from fyndiq TODO: ask about this - it probably shouldn't be there
         //TODO: This should not rely on a translatable string
-        switch ($post_type) {
-            case 'shop_order': {
-                if ($this->ordersEnabled()) {
-                    $scriptOutput .= "if( jQuery('.wrap h2').length && jQuery(jQuery('.wrap h2')[0]).text() != 'Filter posts list' ) {
-                                        jQuery(jQuery('.wrap h2')[0]).append(\"<a href='#' id='".self::ORDER_IMPORT."' class='add-new-h2'>" .
-                        $bulkActionArray[$post_type][self::ORDER_IMPORT] . "</a>\");
-                                    } else if (jQuery('.wrap h1').length ){
-                                        jQuery(jQuery('.wrap h1')[0]).append(\"<a href='#' id='".self::ORDER_IMPORT."' class='page-title-action'>" .
-                        $bulkActionArray[$post_type][self::ORDER_IMPORT] . "</a>\");
-                                    }";
-                }
-            }
-            break;
+        if ($post_type === 'shop_order' && $this->ordersEnabled()) {
+            $scriptOutput .= sprintf(
+                "if( jQuery('.wrap h2').length && jQuery(jQuery('.wrap h2')[0]).text() != 'Filter posts list' ) {
+                    jQuery(jQuery('.wrap h2')[0]).append(\"<a href='#' id='%s' class='add-new-h2'>%s</a>\");
+                } else if (jQuery('.wrap h1').length ){
+                    jQuery(jQuery('.wrap h1')[0]).append(\"<a href='#' id='%s' class='page-title-action'>%s</a>\");
+                }",
+                self::ORDER_IMPORT,
+                $bulkActionArray[$post_type][self::ORDER_IMPORT],
+                self::ORDER_IMPORT,
+                $bulkActionArray[$post_type][self::ORDER_IMPORT]
+            );
         }
 
-        //We also need this footer in all cases too
-        $scriptOutput .= "});</script>";
+        if ($scriptOutput) {
+            $script = sprintf(
+                '<script type="text/javascript">jQuery(document).ready(function (){%s});</script>',
+                $scriptOutput
+            );
 
-        $this->fmOutput->output($scriptOutput);
+            $this->fmOutput->output($script);
+        }
     }
 
 
@@ -1057,8 +1058,9 @@ EOS;
             $file = fopen($tempFileName, 'w+');
             if (!$file) {
                 throw new Exception(sprintf(
-                    $this->fmWoo->__('Cannot create file: `%s`'), $tempFileName)
-                );
+                    $this->fmWoo->__('Cannot create file: `%s`'),
+                    $tempFileName
+                ));
             }
             fwrite($file, $testMessage);
             fclose($file);
