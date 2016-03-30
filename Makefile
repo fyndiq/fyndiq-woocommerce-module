@@ -26,6 +26,9 @@ clean:
 test:
 	$(BIN_DIR)/phpunit
 
+test-integration:
+	$(BIN_DIR)/phpunit --configuration phpintegration.xml.dist
+
 php-lint:
 	find $(SRC_DIR) -name "*.php" -print0 | xargs -0 -n1 -P8 php -l
 
