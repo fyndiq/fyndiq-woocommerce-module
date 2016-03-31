@@ -1,0 +1,22 @@
+<phpunit
+    bootstrap="tests/bootstrap_integration.php"
+    backupGlobals="false"
+    colors="true"
+    convertErrorsToExceptions="true"
+    convertNoticesToExceptions="true"
+    convertWarningsToExceptions="true"
+    >
+    <testsuites>
+        <testsuite>
+            <directory suffix=".php">./tests/phpunit_integration/</directory>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <whitelist>
+            <directory suffix=".php">src/</directory>
+            <exclude>
+                <directory suffix=".php">src/include/</directory>
+            </exclude>
+        </whitelist>
+    </filter>
+</phpunit>
