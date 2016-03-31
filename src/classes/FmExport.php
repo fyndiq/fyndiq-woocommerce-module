@@ -59,7 +59,7 @@ class FmExport
 
         $file = fopen($tempFileName, 'w+');
         if (!$file) {
-            FyndiqUtils::debug('Cannot create file: ' . $fileName);
+            FyndiqUtils::debug('Cannot create file: ' . $tempFileName);
             return false;
         }
 
@@ -96,7 +96,10 @@ class FmExport
         $wcFyndiqCurrency = get_option('wcfyndiq_currency');
         $currency = !empty($wcFyndiqCurrency) ? $wcFyndiqCurrency : get_woocommerce_currency();
         $percentage_discount = get_option('wcfyndiq_price_percentage');
-        $price_discount = !empty(get_option('wcfyndiq_price_discount')) ? intval(get_option('wcfyndiq_price_discount')) : 0;
+        
+        //This has to be a little less concise to keep compatibility with < PHP5.5
+        $discountOption = get_option('wcfyndiq_price_discount');
+        $price_discount = !empty($discountOption) ? intval(get_option('wcfyndiq_price_discount')) : 0;
 
         $config = array(
             'market' => WC()->countries->get_base_country(),

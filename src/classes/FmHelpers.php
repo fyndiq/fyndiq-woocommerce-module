@@ -20,7 +20,7 @@ class FmHelpers
     }
 
     /**
-     * wrappers around FyndiqAPI
+     * Wrappers around FyndiqAPI
      * uses stored connection credentials for authentication
      *
      * @param $method

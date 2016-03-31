@@ -10,6 +10,8 @@ class FmDiagnostics
 {
     /**
      * This registers the various hooks with WordPress
+     *
+     * @return true
      */
     public static function setHooks()
     {
@@ -20,6 +22,8 @@ class FmDiagnostics
 
     /**
      * Adds the diagnostic page as a menu item
+     *
+     * @return false|string - The resulting page's hook_suffix, or false if the user does not have the capability required.
      */
     public static function addDiagnosticMenuItem()
     {
@@ -41,6 +45,8 @@ class FmDiagnostics
 
     /**
      * Outputs the raw HTML for the diagnostic page's body
+     *
+     * @return true
      */
     public static function diagPage()
     {
@@ -60,6 +66,8 @@ class FmDiagnostics
 
         $fmOutput->output("<h2>" . __('Installed Plugins', 'fyndiq') . "</h2>");
         $fmOutput->output(self::probePlugins());
+
+        return true;
     }
 
     /**
@@ -110,6 +118,7 @@ class FmDiagnostics
      * Checks that all of the classes that we expect to be loaded are
      *
      * @return string - HTML output of log data from the function
+     * @throws Exception - if classes are missing
      */
     private static function probeModuleIntegrity()
     {

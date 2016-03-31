@@ -8,7 +8,9 @@ defined('ABSPATH') || exit;
 class FmError
 {
     /**
+     * This registers the various hooks with WordPress
      *
+     * @return true
      */
     public static function setHooks()
     {
@@ -16,7 +18,9 @@ class FmError
     }
 
     /**
+     * Renders error message if the correct request variables are set
      *
+     * @return bool - true if a message is displayed, otherwise false
      */
     public static function renderError()
     {
@@ -26,10 +30,14 @@ class FmError
                 htmlspecialchars(urldecode($_REQUEST['fyndiqMessageType'])),
                 htmlspecialchars(urldecode($_REQUEST['fyndiqMessage']))
             );
+            return true;
         }
+        return false;
     }
 
     /**
+     * Injects the error into the request when triggered
+     *
      * @param $errorMessage
      */
     public static function handleError($errorMessage)
