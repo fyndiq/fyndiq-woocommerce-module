@@ -5,15 +5,16 @@ defined('ABSPATH') || exit;
 class WC_Fyndiq
 {
     private $filePath = null;
+    private $fmWoo = null;
     private $fmOutput = null;
     private $fmExport = null;
 
     const NOTICES = 'fyndiq_notices';
 
-    /** @var string key value for fyndiq order column */
+    /** @var string key value for Fyndiq order column */
     const ORDERS = 'fyndiq_order';
 
-    /** @var string key value for fyndiq product column */
+    /** @var string key value for Fyndiq product column */
     const EXPORT = 'fyndiq_export_column';
 
     /** @var string the key for the bulk action in export */
@@ -25,7 +26,7 @@ class WC_Fyndiq
     /** @var string the key for mark imported orders as handled */
     const ORDER_HANDLE = 'fyndiq_handle_order';
 
-    /** @var string the key for mark imported orders as unhandled */
+    /** @var string the key for mark imported orders as not handled */
     const ORDER_UNHANDLE = 'fyndiq_unhandle_order';
 
     /** @var string the key for delivery note action */
@@ -37,32 +38,44 @@ class WC_Fyndiq
     const ORDERS_DISABLE = 1;
     const ORDERS_ENABLE = 2;
 
+    const TEXT_DOMAIN = 'fyndiq';
 
-    public function __construct($fmOutput)
+
+    public function __construct($fmWoo, $fmOutput)
     {
+        $this->fmWoo = $fmWoo;
+        $this->fmOutput = $fmOutput;
+
+        $this->currencies = array_combine(
+            FyndiqUtils::$allowedCurrencies,
+            FyndiqUtils::$allowedCurrencies
+        );
 
         //Register class hooks as early as possible
-        add_action('wp_loaded', array(&$this, 'initiateClassHooks'));
+        $this->fmWoo->addAction('wp_loaded', array(&$this, 'initiateClassHooks'));
 
         //Load locale in init
-        add_action('init', array(&$this, 'locale_load'));
+        $this->fmWoo->addAction('init', array(&$this, 'localeLoad'));
 
         // called only after woocommerce has finished loading
-        add_action('init', array(&$this, 'woocommerce_loaded'), 250);
+        $this->fmWoo->addAction('init', array(&$this, 'woocommerceLoaded'), 250);
 
         //This needs to be two-step to ensure compatibility with < PHP5.5
-        $uploadDir = wp_upload_dir();
+        $uploadDir = $this->fmWoo->wpUploadDir();
         $this->filePath = $uploadDir['basedir'] . '/fyndiq-feed.csv';
 
-        $this->fmOutput = $fmOutput;
         $this->fmUpdate = new FmUpdate();
         $this->fmExport = new FmExport($this->filePath, $this->fmOutput);
     }
 
-    public function locale_load()
+    public function localeLoad()
     {
         // Localization
-        load_plugin_textdomain('fyndiq', false, dirname(plugin_basename(__FILE__)) . '/translations/');
+        return $this->fmWoo->loadPluginTextdomain(
+            self::TEXT_DOMAIN,
+            false,
+            dirname($this->fmWoo->pluginBasename(__FILE__)) . '/translations/'
+        );
     }
 
     public function initiateClassHooks()
@@ -75,52 +88,80 @@ class WC_Fyndiq
     }
 
     /**
-     * Take care of anything that needs woocommerce to be loaded.
+     * Take care of anything that needs WooCommerce to be loaded.
      * For instance, if you need access to the $woocommerce global
      */
-    public function woocommerce_loaded()
+    public function woocommerceLoaded()
     {
+        //products
+        $this->fmWoo->addAction(
+            'woocommerce_process_shop_order_meta',
+            array(&$this, 'fyndiq_order_handled_save')
+        );
 
-        //Products
-        add_action('woocommerce_process_shop_order_meta', array(&$this, 'fyndiq_order_handled_save'));
-        add_action('woocommerce_admin_order_data_after_order_details', array(&$this, 'fyndiq_add_order_field'));
-        add_action('woocommerce_product_write_panel_tabs', array(&$this, 'fyndiq_product_tab'));
+        $this->fmWoo->addAction(
+            'woocommerce_admin_order_data_after_order_details',
+            array(&$this, 'fyndiqAddOrderField')
+        );
+        $this->fmWoo->addAction(
+            'woocommerce_product_write_panel_tabs',
+            array(&$this, 'fyndiq_product_tab')
+        );
 
 
-        //Product list
-        add_filter('manage_edit-product_columns', array(&$this, 'fyndiq_product_add_column'));
-        add_action('manage_product_posts_custom_column', array(&$this, 'fyndiq_product_column_export'), 5, 2);
-        add_filter('manage_edit-product_sortable_columns', array(&$this, 'fyndiq_product_column_sort'));
-        add_action('pre_get_posts', array(&$this, 'fyndiq_product_column_sort_by'));
-        add_action('admin_notices', array(&$this, 'fyndiq_bulk_notices'));
-        add_action('admin_notices', array(&$this, 'do_bulk_action_messages'));
+        //product list
+        $this->fmWoo->addFilter(
+            'manage_edit-product_columns',
+            array(&$this, 'fyndiq_product_add_column')
+        );
+        $this->fmWoo->addAction(
+            'manage_product_posts_custom_column',
+            array(&$this, 'fyndiqProductColumnExport'),
+            5,
+            2
+        );
+        $this->fmWoo->addFilter(
+            'manage_edit-product_sortable_columns',
+            array(&$this, 'fyndiq_product_column_sort')
+        );
+        $this->fmWoo->addAction('pre_get_posts', array(&$this, 'fyndiqProductColumnSortBy'));
+        $this->fmWoo->addAction('admin_notices', array(&$this, 'fyndiqBulkNotices'));
+        $this->fmWoo->addAction('admin_notices', array(&$this, 'doBulkActionMessages'));
 
 
-        //Order list
+        //order list
         if (FmOrder::getOrdersEnabled()) {
-            add_filter('manage_edit-shop_order_columns', array(&$this, 'fyndiq_order_add_column'));
-            add_action('manage_shop_order_posts_custom_column', array(&$this, 'fyndiq_order_column'), 5, 2);
-            add_filter('manage_edit-shop_order_sortable_columns', array(&$this, 'fyndiq_order_column_sort'));
+            $this->fmWoo->addFilter('manage_edit-shop_order_columns', array(&$this, 'fyndiqOrderAddColumn'));
+            $this->fmWoo->addAction(
+                'manage_shop_order_posts_custom_column',
+                array(&$this, 'fyndiq_order_column'),
+                5,
+                2
+            );
+            $this->fmWoo->addFilter(
+                'manage_edit-shop_order_sortable_columns',
+                array(&$this, 'fyndiqOrderColumnSort')
+            );
         }
 
         //Bulk Action
         //Inserts the JS for the appropriate dropdown items
-        add_action('admin_footer-edit.php', array(&$this, 'fyndiq_add_bulk_action'));
+        $this->fmWoo->addAction('admin_footer-edit.php', array(&$this, 'fyndiq_add_bulk_action'));
 
         //Dispatcher for different bulk actions
-        add_action('load-edit.php', array(&$this, 'fyndiq_bulk_action_dispatcher'));
+        $this->fmWoo->addAction('load-edit.php', array(&$this, 'fyndiq_bulk_action_dispatcher'));
 
         //add_action('post_submitbox_misc_actions', array( &$this, 'fyndiq_order_edit_action'));
-        add_action('add_meta_boxes', array(&$this, 'fyndiq_order_meta_boxes'));
+        $this->fmWoo->addAction('add_meta_boxes', array(&$this, 'fyndiqOrderMetaBoxes'));
 
         //notice for currency check
-        add_action('admin_notices', array(&$this, 'my_admin_notice'));
+        $this->fmWoo->addAction('admin_notices', array(&$this, 'fyndiqAdminNotices'));
 
         //index
-        add_action('load-index.php', array($this->fmUpdate, 'updateNotification'));
+        $this->fmWoo->addAction('load-index.php', array($this->fmUpdate, 'updateNotification'));
 
         //orders
-        add_action('load-edit.php', array(&$this, 'fyndiq_show_order_error'));
+        $this->fmWoo->addAction('load-edit.php', array(&$this, 'fyndiqShowOrderError'));
 
         // admin javascripts
         add_action('admin_enqueue_scripts', array(&$this, 'fyndiqLoadJavascript'));
@@ -133,21 +174,39 @@ class WC_Fyndiq
             FmOrder::generateOrders();
         }
         if (isset($_GET['fyndiq_notification'])) {
-            $this->setAJAX();
+            $this->fmWoo->setDoingAJAX($value);
             $this->handleNotification($_GET);
-            $this->wpDie();
+            $this->fmWoo->wpDie();
         }
     }
 
-
-    protected function wpDie($message = '')
+    public function fyndiqAddMenu()
     {
-        return wp_die($message = '');
+        $this->fmWoo->addSubmenuPage(
+            null,
+            'Fyndiq Checker Page',
+            'Fyndiq',
+            'manage_options',
+            'fyndiq-check',
+            array(&$this, 'check_page')
+        );
     }
 
-    protected function setAJAX()
+    public function fyndiqActionLinks($links)
     {
-        define('DOING_AJAX', true);
+        $checkUrl = $this->fmWoo->escURL(
+            $this->fmWoo->getAdminURL(null, 'admin.php?page=fyndiq-check')
+        );
+        $settingUrl = $this->fmWoo->escURL(
+            $this->fmWoo->getAdminURL(
+                null,
+                'admin.php?page=wc-settings&tab=products&section=wcfyndiq'
+            )
+        );
+        return array(
+            '<a href="'. $settingUrl . '">' . $this->fmWoo->__('Settings') . '</a>',
+            '<a href="'. $checkUrl . '">' . $this->fmWoo->__('Fyndiq Check') . '</a>'
+        );
     }
 
     function fyndiqLoadJavascript()
@@ -164,49 +223,83 @@ EOS;
         printf(
             $script,
             get_site_url(),
-            __('Error!', 'fyndiq'),
-            __('Loading', 'fyndiq') . '...',
-            __('Done', 'fyndiq')
+            __('Error!'),
+            __('Loading') . '...',
+            __('Done')
         );
 
-        if ($this->ordersEnabled()) {
+        if (FmOrder::getOrdersEnabled()) {
             wp_enqueue_script('fyndiq_order', plugins_url('/js/order-import.js', __FILE__), array('jquery'), null);
         }
     }
 
-    public function fyndiq_order_meta_boxes()
+    public function fyndiqOrderMetaBoxes()
     {
-        $meta = get_post_custom(FmOrder::getWordpressCurrentPostID());
-        if (isset($meta['fyndiq_delivery_note']) && isset($meta['fyndiq_delivery_note'][0]) && $meta['fyndiq_delivery_note'][0] != '') {
-            add_meta_box(
+        $meta = $this->fmWoo->getPostCustom(FmOrder::getWordpressCurrentPostID());
+        if (is_array($meta) &&
+            array_key_exists('fyndiq_delivery_note', $meta) &&
+            isset($meta['fyndiq_delivery_note'][0]) &&
+            $meta['fyndiq_delivery_note'][0] != ''
+        ) {
+            return $this->fmWoo->addMetaBox(
                 'woocommerce-order-fyndiq-delivery-note',
-                __('Fyndiq', 'fyndiq'),
+                $this->fmWoo->__('Fyndiq'),
                 array(&$this, 'order_meta_box_delivery_note'),
                 'shop_order',
                 'side',
                 'default'
             );
         }
+        return false;
     }
 
     public function order_meta_box_delivery_note()
     {
-        $meta = get_post_custom(FmOrder::getWordpressCurrentPostID());
-        $this->fmOutput->output('<a href="' . $meta['fyndiq_delivery_note'][0] . '" class="button button-primary">Get Fyndiq Delivery Note</a>');
+        $meta = $this->fmWoo->getPostCustom(FmOrder::getWordpressCurrentPostID());
+        $this->fmOutput->output(
+            sprintf(
+                '<a href="%s" class="button button-primary">%s</a>',
+                $meta['fyndiq_delivery_note'][0],
+                $this->fmWoo->__('Get Fyndiq Delivery Note')
+            )
+        );
     }
+
 
     //Hooked to WooCommerce_product_write_panel_tabs
     public function fyndiq_product_tab()
     {
-        echo sprintf("<li class='fyndiq_tab'><a href='#fyndiq_tab'>%s</a></li>", __('Fyndiq', 'fyndiq'));
+        $this->fmOutput->output(
+            sprintf(
+                '<li class="fyndiq_tab"><a href="#fyndiq_tab">%s</a></li>',
+                $this->fmWoo->__('Fyndiq')
+            )
+        );
     }
 
-    public function fyndiq_show_order_error()
+    /**
+     *
+     * This is the hooked function for fields on the order pages
+     *
+     */
+    public function fyndiqAddOrderField()
+    {
+        $order = new FmOrder(FmOrder::getWordpressCurrentPostID());
+
+        FmField::fyndiq_generate_field(FmOrder::FYNDIQ_HANDLED_ORDER_META_FIELD, array(
+            'type' => 'checkbox',
+            'class' => array('input-checkbox'),
+            'label' => $this->fmWoo->__('Order handled'),
+            'description' => $this->fmWoo->__('Report this order as handled to Fyndiq'),
+        ), (bool)$order->getIsHandled());
+    }
+
+    public function fyndiqShowOrderError()
     {
         if (isset($_GET['post_type']) && $_GET['post_type'] == 'shop_order') {
-            $error = get_option('wcfyndiq_order_error');
+            $error = $this->fmWoo->getOption('wcfyndiq_order_error');
             if ($error) {
-                add_action('admin_notices', array(&$this, 'fyndiq_show_order_error_notice'));
+                $this->fmWoo->addAction('admin_notices', array(&$this, 'fyndiq_show_order_error_notice'));
                 update_option('wcfyndiq_order_error', false);
             }
         }
@@ -216,8 +309,7 @@ EOS;
     {
         $this->fmOutput->output(sprintf(
             '<div class="error"><p>%s</p></div>',
-            __('Some Fyndiq Orders failed to be imported, most likely due to
-            stock or couldn\'t find product on Reference.', 'fyndiq')
+            $this->fmWoo->__('Some Fyndiq Orders failed to be imported, most likely due to stock or couldn\'t find product on Reference.')
         ));
     }
 
@@ -234,27 +326,27 @@ EOS;
     }
 
     //Hooked function for adding columns to the products page (manage_edit-shop_order_columns)
-    public function fyndiq_order_add_column($defaults)
+    public function fyndiqOrderAddColumn($defaults)
     {
-        $defaults[self::ORDERS] = __('Fyndiq Order', 'fyndiq');
+        $defaults[self::ORDERS] = $this->fmWoo->__('Fyndiq Order');
         return $defaults;
     }
 
     public function fyndiq_order_column($column, $orderId)
     {
         if ($column === self::ORDERS) {
-            $fyndiq_order = get_post_meta($orderId, 'fyndiq_id', true);
+            $fyndiq_order = $this->fmWoo->getPostMeta($orderId, 'fyndiq_id', true);
             if ($fyndiq_order != '') {
                 $this->fmOutput->output($fyndiq_order);
             } else {
-                update_post_meta($orderId, 'fyndiq_id', '-');
+                $this->fmWoo->updatePostMeta($orderId, 'fyndiq_id', '-');
                 $this->fmOutput->output('-');
             }
         }
     }
 
     //Hooked to manage_edit-shop_order_sortable_columns
-    public function fyndiq_order_column_sort()
+    public function fyndiqOrderColumnSort()
     {
         return array(
             self::ORDERS => self::ORDERS
@@ -264,7 +356,7 @@ EOS;
     //TODO: find out how this function is called
     public function fyndiq_order_column_sort_by($query)
     {
-        if (!is_admin()) {
+        if (!$this->fmWoo->isAdmin()) {
             return;
         }
         $orderby = $query->get('orderby');
@@ -277,7 +369,7 @@ EOS;
     //Hooked function for adding columns to the products page (manage_edit-product_columns)
     public function fyndiq_product_add_column($defaults)
     {
-        $defaults[self::EXPORT] = __('Fyndiq', 'fyndiq');
+        $defaults[self::EXPORT] = $this->fmWoo->__('Fyndiq');
         return $defaults;
     }
 
@@ -288,9 +380,9 @@ EOS;
         );
     }
 
-    public function fyndiq_product_column_sort_by($query)
+    public function fyndiqProductColumnSortBy($query)
     {
-        if (!is_admin()) {
+        if (!$this->fmWoo->isAdmin()) {
             return;
         }
         $orderby = $query->get('orderby');
@@ -300,51 +392,50 @@ EOS;
         }
     }
 
-    public function fyndiq_product_column_export($column, $postId)
+    public function fyndiqProductColumnExport($column, $postId)
     {
         $product = new FmProduct($postId);
 
         if ($column == self::EXPORT) {
             if ($product->isProductExportable()) {
                 if ($product->getIsExported()) {
-                    _e('Exported', 'fyndiq');
+                    _e('Exported');
                 } else {
-                    _e('Not exported', 'fyndiq');
+                    _e('Not exported');
                 }
             } else {
-                _e('Can\'t be exported', 'fyndiq');
+                _e('Can\'t be exported');
             }
         }
     }
 
 
-
-    public function my_admin_notice()
+    public function fyndiqAdminNotices()
     {
         if ($this->checkCurrency()) {
             $this->fmOutput->output(sprintf(
                 '<div class="error"><p><strong>%s</strong>: %s %s</p></div>',
-                __('Wrong Currency', 'fyndiq'),
-                __('Fyndiq only works in EUR and SEK. change to correct currency. Current Currency:', 'fyndiq'),
-                get_woocommerce_currency()
+                $this->fmWoo->__('Wrong Currency'),
+                $this->fmWoo->__('Fyndiq only works in EUR and SEK. change to correct currency. Current Currency:'),
+                $this->fmWoo->getWoocommerceCurrency()
             ));
         }
         if ($this->checkCountry()) {
             $this->fmOutput->output(sprintf(
                 '<div class="error"><p><strong>%s</strong>: %s %s</p></div>',
-                __('Wrong Country', 'fyndiq'),
-                __('Fyndiq only works in Sweden and Germany. change to correct country. Current Country:', 'fyndiq'),
-                WC()->countries->get_base_country()
+                $this->fmWoo->__('Wrong Country'),
+                $this->fmWoo->__('Fyndiq only works in Sweden and Germany. change to correct country. Current Country:'),
+                $this->fmWoo->WC()->countries->get_base_country()
             ));
         }
         if ($this->checkCredentials()) {
             $url = admin_url('admin.php?page=wc-settings&tab=wcfyndiq');
             $this->fmOutput->output(sprintf(
                 '<div class="error"><p><strong>%s</strong>: %s <a href="%s">%s</a></p></div>',
-                __('Fyndiq Credentials', 'fyndiq'),
-                __('You need to set Fyndiq Credentials to make it work. Do it in ', 'fyndiq'),
+                $this->fmWoo->__('Fyndiq Credentials'),
+                $this->fmWoo->__('You need to set Fyndiq Credentials to make it work. Do it in '),
                 $url,
-                __('Woocommerce Settings > Fyndiq', 'fyndiq')
+                $this->fmWoo->__('Woocommerce Settings > Fyndiq')
             ));
         }
         if (isset($_SESSION[self::NOTICES])) {
@@ -352,20 +443,18 @@ EOS;
             foreach ($notices as $type => $noticegroup) {
                 $class = 'update' === $type ? 'updated' : $type;
                 echo '<div class="fn_message '.$class.'">';
-                echo '<strong>'.__('Fyndiq Validations', 'fyndiq').'</strong>';
+                echo '<strong>'.$this->fmWoo->__('Fyndiq Validations').'</strong>';
                 echo '<ul>';
                 foreach ($noticegroup as $notice) :
                     echo '<li>'.wp_kses($notice, wp_kses_allowed_html('post')).'</li>';
                 endforeach;
                 echo '</ul>';
-                echo '<p>'.__('The product will not be exported to Fyndiq until these validations are fixed.', 'fyndiq') . '</p>';
+                echo '<p>' . $this->fmWoo->__('The product will not be exported to Fyndiq until these validations are fixed.') . '</p>';
                 echo '</div>';
             }
             unset($_SESSION[self::NOTICES]);
         }
     }
-
-
 
     /**
      *
@@ -379,52 +468,52 @@ EOS;
         //Define bulk actions for the various page types
         $bulkActionArray = array(
             'product' => array(
-                self::EXPORT_HANDLE => __('Export to Fyndiq', 'fyndiq'),
-                self::EXPORT_UNHANDLE => __('Remove from Fyndiq', 'fyndiq'),
+                self::EXPORT_HANDLE => $this->fmWoo->__('Export to Fyndiq'),
+                self::EXPORT_UNHANDLE => $this->fmWoo->__('Remove from Fyndiq'),
             ),
             'shop_order' => array(
-                self::DELIVERY_NOTE => __('Get Fyndiq Delivery Note', 'fyndiq'),
-                self::ORDER_IMPORT => __('Import From Fyndiq', 'fyndiq'),
-                self::ORDER_HANDLE => __('Mark order(s) as handled', 'fyndiq'),
-                self::ORDER_UNHANDLE => __('Mark order(s) as not handled', 'fyndiq')
+                self::DELIVERY_NOTE => $this->fmWoo->__('Get Fyndiq Delivery Note'),
+                self::ORDER_IMPORT => $this->fmWoo->__('Import From Fyndiq'),
+                self::ORDER_HANDLE => $this->fmWoo->__('Mark order(s) as handled'),
+                self::ORDER_UNHANDLE => $this->fmWoo->__('Mark order(s) as not handled')
             )
         );
 
-
-        //We need this JS header in any case. Initialises output var too.
-        $scriptOutput = '<script type="text/javascript">jQuery(document).ready(function () {';
-
+        $scriptOutput = '';
 
         //Goes through the corresponding array for the page type and writes JS needed for dropdown
         if (isset($bulkActionArray[$post_type])) {
             foreach ($bulkActionArray[$post_type] as $key => $value) {
                 $scriptOutput .= "jQuery('<option>').val('$key').text('$value').appendTo('select[name=\"action\"]');
-                              jQuery('<option>').val('$key').text('$value').appendTo('select[name=\"action2\"]');";
+                    jQuery('<option>').val('$key').text('$value').appendTo('select[name=\"action2\"]');";
             }
         }
-
 
         //This adds a button for importing stuff from fyndiq TODO: ask about this - it probably shouldn't be there
         //TODO: This should not rely on a translatable string
-        switch ($post_type) {
-            case 'shop_order': {
-                if (FmOrder::getOrdersEnabled()) {
-                    $scriptOutput .= "if( jQuery('.wrap h2').length && jQuery(jQuery('.wrap h2')[0]).text() != 'Filter posts list' ) {
-                                        jQuery(jQuery('.wrap h2')[0]).append(\"<a href='#' id='".self::ORDER_IMPORT."' class='add-new-h2'>" .
-                        $bulkActionArray[$post_type][self::ORDER_IMPORT] . "</a>\");
-                                    } else if (jQuery('.wrap h1').length ){
-                                        jQuery(jQuery('.wrap h1')[0]).append(\"<a href='#' id='".self::ORDER_IMPORT."' class='page-title-action'>" .
-                        $bulkActionArray[$post_type][self::ORDER_IMPORT] . "</a>\");
-                                    }";
-                }
-            }
-                break;
+
+        if ($post_type === 'shop_order' && FmOrder::getOrdersEnabled()) {
+            $scriptOutput .= sprintf(
+                "if( jQuery('.wrap h2').length && jQuery(jQuery('.wrap h2')[0]).text() != 'Filter posts list' ) {
+                    jQuery(jQuery('.wrap h2')[0]).append(\"<a href='#' id='%s' class='add-new-h2'>%s</a>\");
+                } else if (jQuery('.wrap h1').length ){
+                    jQuery(jQuery('.wrap h1')[0]).append(\"<a href='#' id='%s' class='page-title-action'>%s</a>\");
+                }",
+                self::ORDER_IMPORT,
+                $bulkActionArray[$post_type][self::ORDER_IMPORT],
+                self::ORDER_IMPORT,
+                $bulkActionArray[$post_type][self::ORDER_IMPORT]
+            );
         }
 
-        //We also need this footer in all cases too
-        $scriptOutput .= "});</script>";
+        if ($scriptOutput) {
+            $script = sprintf(
+                '<script type="text/javascript">jQuery(document).ready(function (){%s});</script>',
+                $scriptOutput
+            );
 
-        $this->fmOutput->output($scriptOutput);
+            $this->fmOutput->output($script);
+        }
     }
 
 
@@ -458,7 +547,7 @@ EOS;
         }
     }
 
-    public function do_bulk_action_messages()
+    public function doBulkActionMessages()
     {
         if (isset($_SESSION['bulkMessage']) && $GLOBALS['pagenow'] === 'edit.php') {
             $this->fmOutput->output('<div class="updated"><p>' . $_SESSION['bulkMessage'] . '</p></div>');
@@ -466,7 +555,7 @@ EOS;
         }
     }
 
-    public function fyndiq_bulk_notices()
+    public function fyndiqBulkNotices()
     {
         global $post_type, $pagenow;
 
@@ -502,7 +591,7 @@ EOS;
     public function handleNotification($get)
     {
         if (isset($get['event'])) {
-            switch($get['event']) {
+            switch ($get['event']) {
                 case 'order_created':
                     return $this->orderCreated($get);
                 case 'ping':
@@ -526,8 +615,9 @@ EOS;
      */
     protected function orderCreated($get)
     {
+
         if (!FmOrder::getOrdersEnabled()) {
-            wp_die('Orders is disabled');
+            $this->fmWoo->wpDie('Orders is disabled');
         }
         $order_id = $get['order_id'];
         $orderId = is_numeric($order_id) ? intval($order_id) : 0;
@@ -557,7 +647,7 @@ EOS;
     {
         FyndiqUtils::debugStart();
         FyndiqUtils::debug('USER AGENT', FmHelpers::get_user_agent());
-        $languageId = WC()->countries->get_base_country();
+        $languageId = $this->fmWoo->WC()->countries->get_base_country();
         FyndiqUtils::debug('language', $languageId);
         FyndiqUtils::debug('taxonomy', FmHelpers::getAllTerms());
         $return = $this->fmExport->feedFileHandling();
@@ -576,7 +666,7 @@ EOS;
         $this->fmOutput->flushHeader('OK');
 
         $locked = false;
-        $lastPing = get_option('wcfyndiq_ping_time');
+        $lastPing = $this->fmWoo->getOption('wcfyndiq_ping_time');
         $lastPing = $lastPing ? $lastPing : false;
         $locked = $lastPing && $lastPing > strtotime('15 minutes ago');
         if (!$locked) {
@@ -612,42 +702,35 @@ EOS;
         return $wp_list_table->current_action();
     }
 
-    public function returnAndDie($return)
-    {
-        die($return);
-    }
-
     public function checkCurrency()
     {
-        $currency = get_woocommerce_currency();
+        $currency = $this->fmWoo->getWoocommerceCurrency();
         return !in_array($currency, FyndiqUtils::$allowedCurrencies);
     }
 
     public function checkCountry()
     {
-        $country = WC()->countries->get_base_country();
+        $country = $this->fmWoo->WC()->countries->get_base_country();
         return !in_array($country, FyndiqUtils::$allowedMarkets);
     }
 
     public function checkCredentials()
     {
-        $username = get_option('wcfyndiq_username');
-        $token = get_option('wcfyndiq_apitoken');
+        $username = $this->fmWoo->getOption('wcfyndiq_username');
+        $token = $this->fmWoo->getOption('wcfyndiq_apitoken');
 
         return (empty($username) || empty($token));
     }
 
-
-
     protected function checkToken($get)
     {
-        $pingToken = get_option('wcfyndiq_ping_token');
+        $pingToken = $this->fmWoo->getOption('wcfyndiq_ping_token');
 
         $token = isset($get['pingToken']) ? $get['pingToken'] : null;
 
         if (is_null($token) || $token != $pingToken) {
             $this->fmOutput->showError(400, 'Bad Request', '400 Bad Request');
-            $this->wpDie();
+            $this->fmWoo->wpDie();
         }
     }
 }
