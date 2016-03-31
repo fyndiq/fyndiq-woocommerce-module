@@ -10,11 +10,17 @@ class FyndiqTest extends PHPUnit_Framework_TestCase
                 'addAction',
                 'wpUploadDir',
                 'loadPluginTextdomain',
-                'pluginBasename'
+                'pluginBasename',
+                'setDoingAJAX',
+                'getOption',
+                'wpDie',
             ))
             ->getMock();
 
         $this->fmOutput = $this->getMockBuilder('stdClass')
+            ->setMethods(array(
+                'showError',
+            ))
             ->getMock();
 
         $this->wcFyndiq = new WC_Fyndiq($this->fmWoo, $this->fmOutput);
@@ -35,4 +41,32 @@ class FyndiqTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($result);
     }
 
+
+    public function testCheckDebugEnabled()
+    {
+        $get = array('event' => 'debug');
+
+        $this->fmWoo->expects($this->once())
+            ->method('getOption')
+            ->with(
+                $this->equalTo('wcfyndiq_enable_debug')
+            )
+            ->willReturn(null);
+
+        $this->fmOutput->expects($this->once())
+            ->method('showError')
+            ->with(
+                $this->equalTo(403),
+                $this->equalTo('Forbidden'),
+                $this->equalTo('Forbidden')
+            )
+            ->willReturn(true);
+
+        $this->fmWoo->expects($this->once())
+            ->method('wpDie')
+            ->willReturn(true);
+
+        $result = $this->wcFyndiq->handleNotification($get);
+        $this->assertTrue($result);
+    }
 }

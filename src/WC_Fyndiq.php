@@ -174,7 +174,7 @@ class WC_Fyndiq
             FmOrder::generateOrders();
         }
         if (isset($_GET['fyndiq_notification'])) {
-            $this->fmWoo->setDoingAJAX($value);
+            $this->fmWoo->setDoingAJAX(true);
             $this->handleNotification($_GET);
             $this->fmWoo->wpDie();
         }
@@ -590,6 +590,8 @@ EOS;
      */
     public function handleNotification($get)
     {
+        // Disable page chrome
+        $this->fmWoo->setDoingAJAX(true);
         if (isset($get['event'])) {
             switch ($get['event']) {
                 case 'order_created':
@@ -598,8 +600,12 @@ EOS;
                     $this->checkToken($get);
                     return $this->ping();
                 case 'debug':
-                    $this->checkToken($get);
-                    return $this->debug();
+                    if ($this->isDebugEnabled()) {
+                        $this->checkToken($get);
+                        return $this->debug();
+                    }
+                    $this->fmOutput->showError(403, 'Forbidden', 'Forbidden');
+                    return $this->fmWoo->wpDie();
             }
         }
         return $this->fmOutput->showError(400, 'Bad Request', '400 Bad Request');
@@ -714,5 +720,14 @@ EOS;
             $this->fmOutput->showError(400, 'Bad Request', '400 Bad Request');
             $this->fmWoo->wpDie();
         }
+    }
+
+    /**
+     * isDebugEnabled returns true if debug is enabled;
+     * @return bool
+     */
+    protected function isDebugEnabled()
+    {
+        return intval($this->fmWoo->getOption('wcfyndiq_enable_debug')) === FmHelpers::DEBUG_ENABLED;
     }
 }
