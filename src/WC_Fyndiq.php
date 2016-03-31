@@ -600,9 +600,6 @@ EOS;
                 case 'debug':
                     $this->checkToken($get);
                     return $this->debug();
-                case 'info':
-                    $this->checkToken($get);
-                    return $this->info();
             }
         }
         return $this->fmOutput->showError(400, 'Bad Request', '400 Bad Request');
@@ -679,21 +676,6 @@ EOS;
             }
         }
         return true;
-    }
-
-    /**
-     * info handles information report
-     * @return bool
-     */
-    protected function info()
-    {
-        $info = FyndiqUtils::getInfo(
-            FmHelpers::PLATFORM,
-            FmHelpers::get_woocommerce_version(),
-            FmHelpers::get_plugin_version(),
-            FmHelpers::COMMIT
-        );
-        return $this->fmOutput->outputJSON($info);
     }
 
     public function getAction($table)
