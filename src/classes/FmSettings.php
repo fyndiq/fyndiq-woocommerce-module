@@ -4,7 +4,6 @@
  */
 
 
-
 class FmSettings
 {
     const SETTING_TAB_PRIORITY = 50;
@@ -76,9 +75,9 @@ class FmSettings
         /**
          * Check the current section is what we want
          **/
-        $settings_slider = array();
+        $settings = array();
 
-        $settings_slider[] = array(
+        $settings[] = array(
             'name'     => __('Fyndiq', 'fyndiq'),
             'type'     => 'title',
             'desc'     => '',
@@ -86,7 +85,7 @@ class FmSettings
         );
 
         // Add Title to the Settings
-        $settings_slider[] = array(
+        $settings[] = array(
             'name' => __('General Settings', 'fyndiq'),
             'type' => 'title',
             'desc' => __('The following options are used to configure Fyndiq', 'fyndiq'),
@@ -94,7 +93,7 @@ class FmSettings
         );
 
         // Add second text field option
-        $settings_slider[] = array(
+        $settings[] = array(
             'name' => __('Username', 'fyndiq'),
             'desc_tip' => __('This is the username you use for login on Fyndiq Merchant', 'fyndiq'),
             'id' => 'wcfyndiq_username',
@@ -103,7 +102,7 @@ class FmSettings
         );
 
         // Add second text field option
-        $settings_slider[] = array(
+        $settings[] = array(
             'name' => __('API-token', 'fyndiq'),
             'desc_tip' => __('This is the API V2 Token on Fyndiq', 'fyndiq'),
             'id' => 'wcfyndiq_apitoken',
@@ -113,7 +112,7 @@ class FmSettings
 
 
         //Price Percentage
-        $settings_slider[] = array(
+        $settings[] = array(
             'name' => __('Global Price Percentage', 'fyndiq'),
             'desc_tip' => __(
                 'The percentage that will be removed from the price when sending to fyndiq.',
@@ -126,7 +125,7 @@ class FmSettings
         );
 
         //Price Discount
-        $settings_slider[] = array(
+        $settings[] = array(
             'name' => __('Global Price Discount', 'fyndiq'),
             'desc_tip' => __(
                 'The amount that will be removed from the price when sending to fyndiq.',
@@ -140,7 +139,7 @@ class FmSettings
 
         if (isset($_GET['set_sku'])) {
             // Add SKU picker
-            $settings_slider[] = array(
+            $settings[] = array(
                 'name' => __('Reference to be in use', 'fyndiq'),
                 'desc_tip' => __(
                     'If you have multi SKU as in variations changing this will make it work better',
@@ -157,7 +156,7 @@ class FmSettings
         }
 
         // Add currency setting
-        $settings_slider[] = array(
+        $settings[] = array(
             'name' => __('Used Currency', 'fyndiq'),
             'desc_tip' => __(
                 'Choose currency to be used for Fyndiq.',
@@ -171,7 +170,7 @@ class FmSettings
         );
 
         //Minimum Quantity limit
-        $settings_slider[] = array(
+        $settings[] = array(
             'name' => __('Minimum Quantity Limit', 'fyndiq'),
             'desc_tip' => __(
                 'this quantity will be reserved by you and will be removed from the quantity that is sent to Fyndiq.',
@@ -184,7 +183,7 @@ class FmSettings
         );
 
         // Add Description picker
-        $settings_slider[] = array(
+        $settings[] = array(
             'name' => __('Enable Orders', 'fyndiq'),
             'desc_tip' => __(
                 'This will disable all order logic for Fyndiq',
@@ -200,7 +199,7 @@ class FmSettings
         );
 
         // Add order status setting
-        $settings_slider[] = array(
+        $settings[] = array(
             'name' => __('Order Status', 'fyndiq'),
             'desc_tip' => __(
                 'When a order is imported from fyndiq, this status will be applied.',
@@ -217,12 +216,12 @@ class FmSettings
             'desc' => __('This must be picked accurate', 'fyndiq')
         );
 
-        $settings_slider[] = array(
+        $settings[] = array(
             'type' => 'sectionend',
             'id' => 'wc_settings_wcfyndiq_section_end'
         );
 
-        $settings_slider[] = array(
+        $settings[] = array(
             'name'     => __('Field Mappings', 'fyndiq'),
             'type'     => 'title',
             'desc'     => '',
@@ -230,7 +229,7 @@ class FmSettings
         );
 
         // Add Description picker
-        $settings_slider[] = array(
+        $settings[] = array(
             'name' => __('Description to use', 'fyndiq'),
             'desc_tip' => __(
                 'Set how you want your description to be exported to Fyndiq.',
@@ -247,7 +246,7 @@ class FmSettings
         );
 
         // Map Field for EAN
-        $settings_slider[] = array(
+        $settings[] = array(
             'name' => __('EAN', 'fyndiq'),
             'desc_tip' => __(
                 'EAN',
@@ -260,7 +259,7 @@ class FmSettings
         );
 
         // Map Field for ISBN
-        $settings_slider[] = array(
+        $settings[] = array(
             'name' => __('ISBN', 'fyndiq'),
             'desc_tip' => __(
                 'ISBN',
@@ -273,7 +272,7 @@ class FmSettings
         );
 
         // Map Field for MPN
-        $settings_slider[] = array(
+        $settings[] = array(
             'name' => __('MPN', 'fyndiq'),
             'desc_tip' => __(
                 'MPN',
@@ -286,7 +285,7 @@ class FmSettings
         );
 
         // Map Field for MPN
-        $settings_slider[] = array(
+        $settings[] = array(
             'name' => __('Brand', 'fyndiq'),
             'desc_tip' => __(
                 'Brand',
@@ -295,14 +294,45 @@ class FmSettings
             'id' => 'wcfyndiq_field_map_brand',
             'type' => 'select',
             'options' => $attributes,
-            'desc' => __('This must be picked accurate', 'fyndiq'),
+            'desc' => __('This must be picked accurate', 'fyndiq'),se
         );
 
-        $settings_slider[] = array(
+        $settings[] = array(
+            'name'     => __('Field Mappings', 'fyndiq'),
+            'type'     => 'title',
+            'desc'     => '',
+            'id'       => 'wc_settings_wcfyndiq_section_title'
+        );
+
+        $settings[] = array(
             'type' => 'sectionend',
-            'id' => 'wc_settings_wcfyndiq_section_end'
+            'id' => 'wc_settings_wcfyndiq_section_end_mapping'
         );
 
-        return apply_filters('wc_settings_tab_wcfyndiq', $settings_slider);
+        // Troubleshooting
+        $settings[] = array(
+            'name' => __('Troubleshooting', 'fyndiq'),
+            'type' => 'title',
+            'id' => 'wc_settings_troubleshooting'
+        );
+
+        $settings[] = array(
+            'name' => __('Enable Debug', 'fyndiq'),
+            'desc_tip' => __('Enables debugging.', 'fyndiq'),
+            'id' => 'wcfyndiq_enable_debug',
+            'type' => 'select',
+            'options' => array(
+                FmHelpers::DEBUG_DISABLED => __('No', 'fyndiq'),
+                FmHelpers::DEBUG_ENABLED => __('Yes', 'fyndiq'),
+            ),
+            'desc' => __('Enable Debug', 'fyndiq'),
+        );
+
+        $settings[] = array(
+            'type' => 'sectionend',
+            'id' => 'wc_settings_wcfyndiq_section_end_troubleshooting'
+        );
+
+        return apply_filters('wc_settings_tab_wcfyndiq', $settings);
     }
 }
