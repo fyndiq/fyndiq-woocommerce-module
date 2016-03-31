@@ -20,8 +20,8 @@ class FmSettings
 
     public static function addSettingsTab($settingsTabs)
     {
-        $settings_tabs['wcfyndiq'] = __('Fyndiq', 'fyndiq');
-        return $settings_tabs;
+        $settingsTabs['wcfyndiq'] = __('Fyndiq', 'fyndiq');
+        return $settingsTabs;
     }
 
     public static function settings_tab()
