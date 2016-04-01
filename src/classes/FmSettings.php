@@ -294,7 +294,7 @@ class FmSettings
             'id' => 'wcfyndiq_field_map_brand',
             'type' => 'select',
             'options' => $attributes,
-            'desc' => __('This must be picked accurate', 'fyndiq'),se
+            'desc' => __('This must be picked accurate', 'fyndiq'),
         );
 
         $settings[] = array(
