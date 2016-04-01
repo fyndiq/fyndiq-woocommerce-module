@@ -137,24 +137,6 @@ class FmSettings
             'desc' => __('Can be 0 if the price should not change', 'fyndiq'),
         );
 
-        if (isset($_GET['set_sku'])) {
-            // Add SKU picker
-            $settings[] = array(
-                'name' => __('Reference to be in use', 'fyndiq'),
-                'desc_tip' => __(
-                    'If you have multi SKU as in variations changing this will make it work better',
-                    'fyndiq'
-                ),
-                'id' => 'wcfyndiq_reference_picker',
-                'type' => 'select',
-                'options' => array(
-                    FmExport::REF_SKU => __('SKU', 'fyndiq'),
-                    FmExport::REF_ID => __('Product and Article ID', 'fyndiq'),
-                ),
-                'desc' => __('If this value is changed, products already existing on Fyndiq will be removed and uploaded again and orders might not be able to be imported with old SKU.', 'fyndiq'),
-            );
-        }
-
         // Add currency setting
         $settings[] = array(
             'name' => __('Used Currency', 'fyndiq'),
@@ -284,7 +266,7 @@ class FmSettings
             'desc' => __('This must be picked accurate', 'fyndiq'),
         );
 
-        // Map Field for MPN
+        // Map Field for Brand
         $settings[] = array(
             'name' => __('Brand', 'fyndiq'),
             'desc_tip' => __(
@@ -297,12 +279,23 @@ class FmSettings
             'desc' => __('This must be picked accurate', 'fyndiq'),
         );
 
-        $settings[] = array(
-            'name'     => __('Field Mappings', 'fyndiq'),
-            'type'     => 'title',
-            'desc'     => '',
-            'id'       => 'wc_settings_wcfyndiq_section_title'
-        );
+        if (isset($_GET['set_sku'])) {
+            // Add SKU picker
+            $settings[] = array(
+                'name' => __('Reference to be in use', 'fyndiq'),
+                'desc_tip' => __(
+                    'If you have multi SKU as in variations changing this will make it work better',
+                    'fyndiq'
+                ),
+                'id' => 'wcfyndiq_reference_picker',
+                'type' => 'select',
+                'options' => array(
+                    FmExport::REF_SKU => __('SKU', 'fyndiq'),
+                    FmExport::REF_ID => __('Product and Article ID', 'fyndiq'),
+                ),
+                'desc' => __('If this value is changed, products already existing on Fyndiq will be removed and uploaded again and orders might not be able to be imported with old SKU.', 'fyndiq'),
+            );
+        }
 
         $settings[] = array(
             'type' => 'sectionend',
