@@ -9,6 +9,9 @@ class FmHelpers
     const COMMIT = 'XXXXXX';
     const PLATFORM = 'WooCommerce';
 
+    const DEBUG_DISABLED = 0;
+    const DEBUG_ENABLED = 1;
+
     public static function apiConnectionExists()
     {
         return !is_null(get_option('wcfyndiq_username')) && !is_null(get_option('wcfyndiq_apitoken'));

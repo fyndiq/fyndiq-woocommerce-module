@@ -530,11 +530,15 @@ class FyndiqTest extends WP_UnitTestCase
         $get = array('event' => 'debug');
         $wC_Fyndiq = $this->getMockBuilder('WC_Fyndiq')
             ->setConstructorArgs(array($this->fmWoo, $this->fmOuptut))
-            ->setMethods(array('debug', 'checkToken'))
+            ->setMethods(array('debug', 'checkToken', 'isDebugEnabled'))
             ->getMock();
 
         $wC_Fyndiq->expects($this->once())
             ->method('debug')
+            ->willReturn(true);
+
+        $wC_Fyndiq->expects($this->once())
+            ->method('isDebugEnabled')
             ->willReturn(true);
 
         $wC_Fyndiq->expects($this->once())
