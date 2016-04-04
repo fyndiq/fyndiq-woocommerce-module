@@ -64,7 +64,7 @@ class FmSettingsTest extends WP_UnitTestCase
                     1 => 'Disable',
                 ),
                 'desc' => 'Default is to have orders enabled'),
-            array('name' => 'Order Status',
+                array('name' => 'Order Status',
                 'desc_tip' => 'When a order is imported from fyndiq, this status will be applied.',
                 'id' => 'wcfyndiq_create_order_status',
                 'type' => 'select',
@@ -168,13 +168,15 @@ class FmSettingsTest extends WP_UnitTestCase
         $this->assertEquals($expected, $return);
     }
 
-    function testAddSettingsTab() {
+    function testAddSettingsTab()
+    {
         $expected = array('wcfyndiq' => __('Fyndiq', 'fyndiq'));
         $return = FmSettings::addSettingsTab(array());
         $this->assertEquals($expected, $return);
     }
 
-    function testPluginActionLink() {
+    function testPluginActionLink()
+    {
         $expected = array('<a href="http://example.org/wp-admin/admin.php?page=wc-settings&#038;tab=products&#038;section=wcfyndiq">Settings</a>');
         $return = FmSettings::pluginActionLink(array());
         $this->assertEquals($expected, $return);
