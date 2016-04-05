@@ -50,11 +50,7 @@ class FmOrder extends FmPost
 
         $data = new stdClass();
         $data->orders = array($markPair);
-        try {
-            FmHelpers::callApi('POST', 'orders/marked/', $data);
-        } catch (Exception $e) {
-            FmError::handleError($e->getMessage());
-        }
+        FmHelpers::callApi('POST', 'orders/marked/', $data);
     }
 
 
@@ -65,7 +61,6 @@ class FmOrder extends FmPost
         if ($orderID === '-') {
                 return false;
         }
-
         return (int)$orderID;
     }
 
@@ -73,8 +68,6 @@ class FmOrder extends FmPost
     {
         $this->setMetaData(self::FYNDIQ_ID_META_FIELD, $fyndiqId);
     }
-
-
 
     /**
      * Here be dragons. By dragons, I mean static methods.
@@ -275,17 +268,14 @@ class FmOrder extends FmPost
     public static function setIsHandledBulk($orders)
     {
         //Try to send the data to the API
-        try {
-            FmHelpers::callApi('POST', 'orders/marked/', $orders);
-        } catch (Exception $e) {
-            FmError::handleError($e->getMessage());
-        }
+        FmHelpers::callApi('POST', 'orders/marked/', $orders);
 
         //If the API call worked, update the orders on WC
         foreach ($orders as $order) {
             $orderObject = new FmOrder($order['id']);
             $orderObject->setIsHandled((bool) $order['marked']);
         }
+        return true;
     }
 
 
@@ -336,41 +326,37 @@ class FmOrder extends FmPost
                 $data->orders[] = $markPair;
             }
         }
-            FmOrder::setIsHandledBulk($data);
+        return FmOrder::setIsHandledBulk($data);
     }
 
     public static function deliveryNoteBulkAction()
     {
-        try {
-            $output = new FyndiqOutput();
+        $output = new FyndiqOutput();
 
-            $orders = array(
-                'orders' => array()
-            );
-            if (!isset($_REQUEST['post'])) {
-                throw new Exception(__('Pick at least one Order', 'fyndiq'));
+        $orders = array(
+            'orders' => array()
+        );
+        if (!isset($_REQUEST['post'])) {
+            throw new Exception(__('Pick at least one Order', 'fyndiq'));
+        }
+
+        foreach ($_REQUEST['post'] as $order) {
+            $meta = get_post_custom($order);
+            if (isset($meta['fyndiq_id']) && isset($meta['fyndiq_id'][0]) && $meta['fyndiq_id'][0] != '') {
+                $orders['orders'][] = array('order' => intval($meta['fyndiq_id'][0]));
             }
+        }
 
-            foreach ($_REQUEST['post'] as $order) {
-                $meta = get_post_custom($order);
-                if (isset($meta['fyndiq_id']) && isset($meta['fyndiq_id'][0]) && $meta['fyndiq_id'][0] != '') {
-                    $orders['orders'][] = array('order' => intval($meta['fyndiq_id'][0]));
-                }
-            }
+        $ret = FmHelpers::callApi('POST', 'delivery_notes/', $orders);
 
-            $ret = FmHelpers::callApi('POST', 'delivery_notes/', $orders);
-
-            if ($ret['status'] == 200) {
-                $fileName = 'delivery_notes-' . implode('-', $_REQUEST['post']) . '.pdf';
-                $file = fopen('php://temp', 'wb+');
-                fputs($file, $ret['data']);
-                $output->streamFile($file, $fileName, 'application/pdf', strlen($ret['data']));
-                fclose($file);
-            } else {
-                throw new Exception($ret['data']);
-            }
-        } catch (Exception $e) {
-            FmError::handleError($e->getMessage());
+        if ($ret['status'] == 200) {
+            $fileName = 'delivery_notes-' . implode('-', $_REQUEST['post']) . '.pdf';
+            $file = fopen('php://temp', 'wb+');
+            fputs($file, $ret['data']);
+            $output->streamFile($file, $fileName, 'application/pdf', strlen($ret['data']));
+            fclose($file);
+        } else {
+            throw new Exception($ret['data']);
         }
         exit();
     }
