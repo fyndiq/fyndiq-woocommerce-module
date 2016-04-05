@@ -7,7 +7,7 @@ class FmUpdate
 {
     const UPDATE_URL = 'http://developers.fyndiq.com/repos/fyndiq/fyndiq-woocommerce-module/releases/latest.json';
 
-    function updateNotification()
+    public function updateNotification()
     {
         $time = get_option('wcfyndiq_update_date');
         if (!isset($time) || $time < strtotime('-1 day', time())) {
@@ -27,17 +27,21 @@ class FmUpdate
         }
     }
 
-    function updateNotificiation_shower()
+    public function updateNotificiation_shower()
     {
         $url = get_option('wcfyndiq_update_url');
         ?>
         <div class="updated">
-        <p><?php _e('It exist a new version of Fyndiq plugin, install it by clicking on the link:', 'fyndiq'); ?> <a href="<?php echo $url; ?>"><?php echo $url; ?></a> </p>
+        <p><?php _e('It exist a new version of Fyndiq plugin, install it by clicking on the link:', 'fyndiq');
+        ?> <a href="<?php echo $url;
+        ?>"><?php echo $url;
+        ?></a> </p>
         </div>
         <?php
+
     }
 
-    function get_update_version()
+    public function get_update_version()
     {
         $data = $this->update_curl();
         if (isset($data->tag_name)) {
@@ -46,7 +50,7 @@ class FmUpdate
         return null;
     }
 
-    function update_curl()
+    public function update_curl()
     {
         $response = wp_remote_get(self::UPDATE_URL);
 

@@ -16,7 +16,7 @@ class FmExport
     const REF_SKU = 1;
     const REF_ID = 2;
 
-    function __construct($filepath, $fmoutput)
+    public function __construct($filepath, $fmoutput)
     {
         $this->filepath = $filepath;
         $this->fmOutput = $fmoutput;
@@ -284,7 +284,7 @@ class FmExport
         return array_merge($feedArticle, $this->getMappedFields($variation['variation_id']), $this->getComparisons($variation['variation_id']));
     }
 
-    function getProductPrice($product, $config, $absolutePrice)
+    public function getProductPrice($product, $config, $absolutePrice)
     {
         if ($config['wooML']) {
             return $this->getSaleProductPrice($product, $config['currency']);
@@ -300,7 +300,7 @@ class FmExport
         return $price;
     }
 
-    function getProductRegularPrice($product, $config)
+    public function getProductRegularPrice($product, $config)
     {
         if ($config['wooML']) {
             $regularPrice = '_regular_price';
@@ -324,7 +324,7 @@ class FmExport
     }
 
 
-    function getSaleProductPrice($product, $currency)
+    public function getSaleProductPrice($product, $currency)
     {
         $salePriceColumn = '_sale_price';
         $priceColumn = '_price';
@@ -357,7 +357,7 @@ class FmExport
         return $price;
     }
 
-    function getDescription($post)
+    public function getDescription($post)
     {
         $option = get_option('wcfyndiq_description_picker');
         if (!isset($option) || $option == false) {
@@ -450,7 +450,6 @@ class FmExport
                 if (wc_tax_enabled()) {
                     $filters['display_price'] = $variation->get_price_including_tax();
                 }
-
             } else {
                 $tax_display_mode      = get_option('woocommerce_tax_display_shop');
                 $display_price         = $tax_display_mode == 'incl' ? $variation->get_price_including_tax() : $variation->get_price_excluding_tax();

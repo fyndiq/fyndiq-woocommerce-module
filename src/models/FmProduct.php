@@ -57,7 +57,7 @@ class FmProduct extends FmPost
      */
     public function getWooCommerceProductObject()
     {
-         return wc_get_product($this->getPostID());
+        return wc_get_product($this->getPostID());
     }
 
 
