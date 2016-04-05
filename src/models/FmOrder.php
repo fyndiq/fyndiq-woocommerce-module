@@ -63,7 +63,7 @@ class FmOrder extends FmPost
         $orderID = $this->getMetaData(self::FYNDIQ_ID_META_FIELD);
 
         if ($orderID === '-') {
-                return false;
+            return false;
         }
 
         return (int)$orderID;
@@ -336,7 +336,7 @@ class FmOrder extends FmPost
                 $data->orders[] = $markPair;
             }
         }
-            FmOrder::setIsHandledBulk($data);
+        FmOrder::setIsHandledBulk($data);
     }
 
     public static function deliveryNoteBulkAction()

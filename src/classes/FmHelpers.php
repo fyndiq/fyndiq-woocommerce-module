@@ -49,7 +49,7 @@ class FmHelpers
         );
     }
 
-    static function get_woocommerce_version()
+    public static function get_woocommerce_version()
     {
         // If get_plugins() isn't available, require it
         if (!function_exists('get_plugins')) {
@@ -63,19 +63,18 @@ class FmHelpers
         // If the plugin version number is set, return it
         if (isset($plugin_folder[$plugin_file]['Version'])) {
             return $plugin_folder[$plugin_file]['Version'];
-
         } else {
             // Otherwise return null
             return null;
         }
     }
 
-    static function get_version_label()
+    public static function get_version_label()
     {
         return FyndiqUtils::getVersionLabel(self::get_plugin_version(), self::COMMIT);
     }
 
-    static function get_plugin_version()
+    public static function get_plugin_version()
     {
         $plugin_folder = get_plugins('/' . 'woocommerce-fyndiq');
         $plugin_file = 'woocommerce-fyndiq.php';
@@ -102,7 +101,7 @@ class FmHelpers
     }
 
 
-    static function fyndiq_wc_tax_enabled()
+    public static function fyndiq_wc_tax_enabled()
     {
         if (function_exists('wc_tax_enabled')) {
             return wc_tax_enabled();
@@ -110,7 +109,7 @@ class FmHelpers
         return apply_filters('wc_tax_enabled', get_option('woocommerce_calc_taxes') === 'yes');
     }
 
-    static function fyndiq_wc_prices_include_tax()
+    public static function fyndiq_wc_prices_include_tax()
     {
         if (function_exists('wc_tax_enabled')) {
             return wc_prices_include_tax();

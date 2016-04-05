@@ -209,9 +209,8 @@ class WC_Fyndiq
         );
     }
 
-    function fyndiqLoadJavascript()
+    public function fyndiqLoadJavascript()
     {
-
         $script = <<<EOS
         <script type="text/javascript">
             var wordpressurl = '%s';
@@ -618,7 +617,6 @@ EOS;
      */
     protected function orderCreated($get)
     {
-
         if (!FmOrder::getOrdersEnabled()) {
             $this->fmWoo->wpDie('Orders is disabled');
         }

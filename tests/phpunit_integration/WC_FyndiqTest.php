@@ -26,13 +26,13 @@ class FyndiqTest extends WP_UnitTestCase
 
         $this->wc_fyndiq = $this->getMockBuilder('WC_Fyndiq')
             ->setConstructorArgs(array($this->fmWoo, $this->fmOuptut))
-            ->setMethods(array('getAction','getRequestPost', 'bulkRedirect', 'returnAndDie', 'getProductId', 'getExportState', 'checkCurrency', 'checkCountry'))
+            ->setMethods(array('getAction', 'getRequestPost', 'bulkRedirect', 'returnAndDie', 'getProductId', 'getExportState', 'checkCurrency', 'checkCountry'))
             ->getMock();
         $this->wc_fyndiq->woocommerceLoaded();
         $this->wc_fyndiq->localeLoad();
     }
 
-    function test_fyndiq_class_should_exist()
+    public function test_fyndiq_class_should_exist()
     {
         // replace this with some actual testing code
         $this->assertTrue(isset($this->wc_fyndiq));
@@ -41,7 +41,7 @@ class FyndiqTest extends WP_UnitTestCase
     /**
      * @group ignore
      */
-    function test_setting_action_should_exist()
+    public function test_setting_action_should_exist()
     {
         $this->markTestIncomplete('This test has not been completed yet.');
         $fakeSections = array();
@@ -49,7 +49,7 @@ class FyndiqTest extends WP_UnitTestCase
     }
 
     // Columnable' );
-    function test_fyndiq_order_column_sort_return_array()
+    public function test_fyndiq_order_column_sort_return_array()
     {
         $data = array(
             'fyndiq_order' => 'fyndiq_order'
@@ -58,7 +58,7 @@ class FyndiqTest extends WP_UnitTestCase
     }
 
     // Columnable' );
-    function test_fyndiq_product_column_sort_return_array()
+    public function test_fyndiq_product_column_sort_return_array()
     {
         $data = array(
             'fyndiq_export_column' => 'fyndiq_export_column'
@@ -67,7 +67,7 @@ class FyndiqTest extends WP_UnitTestCase
     }
 
     // Columnable' );
-    function test_fyndiq_order_add_column()
+    public function test_fyndiq_order_add_column()
     {
         $default = array();
         $data = $this->wc_fyndiq->fyndiqOrderAddColumn($default);
@@ -77,7 +77,7 @@ class FyndiqTest extends WP_UnitTestCase
     /**
      * @group ignore
      */
-    function test_fyndiq_product_add_bulk_action_product()
+    public function test_fyndiq_product_add_bulk_action_product()
     {
         $this->markTestIncomplete('This test has not been completed yet.');
         $contributor_id = $this->factory->user->create(array( 'role' => 'editor' ));
@@ -99,7 +99,7 @@ class FyndiqTest extends WP_UnitTestCase
     /**
      * @group ignore
      */
-    function test_fyndiq_product_add_bulk_action_order()
+    public function test_fyndiq_product_add_bulk_action_order()
     {
         $this->markTestIncomplete('This test has not been completed yet.');
         $contributor_id = $this->factory->user->create(array( 'role' => 'editor' ));
@@ -118,7 +118,7 @@ class FyndiqTest extends WP_UnitTestCase
     }
 
 
-    function test_order_meta_box_fyndiq_should_echo_link()
+    public function test_order_meta_box_fyndiq_should_echo_link()
     {
         $contributor_id = $this->factory->user->create(array( 'role' => 'editor' ));
         wp_set_current_user($contributor_id);
@@ -136,7 +136,7 @@ class FyndiqTest extends WP_UnitTestCase
             ->willReturn(true);
     }
 
-    function test_fyndiq_product_add_column_return_right_array()
+    public function test_fyndiq_product_add_column_return_right_array()
     {
         $defaults = array();
         $return = $this->wc_fyndiq->fyndiq_product_add_column($defaults);
@@ -144,7 +144,7 @@ class FyndiqTest extends WP_UnitTestCase
         $this->assertEquals($correct, $return);
     }
 
-    function test_fyndiq_product_column_export()
+    public function test_fyndiq_product_column_export()
     {
         $contributor_id = $this->factory->user->create(array( 'role' => 'editor' ));
         wp_set_current_user($contributor_id);
@@ -160,7 +160,7 @@ class FyndiqTest extends WP_UnitTestCase
         $this->expectOutputString("Can't be exportedCan't be exported");
     }
 
-    function test_fyndiq_product_column_export_downloadable()
+    public function test_fyndiq_product_column_export_downloadable()
     {
         $contributor_id = $this->factory->user->create(array( 'role' => 'editor' ));
         wp_set_current_user($contributor_id);
@@ -172,7 +172,7 @@ class FyndiqTest extends WP_UnitTestCase
         $this->expectOutputString("Can't be exported");
     }
 
-    function test_fyndiq_order_meta_boxes()
+    public function test_fyndiq_order_meta_boxes()
     {
         $this->markTestIncomplete('Post is not initialized.');
         $contributor_id = $this->factory->user->create(array( 'role' => 'editor' ));
@@ -187,7 +187,7 @@ class FyndiqTest extends WP_UnitTestCase
         $expected = array('shop_order' => array('side' => array('default' => array('woocommerce-order-fyndiq-delivery-note' => array(
             'id' => 'woocommerce-order-fyndiq-delivery-note',
             'title' => 'Fyndiq',
-            'callback' => array (0 => $this->wc_fyndiq,
+            'callback' => array(0 => $this->wc_fyndiq,
                                  1 => 'order_meta_box_delivery_note'),
             'args' => null
         )))));
@@ -197,18 +197,17 @@ class FyndiqTest extends WP_UnitTestCase
     /**
      * @group ignore
      */
-    function test_fyndiq_product_export_bulk_action()
+    public function test_fyndiq_product_export_bulk_action()
     {
         $this->markTestIncomplete('This test has not been completed yet.');
         $return = $this->wc_fyndiq->fyndiq_product_export_bulk_action();
         $this->expectOutputString("");
-
     }
 
     /**
      * @group ignore
      */
-    function test_fyndiq_product_export_bulk_action_working()
+    public function test_fyndiq_product_export_bulk_action_working()
     {
         $this->markTestIncomplete('This test has not been completed yet.');
         $contributor_id = $this->factory->user->create(array( 'role' => 'editor' ));
@@ -221,13 +220,12 @@ class FyndiqTest extends WP_UnitTestCase
         $this->wc_fyndiq->expects($this->once())->method('bulkRedirect')->will($this->returnArgument(1));
         $return = $this->wc_fyndiq->fyndiq_product_export_bulk_action();
         $this->assertEquals(1, $return);
-
     }
 
     /**
      * @group ignore
      */
-    function test_fyndiq_product_export_bulk_action_remove_working()
+    public function test_fyndiq_product_export_bulk_action_remove_working()
     {
         $this->markTestIncomplete('This test has not been completed yet.');
         $contributor_id = $this->factory->user->create(array( 'role' => 'editor' ));
@@ -240,13 +238,12 @@ class FyndiqTest extends WP_UnitTestCase
         $this->wc_fyndiq->expects($this->once())->method('bulkRedirect')->will($this->returnArgument(1));
         $return = $this->wc_fyndiq->fyndiq_product_export_bulk_action();
         $this->assertEquals(1, $return);
-
     }
 
     /**
      * @group ignore
      */
-    function test_generate_feed_notset()
+    public function test_generate_feed_notset()
     {
         $this->markTestIncomplete('This test has not been completed yet.');
         $contributor_id = $this->factory->user->create(array( 'role' => 'editor' ));
@@ -258,13 +255,12 @@ class FyndiqTest extends WP_UnitTestCase
 
         $return = $this->wc_fyndiq->generate_feed();
         $this->assertEquals("", $return);
-
     }
 
     /**
      * @group ignore
      */
-    function test_generate_feed_working()
+    public function test_generate_feed_working()
     {
         $this->markTestIncomplete('This test has not been completed yet.');
         // Removing the feed so it will test correct part of the function
@@ -291,10 +287,9 @@ class FyndiqTest extends WP_UnitTestCase
 
         $this->assertEquals("product-id,product-image-1-identifier,product-image-1-url,product-title,product-market,product-description,product-price,product-oldprice,product-currency,product-vat-percent,article-quantity,article-sku,article-name
 //", $return);
-
     }
 
-    function test_get_url()
+    public function test_get_url()
     {
         $this->wc_fyndiq->fyndiqLoadJavascript();
         $this->expectOutputString("        <script type=\"text/javascript\">
@@ -308,7 +303,7 @@ class FyndiqTest extends WP_UnitTestCase
     /**
      * @group ignore
      */
-    function test_fyndiq_add_product_field()
+    public function test_fyndiq_add_product_field()
     {
         $contributor_id = $this->factory->user->create(array( 'role' => 'editor' ));
         wp_set_current_user($contributor_id);
@@ -320,15 +315,15 @@ class FyndiqTest extends WP_UnitTestCase
         //$this->wc_fyndiq->fyndiq_add_product_field();
 
         /**$this->expectOutputString('<div class="options_group"><p class="form-row input-checkbox" id="_fyndiq_export_field">
-						<label class="checkbox " >
-						<input type="checkbox" class="input-checkbox " name="_fyndiq_export" id="_fyndiq_export" value="1"  /> Export to Fyndiq</label><span class="description">mark this as true if you want to export to Fyndiq</span></p></div>');*/
+                        <label class="checkbox " >
+                        <input type="checkbox" class="input-checkbox " name="_fyndiq_export" id="_fyndiq_export" value="1"  /> Export to Fyndiq</label><span class="description">mark this as true if you want to export to Fyndiq</span></p></div>');*/
         $this->markTestIncomplete('This test has not been completed yet.');
     }
 
     /**
      * @group ignore
      */
-    function test_fyndiq_add_product_field_downloadable()
+    public function test_fyndiq_add_product_field_downloadable()
     {
         $this->markTestIncomplete('This test has not been completed yet.');
         $contributor_id = $this->factory->user->create(array( 'role' => 'editor' ));
@@ -341,13 +336,12 @@ class FyndiqTest extends WP_UnitTestCase
         $this->wc_fyndiq->fyndiq_add_product_field();
 
         $this->expectOutputString('<div class="options_group">Can\'t export this product to Fyndiq</div>');
-
     }
 
     /**
      * @group ignore
      */
-    function test_fyndiq_product_save()
+    public function test_fyndiq_product_save()
     {
         $this->markTestIncomplete('This test has not been completed yet.');
         $contributor_id = $this->factory->user->create(array( 'role' => 'editor' ));
@@ -362,10 +356,9 @@ class FyndiqTest extends WP_UnitTestCase
         $exported = get_post_meta($p, '_fyndiq_export', true);
 
         $this->assertEquals("exported", $exported);
-
     }
 
-    function test_fyndiq_notice_currency()
+    public function test_fyndiq_notice_currency()
     {
         $contributor_id = $this->factory->user->create(array( 'role' => 'editor' ));
         wp_set_current_user($contributor_id);
@@ -379,7 +372,7 @@ class FyndiqTest extends WP_UnitTestCase
             ->willReturn(true);
     }
 
-    function test_fyndiq_notice_country()
+    public function test_fyndiq_notice_country()
     {
         $this->markTestIncomplete('WooCommerce is not installed in the integration suite.');
 
@@ -448,7 +441,7 @@ class FyndiqTest extends WP_UnitTestCase
         return $post_id;
     }
 
-    function createOrder()
+    public function createOrder()
     {
         // build order data
         $order_data = array(

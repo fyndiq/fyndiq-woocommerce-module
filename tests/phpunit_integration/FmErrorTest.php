@@ -3,13 +3,13 @@
 class FmErrorTest extends WP_UnitTestCase
 {
 
-    function test_renderErrorEmpty()
+    public function test_renderErrorEmpty()
     {
         FmError::renderError();
         $this->expectOutputString("");
     }
 
-    function test_renderErrorReal()
+    public function test_renderErrorReal()
     {
         $_REQUEST['fyndiqMessageType'] = "test";
         $_REQUEST['fyndiqMessage'] = "test";

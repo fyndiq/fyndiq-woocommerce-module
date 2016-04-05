@@ -11,7 +11,7 @@ class FmHelperTest extends WP_UnitTestCase
     /**
      * @group ignore
      */
-    function test_wordpress_version()
+    public function test_wordpress_version()
     {
         $this->markTestIncomplete('This test has not been completed yet.');
         $return = FmHelpers::get_woocommerce_version();
