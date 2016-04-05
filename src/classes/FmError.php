@@ -11,18 +11,29 @@ class FmError
 {
     public static function setHooks()
     {
-        add_action('admin_notices', array(__CLASS__, 'renderError'));
+        add_action('admin_notices', array(__CLASS__, 'processError'));
     }
 
-    public static function renderError()
+    public static function processError()
     {
         if (isset($_REQUEST['fyndiqMessageType'])) {
-            echo sprintf(
-                "<div class='%s'><p>%s</p></div>",
-                htmlspecialchars(urldecode($_REQUEST['fyndiqMessageType'])),
-                htmlspecialchars(urldecode($_REQUEST['fyndiqMessage']))
+            return self::renderError(
+                urldecode($_REQUEST['fyndiqMessage'])
+                urldecode($_REQUEST['fyndiqMessageType']),
             );
         }
+    }
+
+    public static function renderError($message, $messageType = 'error')
+    {
+        $fmOutput = new FyndiqOutput();
+        return $fmOutput->output(
+            sprintf(
+                "<div class='%s'><p>%s</p></div>",
+                htmlspecialchars($messageType),
+                htmlspecialchars($message)
+            )
+        );
     }
 
     public static function handleError($errorMessage)

@@ -299,18 +299,17 @@ EOS;
         if (isset($_GET['post_type']) && $_GET['post_type'] == 'shop_order') {
             $error = $this->fmWoo->getOption('wcfyndiq_order_error');
             if ($error) {
-                $this->fmWoo->addAction('admin_notices', array(&$this, 'fyndiq_show_order_error_notice'));
+                $this->fmWoo->addAction('admin_notices', array(&$this, 'fyndiqShowOrderErrorNotice'));
                 update_option('wcfyndiq_order_error', false);
             }
         }
     }
 
-    public function fyndiq_show_order_error_notice()
+    public function fyndiqShowOrderErrorNotice()
     {
-        $this->fmOutput->output(sprintf(
-            '<div class="error"><p>%s</p></div>',
+        return FmError::renderError(
             $this->fmWoo->__('Some Fyndiq Orders failed to be imported, most likely due to stock or couldn\'t find product on Reference.')
-        ));
+        );
     }
 
     /**
