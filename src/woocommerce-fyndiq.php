@@ -18,7 +18,6 @@ include_once(ABSPATH . 'wp-admin/includes/plugin.php');
 require_once('dependency.php');
 
 if (is_plugin_active('woocommerce/woocommerce.php')) {
-
     // Handle deactivating the module.
     register_deactivation_hook(__FILE__, 'fyndiq_deactivate');
     function fyndiq_deactivate()
@@ -42,8 +41,9 @@ if (is_plugin_active('woocommerce/woocommerce.php')) {
     }
 
     // Require the necessary files
+    require_once('classes/FmWoo.php');
     require_once('models/FmPost.php');
-    require_once('classes/FmErrorHandler.php');
+    require_once('classes/FmError.php');
     require_once('include/api/fyndiqAPI.php');
     require_once('classes/FmHelpers.php');
     require_once('classes/FmUpdate.php');
@@ -53,8 +53,13 @@ if (is_plugin_active('woocommerce/woocommerce.php')) {
     require_once('models/FmOrder.php');
     require_once('models/FmOrderFetch.php');
     require_once('models/FmProduct.php');
+    require_once('classes/FmSettings.php');
+    require_once('classes/FmDiagnostics.php');
+
     require_once('WC_Fyndiq.php');
 
     //Let's get the ball rolling.
-    new WC_Fyndiq();
+    $fmWoo = new FmWoo(WC_Fyndiq::TEXT_DOMAIN);
+    $fmOutput = new FyndiqOutput();
+    new WC_Fyndiq($fmWoo, $fmOutput);
 }

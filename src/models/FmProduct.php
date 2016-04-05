@@ -94,23 +94,21 @@ class FmProduct extends FmPost
         //Iterate through criteria, giving us categoryName (e.g. forbiddenProperties) => array()
         foreach ($exportCriteria as $exportCriterionCatName => $exportCriterionArray) {
             switch ($exportCriterionCatName) {
-                case 'forbiddenProperties': {
+                case 'forbiddenProperties':
                     foreach ($exportCriterionArray as $forbiddenProperty) {
                         if ($product->$forbiddenProperty($product)) {
                             return false;
                         }
                     };
                     break;
-                }
 
-                case 'forbiddenTypes': {
+                case 'forbiddenTypes':
                     foreach ($exportCriterionArray as $forbiddenType) {
                         if ($product->is_type($forbiddenType)) {
                             return false;
                         }
                     }
                     break;
-                }
 
                 default:
                     throw new Exception('Bad export criterion category supplied to isProductExportable()');
@@ -150,7 +148,8 @@ class FmProduct extends FmPost
      * Sets the instantiated product as exported (or not according to $value)
      *
      * @param bool $value - True if the product is to be exported, inverse applies.
-     * @return bool|int|null - whatever the native WP function spits out @todo - write abstraction class
+     * @return bool|int|null - whatever the native WP function spits out
+     * @todo - write abstraction class
      */
     public function setIsExported($value)
     {
@@ -180,7 +179,8 @@ class FmProduct extends FmPost
      * Sets the absolute price (price of item with Fyndiq discount applied) of instantiated product
      *
      * @param int $price - Absolute price of the item
-     * @return bool|int|null - whatever the native WP function spits out @todo - write abstraction class
+     * @return bool|int|null - whatever the native WP function spits out
+     * @todo - write abstraction class
      */
     public function setAbsolutePrice($price)
     {
@@ -189,7 +189,7 @@ class FmProduct extends FmPost
 
     /**
      * This validates product data and displays an error if
-     * it does not follow the fyndiq validation criteria
+     * it does not follow the Fyndiq validation criteria
      *
      * @todo Make this return something meaningful
      */
@@ -315,7 +315,6 @@ class FmProduct extends FmPost
         $postIds = array();
         $posts = FmPost::getRequestPostsArray();
         if (!is_null($posts)) {
-
             foreach ($posts as $postId) {
                 $product = new FmProduct((int) $postId);
                 if ($product->isProductExportable()) {

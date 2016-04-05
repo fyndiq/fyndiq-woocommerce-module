@@ -13,6 +13,9 @@ class FmOrder extends FmPost
     const FYNDIQ_ID_META_FIELD = 'fyndiq_id';
     const FYNDIQ_HANDLED_ORDER_META_FIELD = '_fyndiq_handled_order';
 
+    const ORDERS_DISABLE = 1;
+    const ORDERS_ENABLE = 2;
+
     //Getter for whether the order is handled. Takes into account $_POST when called.
     public function getIsHandled()
     {
@@ -370,5 +373,14 @@ class FmOrder extends FmPost
             FmError::handleError($e->getMessage());
         }
         exit();
+    }
+
+    public static function getOrdersEnabled()
+    {
+        $setting = get_option('wcfyndiq_order_enable');
+        if (!isset($setting) || $setting == false) {
+            return true;
+        }
+        return ($setting == self::ORDERS_ENABLE);
     }
 }

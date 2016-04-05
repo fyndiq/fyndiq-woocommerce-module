@@ -9,6 +9,9 @@ class FmHelpers
     const COMMIT = 'XXXXXX';
     const PLATFORM = 'WooCommerce';
 
+    const DEBUG_DISABLED = 0;
+    const DEBUG_ENABLED = 1;
+
     public static function apiConnectionExists()
     {
         return !is_null(get_option('wcfyndiq_username')) && !is_null(get_option('wcfyndiq_apitoken'));
@@ -113,5 +116,29 @@ class FmHelpers
             return wc_prices_include_tax();
         }
         return self::fyndiq_wc_tax_enabled() && get_option('woocommerce_prices_include_tax') === 'yes';
+    }
+
+    public static function getAllTerms()
+    {
+        $attributes = array('' => '');
+        $attribute_taxonomies = wc_get_attribute_taxonomies();
+
+        if ($attribute_taxonomies) {
+            foreach ($attribute_taxonomies as $tax) {
+                $attributes[$tax->attribute_name] = $tax->attribute_label;
+            }
+        }
+
+        // Get products attributes
+        // This can be set per product and some product can have no attributes at all
+        global $wpdb;
+        $results = $wpdb->get_results('SELECT * FROM wp_postmeta WHERE meta_key = "_product_attributes" AND meta_value != "a:0:{}"', OBJECT);
+        foreach ($results as $meta) {
+            $data = unserialize($meta->meta_value);
+            foreach ($data as $key => $attribute) {
+                $attributes[$key] = $attribute['name'];
+            }
+        }
+        return $attributes;
     }
 }

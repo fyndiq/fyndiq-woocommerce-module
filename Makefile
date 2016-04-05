@@ -26,6 +26,9 @@ clean:
 test:
 	$(BIN_DIR)/phpunit
 
+test-integration:
+	$(BIN_DIR)/phpunit --configuration phpintegration.xml.dist
+
 php-lint:
 	find $(SRC_DIR) -name "*.php" -print0 | xargs -0 -n1 -P8 php -l
 
@@ -43,7 +46,7 @@ sniff:
 
 sniff-fix:
 	$(BIN_DIR)/phpcbf --standard=PSR2 --extensions=php --ignore=include $(SRC_DIR)
-	#$(BIN_DIR)/phpcbf --standard=PSR2 --extensions=php $(TESTS_DIR)
+	$(BIN_DIR)/phpcbf --standard=PSR2 --extensions=php $(TESTS_DIR)
 
 compatinfo:
 	$(BIN_DIR)/phpcompatinfo analyser:run $(SRC_DIR)
