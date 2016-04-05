@@ -14,7 +14,7 @@ class FmField
     const SHOW_CONTENT_PRIORITY = 70;
 
     /**
-     * This sets all WordPress hooks related to the Fields
+     * Sets all WordPress hooks related to the Fields
      *
      * @return bool - Always returns true because add_action() aways returns true TODO: abstraction layer
      */
@@ -30,6 +30,7 @@ class FmField
      * This is the hooked function for fields on the product pages
      *
      * @return bool - false if the product is not exportable. Otherwise, true.
+     * @throws -
      */
     public static function fyndiqProductTab()
     {
@@ -100,6 +101,9 @@ class FmField
                 </p>", $fieldName, $fieldName, $array['label'], $array['type'], $array['type'], $fieldName, $fieldName, $fieldName, $array['description']));
     }
 
+    /**
+     *
+     */
     public static function addOrderField()
     {
         $order = new FmOrder(FmOrder::getWordpressCurrentPostID());

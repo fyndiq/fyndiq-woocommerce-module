@@ -6,50 +6,89 @@
 
 class FmSettings
 {
+    /** Priority of the settings tab that we add to WooCommerce in terms of the order in which they are rendered*/
     const SETTING_TAB_PRIORITY = 50;
 
+
+    /**
+     * Sets all WordPress hooks related to the Fields
+     *
+     * @return bool - Always returns true because add_action() aways returns true TODO: abstraction layer
+     */
     public static function setHooks()
     {
         add_filter('woocommerce_settings_tabs_array', array(__CLASS__, 'addSettingsTab'), self::SETTING_TAB_PRIORITY);
-        add_action('woocommerce_settings_tabs_wcfyndiq', array(__CLASS__, 'settings_tab'));
-        add_action('woocommerce_update_options_wcfyndiq', array(__CLASS__, 'update_settings'));
-        add_filter('plugin_action_links_' . plugin_basename(dirname(__FILE__).'/woocommerce-fyndiq.php'), array(__CLASS__, 'pluginActionLink'));
+        add_action('woocommerce_settings_tabs_wcfyndiq', array(__CLASS__, 'settingsTab'));
+        add_action('woocommerce_update_options_wcfyndiq', array(__CLASS__, 'updateSettings'));
+        add_filter('plugin_action_links_' . plugin_basename(dirname(__FILE__).'/woocommerce-fyndiq.php'), array(__CLASS__, 'pluginSettingsActionLink'));
     }
 
 
+    /**
+     * Hooked to 'woocommerce_settings_tabs_array' - filter to inject our tab
+     *
+     * @param $settingsTabs - an associative array of tab names to be rendered where: [label => slug]
+     * @return mixed - should be the array of tabs that this was passed, plus the one for our plugin
+     */
     public static function addSettingsTab($settingsTabs)
     {
         $settingsTabs['wcfyndiq'] = __('Fyndiq', 'fyndiq');
         return $settingsTabs;
     }
 
-    public static function settings_tab()
+
+    /**
+     * Hooked to 'woocommerce_settings_tabs_wcfyndiq' - renders the settings tab contents
+     *
+     * @return bool - always true
+     */
+    public static function settingsTab()
     {
         woocommerce_admin_fields(self::fyndiqAllSettings());
+        return true;
     }
 
-    public static function pluginActionLink($links)
+    /**
+     * Hooked to 'plugin_action_links_<slug_name>' - injects an action link for our settings page
+     *
+     * @param $links - the existing array of action links
+     * @return array - the passed array plus our injected link
+     */
+    public static function pluginSettingsActionLink($links)
     {
         $settingUrl = esc_url(get_admin_url(null, 'admin.php?page=wc-settings&tab=products&section=wcfyndiq'));
         $links[] = '<a href="'.$settingUrl.'">'.__('Settings', 'fyndiq').'</a>';
         return $links;
     }
 
-    public static function update_settings()
+    /**
+     * Hooked to 'woocommerce_update_options_wcfyndiq' - triggers the saving of the options for our plugin
+     * also generates pingToken
+     *
+     * @return bool - false if there is an error, otherwise true.
+     */
+    public static function updateSettings()
     {
         woocommerce_update_options(self::fyndiqAllSettings());
         try {
             self::updateUrls();
         } catch (Exception $e) {
             if ($e->getMessage() === 'Unauthorized') {
-                FmError::handleError(__('Uh-oh. It looks like your Fyndiq credentials aren\'t correct.'), 'fyndiq');
+                FmError::handleError(__('Uh-oh. It looks like your Fyndiq credentials aren\'t correct.', 'fyndiq'));
             }
+            return false;
         }
+        return true;
     }
 
+    /**
+     * Updates the saved URLs to have the correct pingToken
+     *
+     * @return mixed - the result of FmHelpers:callAPI()
+     */
     public static function updateUrls()
     {
-        //Generate ping token
+        //Generates pingToken
         $pingToken = md5(uniqid());
         update_option('wcfyndiq_ping_token', $pingToken);
 
@@ -65,16 +104,19 @@ class FmSettings
     }
 
 
+    /**
+     * Contains the data for the various settings options that we use
+     *
+     * @return mixed|void - returns WordPress function apply_filters(), which is the value of the settings after filtration
+     */
     public static function fyndiqAllSettings()
     {
+        //Turns standard array into associate array, with the key and value being the same
         $currencies = array_combine(FyndiqUtils::$allowedCurrencies, FyndiqUtils::$allowedCurrencies);
 
-        //Get options for attributes
+        //Gets list of product attributes to be used as options
         $attributes = FmHelpers::getAllTerms();
 
-        /**
-         * Check the current section is what we want
-         **/
         $settings = array();
 
         $settings[] = array(
@@ -84,7 +126,7 @@ class FmSettings
             'id'       => 'wc_settings_wcfyndiq_section_title'
         );
 
-        // Add Title to the Settings
+        // Adds Title to the Settings
         $settings[] = array(
             'name' => __('General Settings', 'fyndiq'),
             'type' => 'title',
@@ -279,6 +321,8 @@ class FmSettings
             'desc' => __('This must be picked accurate', 'fyndiq'),
         );
 
+
+        //TODO: what sets this?
         if (isset($_GET['set_sku'])) {
             // Add SKU picker
             $settings[] = array(

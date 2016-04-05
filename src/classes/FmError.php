@@ -8,9 +8,9 @@ defined('ABSPATH') || exit;
 class FmError
 {
     /**
-     * This registers the various hooks with WordPress
+     * Sets all WordPress hooks related to the Fields
      *
-     * @return true
+     * @return bool - Always returns true because add_action() aways returns true TODO: abstraction layer
      */
     public static function setHooks()
     {
