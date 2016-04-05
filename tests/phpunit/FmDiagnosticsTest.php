@@ -18,7 +18,7 @@ class FmDiagnosticsTest extends WP_UnitTestCase
         $actionLinks = array();
         $return = FmDiagnostics::pluginActionLink($actionLinks);
 
-        $expected = array (
+        $expected = array(
             0 => '<a href="http://example.org/wp-admin/admin.php?page=fyndiq-check">Fyndiq Check</a>'
         );
         $this->assertEquals($expected, $return);
