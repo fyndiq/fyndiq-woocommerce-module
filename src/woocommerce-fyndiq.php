@@ -21,6 +21,11 @@ require_once 'dependency.php';
 if (is_plugin_active('woocommerce/woocommerce.php')) {
     // Handle deactivating the module.
     register_deactivation_hook(__FILE__, 'fyndiqDeactivate');
+    /**
+     * Callback to 'register_deactivation_hook'
+     *
+     * @return bool - always true
+     */
     function fyndiqDeactivate()
     {
         //First empty the settings on fyndiq
@@ -39,6 +44,7 @@ if (is_plugin_active('woocommerce/woocommerce.php')) {
         delete_option('wcfyndiq_ping_token');
         delete_option('wcfyndiq_username');
         delete_option('wcfyndiq_apitoken');
+        return true;
     }
 
     // Require the necessary files

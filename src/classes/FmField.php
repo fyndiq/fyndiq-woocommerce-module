@@ -10,7 +10,9 @@ defined('ABSPATH') || exit;
  */
 class FmField
 {
-    /** @var int - the render order priority of the product tab vs. other tabs */
+    /**
+     * The render order priority of the product tab vs. other tabs
+     */
     const SHOW_CONTENT_PRIORITY = 70;
 
     /**
@@ -20,7 +22,11 @@ class FmField
      */
     public static function setHooks()
     {
-        add_action('woocommerce_product_write_panels', array(__CLASS__, 'fyndiqProductTab'), self::SHOW_CONTENT_PRIORITY);
+        add_action(
+            'woocommerce_product_write_panels',
+            array(__CLASS__, 'fyndiqProductTab'),
+            self::SHOW_CONTENT_PRIORITY
+        );
         add_action('woocommerce_admin_order_data_after_order_details', array(__CLASS__, 'addOrderField'));
         return true;
     }
@@ -42,10 +48,12 @@ class FmField
 
         // Renders a notification if the product is not exportable and dies
         if (!$product->isProductExportable()) {
-            $fmOutput->output(sprintf(
-                '<div class="options_group"><p>%s</p></div>',
-                __('Can\'t export this product to Fyndiq', 'fyndiq')
-            ));
+            $fmOutput->output(
+                sprintf(
+                    '<div class="options_group"><p>%s</p></div>',
+                    __('Can\'t export this product to Fyndiq', 'fyndiq')
+                )
+            );
             return false;
         }
 
@@ -53,15 +61,21 @@ class FmField
         $fmOutput->output('<div class="options_group">');
 
         // 'Export to Fyndiq' checkbox
-        self::fyndiqGenerateField(FmProduct::FYNDIQ_EXPORT_META_KEY, array(
+        self::fyndiqGenerateField(
+            FmProduct::FYNDIQ_EXPORT_META_KEY,
+            array(
             'type' => 'checkbox',
             'class' => array('form-field', 'input-checkbox'),
             'label' => __('Export to Fyndiq', 'fyndiq'),
             'description' => __('mark this as true if you want to export to Fyndiq', 'fyndiq'),
-        ), (bool)$product->getIsExported());
+            ),
+            (bool)$product->getIsExported()
+        );
 
         // Absolute price text box
-        self::fyndiqGenerateField(FmProduct::FYNDIQ_ABSOLUTE_PRICE_FIELD, array(
+        self::fyndiqGenerateField(
+            FmProduct::FYNDIQ_ABSOLUTE_PRICE_FIELD,
+            array(
             'type' => 'text',
             'class' => array('form-field', 'short'),
             'label' => __('Fyndiq Absolute Price', 'fyndiq'),
@@ -70,7 +84,9 @@ class FmField
                 'fyndiq'
             ),
             'required' => false,
-        ), $product->getAbsolutePrice());
+            ),
+            $product->getAbsolutePrice()
+        );
 
         // Close the wrapper for the rendered code
         $fmOutput->output('</div></div></div>');
@@ -80,10 +96,11 @@ class FmField
     /**
      * This generates the code for fields, compensating for old versions
      *
-     * @param $fieldName - the name of the field to be added
-     * @param $array - the array that would usually be passed to woocommerce_form_field()
-     * @param $value - the value of the field
-     * @return object|null - woocommerce_form_field can return or echo the output HTML depending on arguments
+     *  @param string $fieldName - the name of the field to be added
+     *  @param array  $array     - the array that would usually be passed to woocommerce_form_field()
+     *  @param string $value     - the value of the field
+     *
+     *  @return object|null - woocommerce_form_field can return or echo the output HTML depending on arguments
      */
     public static function fyndiqGenerateField($fieldName, $array, $value)
     {
@@ -92,12 +109,24 @@ class FmField
         if (version_compare(WC()->version, '2.3.8') >= 0) {
             return woocommerce_form_field($fieldName, $array, $value);
         }
-        return $fmOutput->output(sprintf("
-                <p class='form-field' 'id'=%s>
+        return $fmOutput->output(
+            sprintf(
+                "<p class='form-field' 'id'=%s>
                     <label for='%s'>%s</label>
                     <input type='%s' class='input-%s' name='%s' id='%s value='%s'/>
                     <span class='description'>" . $array['description'] . "</span>
-                </p>", $fieldName, $fieldName, $array['label'], $array['type'], $array['type'], $fieldName, $fieldName, $fieldName, $array['description']));
+                </p>",
+                $fieldName,
+                $fieldName,
+                $array['label'],
+                $array['type'],
+                $array['type'],
+                $fieldName,
+                $fieldName,
+                $fieldName,
+                $array['description']
+            )
+        );
     }
 
     /**
@@ -109,12 +138,16 @@ class FmField
     {
         $order = new FmOrder(FmOrder::getWordpressCurrentPostID());
 
-        self::fyndiqGenerateField(FmOrder::FYNDIQ_HANDLED_ORDER_META_FIELD, array(
+        self::fyndiqGenerateField(
+            FmOrder::FYNDIQ_HANDLED_ORDER_META_FIELD,
+            array(
             'type' => 'checkbox',
             'class' => array('input-checkbox'),
             'label' => __('Order handled', 'fyndiq'),
             'description' => __('Report this order as handled to Fyndiq', 'fyndiq'),
-        ), (bool)$order->getIsHandled());
+            ),
+            (bool)$order->getIsHandled()
+        );
 
         return true;
     }

@@ -4,6 +4,12 @@
     <rule ref="PEAR">
         <exclude name="PEAR.Commenting.FileComment"/>
         <exclude name="PEAR.Commenting.ClassComment"/>
+        <exclude name="PEAR.Commenting.ClassComment"/>
+        <exclude name="PEAR.NamingConventions.ValidFunctionName.PrivateNoUnderscore"/>
+        <exclude name="PEAR.Whitespace.ScopeIndent.IncorrectExact"/>
     </rule>
-    <rule ref="PSR2"></rule>
+    <rule ref="PSR2">
+        <exclude name="PSR1.Files.SideEffects"/>
+        <exclude name="PSR1.Classes.ClassDeclaration.MissingNamespace"/>
+    </rule>
 </ruleset>
