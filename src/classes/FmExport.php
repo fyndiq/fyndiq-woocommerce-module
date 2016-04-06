@@ -1,60 +1,102 @@
 <?php
-
 //Boilerplate security. Doesn't allow this file to be directly executed by the browser.
 defined('ABSPATH') || exit;
 
+/**
+ * Class FmExport - functionality for exporting data to CSV
+ */
 class FmExport
 {
 
+    /**
+     *
+     */
     const DELIMITER = ' / ';
+    /**
+     *
+     */
     const REF_DELIMITER = '-';
 
+    /**
+     *
+     */
     const DESCRIPTION_SHORT = 1;
+    /**
+     *
+     */
     const DESCRIPTION_LONG = 2;
+    /**
+     *
+     */
     const DESCRIPTION_SHORT_LONG = 3;
 
+    /**
+     *
+     */
     const REF_SKU = 1;
+    /**
+     *
+     */
     const REF_ID = 2;
 
-    function __construct($filepath, $fmoutput)
+    private $productImages;
+    private $categoryCache;
+
+    /**
+     * FmExport constructor
+     *
+     * @param $filePath
+     * @param $fmOutput
+     */
+    function __construct($filePath, $fmOutput)
     {
-        $this->filepath = $filepath;
-        $this->fmOutput = $fmoutput;
+        $this->filePath = $filePath;
+        $this->fmOutput = $fmOutput;
     }
 
-    public function generate_feed()
+    /**
+     * Verifies whether the user has the right to get the feed. Regenerates the file if need be.
+     *
+     * @return mixed - true on success, false or an error message on failure
+     */
+    public function generateFeed()
     {
         $username = get_option('wcfyndiq_username');
         $token = get_option('wcfyndiq_apitoken');
 
         if (isset($username) && isset($token)) {
-            if (FyndiqUtils::mustRegenerateFile($this->filepath)) {
+            if (FyndiqUtils::mustRegenerateFile($this->filePath)) {
                 $this->feedFileHandling();
             }
-            if (file_exists($this->filepath)) {
+            if (file_exists($this->filePath)) {
                 // Clean output buffer if possible. Not this is not guaranteed to work because we don't control
                 // when/if ob_start will be called
                 ob_get_clean();
-                $lastModified = filemtime($this->filepath);
-                $file = fopen($this->filepath, 'r');
+                $lastModified = filemtime($this->filePath);
+                $file = fopen($this->filePath, 'r');
                 $this->fmOutput->header('Last-Modified: ' . gmdate('D, d M Y H:i:s T', $lastModified));
-                $this->fmOutput->streamFile($file, 'feed.csv', 'text/csv', filesize($this->filepath));
+                $this->fmOutput->streamFile($file, 'feed.csv', 'text/csv', filesize($this->filePath));
                 fclose($file);
+                return true;
             }
-
-            return $this->returnAndDie('');
+            return false;
         }
         return $this->fmOutput->showError(
             500,
             'Internal Server Error',
-            sprintf('Error generating feed to %s', $this->filepath)
+            sprintf('Error generating feed to %s', $this->filePath)
         );
     }
 
+    /**
+     * Handles the reading and writing of the Fyndiq feed file itself
+     *
+     * @return bool - false on error, otherwise true.
+     */
     public function feedFileHandling()
     {
-        $tempFileName = FyndiqUtils::getTempFilename(dirname($this->filepath));
-        FyndiqUtils::debug('$fileName', $this->filepath);
+        $tempFileName = FyndiqUtils::getTempFilename(dirname($this->filePath));
+        FyndiqUtils::debug('$fileName', $this->filePath);
         FyndiqUtils::debug('$tempFileName', $tempFileName);
 
         $file = fopen($tempFileName, 'w+');
@@ -68,14 +110,20 @@ class FmExport
         fclose($file);
         if ($exportResult) {
             // File successfully generated
-            FyndiqUtils::moveFile($tempFileName, $this->filepath);
+            FyndiqUtils::moveFile($tempFileName, $this->filePath);
+            return true;
         } else {
             // Something wrong happened, clean the file
             FyndiqUtils::deleteFile($tempFileName);
+            return false;
         }
     }
 
-    protected function getTagValuesFixed($wpdb, $productId)
+    /**
+     * @param $productId
+     * @return array
+     */
+    protected function getTagValuesFixed($productId)
     {
         $result = array();
         $tag_values = get_post_meta($productId, '_product_attributes', true);
@@ -89,6 +137,10 @@ class FmExport
         return $result;
     }
 
+    /**
+     * @param $feedWriter
+     * @return mixed
+     */
     protected function writeFeed($feedWriter)
     {
         global $wpdb;
@@ -96,7 +148,7 @@ class FmExport
         $wcFyndiqCurrency = get_option('wcfyndiq_currency');
         $currency = !empty($wcFyndiqCurrency) ? $wcFyndiqCurrency : get_woocommerce_currency();
         $percentage_discount = get_option('wcfyndiq_price_percentage');
-        
+
         //This has to be a little less concise to keep compatibility with < PHP5.5
         $discountOption = get_option('wcfyndiq_price_discount');
         $price_discount = !empty($discountOption) ? intval(get_option('wcfyndiq_price_discount')) : 0;
@@ -130,7 +182,7 @@ class FmExport
             }
 
             $articles = array();
-            $tagValuesFixed = $this->getTagValuesFixed($wpdb, $product->id);
+            $tagValuesFixed = $this->getTagValuesFixed($product->id);
             foreach ($variations as $variation) {
                 $exportVariation = $this->getVariation($product, $variation, $config, $tagValuesFixed);
                 if (!empty($exportVariation)) {
@@ -150,6 +202,11 @@ class FmExport
         return $feedWriter->write();
     }
 
+    /**
+     * @param $product
+     * @param $config
+     * @return array
+     */
     private function getProduct($product, $config)
     {
         $absolutePrice = get_post_meta($product->id, '_fyndiq_price_absolute', true);
@@ -222,11 +279,18 @@ class FmExport
         return array_merge($feedProduct, $this->getMappedFields($product), $this->getComparisons($product));
     }
 
+    /**
+     * @param $product
+     * @param $variation
+     * @param $config
+     * @param $tagValuesFixed
+     * @return array|bool - array containing the variations, otherwise false on error
+     */
     private function getVariation($product, $variation, $config, $tagValuesFixed)
     {
         if ($variation['is_downloadable'] || $variation['is_virtual']) {
             FyndiqUtils::debug('downloadable, virtual', $variation['is_downloadable'], $variation['is_virtual']);
-            return;
+            return false;
         }
         $variationModel = new WC_Product_Variation(
             $variation['variation_id'],
@@ -287,6 +351,12 @@ class FmExport
         return array_merge($feedArticle, $this->getMappedFields($variation['variation_id']), $this->getComparisons($variation['variation_id']));
     }
 
+    /**
+     * @param $product
+     * @param $config
+     * @param $absolutePrice
+     * @return mixed
+     */
     function getProductPrice($product, $config, $absolutePrice)
     {
         if ($config['wooML']) {
@@ -303,14 +373,19 @@ class FmExport
         return $price;
     }
 
+    /**
+     * @param $product
+     * @param $config
+     * @return mixed|string
+     */
     function getProductRegularPrice($product, $config)
     {
         if ($config['wooML']) {
             $regularPrice = '_regular_price';
             $orderCurrency = get_post_meta($product->id, '_order_currency', true);
-            $checkPrice = get_post_meta($product->id, $regularPrice . '_'.$config['currency'], true);
+            $checkPrice = get_post_meta($product->id, $regularPrice . '_' . $config['currency'], true);
             if (!empty($checkPrice) && $config['currency'] != $orderCurrency) {
-                $regularPrice .= '_'.$config['currency'];
+                $regularPrice .= '_' . $config['currency'];
             }
             FyndiqUtils::debug('$regularPrice Column', $regularPrice);
             return get_post_meta($product->id, $regularPrice, true);
@@ -327,6 +402,11 @@ class FmExport
     }
 
 
+    /**
+     * @param $product
+     * @param $currency
+     * @return mixed
+     */
     function getSaleProductPrice($product, $currency)
     {
         $salePriceColumn = '_sale_price';
@@ -334,18 +414,18 @@ class FmExport
         $priceFromColumn = '_sale_price_dates_from';
         $priceToColumn = '_sale_price_dates_to';
         $orderCurrency = get_post_meta($product->id, '_order_currency', true);
-        $checkPrice = get_post_meta($product->id, $salePriceColumn . '_'.$currency, true);
+        $checkPrice = get_post_meta($product->id, $salePriceColumn . '_' . $currency, true);
         FyndiqUtils::debug('$orderCurrency', $orderCurrency);
         if (!empty($checkPrice) && $currency != $orderCurrency) {
-            $salePriceColumn .= '_'.$currency;
-            $priceColumn .= '_'.$currency;
-            $priceFromColumn .= '_'.$currency;
-            $priceToColumn .= '_'.$currency;
+            $salePriceColumn .= '_' . $currency;
+            $priceColumn .= '_' . $currency;
+            $priceFromColumn .= '_' . $currency;
+            $priceToColumn .= '_' . $currency;
         }
         FyndiqUtils::debug('$salePriceColumn', $salePriceColumn);
         $salePrice = get_post_meta($product->id, $salePriceColumn, true);
         FyndiqUtils::debug('$salePrice', $salePrice);
-        if (get_post_meta($product->id, '_wcml_schedule_'.$currency, true)) {
+        if (get_post_meta($product->id, '_wcml_schedule_' . $currency, true)) {
             $from = get_post_meta($product->id, $priceFromColumn, true);
             $to = get_post_meta($product->id, $priceToColumn, true);
             $now = time();
@@ -360,6 +440,10 @@ class FmExport
         return $price;
     }
 
+    /**
+     * @param $post
+     * @return string
+     */
     function getDescription($post)
     {
         $option = get_option('wcfyndiq_description_picker');
@@ -376,6 +460,9 @@ class FmExport
         }
     }
 
+    /**
+     * @return string
+     */
     public static function getDescriptionPOST()
     {
         $option = get_option('wcfyndiq_description_picker');
@@ -392,6 +479,10 @@ class FmExport
         }
     }
 
+    /**
+     * @param $exportedProduct
+     * @return array
+     */
     private function getAllVariations($exportedProduct)
     {
         $available_variations = array();
@@ -402,50 +493,49 @@ class FmExport
             $variation = $product->get_child($child_id);
 
             $variation_attributes = $variation->get_variation_attributes();
-            $availability         = $variation->get_availability();
-            $availability_html    = empty($availability['availability']) ? '' : '<p class="stock ' . esc_attr($availability['class']) . '">' . wp_kses_post($availability['availability']) . '</p>';
-            $availability_html    = apply_filters('woocommerce_stock_html', $availability_html, $availability['availability'], $variation);
+            $availability = $variation->get_availability();
+            $availability_html = empty($availability['availability']) ? '' : '<p class="stock ' . esc_attr($availability['class']) . '">' . wp_kses_post($availability['availability']) . '</p>';
+            $availability_html = apply_filters('woocommerce_stock_html', $availability_html, $availability['availability'], $variation);
 
             if (has_post_thumbnail($variation->get_variation_id())) {
                 $attachment_id = get_post_thumbnail_id($variation->get_variation_id());
 
-                $attachment    = wp_get_attachment_image_src($attachment_id, apply_filters('single_product_large_thumbnail_size', 'shop_single'));
-                $image         = $attachment ? current($attachment) : '';
+                $attachment = wp_get_attachment_image_src($attachment_id, apply_filters('single_product_large_thumbnail_size', 'shop_single'));
+                $image = $attachment ? current($attachment) : '';
 
-                $attachment    = wp_get_attachment_image_src($attachment_id, 'full');
-                $image_link    = $attachment ? current($attachment) : '';
+                $attachment = wp_get_attachment_image_src($attachment_id, 'full');
+                $image_link = $attachment ? current($attachment) : '';
 
-                $image_title   = get_the_title($attachment_id);
-                $image_alt     = get_post_meta($attachment_id, '_wp_attachment_image_alt', true);
+                $image_title = get_the_title($attachment_id);
+                $image_alt = get_post_meta($attachment_id, '_wp_attachment_image_alt', true);
             } else {
                 $image = $image_link = $image_title = $image_alt = '';
             }
 
             $filters = array(
-                'variation_id'          => $child_id,
-                'variation_is_visible'  => $variation->variation_is_visible(),
-                'is_purchasable'        => $variation->is_purchasable(),
-                'attributes'            => $variation_attributes,
-                'image_src'             => $image,
-                'image_link'            => $image_link,
-                'image_title'           => $image_title,
-                'image_alt'             => $image_alt,
-                'price_html'            => $variation->get_price() === "" || $product->get_variation_price('min') !== $product->get_variation_price('max') ? '<span class="price">' . $variation->get_price_html() . '</span>' : '',
-                'availability_html'     => $availability_html,
-                'sku'                   => $variation->get_sku(),
-                'weight'                => $variation->get_weight() . ' ' . esc_attr(get_option('woocommerce_weight_unit')),
-                'dimensions'            => $variation->get_dimensions(),
-                'min_qty'               => 1,
-                'max_qty'               => $variation->backorders_allowed() ? '' : $variation->get_stock_quantity(),
-                'backorders_allowed'    => $variation->backorders_allowed(),
-                'is_in_stock'           => $variation->is_in_stock(),
-                'is_downloadable'       => $variation->is_downloadable() ,
-                'is_virtual'            => $variation->is_virtual(),
-                'is_sold_individually'  => $variation->is_sold_individually() ? 'yes' : 'no',
+                'variation_id' => $child_id,
+                'variation_is_visible' => $variation->variation_is_visible(),
+                'is_purchasable' => $variation->is_purchasable(),
+                'attributes' => $variation_attributes,
+                'image_src' => $image,
+                'image_link' => $image_link,
+                'image_title' => $image_title,
+                'image_alt' => $image_alt,
+                'price_html' => $variation->get_price() === "" || $product->get_variation_price('min') !== $product->get_variation_price('max') ? '<span class="price">' . $variation->get_price_html() . '</span>' : '',
+                'availability_html' => $availability_html,
+                'sku' => $variation->get_sku(),
+                'weight' => $variation->get_weight() . ' ' . esc_attr(get_option('woocommerce_weight_unit')),
+                'dimensions' => $variation->get_dimensions(),
+                'min_qty' => 1,
+                'max_qty' => $variation->backorders_allowed() ? '' : $variation->get_stock_quantity(),
+                'backorders_allowed' => $variation->backorders_allowed(),
+                'is_in_stock' => $variation->is_in_stock(),
+                'is_downloadable' => $variation->is_downloadable(),
+                'is_virtual' => $variation->is_virtual(),
+                'is_sold_individually' => $variation->is_sold_individually() ? 'yes' : 'no',
             );
 
-            $version = FmHelpers::get_woocommerce_version();
-            if (version_compare($version, '2.2.11') > 0) {
+            if (version_compare(WC()->version, '2.2.11') > 0) {
                 $filters['variation_is_active'] = $variation->variation_is_active();
                 $filters['display_regular_price'] = $variation->get_display_price($variation->get_regular_price());
 
@@ -455,10 +545,10 @@ class FmExport
                 }
 
             } else {
-                $tax_display_mode      = get_option('woocommerce_tax_display_shop');
-                $display_price         = $tax_display_mode == 'incl' ? $variation->get_price_including_tax() : $variation->get_price_excluding_tax();
+                $tax_display_mode = get_option('woocommerce_tax_display_shop');
+                $display_price = $tax_display_mode == 'incl' ? $variation->get_price_including_tax() : $variation->get_price_excluding_tax();
                 $display_regular_price = $tax_display_mode == 'incl' ? $variation->get_price_including_tax(1, $variation->get_regular_price()) : $variation->get_price_excluding_tax(1, $variation->get_regular_price());
-                $display_sale_price    = $tax_display_mode == 'incl' ? $variation->get_price_including_tax(1, $variation->get_sale_price()) : $variation->get_price_excluding_tax(1, $variation->get_sale_price());
+                $display_sale_price = $tax_display_mode == 'incl' ? $variation->get_price_including_tax(1, $variation->get_sale_price()) : $variation->get_price_excluding_tax(1, $variation->get_sale_price());
 
                 $price = $display_price;
                 if (isset($display_sale_price)) {
@@ -477,6 +567,12 @@ class FmExport
         return $available_variations;
     }
 
+    /**
+     * @param $product_id
+     * @param $product_price
+     * @param $config
+     * @return float
+     */
     public function getPrice($product_id, $product_price, $config)
     {
         $discount = $this->getDiscount($config['percentage_discount']);
@@ -484,6 +580,10 @@ class FmExport
         return FyndiqUtils::getFyndiqPrice($product_price, $discount, $config['price_discount']);
     }
 
+    /**
+     * @param $discount
+     * @return int
+     */
     private function getDiscount($discount)
     {
         if ($discount > 100) {
@@ -496,6 +596,10 @@ class FmExport
     }
 
 
+    /**
+     * @param $categoryId
+     * @return mixed
+     */
     private function getCategoriesPath($categoryId)
     {
         if (isset($this->categoryCache[$categoryId])) {
@@ -515,6 +619,11 @@ class FmExport
         return $this->categoryCache[$categoryId];
     }
 
+    /**
+     * @param $product
+     * @param bool $parent_id
+     * @return mixed|string
+     */
     private function getReference($product, $parent_id = false)
     {
         $option = get_option('wcfyndiq_reference_picker');
@@ -531,6 +640,12 @@ class FmExport
         }
     }
 
+    /**
+     * getMappedFields - gets mapped fields for a given product
+     *
+     * @param $product - either the post object of the product or the post ID
+     * @return array - an associative array of fields and their mapped values
+     */
     private function getMappedFields($product)
     {
         return array(
@@ -541,10 +656,15 @@ class FmExport
         );
     }
 
+    /**
+     * @param $key
+     * @param $product
+     * @return string
+     */
     private function getValueForFields($key, $product)
     {
         //Get the options, if empty it is not set, return empty string
-        $option = get_option('wcfyndiq_field_map_'.$key);
+        $option = get_option('wcfyndiq_field_map_' . $key);
         if (empty($option)) {
             return '';
         }
@@ -552,7 +672,7 @@ class FmExport
         //if product is int, it will not be a get_attribute function called, skip it
         $attribute = '';
         if (!is_int($product)) {
-            $attribute = $product->get_attribute('pa_'.$option);
+            $attribute = $product->get_attribute('pa_' . $option);
         }
         if (empty($attribute)) {
             //handling if product is integer
@@ -569,12 +689,24 @@ class FmExport
         FyndiqUtils::debug('attribute', $attribute);
         return $attribute;
     }
+
+    /**
+     * checkFieldIsSet - checks whether a field map is set for a given key
+     *
+     * @param $key - key for field mapping
+     * @return bool - returns true if a mapping exists, otherwise false
+     */
     private function checkFieldIsSet($key)
     {
-        $option = get_option('wcfyndiq_field_map_'.$key);
+        $option = get_option('wcfyndiq_field_map_' . $key);
         return !empty($option);
     }
 
+    /**
+     *
+     * @param $product
+     * @return array
+     */
     private function getComparisons($product)
     {
         $feedProduct = array();
@@ -588,10 +720,5 @@ class FmExport
             }
         }
         return $feedProduct;
-    }
-
-    public function returnAndDie($return)
-    {
-        die($return);
     }
 }

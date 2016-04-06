@@ -1,26 +1,35 @@
 <?php
-
 //Boilerplate security. Doesn't allow this file to be directly executed by the browser.
 defined('ABSPATH') || exit;
 
+/**
+ * Class FmHelpers
+ */
 class FmHelpers
 {
 
+    /** Commit hash constant*/
     const COMMIT = 'XXXXXX';
+
+    /** Plugin platform*/
     const PLATFORM = 'WooCommerce';
 
+    /** Debug disabled truth value */
     const DEBUG_DISABLED = 0;
+
+    /** Debug enabled truth value */
     const DEBUG_ENABLED = 1;
 
+    /**
+     * Checks whether options for an API connection have been set
+     *
+     * @return bool - true if options have been set
+     */
     public static function apiConnectionExists()
     {
         return !is_null(get_option('wcfyndiq_username')) && !is_null(get_option('wcfyndiq_apitoken'));
     }
 
-    public static function allSettingsExist()
-    {
-        return FmConfig::getBool('language') && FmConfig::getBool('currency');
-    }
 
     /**
      * Wrappers around FyndiqAPI
@@ -30,13 +39,14 @@ class FmHelpers
      * @param $path
      * @param array $data
      * @return mixed
+     * @throws Exception - when the API call fails
      */
     public static function callApi($method, $path, $data = array())
     {
         $username = get_option('wcfyndiq_username');
         $apiToken = get_option('wcfyndiq_apitoken');
 
-        $userAgent = self::get_user_agent();
+        $userAgent = self::getUserAgent();
 
         return FyndiqAPICall::callApiRaw(
             $userAgent,
@@ -49,33 +59,12 @@ class FmHelpers
         );
     }
 
-    static function get_woocommerce_version()
-    {
-        // If get_plugins() isn't available, require it
-        if (!function_exists('get_plugins')) {
-            require_once(ABSPATH . 'wp-admin/includes/plugin.php');
-        }
-
-        // Create the plugins folder and file variables
-        $plugin_folder = get_plugins('/' . 'woocommerce');
-        $plugin_file = 'woocommerce.php';
-
-        // If the plugin version number is set, return it
-        if (isset($plugin_folder[$plugin_file]['Version'])) {
-            return $plugin_folder[$plugin_file]['Version'];
-
-        } else {
-            // Otherwise return null
-            return null;
-        }
-    }
-
-    static function get_version_label()
-    {
-        return FyndiqUtils::getVersionLabel(self::get_plugin_version(), self::COMMIT);
-    }
-
-    static function get_plugin_version()
+    /**
+     * Gets the version of the Fyndiq plugin
+     *
+     * @return string - version string of the plugin
+     */
+    static function getPluginVersion()
     {
         $plugin_folder = get_plugins('/' . 'woocommerce-fyndiq');
         $plugin_file = 'woocommerce-fyndiq.php';
@@ -90,18 +79,26 @@ class FmHelpers
         return $plugin_version;
     }
 
-    public static function get_user_agent()
+    /**
+     * Gets the user agent of the browser
+     *
+     * @return string
+     */
+    public static function getUserAgent()
     {
         return FyndiqUtils::getUserAgentString(
             self::PLATFORM,
-            self::get_woocommerce_version(),
+            WC()->version,
             'module',
-            self::get_plugin_version(),
+            self::getPluginVersion(),
             self::COMMIT
         );
     }
 
 
+    /**
+     * @return bool|mixed|void
+     */
     static function fyndiq_wc_tax_enabled()
     {
         if (function_exists('wc_tax_enabled')) {
@@ -110,6 +107,9 @@ class FmHelpers
         return apply_filters('wc_tax_enabled', get_option('woocommerce_calc_taxes') === 'yes');
     }
 
+    /**
+     * @return bool
+     */
     static function fyndiq_wc_prices_include_tax()
     {
         if (function_exists('wc_tax_enabled')) {
@@ -118,6 +118,9 @@ class FmHelpers
         return self::fyndiq_wc_tax_enabled() && get_option('woocommerce_prices_include_tax') === 'yes';
     }
 
+    /**
+     * @return array
+     */
     public static function getAllTerms()
     {
         $attributes = array('' => '');

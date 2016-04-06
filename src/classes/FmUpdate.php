@@ -21,7 +21,7 @@ class FmUpdate
         }
 
         $version = get_option('wcfyndiq_update_version');
-        $current_version = FmHelpers::get_plugin_version();
+        $current_version = FmHelpers::getPluginVersion();
         if (!is_null($version) && version_compare($version, $current_version) > 0) {
             add_action('admin_notices', array(&$this, 'updateNotificiation_shower'));
         }

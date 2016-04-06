@@ -171,7 +171,7 @@ class WC_Fyndiq
 
         //functions
         if (isset($_GET['fyndiq_feed'])) {
-            $this->fmExport->generate_feed();
+            $this->fmExport->generateFeed();
         }
         if (isset($_GET['fyndiq_orders'])) {
             FmOrder::generateOrders();
@@ -667,7 +667,7 @@ EOS;
     protected function debug()
     {
         FyndiqUtils::debugStart();
-        FyndiqUtils::debug('USER AGENT', FmHelpers::get_user_agent());
+        FyndiqUtils::debug('USER AGENT', FmHelpers::getUserAgent());
         $languageId = $this->fmWoo->WC()->countries->get_base_country();
         FyndiqUtils::debug('language', $languageId);
         FyndiqUtils::debug('taxonomy', FmHelpers::getAllTerms());
@@ -741,8 +741,9 @@ EOS;
     }
 
     /**
-     * isDebugEnabled returns true if debug is enabled;
-     * @return bool
+     * isDebugEnabled - returns true if debug is enabled
+     * 
+     * @return bool - whether debug is enabled
      */
     protected function isDebugEnabled()
     {

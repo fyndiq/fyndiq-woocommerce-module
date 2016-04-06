@@ -263,7 +263,7 @@ class FmOrder extends FmPost
      *                  ...
      * )
      * @throws Exception
-     *
+     * @return bool - always true
      */
     public static function setIsHandledBulk($orders)
     {

@@ -17,7 +17,7 @@ class FmError
     /**
      * Sets all WordPress hooks related to the Fields
      *
-     * @return bool - Always returns true because add_action() aways returns true TODO: abstraction layer
+     * @return bool - Always returns true because add_action() aways returns true
      */
     public static function setHooks()
     {
@@ -26,7 +26,7 @@ class FmError
 
     /**
      * processErrorAction - hooked to 'admin_notices' - handles the admin_notices action
-     * @return bool
+     * @return bool - returns output from renderErrorRaw() on success, otherwise false
      */
     public static function processErrorAction()
     {
@@ -36,6 +36,7 @@ class FmError
                 urldecode($_REQUEST['fyndiqMessageType'])
             );
         }
+        return false;
     }
 
     /**

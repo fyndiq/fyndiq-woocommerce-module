@@ -10,7 +10,7 @@ defined('ABSPATH') || exit;
  */
 class FmField
 {
-    /** @var int - the render order priority of the product tab vs. other tabs*/
+    /** @var int - the render order priority of the product tab vs. other tabs */
     const SHOW_CONTENT_PRIORITY = 70;
 
     /**
@@ -89,7 +89,7 @@ class FmField
     {
         $fmOutput = new FyndiqOutput();
 
-        if (version_compare(FmHelpers::get_woocommerce_version(), '2.3.8') >= 0) {
+        if (version_compare(WC()->version, '2.3.8') >= 0) {
             return woocommerce_form_field($fieldName, $array, $value);
         }
         return $fmOutput->output(sprintf("
@@ -102,6 +102,8 @@ class FmField
 
     /**
      * Hooked to 'woocommerce_admin_order_data_after_order_details' - generates the order handled checkbox
+     *
+     * @return bool - always true
      */
     public static function addOrderField()
     {
@@ -113,5 +115,7 @@ class FmField
             'label' => __('Order handled', 'fyndiq'),
             'description' => __('Report this order as handled to Fyndiq', 'fyndiq'),
         ), (bool)$order->getIsHandled());
+
+        return true;
     }
 }
