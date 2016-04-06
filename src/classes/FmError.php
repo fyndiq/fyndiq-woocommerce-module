@@ -32,8 +32,8 @@ class FmError
     public static function renderError($message, $messageType = self::CLASS_ERROR, $fmOutput = null)
     {
         return FmError::renderErrorRaw(
-            htmlspecialchars($messageType),
             htmlspecialchars($message),
+            htmlspecialchars($messageType),
             $fmOutput
         );
     }
