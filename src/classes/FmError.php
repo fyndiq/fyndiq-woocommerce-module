@@ -25,8 +25,9 @@ class FmError
     }
 
     /**
-     * processErrorAction - hooked to 'admin_notices' - handles the admin_notices action
-     * @return bool - returns output from renderErrorRaw() on success, otherwise false
+     * Hooked to 'admin_notices' - handles the admin_notices action
+     *
+     *  @return bool - returns output from renderErrorRaw() on success, otherwise false
      */
     public static function processErrorAction()
     {
@@ -40,11 +41,13 @@ class FmError
     }
 
     /**
-     * renderError - renders notification message and escapes the parameters
-     * @param  string $message error message
-     * @param  string $messageType message class
-     * @param  FyndiqOutput $fmOutput
-     * @return bool
+     * Renders notification message and escapes the parameters
+     *
+     *  @param string       $message     Error message
+     *  @param string       $messageType Message class
+     *  @param FyndiqOutput $fmOutput    Output class instance
+     *
+     *  @return bool
      */
     public static function renderError($message, $messageType = self::CLASS_ERROR, $fmOutput = null)
     {
@@ -56,10 +59,12 @@ class FmError
     }
 
     /**
-     * renderErrorRaw - renders notification message without escaping the parameters
-     * @param  string $message error message
-     * @param  string $messageType message class
-     * @param  FyndiqOutput $fmOutput
+     * Renders notification message without escaping the parameters
+     *
+     * @param string       $message     Error message
+     * @param string       $messageType Message class
+     * @param FyndiqOutput $fmOutput    Output class instance
+     *
      * @return bool
      */
     public static function renderErrorRaw($message, $messageType = self::CLASS_ERROR, $fmOutput = null)
@@ -77,9 +82,12 @@ class FmError
     }
 
     /**
-     * handleError - sets error message and type and refreshes the page to show it
-     * @param  string $errorMessage error message
-     * @param  string $messageType message class
+     * Sets error message and type and refreshes the page to show it
+     *
+     *  @param string $errorMessage Error message
+     *  @param string $messageType  Message CSS class
+     *
+     * @return null
      */
     public static function handleError($errorMessage, $messageType = self::CLASS_ERROR)
     {

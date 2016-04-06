@@ -148,7 +148,6 @@ class FmField
             ),
             (bool)$order->getIsHandled()
         );
-
         return true;
     }
 }

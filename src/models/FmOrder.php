@@ -68,9 +68,7 @@ class FmOrder extends FmPost
         $this->setMetaData(self::FYNDIQ_ID_META_FIELD, $fyndiqId);
     }
 
-    /**
-     * Here be dragons. By dragons, I mean static methods.
-     */
+    //Here be dragons. By dragons, I mean static methods.
 
     public static function orderExists($fyndiqId)
     {

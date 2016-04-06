@@ -418,7 +418,7 @@ EOS;
                     _e('Can\'t be exported');
                 }
             }
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             FmError::handleError($e->getMessage());
         }
     }
