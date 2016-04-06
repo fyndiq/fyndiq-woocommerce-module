@@ -310,7 +310,8 @@ class FmOrder extends FmPost
      * Function that handles bulk actions related to setting order handling status
      *
      * @param bool $markStatus - whether the orders are handled or not
-     * @throws Exception
+     * @return bool - always true
+     * @throws Exception - if there are no request posts
      */
     public static function orderHandleBulkAction($markStatus)
     {
@@ -326,7 +327,7 @@ class FmOrder extends FmPost
                 $data->orders[] = $markPair;
             }
         }
-        return FmOrder::setIsHandledBulk($data);
+        return true;
     }
 
     public static function deliveryNoteBulkAction()

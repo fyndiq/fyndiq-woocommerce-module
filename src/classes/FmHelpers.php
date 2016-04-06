@@ -82,7 +82,7 @@ class FmHelpers
     /**
      * Gets the user agent of the browser
      *
-     * @return string
+     * @return string - user agent string
      */
     public static function getUserAgent()
     {
@@ -97,6 +97,8 @@ class FmHelpers
 
 
     /**
+     * TODO: Why do we do this filtering stuff?
+     *
      * @return bool|mixed|void
      */
     static function fyndiq_wc_tax_enabled()
@@ -108,6 +110,8 @@ class FmHelpers
     }
 
     /**
+     * TODO: Why do we do this filtering stuff?
+     *
      * @return bool
      */
     static function fyndiq_wc_prices_include_tax()
@@ -119,7 +123,9 @@ class FmHelpers
     }
 
     /**
-     * @return array
+     * getAllTerms - gets an array of product attributes TODO: explain further
+     *
+     * @return array - an array of product attributes
      */
     public static function getAllTerms()
     {

@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<ruleset name="Fyndiq">
+    <exclude-pattern>src/include/*</exclude-pattern>
+    <rule ref="PEAR">
+        <exclude name="PEAR.Commenting.FileComment"/>
+        <exclude name="PEAR.Commenting.ClassComment"/>
+    </rule>
+    <rule ref="PSR2"></rule>
+</ruleset>

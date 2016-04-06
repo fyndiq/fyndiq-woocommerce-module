@@ -309,6 +309,13 @@ class FmProduct extends FmPost
         $product->validateProduct();
     }
 
+    /**
+     * productExportBulkAction - bulk action for changing the export status
+     *
+     * @param $export - whether the products are to be marked as to be exported or not
+     * @param $action - TODO: what does this do, exactly?
+     * @throws Exception - if there are no posts in the request
+     */
     public static function productExportBulkAction($export, $action)
     {
         $changed = 0;

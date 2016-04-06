@@ -40,11 +40,10 @@ class WC_Fyndiq
 
     const TEXT_DOMAIN = 'fyndiq';
 
-
-    public function __construct($fmWoo, $fmOutput)
+    public function __construct()
     {
-        $this->fmWoo = $fmWoo;
-        $this->fmOutput = $fmOutput;
+        $this->fmWoo = new FmWoo(WC_Fyndiq::TEXT_DOMAIN);
+        $this->fmOutput = new FyndiqOutput();
 
         $this->currencies = array_combine(
             FyndiqUtils::$allowedCurrencies,
@@ -290,7 +289,7 @@ EOS;
         try {
             $order = new FmOrder(FmOrder::getWordpressCurrentPostID());
 
-            FmField::fyndiq_generate_field(FmOrder::FYNDIQ_HANDLED_ORDER_META_FIELD, array(
+            FmField::fyndiqGenerateField(FmOrder::FYNDIQ_HANDLED_ORDER_META_FIELD, array(
                 'type' => 'checkbox',
                 'class' => array('input-checkbox'),
                 'label' => $this->fmWoo->__('Order handled'),
@@ -742,7 +741,7 @@ EOS;
 
     /**
      * isDebugEnabled - returns true if debug is enabled
-     * 
+     *
      * @return bool - whether debug is enabled
      */
     protected function isDebugEnabled()

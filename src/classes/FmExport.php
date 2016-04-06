@@ -8,38 +8,30 @@ defined('ABSPATH') || exit;
 class FmExport
 {
 
-    /**
-     *
-     */
+    /** TODO: what does this do? */
     const DELIMITER = ' / ';
-    /**
-     *
-     */
+    /** TODO: what does this do? */
     const REF_DELIMITER = '-';
 
-    /**
-     *
-     */
+    /** TODO: what does this do? */
     const DESCRIPTION_SHORT = 1;
-    /**
-     *
-     */
+
+    /** TODO: what does this do? */
     const DESCRIPTION_LONG = 2;
-    /**
-     *
-     */
+
+    /** TODO: what does this do? */
     const DESCRIPTION_SHORT_LONG = 3;
 
-    /**
-     *
-     */
+    /** TODO: what does this do? */
     const REF_SKU = 1;
-    /**
-     *
-     */
+
+    /** TODO: what does this do? */
     const REF_ID = 2;
 
+    /** @var array - TODO: what is this? */
     private $productImages;
+
+    /** @var string - list of categories, cached to avoid fetching them every time we need them*/
     private $categoryCache;
 
     /**

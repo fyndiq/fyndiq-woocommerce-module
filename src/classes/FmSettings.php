@@ -6,7 +6,7 @@
 
 class FmSettings
 {
-    /** Priority of the settings tab that we add to WooCommerce in terms of the order in which they are rendered*/
+    /** Priority of the settings tab that we add to WooCommerce in terms of the order in which they are rendered */
     const SETTING_TAB_PRIORITY = 50;
 
 
