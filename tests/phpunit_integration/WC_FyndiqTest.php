@@ -63,7 +63,7 @@ class FyndiqTest extends WP_UnitTestCase
         $data = array(
             'fyndiq_export_column' => 'fyndiq_export_column'
         );
-        $this->assertEquals($data, $this->wc_fyndiq->fyndiq_product_column_sort());
+        $this->assertEquals($data, $this->wc_fyndiq->fyndiqProductColumnSort());
     }
 
     // Columnable' );
@@ -139,7 +139,7 @@ class FyndiqTest extends WP_UnitTestCase
     function test_fyndiq_product_add_column_return_right_array()
     {
         $defaults = array();
-        $return = $this->wc_fyndiq->fyndiq_product_add_column($defaults);
+        $return = $this->wc_fyndiq->fyndiqProductAddColumn($defaults);
         $correct = array('fyndiq_export_column' => 'Fyndiq');
         $this->assertEquals($correct, $return);
     }

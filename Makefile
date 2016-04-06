@@ -48,5 +48,9 @@ sniff-fix:
 	$(BIN_DIR)/phpcbf --standard=PSR2 --extensions=php --ignore=include $(SRC_DIR)
 	$(BIN_DIR)/phpcbf --standard=PSR2 --extensions=php $(TESTS_DIR)
 
+sniff-fixer:
+	php -n $(BIN_DIR)/php-cs-fixer fix --config-file=$(BASE)/.php_cs.php
+	php -n $(BIN_DIR)/php-cs-fixer fix $(TESTS_DIR) --level=psr2
+
 compatinfo:
 	$(BIN_DIR)/phpcompatinfo analyser:run $(SRC_DIR)
