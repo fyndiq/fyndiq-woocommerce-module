@@ -96,7 +96,7 @@ class WC_Fyndiq
         //products
         $this->fmWoo->addAction(
             'woocommerce_process_shop_order_meta',
-            array(&$this, 'fyndiq_order_handled_save')
+            array(&$this, 'fyndiqOrderHandledSave')
         );
 
         $this->fmWoo->addAction(
@@ -105,14 +105,14 @@ class WC_Fyndiq
         );
         $this->fmWoo->addAction(
             'woocommerce_product_write_panel_tabs',
-            array(&$this, 'fyndiq_product_tab')
+            array(&$this, 'fyndiqProductTab')
         );
 
 
         //product list
         $this->fmWoo->addFilter(
             'manage_edit-product_columns',
-            array(&$this, 'fyndiq_product_add_column')
+            array(&$this, 'fyndiqProductAddColumn')
         );
         $this->fmWoo->addAction(
             'manage_product_posts_custom_column',
@@ -122,7 +122,7 @@ class WC_Fyndiq
         );
         $this->fmWoo->addFilter(
             'manage_edit-product_sortable_columns',
-            array(&$this, 'fyndiq_product_column_sort')
+            array(&$this, 'fyndiqProductColumnSort')
         );
         $this->fmWoo->addAction('pre_get_posts', array(&$this, 'fyndiqProductColumnSortBy'));
         $this->fmWoo->addAction('admin_notices', array(&$this, 'fyndiqBulkNotices'));
@@ -131,10 +131,13 @@ class WC_Fyndiq
 
         //order list
         if (FmOrder::getOrdersEnabled()) {
-            $this->fmWoo->addFilter('manage_edit-shop_order_columns', array(&$this, 'fyndiqOrderAddColumn'));
+            $this->fmWoo->addFilter(
+                'manage_edit-shop_order_columns',
+                array(&$this, 'fyndiqOrderAddColumn')
+            );
             $this->fmWoo->addAction(
                 'manage_shop_order_posts_custom_column',
-                array(&$this, 'fyndiq_order_column'),
+                array(&$this, 'fyndiqOrderColumn'),
                 5,
                 2
             );
@@ -146,10 +149,10 @@ class WC_Fyndiq
 
         //Bulk Action
         //Inserts the JS for the appropriate dropdown items
-        $this->fmWoo->addAction('admin_footer-edit.php', array(&$this, 'fyndiq_add_bulk_action'));
+        $this->fmWoo->addAction('admin_footer-edit.php', array(&$this, 'fyndiqAddBulkAction'));
 
         //Dispatcher for different bulk actions
-        $this->fmWoo->addAction('load-edit.php', array(&$this, 'fyndiq_bulk_action_dispatcher'));
+        $this->fmWoo->addAction('load-edit.php', array(&$this, 'fyndiqBulkActionDispatcher'));
 
         //add_action('post_submitbox_misc_actions', array( &$this, 'fyndiq_order_edit_action'));
         $this->fmWoo->addAction('add_meta_boxes', array(&$this, 'fyndiqOrderMetaBoxes'));
@@ -267,7 +270,7 @@ EOS;
 
 
     //Hooked to WooCommerce_product_write_panel_tabs
-    public function fyndiq_product_tab()
+    public function fyndiqProductTab()
     {
         $this->fmOutput->output(
             sprintf(
@@ -284,14 +287,18 @@ EOS;
      */
     public function fyndiqAddOrderField()
     {
-        $order = new FmOrder(FmOrder::getWordpressCurrentPostID());
+        try {
+            $order = new FmOrder(FmOrder::getWordpressCurrentPostID());
 
-        FmField::fyndiq_generate_field(FmOrder::FYNDIQ_HANDLED_ORDER_META_FIELD, array(
-            'type' => 'checkbox',
-            'class' => array('input-checkbox'),
-            'label' => $this->fmWoo->__('Order handled'),
-            'description' => $this->fmWoo->__('Report this order as handled to Fyndiq'),
-        ), (bool)$order->getIsHandled());
+            FmField::fyndiq_generate_field(FmOrder::FYNDIQ_HANDLED_ORDER_META_FIELD, array(
+                'type' => 'checkbox',
+                'class' => array('input-checkbox'),
+                'label' => $this->fmWoo->__('Order handled'),
+                'description' => $this->fmWoo->__('Report this order as handled to Fyndiq'),
+            ), (bool)$order->getIsHandled());
+        } catch (Exception $e) {
+            FmError::handleError($e->getMessage());
+        }
     }
 
     public function fyndiqShowOrderError()
@@ -299,18 +306,19 @@ EOS;
         if (isset($_GET['post_type']) && $_GET['post_type'] == 'shop_order') {
             $error = $this->fmWoo->getOption('wcfyndiq_order_error');
             if ($error) {
-                $this->fmWoo->addAction('admin_notices', array(&$this, 'fyndiq_show_order_error_notice'));
+                $this->fmWoo->addAction('admin_notices', array(&$this, 'fyndiqShowOrderErrorNotice'));
                 update_option('wcfyndiq_order_error', false);
             }
         }
     }
 
-    public function fyndiq_show_order_error_notice()
+    public function fyndiqShowOrderErrorNotice()
     {
-        $this->fmOutput->output(sprintf(
-            '<div class="error"><p>%s</p></div>',
-            $this->fmWoo->__('Some Fyndiq Orders failed to be imported, most likely due to stock or couldn\'t find product on Reference.')
-        ));
+        return FmError::renderError(
+            $this->fmWoo->__('Some Fyndiq Orders failed to be imported, most likely due to stock or couldn\'t find product on Reference.'),
+            FmError::CLASS_ERROR,
+            $this->fmError
+        );
     }
 
     /**
@@ -319,10 +327,14 @@ EOS;
      *
      * @param int $orderId
      */
-    public function fyndiq_order_handled_save($orderId)
+    public function fyndiqOrderHandledSave($orderId)
     {
-        $orderObject = new FmOrder($orderId);
-        $orderObject->setIsHandled($orderObject->getIsHandled());
+        try {
+            $orderObject = new FmOrder($orderId);
+            $orderObject->setIsHandled($orderObject->getIsHandled());
+        } catch (Exception $e) {
+            FmError::handleError($e->getMessage());
+        }
     }
 
     //Hooked function for adding columns to the products page (manage_edit-shop_order_columns)
@@ -332,16 +344,15 @@ EOS;
         return $defaults;
     }
 
-    public function fyndiq_order_column($column, $orderId)
+    public function fyndiqOrderColumn($column, $orderId)
     {
         if ($column === self::ORDERS) {
-            $fyndiq_order = $this->fmWoo->getPostMeta($orderId, 'fyndiq_id', true);
-            if ($fyndiq_order != '') {
-                $this->fmOutput->output($fyndiq_order);
-            } else {
-                $this->fmWoo->updatePostMeta($orderId, 'fyndiq_id', '-');
-                $this->fmOutput->output('-');
+            $fyndiqOrder = $this->fmWoo->getPostMeta($orderId, 'fyndiq_id', true);
+            if ($fyndiqOrder != '') {
+                return $this->fmOutput->output($fyndiq_order);
             }
+            $this->fmWoo->updatePostMeta($orderId, 'fyndiq_id', '-');
+            $this->fmOutput->output('-');
         }
     }
 
@@ -367,13 +378,13 @@ EOS;
     }
 
     //Hooked function for adding columns to the products page (manage_edit-product_columns)
-    public function fyndiq_product_add_column($defaults)
+    public function fyndiqProductAddColumn($defaults)
     {
         $defaults[self::EXPORT] = $this->fmWoo->__('Fyndiq');
         return $defaults;
     }
 
-    public function fyndiq_product_column_sort()
+    public function fyndiqProductColumnSort()
     {
         return array(
             self::EXPORT => self::EXPORT,
@@ -394,18 +405,22 @@ EOS;
 
     public function fyndiqProductColumnExport($column, $postId)
     {
-        $product = new FmProduct($postId);
+        try {
+            $product = new FmProduct($postId);
 
-        if ($column == self::EXPORT) {
-            if ($product->isProductExportable()) {
-                if ($product->getIsExported()) {
-                    _e('Exported');
+            if ($column == self::EXPORT) {
+                if ($product->isProductExportable()) {
+                    if ($product->getIsExported()) {
+                        _e('Exported');
+                    } else {
+                        _e('Not exported');
+                    }
                 } else {
-                    _e('Not exported');
+                    _e('Can\'t be exported');
                 }
-            } else {
-                _e('Can\'t be exported');
             }
+        } catch(Exception $e) {
+            FmError::handleError($e->getMessage());
         }
     }
 
@@ -413,44 +428,48 @@ EOS;
     public function fyndiqAdminNotices()
     {
         if ($this->checkCurrency()) {
-            $this->fmOutput->output(sprintf(
-                '<div class="error"><p><strong>%s</strong>: %s %s</p></div>',
+            $message = sprintf(
+                '<strong>%s</strong>: %s %s',
                 $this->fmWoo->__('Wrong Currency'),
                 $this->fmWoo->__('Fyndiq only works in EUR and SEK. change to correct currency. Current Currency:'),
                 $this->fmWoo->getWoocommerceCurrency()
-            ));
+            );
+            FmError::renderErrorRaw($message, FmError::CLASS_ERROR, $this->fmOutput);
         }
         if ($this->checkCountry()) {
-            $this->fmOutput->output(sprintf(
-                '<div class="error"><p><strong>%s</strong>: %s %s</p></div>',
+            $message = sprintf(
+                '<strong>%s</strong>: %s %s',
                 $this->fmWoo->__('Wrong Country'),
                 $this->fmWoo->__('Fyndiq only works in Sweden and Germany. change to correct country. Current Country:'),
                 $this->fmWoo->WC()->countries->get_base_country()
-            ));
+            );
+            FmError::renderErrorRaw($message, FmError::CLASS_ERROR, $this->fmOutput);
         }
         if ($this->checkCredentials()) {
             $url = admin_url('admin.php?page=wc-settings&tab=wcfyndiq');
-            $this->fmOutput->output(sprintf(
-                '<div class="error"><p><strong>%s</strong>: %s <a href="%s">%s</a></p></div>',
+            $message = (sprintf(
+                '<strong>%s</strong>: %s <a href="%s">%s</a>',
                 $this->fmWoo->__('Fyndiq Credentials'),
                 $this->fmWoo->__('You need to set Fyndiq Credentials to make it work. Do it in '),
                 $url,
                 $this->fmWoo->__('Woocommerce Settings > Fyndiq')
             ));
+            FmError::renderErrorRaw($message, FmError::CLASS_ERROR, $this->fmOutput);
         }
         if (isset($_SESSION[self::NOTICES])) {
             $notices = $_SESSION[self::NOTICES];
             foreach ($notices as $type => $noticegroup) {
-                $class = 'update' === $type ? 'updated' : $type;
+
                 echo '<div class="fn_message '.$class.'">';
-                echo '<strong>'.$this->fmWoo->__('Fyndiq Validations').'</strong>';
-                echo '<ul>';
-                foreach ($noticegroup as $notice) :
-                    echo '<li>'.wp_kses($notice, wp_kses_allowed_html('post')).'</li>';
-                endforeach;
-                echo '</ul>';
-                echo '<p>' . $this->fmWoo->__('The product will not be exported to Fyndiq until these validations are fixed.') . '</p>';
-                echo '</div>';
+                $message = '<strong>'.$this->fmWoo->__('Fyndiq Validations').'</strong>';
+                $message .= '<ul>';
+                foreach ($noticegroup as $notice) {
+                    $message .= '<li>'.wp_kses($notice, wp_kses_allowed_html('post')).'</li>';
+                }
+                $message .= '</ul>';
+                $message .= '<p>' . $this->fmWoo->__('The product will not be exported to Fyndiq until these validations are fixed.') . '</p>';
+                $class = 'update' === $type ? 'updated' : $type;
+                FmError::renderErrorRaw($message, $class, $this->fmOutput);
             }
             unset($_SESSION[self::NOTICES]);
         }
@@ -461,7 +480,7 @@ EOS;
      * Adds bulk actions to the dropdown by reading array and generating relevant JS
      *
      */
-    public function fyndiq_add_bulk_action()
+    public function fyndiqAddBulkAction()
     {
         global $post_type;
 
@@ -523,34 +542,33 @@ EOS;
      * @todo get all bulk actions to use the dispatcher
      *
      */
-    public function fyndiq_bulk_action_dispatcher()
+    public function fyndiqBulkActionDispatcher()
     {
-        $action = $this->getAction('WP_Posts_List_Table');
-        switch ($this->getAction('WP_Posts_List_Table')) {
-            case self::ORDER_HANDLE:
-                FmOrder::orderHandleBulkAction(true);
-                break;
-            case self::ORDER_UNHANDLE:
-                FmOrder::orderHandleBulkAction(false);
-                break;
-            case self::DELIVERY_NOTE:
-                FmOrder::deliveryNoteBulkaction();
-                break;
-            case self::EXPORT_HANDLE:
-                FmProduct::productExportBulkAction(FmProduct::EXPORTED, $action);
-                break;
-            case self::EXPORT_UNHANDLE:
-                FmProduct::productExportBulkAction(FmProduct::NOT_EXPORTED, $action);
-                break;
-            default:
-                break;
+        try {
+            $action = $this->getAction('WP_Posts_List_Table');
+            switch ($this->getAction('WP_Posts_List_Table')) {
+                case self::ORDER_HANDLE:
+                    return FmOrder::orderHandleBulkAction(true);
+                case self::ORDER_UNHANDLE:
+                    return FmOrder::orderHandleBulkAction(false);
+                case self::DELIVERY_NOTE:
+                    return FmOrder::deliveryNoteBulkAction();
+                case self::EXPORT_HANDLE:
+                    return FmProduct::productExportBulkAction(FmProduct::EXPORTED, $action);
+                case self::EXPORT_UNHANDLE:
+                    return FmProduct::productExportBulkAction(FmProduct::NOT_EXPORTED, $action);
+                default:
+                    return false;
+            }
+        } catch (Exception $e) {
+            FmError::handleError($e->getMessage());
         }
     }
 
     public function doBulkActionMessages()
     {
         if (isset($_SESSION['bulkMessage']) && $GLOBALS['pagenow'] === 'edit.php') {
-            $this->fmOutput->output('<div class="updated"><p>' . $_SESSION['bulkMessage'] . '</p></div>');
+            FmError::renderError($_SESSION['bulkMessage'], FmError::CLASS_UPDATED, $this->fmOutput);
             unset($_SESSION['bulkMessage']);
         }
     }
@@ -568,7 +586,7 @@ EOS;
                 ),
                 number_format_i18n($_REQUEST['fyndiq_removed'])
             );
-            $this->fmOutput->output('<div class="updated"><p>' . $message . '</p></div>');
+            return FmError::renderError($message, FmError::CLASS_UPDATED, $this->fmOutput);
         }
         if ($pagenow == 'edit.php' && isset($_REQUEST['fyndiq_exported']) && (int)$_REQUEST['fyndiq_exported']) {
             $message = sprintf(
@@ -579,7 +597,7 @@ EOS;
                 ),
                 number_format_i18n($_REQUEST['fyndiq_exported'])
             );
-            $this->fmOutput->output('<div class="updated"><p>' . $message . '</p></div>');
+            return FmError::renderError($message, FmError::CLASS_UPDATED, $this->fmOutput);
         }
     }
 
