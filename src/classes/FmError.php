@@ -14,12 +14,19 @@ class FmError
     const CLASS_UPDATED = 'updated';
 
 
+    /**
+     * setHooks sets the error handling hooks
+     */
     public static function setHooks()
     {
-        add_action('admin_notices', array(__CLASS__, 'processError'));
+        add_action('admin_notices', array(__CLASS__, 'processErrorAction'));
     }
 
-    public static function processError()
+    /**
+     * processErrorAction handles the admin_notices action
+     * @return bool
+     */
+    public static function processErrorAction()
     {
         if (isset($_REQUEST['fyndiqMessageType'])) {
             return self::renderError(
@@ -29,6 +36,13 @@ class FmError
         }
     }
 
+    /**
+     * renderError renders notification message and escapes the parameters
+     * @param  string $message error message
+     * @param  string $messageType message class
+     * @param  FmOutput $fmOutput
+     * @return bool
+     */
     public static function renderError($message, $messageType = self::CLASS_ERROR, $fmOutput = null)
     {
         return FmError::renderErrorRaw(
@@ -38,6 +52,13 @@ class FmError
         );
     }
 
+    /**
+     * renderErrorRaw renders notification message without escaping the parameters
+     * @param  string $message error message
+     * @param  string $messageType message class
+     * @param  FmOutput $fmOutput
+     * @return bool
+     */
     public static function renderErrorRaw($message, $messageType = self::CLASS_ERROR, $fmOutput = null)
     {
         if (is_null($fmOutput)) {
@@ -52,7 +73,11 @@ class FmError
         );
     }
 
-
+    /**
+     * [handleError sets error message and type and refreshes the page to show it
+     * @param  string $errorMessage error message
+     * @param  sting $messageType message class
+     */
     public static function handleError($errorMessage, $messageType = self::CLASS_ERROR)
     {
         $errorMessage = sprintf("An error occurred: %s", $errorMessage);
