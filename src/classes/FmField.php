@@ -26,11 +26,10 @@ class FmField
     }
 
     /**
-     *
-     * This is the hooked function for fields on the product pages
+     * Hooked to 'woocommerce_product_write_panels' - renders the product tab
      *
      * @return bool - false if the product is not exportable. Otherwise, true.
-     * @throws -
+     * @throws - TODO: find where the exception is thrown here
      */
     public static function fyndiqProductTab()
     {
@@ -54,7 +53,7 @@ class FmField
         $fmOutput->output('<div class="options_group">');
 
         // 'Export to Fyndiq' checkbox
-        FmField::fyndiqGenerateField(FmProduct::FYNDIQ_EXPORT_META_KEY, array(
+        self::fyndiqGenerateField(FmProduct::FYNDIQ_EXPORT_META_KEY, array(
             'type' => 'checkbox',
             'class' => array('form-field', 'input-checkbox'),
             'label' => __('Export to Fyndiq', 'fyndiq'),
@@ -62,7 +61,7 @@ class FmField
         ), (bool)$product->getIsExported());
 
         // Absolute price text box
-        FmField::fyndiqGenerateField(FmProduct::FYNDIQ_ABSOLUTE_PRICE_FIELD, array(
+        self::fyndiqGenerateField(FmProduct::FYNDIQ_ABSOLUTE_PRICE_FIELD, array(
             'type' => 'text',
             'class' => array('form-field', 'short'),
             'label' => __('Fyndiq Absolute Price', 'fyndiq'),
@@ -102,13 +101,13 @@ class FmField
     }
 
     /**
-     *
+     * Hooked to 'woocommerce_admin_order_data_after_order_details' - generates the order handled checkbox
      */
     public static function addOrderField()
     {
         $order = new FmOrder(FmOrder::getWordpressCurrentPostID());
 
-        FmField::fyndiqGenerateField(FmOrder::FYNDIQ_HANDLED_ORDER_META_FIELD, array(
+        self::fyndiqGenerateField(FmOrder::FYNDIQ_HANDLED_ORDER_META_FIELD, array(
             'type' => 'checkbox',
             'class' => array('input-checkbox'),
             'label' => __('Order handled', 'fyndiq'),

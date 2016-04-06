@@ -18,7 +18,7 @@ class FmError
     }
 
     /**
-     * Renders error message if the correct request variables are set
+     * Hooked to 'admin_notices' - renders error message if the correct request variables are set
      *
      * @return bool - true if a message is displayed, otherwise false
      */

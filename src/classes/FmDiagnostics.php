@@ -9,7 +9,7 @@
 class FmDiagnostics
 {
     /**
-     * This registers the various hooks with WordPress
+     * Registers the various hooks with WordPress
      *
      * @return true
      */
@@ -21,7 +21,7 @@ class FmDiagnostics
     }
 
     /**
-     * Adds the diagnostic page as a menu item
+     * Hooked to 'admin_menu' - adds the diagnostic page as a menu item
      *
      * @return false|string - The resulting page's hook_suffix, or false if the user does not have the capability required.
      */
@@ -46,7 +46,8 @@ class FmDiagnostics
     /**
      * Outputs the raw HTML for the diagnostic page's body
      *
-     * @return true
+     * @return bool - true always.
+     * @throws Exception - throws the exceptions raised by diagnostic functions
      */
     public static function diagPage()
     {
@@ -115,7 +116,7 @@ class FmDiagnostics
     }
 
     /**
-     * Checks that all of the classes that we expect to be loaded are
+     * Checks that all of the classes that we expect to be loaded are done so
      *
      * @return string - HTML output of log data from the function
      * @throws Exception - if classes are missing
@@ -170,7 +171,7 @@ class FmDiagnostics
      * Checks whether the plugin has successfully connected/authenticated to/with the Fyndiq backend
      *
      * @return string - HTML output of log data from the function
-     * @throws Exception FyndiqAPIAuthorizationFailed
+     * @throws Exception FyndiqAPIAuthorizationFailed - when the module is not connected to the Fyndiq API
      */
     private static function probeConnection()
     {

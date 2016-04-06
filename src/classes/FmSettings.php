@@ -353,6 +353,7 @@ class FmSettings
             'id' => 'wc_settings_troubleshooting'
         );
 
+        // Enables the use of 'event=debug'
         $settings[] = array(
             'name' => __('Enable Debug', 'fyndiq'),
             'desc_tip' => __('Enables debugging.', 'fyndiq'),
