@@ -8,16 +8,24 @@ defined('ABSPATH') || exit;
 class FmHelpers
 {
 
-    /** Commit hash constant*/
+    /**
+     * Commit hash constant
+     */
     const COMMIT = 'XXXXXX';
 
-    /** Plugin platform*/
+    /**
+     * Plugin platform
+     */
     const PLATFORM = 'WooCommerce';
 
-    /** Debug disabled truth value */
+    /**
+     * Debug disabled truth value
+     */
     const DEBUG_DISABLED = 0;
 
-    /** Debug enabled truth value */
+    /**
+     * Debug enabled truth value
+     */
     const DEBUG_ENABLED = 1;
 
     /**
@@ -35,9 +43,10 @@ class FmHelpers
      * Wrappers around FyndiqAPI
      * uses stored connection credentials for authentication
      *
-     * @param $method
-     * @param $path
-     * @param array $data
+     *  @param string $method - HTTP method used
+     *  @param string $path   - path on Fyndiq URL to make request to
+     *  @param array  $data   - array of data to be sent in request
+     *
      * @return mixed
      * @throws Exception - when the API call fails
      */
@@ -64,7 +73,7 @@ class FmHelpers
      *
      * @return string - version string of the plugin
      */
-    static function getPluginVersion()
+    public static function getPluginVersion()
     {
         $plugin_folder = get_plugins('/' . 'woocommerce-fyndiq');
         $plugin_file = 'woocommerce-fyndiq.php';
@@ -141,7 +150,11 @@ class FmHelpers
         // Get products attributes
         // This can be set per product and some product can have no attributes at all
         global $wpdb;
-        $results = $wpdb->get_results('SELECT * FROM wp_postmeta WHERE meta_key = "_product_attributes" AND meta_value != "a:0:{}"', OBJECT);
+        $results = $wpdb->get_results(
+            'SELECT * FROM wp_postmeta WHERE meta_key = "_product_attributes" 
+            AND meta_value != "a:0:{}"',
+            OBJECT
+        );
         foreach ($results as $meta) {
             $data = unserialize($meta->meta_value);
             foreach ($data as $key => $attribute) {
