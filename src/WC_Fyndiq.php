@@ -84,6 +84,7 @@ class WC_Fyndiq
         FmProduct::setHooks();
         FmField::setHooks();
         FmSettings::setHooks();
+        FmUpdate::setHooks();
     }
 
     /**
