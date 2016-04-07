@@ -28,7 +28,7 @@ test:
 
 test-integration:
 	$(BIN_DIR)/phpunit --configuration phpintegration.xml.dist
-z
+
 php-lint:
 	find $(SRC_DIR) -name "*.php" -print0 | xargs -0 -n1 -P8 php -l
 
@@ -42,7 +42,7 @@ clear_coverage:
 	rm -rf $(COVERAGE_DIR)
 
 sniff:
-	$(BIN_DIR)/phpcs --standard=PS --extensions=php --ignore=shared,templates,api --colors $(SRC_DIR)
+	$(BIN_DIR)/phpcs --standard=PSR2 --extensions=php --ignore=shared,templates,api --colors $(SRC_DIR)
 
 sniff-fix:
 	$(BIN_DIR)/phpcbf --standard=PSR2 --extensions=php --ignore=include $(SRC_DIR)

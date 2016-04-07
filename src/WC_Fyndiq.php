@@ -475,7 +475,6 @@ EOS;
         if (isset($_SESSION[self::NOTICES])) {
             $notices = $_SESSION[self::NOTICES];
             foreach ($notices as $type => $noticegroup) {
-
                 echo '<div class="fn_message '.$class.'">';
                 $message = '<strong>'.$this->fmWoo->__('Fyndiq Validations').'</strong>';
                 $message .= '<ul>';

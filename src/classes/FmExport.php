@@ -591,7 +591,6 @@ class FmExport
                 if (wc_tax_enabled()) {
                     $filters['display_price'] = $variation->get_price_including_tax();
                 }
-
             } else {
                 $tax_display_mode = get_option('woocommerce_tax_display_shop');
                 $display_price = $tax_display_mode == 'incl' ? $variation->get_price_including_tax() :
