@@ -6,7 +6,9 @@
 
 class FmSettings
 {
-    /** Priority of the settings tab that we add to WooCommerce in terms of the order in which they are rendered */
+    /**
+     * Priority of the settings tab that we add to WooCommerce in terms of the order in which they are rendered
+     */
     const SETTING_TAB_PRIORITY = 50;
 
 
@@ -20,14 +22,19 @@ class FmSettings
         add_filter('woocommerce_settings_tabs_array', array(__CLASS__, 'addSettingsTab'), self::SETTING_TAB_PRIORITY);
         add_action('woocommerce_settings_tabs_wcfyndiq', array(__CLASS__, 'settingsTab'));
         add_action('woocommerce_update_options_wcfyndiq', array(__CLASS__, 'updateSettings'));
-        add_filter('plugin_action_links_' . plugin_basename(dirname(__FILE__).'/woocommerce-fyndiq.php'), array(__CLASS__, 'pluginSettingsActionLink'));
+        add_filter(
+            'plugin_action_links_' .
+            plugin_basename(dirname(__FILE__).'/woocommerce-fyndiq.php'),
+            array(__CLASS__, 'pluginSettingsActionLink')
+        );
     }
 
 
     /**
      * Hooked to 'woocommerce_settings_tabs_array' - filter to inject our tab
      *
-     * @param $settingsTabs - an associative array of tab names to be rendered where: [label => slug]
+     *  @param array $settingsTabs - an associative array of tab names to be rendered where: [label => slug]
+     *
      * @return mixed - should be the array of tabs that this was passed, plus the one for our plugin
      */
     public static function addSettingsTab($settingsTabs)
@@ -51,7 +58,8 @@ class FmSettings
     /**
      * Hooked to 'plugin_action_links_<slug_name>' - injects an action link for our settings page
      *
-     * @param $links - the existing array of action links
+     *  @param array $links - the existing array of action links
+     *
      * @return array - the passed array plus our injected link
      */
     public static function pluginSettingsActionLink($links)
@@ -107,7 +115,7 @@ class FmSettings
     /**
      * Contains the data for the various settings options that we use
      *
-     * @return mixed|void - returns WordPress function apply_filters(), which is the value of the settings after filtration
+     * @return mixed|void - returns WP function apply_filters(), which is the value of the settings after filtration
      */
     public static function fyndiqAllSettings()
     {
@@ -337,7 +345,11 @@ class FmSettings
                     FmExport::REF_SKU => __('SKU', 'fyndiq'),
                     FmExport::REF_ID => __('Product and Article ID', 'fyndiq'),
                 ),
-                'desc' => __('If this value is changed, products already existing on Fyndiq will be removed and uploaded again and orders might not be able to be imported with old SKU.', 'fyndiq'),
+                'desc' => __(
+                    'If this value is changed, products already existing on Fyndiq will be removed and uploaded again
+                     and orders might not be able to be imported with old SKU.',
+                    'fyndiq'
+                ),
             );
         }
 
