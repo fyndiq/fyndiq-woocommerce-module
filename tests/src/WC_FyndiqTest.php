@@ -48,6 +48,7 @@ class FyndiqTest extends PHPUnit_Framework_TestCase
 
     public function testCheckDebugEnabled()
     {
+        $this->wcFyndiq = new WC_Fyndiq($this->fmWoo, $this->fmOutput);
         $get = array('event' => 'debug');
 
         $this->fmWoo->expects($this->once())
