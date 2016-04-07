@@ -79,9 +79,7 @@ class FmDiagnostics
         $fmOutput->output(self::probeConnection());
 
         $fmOutput->output('<h2>' . __('Installed Plugins', 'fyndiq') . '</h2>');
-        $fmOutput->output(self::probePlugins());
-
-        return true;
+        return $fmOutput->output(self::probePlugins());
     }
 
     /**
@@ -176,7 +174,7 @@ class FmDiagnostics
                 throw new Exception(
                     sprintf(
                         __('Required classes `%s` are missing.', 'fyndiq'),
-                        implode(',', $missing)
+                        implode(', ', $missing)
                     )
                 );
             }
