@@ -60,25 +60,25 @@ class FmDiagnostics
     public static function diagPage()
     {
         $fmOutput = new FyndiqOutput();
-        $fmOutput->output("<h1>" . __('Fyndiq Integration Diagnostic Page', 'fyndiq') . "</h1>");
+        $fmOutput->output('<h1>' . __('Fyndiq Integration Diagnostic Page', 'fyndiq') . '</h1>');
         $fmOutput->output(
-            "<p>" . __(
+            '<p>' . __(
                 'This page contains diagnostic information that may be useful in the 
                 event that the Fyndiq WooCommerce integration plugin runs in to problems.',
                 'fyndiq'
-            ) . "</p>"
+            ) . '</p>'
         );
 
-        $fmOutput->output("<h2>" . __('File Permissions', 'fyndiq') . "</h2>");
+        $fmOutput->output('<h2>' . __('File Permissions', 'fyndiq') . '</h2>');
         $fmOutput->output(self::probeFilePermissions());
 
-        $fmOutput->output("<h2>" . __('Classes', 'fyndiq') . "</h2>");
+        $fmOutput->output('<h2>' . __('Classes', 'fyndiq') . '</h2>');
         $fmOutput->output(self::probeModuleIntegrity());
 
-        $fmOutput->output("<h2>" . __('API Connection', 'fyndiq') . "</h2>");
+        $fmOutput->output('<h2>' . __('API Connection', 'fyndiq') . '</h2>');
         $fmOutput->output(self::probeConnection());
 
-        $fmOutput->output("<h2>" . __('Installed Plugins', 'fyndiq') . "</h2>");
+        $fmOutput->output('<h2>' . __('Installed Plugins', 'fyndiq') . '</h2>');
         $fmOutput->output(self::probePlugins());
 
         return true;
