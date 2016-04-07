@@ -42,7 +42,7 @@ class FmSettings
             self::updateUrls();
         } catch (Exception $e) {
             if ($e->getMessage() === 'Unauthorized') {
-                FmError::handleError(__('Uh-oh. It looks like your Fyndiq credentials aren\'t correct.'), 'fyndiq');
+                WC_Admin_Settings::add_error(__('Uh-oh. It looks like your Fyndiq credentials aren\'t correct.', 'fyndiq'));
             }
         }
     }
