@@ -8,39 +8,58 @@ defined('ABSPATH') || exit;
 class FmExport
 {
 
-    /** TODO: what does this do? */
+    /**
+     * TODO: what does this do?
+     */
     const DELIMITER = ' / ';
-    /** TODO: what does this do? */
+
+    /**
+     * TODO: what does this do?
+     */
     const REF_DELIMITER = '-';
 
-    /** TODO: what does this do? */
+    /**
+     * TODO: what does this do?
+     */
     const DESCRIPTION_SHORT = 1;
 
-    /** TODO: what does this do? */
+    /**
+     * TODO: what does this do?
+     */
     const DESCRIPTION_LONG = 2;
 
-    /** TODO: what does this do? */
+    /**
+     * TODO: what does this do?
+     */
     const DESCRIPTION_SHORT_LONG = 3;
 
-    /** TODO: what does this do? */
+    /**
+     * TODO: what does this do?
+     */
     const REF_SKU = 1;
 
-    /** TODO: what does this do? */
+    /**
+     * TODO: what does this do?
+     */
     const REF_ID = 2;
 
-    /** @var array - TODO: what is this? */
+    /**
+     * TODO: what is this?
+     */
     private $productImages;
 
-    /** @var string - list of categories, cached to avoid fetching them every time we need them*/
+    /**
+     * List of categories, cached to avoid fetching them every time we need them
+     */
     private $categoryCache;
 
     /**
      * FmExport constructor
      *
-     * @param $filePath
-     * @param $fmOutput
+     *  @param string       $filePath - Path to CSV
+     *  @param FyndiqOutput $fmOutput - Instance of output class
      */
-    function __construct($filePath, $fmOutput)
+    public function __construct($filePath, $fmOutput)
     {
         $this->filePath = $filePath;
         $this->fmOutput = $fmOutput;
@@ -112,8 +131,11 @@ class FmExport
     }
 
     /**
-     * @param $productId
-     * @return array
+     * TODO: what does this do?
+     *
+     *  @param int $productId - ID of the product post
+     *
+     *  @return array - TODO:what do I return?
      */
     protected function getTagValuesFixed($productId)
     {
@@ -340,7 +362,11 @@ class FmExport
             FyndiqFeedWriter::PROPERTIES => $properties,
         );
 
-        return array_merge($feedArticle, $this->getMappedFields($variation['variation_id']), $this->getComparisons($variation['variation_id']));
+        return array_merge(
+            $feedArticle,
+            $this->getMappedFields($variation['variation_id']),
+            $this->getComparisons($variation['variation_id'])
+        );
     }
 
     /**
@@ -349,15 +375,15 @@ class FmExport
      * @param $absolutePrice
      * @return mixed
      */
-    function getProductPrice($product, $config, $absolutePrice)
+    private function getProductPrice($product, $config, $absolutePrice)
     {
         if ($config['wooML']) {
             return $this->getSaleProductPrice($product, $config['currency']);
         }
 
         $price = (!empty($absolutePrice)) ? $absolutePrice : $product->get_price();
-        if ((function_exists('wc_tax_enabled') && wc_tax_enabled()) ||
-            (!function_exists('wc_tax_enabled') && FmHelpers::fyndiq_wc_tax_enabled())
+        if ((function_exists('wc_tax_enabled') && wc_tax_enabled())
+            || (!function_exists('wc_tax_enabled') && FmHelpers::fyndiq_wc_tax_enabled())
         ) {
             // this get the price including taxes for 1 quantity of this product
             $price = $product->get_price_including_tax(1, $price);
@@ -366,11 +392,14 @@ class FmExport
     }
 
     /**
-     * @param $product
-     * @param $config
+     * Gets the regular price of a given product, including tax
+     *
+     *  @param WordPress::WP_Post $product - Post object of product to get price of
+     *  @param string             $config  - TODO: what is this?
+     *
      * @return mixed|string
      */
-    function getProductRegularPrice($product, $config)
+    private function getProductRegularPrice($product, $config)
     {
         if ($config['wooML']) {
             $regularPrice = '_regular_price';
@@ -384,8 +413,8 @@ class FmExport
         }
 
         $regularPrice = $product->get_regular_price();
-        if ((function_exists('wc_tax_enabled') && wc_tax_enabled()) ||
-            (!function_exists('wc_tax_enabled') && FmHelpers::fyndiq_wc_tax_enabled())
+        if ((function_exists('wc_tax_enabled') && wc_tax_enabled())
+            || (!function_exists('wc_tax_enabled') && FmHelpers::fyndiq_wc_tax_enabled())
         ) {
             // this get the price including taxes for 1 quantity of this product
             $regularPrice = $product->get_price_including_tax(1, $regularPrice);
@@ -395,11 +424,14 @@ class FmExport
 
 
     /**
-     * @param $product
-     * @param $currency
+     * Gets the price of a product when on sale
+     *
+     *  @param WordPress::WP_Post $product - product object of which to get the sale price of
+     *  @param $currency
+     *
      * @return mixed
      */
-    function getSaleProductPrice($product, $currency)
+    private function getSaleProductPrice($product, $currency)
     {
         $salePriceColumn = '_sale_price';
         $priceColumn = '_price';
@@ -433,10 +465,13 @@ class FmExport
     }
 
     /**
-     * @param $post
-     * @return string
+     * Gets the description of the given product
+     *
+     *  @param WordPress::WP_Post $post - product object of which to get description of
+     *
+     * @return string - the product description, or false on error
      */
-    function getDescription($post)
+    private function getDescription($post)
     {
         $option = get_option('wcfyndiq_description_picker');
         if (!isset($option) || $option == false) {
@@ -450,10 +485,13 @@ class FmExport
             case self::DESCRIPTION_SHORT_LONG:
                 return $post->post->post_excerpt . "\n" . $post->post->post_content;
         }
+        return false;
     }
 
     /**
-     * @return string
+     * TODO: what do I do?
+     *
+     * @return string - TODO: what am I?
      */
     public static function getDescriptionPOST()
     {
@@ -472,8 +510,11 @@ class FmExport
     }
 
     /**
-     * @param $exportedProduct
-     * @return array
+     * Get the available variations of a product
+     *
+     *  @param WordPress::WP_Post $exportedProduct - product object of which to get variations of
+     *
+     *  @return array
      */
     private function getAllVariations($exportedProduct)
     {
@@ -486,13 +527,23 @@ class FmExport
 
             $variation_attributes = $variation->get_variation_attributes();
             $availability = $variation->get_availability();
-            $availability_html = empty($availability['availability']) ? '' : '<p class="stock ' . esc_attr($availability['class']) . '">' . wp_kses_post($availability['availability']) . '</p>';
-            $availability_html = apply_filters('woocommerce_stock_html', $availability_html, $availability['availability'], $variation);
+            $availability_html = empty($availability['availability'])
+                ? '' : '<p class="stock ' . esc_attr($availability['class']) . '">' .
+                wp_kses_post($availability['availability']) . '</p>';
+            $availability_html = apply_filters(
+                'woocommerce_stock_html',
+                $availability_html,
+                $availability['availability'],
+                $variation
+            );
 
             if (has_post_thumbnail($variation->get_variation_id())) {
                 $attachment_id = get_post_thumbnail_id($variation->get_variation_id());
 
-                $attachment = wp_get_attachment_image_src($attachment_id, apply_filters('single_product_large_thumbnail_size', 'shop_single'));
+                $attachment = wp_get_attachment_image_src(
+                    $attachment_id,
+                    apply_filters('single_product_large_thumbnail_size', 'shop_single')
+                );
                 $image = $attachment ? current($attachment) : '';
 
                 $attachment = wp_get_attachment_image_src($attachment_id, 'full');
@@ -513,7 +564,9 @@ class FmExport
                 'image_link' => $image_link,
                 'image_title' => $image_title,
                 'image_alt' => $image_alt,
-                'price_html' => $variation->get_price() === "" || $product->get_variation_price('min') !== $product->get_variation_price('max') ? '<span class="price">' . $variation->get_price_html() . '</span>' : '',
+                'price_html' => $variation->get_price() === ""
+                    || $product->get_variation_price('min') !== $product->get_variation_price('max')
+                    ? '<span class="price">' . $variation->get_price_html() . '</span>' : '',
                 'availability_html' => $availability_html,
                 'sku' => $variation->get_sku(),
                 'weight' => $variation->get_weight() . ' ' . esc_attr(get_option('woocommerce_weight_unit')),
@@ -538,9 +591,14 @@ class FmExport
 
             } else {
                 $tax_display_mode = get_option('woocommerce_tax_display_shop');
-                $display_price = $tax_display_mode == 'incl' ? $variation->get_price_including_tax() : $variation->get_price_excluding_tax();
-                $display_regular_price = $tax_display_mode == 'incl' ? $variation->get_price_including_tax(1, $variation->get_regular_price()) : $variation->get_price_excluding_tax(1, $variation->get_regular_price());
-                $display_sale_price = $tax_display_mode == 'incl' ? $variation->get_price_including_tax(1, $variation->get_sale_price()) : $variation->get_price_excluding_tax(1, $variation->get_sale_price());
+                $display_price = $tax_display_mode == 'incl' ? $variation->get_price_including_tax() :
+                    $variation->get_price_excluding_tax();
+                $display_regular_price = $tax_display_mode == 'incl' ?
+                    $variation->get_price_including_tax(1, $variation->get_regular_price()) :
+                    $variation->get_price_excluding_tax(1, $variation->get_regular_price());
+                $display_sale_price = $tax_display_mode == 'incl' ?
+                    $variation->get_price_including_tax(1, $variation->get_sale_price()) :
+                    $variation->get_price_excluding_tax(1, $variation->get_sale_price());
 
                 $price = $display_price;
                 if (isset($display_sale_price)) {
@@ -633,9 +691,10 @@ class FmExport
     }
 
     /**
-     * getMappedFields - gets mapped fields for a given product
+     * Gets mapped fields for a given product
      *
-     * @param $product - either the post object of the product or the post ID
+     *  @param WordPress::WP_Post - $product - either the post object of the product or the post ID
+     *
      * @return array - an associative array of fields and their mapped values
      */
     private function getMappedFields($product)
@@ -683,9 +742,10 @@ class FmExport
     }
 
     /**
-     * checkFieldIsSet - checks whether a field map is set for a given key
+     * Checks whether a field map is set for a given key
      *
-     * @param $key - key for field mapping
+     * @param string $key - key for field mapping
+     *
      * @return bool - returns true if a mapping exists, otherwise false
      */
     private function checkFieldIsSet($key)
@@ -695,9 +755,11 @@ class FmExport
     }
 
     /**
+     * TODO: what do I do?
      *
-     * @param $product
-     * @return array
+     * @param int|WP::WP_Post $product - Post ID or post object
+     *
+     * @return array - TODO: What do I return?
      */
     private function getComparisons($product)
     {
@@ -706,8 +768,8 @@ class FmExport
             $comparisonUnit = $this->getValueForFields('comp_unit', $product);
             $comparisonPrice = $this->getValueForFields('comp_price', $product);
             if (!empty($comparisonUnit) && !empty($comparisonPrice)) {
-                $feedProduct[FyndiqFeedWriter::PRODUCT_PORTION] =
-                    number_format((float)$comparisonPrice, 2, '.', '');
+                $feedProduct[FyndiqFeedWriter::PRODUCT_PORTION]
+                    = number_format((float)$comparisonPrice, 2, '.', '');
                 $feedProduct[FyndiqFeedWriter::PRODUCT_COMPARISON_UNIT] = $comparisonUnit;
             }
         }

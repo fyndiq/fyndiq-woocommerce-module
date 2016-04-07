@@ -5,8 +5,9 @@
         <exclude name="PEAR.Commenting.FileComment"/>
         <exclude name="PEAR.Commenting.ClassComment"/>
         <exclude name="PEAR.Commenting.ClassComment"/>
+        <exclude name="PEAR.WhiteSpace.ScopeIndent.IncorrectExact"/>
         <exclude name="PEAR.NamingConventions.ValidFunctionName.PrivateNoUnderscore"/>
-        <exclude name="PEAR.Whitespace.ScopeIndent.IncorrectExact"/>
+        <exclude name="PEAR.NamingConventions.ValidVariableName.PrivateNoUnderscore"/>
     </rule>
     <rule ref="PSR2">
         <exclude name="PSR1.Files.SideEffects"/>
