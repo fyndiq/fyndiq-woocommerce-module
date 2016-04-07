@@ -11,6 +11,10 @@ class FmSettings
      */
     const SETTING_TAB_PRIORITY = 50;
 
+    /**
+     * Slug used for settings
+     */
+    const ID = 'wcfyndiq';
 
     /**
      * Sets all WordPress hooks related to the Fields
@@ -24,7 +28,7 @@ class FmSettings
         add_action('woocommerce_update_options_wcfyndiq', array(__CLASS__, 'updateSettings'));
         add_filter(
             'plugin_action_links_' .
-            plugin_basename(dirname(__FILE__).'/woocommerce-fyndiq.php'),
+            plugin_basename(dirname(__FILE__) . '/woocommerce-fyndiq.php'),
             array(__CLASS__, 'pluginSettingsActionLink')
         );
     }
@@ -39,7 +43,7 @@ class FmSettings
      */
     public static function addSettingsTab($settingsTabs)
     {
-        $settingsTabs['wcfyndiq'] = __('Fyndiq', 'fyndiq');
+        $settingsTabs[self::ID] = __('Fyndiq', 'fyndiq');
         return $settingsTabs;
     }
 
@@ -64,7 +68,7 @@ class FmSettings
      */
     public static function pluginSettingsActionLink($links)
     {
-        $settingUrl = esc_url(get_admin_url(null, 'admin.php?page=wc-settings&tab=products&section=wcfyndiq'));
+        $settingUrl = esc_url(get_admin_url(null, 'admin.php?page=wc-settings&tab=products&section=' . self::ID));
         $links[] = '<a href="'.$settingUrl.'">'.__('Settings', 'fyndiq').'</a>';
         return $links;
     }
@@ -82,7 +86,9 @@ class FmSettings
             self::updateUrls();
         } catch (Exception $e) {
             if ($e->getMessage() === 'Unauthorized') {
-                FmError::handleError(__('Uh-oh. It looks like your Fyndiq credentials aren\'t correct.', 'fyndiq'));
+                WC_Admin_Settings::add_error(
+                    __('Uh-oh. It looks like your Fyndiq credentials aren\'t correct.', 'fyndiq')
+                );
             }
             return false;
         }
@@ -383,6 +389,6 @@ class FmSettings
             'id' => 'wc_settings_wcfyndiq_section_end_troubleshooting'
         );
 
-        return apply_filters('wc_settings_tab_wcfyndiq', $settings);
+        return apply_filters('wc_settings_tab_' . self::ID, $settings);
     }
 }
