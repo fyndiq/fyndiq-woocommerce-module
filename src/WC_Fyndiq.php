@@ -228,7 +228,7 @@ class WC_Fyndiq
         );
     }
 
-    function fyndiqLoadJavascript()
+    public function fyndiqLoadJavascript()
     {
 
         $script = <<<EOS
@@ -491,9 +491,7 @@ EOS;
     }
 
     /**
-     *
-     * Adds bulk actions to the dropdown by reading array and generating relevant JS
-     *
+     * Adds bulk actions to the drop-down by reading array and generating relevant JS
      */
     public function fyndiqAddBulkAction()
     {
@@ -552,10 +550,9 @@ EOS;
 
 
     /**
+     * This function acts as a dispatcher, taking various actions and routing them to the appropriate function*
      *
-     * This function acts as a dispatcher, taking various actions and routing them to the appropriate function
-     * @todo get all bulk actions to use the dispatcher
-     *
+     * @return mixed - return of function called by dispatcher
      */
     public function fyndiqBulkActionDispatcher()
     {
@@ -617,8 +614,10 @@ EOS;
     }
 
     /**
-     * handleNotification handles notification calls
-     * @param array $get $_GET array
+     * Handles notification calls
+     *
+     *  @param array $get $_GET array
+     *
      * @return bool
      */
     public function handleNotification($get)
@@ -645,8 +644,10 @@ EOS;
     }
 
     /**
-     * orderCreated handles new order notification
-     * @param array $get $_GET array
+     * Handles new order notification
+     *
+     *  @param array $get - $_GET array
+     *
      * @return bool
      */
     protected function orderCreated($get)
@@ -676,7 +677,8 @@ EOS;
     }
 
     /**
-     * debug handles the debug page
+     * Handles the debug page
+     *
      * @return bool
      */
     protected function debug()
@@ -694,7 +696,8 @@ EOS;
     }
 
     /**
-     * ping handles ping notification
+     * Handles ping notification
+     *
      * @return bool
      */
     protected function ping()
@@ -756,7 +759,7 @@ EOS;
     }
 
     /**
-     * isDebugEnabled - returns true if debug is enabled
+     * Returns true if debug is enabled
      *
      * @return bool - whether debug is enabled
      */

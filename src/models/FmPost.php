@@ -19,8 +19,7 @@ class FmPost
         if (is_null($this->post)) {
             throw new Exception(
                 __(
-                    'Whoops. An error occurred when generating a post.' .
-                    'Please tell Fyndiq: FmPost instantiated with bad ID',
+                    'Whoops. An error occurred when generating a post. Please tell Fyndiq: FmPost instantiated with bad ID',
                     'fyndiq'
                 )
             );
