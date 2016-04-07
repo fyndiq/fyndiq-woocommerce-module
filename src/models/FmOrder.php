@@ -334,7 +334,7 @@ class FmOrder extends FmPost
                 $data->orders[] = $markPair;
             }
         }
-        return true;
+        return FmOrder::setIsHandledBulk($data);
     }
 
     public static function deliveryNoteBulkAction()
