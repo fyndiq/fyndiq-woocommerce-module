@@ -316,15 +316,17 @@ class FmOrder extends FmPost
     {
         $postsArray = FmPost::getRequestPostsArray();
 
+        if (empty($postsArray)) {
+            throw new Exception(__('Please select at least one order', WC_Fyndiq::TEXT_DOMAIN));
+        }
+
         $data = new stdClass();
 
-        if (!empty($postsArray)) {
-            foreach ($postsArray as $postId) {
-                $markPair = new stdClass();
-                $markPair->id = $postId;
-                $markPair->marked = (bool)$markStatus;
-                $data->orders[] = $markPair;
-            }
+        foreach ($postsArray as $postId) {
+            $markPair = new stdClass();
+            $markPair->id = $postId;
+            $markPair->marked = (bool)$markStatus;
+            $data->orders[] = $markPair;
         }
         return FmOrder::setIsHandledBulk($data);
     }

@@ -5,7 +5,7 @@ class FmErrorTest extends WP_UnitTestCase
 
     function test_renderErrorEmpty()
     {
-        FmError::processError();
+        FmError::processErrorAction();
         $this->expectOutputString('');
     }
 
@@ -14,7 +14,7 @@ class FmErrorTest extends WP_UnitTestCase
         $_REQUEST['fyndiqMessageType'] = "test";
         $_REQUEST['fyndiqMessage'] = "test";
 
-        FmError::processError();
+        FmError::processErrorAction();
         $this->expectOutputString('<div class="test"><p>test</p></div>');
     }
 }

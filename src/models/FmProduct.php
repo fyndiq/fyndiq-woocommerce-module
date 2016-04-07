@@ -311,9 +311,13 @@ class FmProduct extends FmPost
 
     public static function productExportBulkAction($export, $action)
     {
+        $posts = FmPost::getRequestPostsArray();
+        if (empty($postsArray)) {
+            throw new Exception(__('Please select at least one product', WC_Fyndiq::TEXT_DOMAIN));
+        }
+
         $changed = 0;
         $postIds = array();
-        $posts = FmPost::getRequestPostsArray();
         if (!is_null($posts)) {
             foreach ($posts as $postId) {
                 $product = new FmProduct((int) $postId);
