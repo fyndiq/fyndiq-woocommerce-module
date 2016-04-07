@@ -63,8 +63,8 @@ class FmDiagnostics
         $fmOutput->output('<h1>' . __('Fyndiq Integration Diagnostic Page', 'fyndiq') . '</h1>');
         $fmOutput->output(
             '<p>' . __(
-                'This page contains diagnostic information that may be useful in the 
-                event that the Fyndiq WooCommerce integration plugin runs in to problems.',
+                'This page contains diagnostic information that may be useful in the' .
+                'event that the Fyndiq WooCommerce integration plugin runs in to problems.',
                 'fyndiq'
             ) . '</p>'
         );
