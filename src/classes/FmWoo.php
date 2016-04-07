@@ -51,9 +51,7 @@ class FmWoo
 
     public function addMetaBox($id, $title, $callback, $screen = null, $context = 'advanced', $priority = 'default', $callback_args = null)
     {
-        add_meta_box($id, $title, $callback, $screen = null, $context, $priority, $callback_args);
-        //We return our own value due to add_meta_box being void
-        return true;
+        return add_meta_box($id, $title, $callback, $screen = null, $context, $priority, $callback_args);
     }
 
     public function __($text, $domain = null)
