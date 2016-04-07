@@ -312,7 +312,7 @@ class FmProduct extends FmPost
     public static function productExportBulkAction($export, $action)
     {
         $posts = FmPost::getRequestPostsArray();
-        if (empty($postsArray)) {
+        if (empty($posts)) {
             throw new Exception(__('Please select at least one product', WC_Fyndiq::TEXT_DOMAIN));
         }
 
