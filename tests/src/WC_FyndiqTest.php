@@ -6,7 +6,8 @@ class FyndiqTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->fmWoo = $this->getMockBuilder('stdClass')
-            ->setMethods(array(
+            ->setMethods(
+                array(
                 'addAction',
                 'wpUploadDir',
                 'loadPluginTextdomain',
@@ -14,20 +15,23 @@ class FyndiqTest extends PHPUnit_Framework_TestCase
                 'setDoingAJAX',
                 'getOption',
                 'wpDie',
-            ))
+                )
+            )
             ->getMock();
 
         $this->fmOutput = $this->getMockBuilder('stdClass')
-            ->setMethods(array(
+            ->setMethods(
+                array(
                 'showError',
-            ))
+                )
+            )
             ->getMock();
 
-        $this->wcFyndiq = new WC_Fyndiq($this->fmWoo, $this->fmOutput);
     }
 
     public function testLocaleLoad()
     {
+        $this->wcFyndiq = new WC_Fyndiq($this->fmWoo, $this->fmOutput);
         $this->fmWoo->expects($this->once())
             ->method('loadPluginTextdomain')
             ->with(

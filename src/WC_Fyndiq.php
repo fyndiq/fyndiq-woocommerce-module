@@ -56,10 +56,10 @@ class WC_Fyndiq
 
     const TEXT_DOMAIN = 'fyndiq';
 
-    public function __construct()
+    public function __construct($fmWoo, $fmOutput)
     {
-        $this->fmWoo = new FmWoo(WC_Fyndiq::TEXT_DOMAIN);
-        $this->fmOutput = new FyndiqOutput();
+        $this->fmWoo = $fmWoo;
+        $this->fmOutput = $fmOutput;
 
         $this->currencies = array_combine(
             FyndiqUtils::$allowedCurrencies,
