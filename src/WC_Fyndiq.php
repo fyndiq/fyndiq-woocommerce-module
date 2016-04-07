@@ -11,28 +11,44 @@ class WC_Fyndiq
 
     const NOTICES = 'fyndiq_notices';
 
-    /** @var string - key value for Fyndiq order column */
+    /**
+     * Key value for Fyndiq order column
+     */
     const ORDERS = 'fyndiq_order';
 
-    /** @var string -  key value for Fyndiq product column */
+    /**
+     * Key value for Fyndiq product column
+     */
     const EXPORT = 'fyndiq_export_column';
 
-    /** @var string - key for the bulk action in export */
+    /**
+     * Key for the bulk action in export
+     */
     const EXPORT_HANDLE = 'fyndiq_handle_export';
 
-    /** @var string - key for the bulk action in not export */
+    /**
+     * Key for the bulk action in not export
+     */
     const EXPORT_UNHANDLE = 'fyndiq_handle_no_export';
 
-    /** @var string - key for mark imported orders as handled */
+    /**
+     * Key for mark imported orders as handled
+     */
     const ORDER_HANDLE = 'fyndiq_handle_order';
 
-    /** @var string - key for mark imported orders as not handled */
+    /**
+     * Key for mark imported orders as not handled
+     */
     const ORDER_UNHANDLE = 'fyndiq_unhandle_order';
 
-    /** @var string - key for delivery note action */
+    /**
+     * Key for delivery note action
+     */
     const DELIVERY_NOTE = 'fyndiq_delivery';
 
-    /** @var string - key for order import action */
+    /**
+     * Key for order import action
+     */
     const ORDER_IMPORT = 'order_import';
 
     const ORDERS_DISABLE = 1;
