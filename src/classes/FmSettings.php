@@ -352,8 +352,7 @@ class FmSettings
                     FmExport::REF_ID => __('Product and Article ID', 'fyndiq'),
                 ),
                 'desc' => __(
-                    'If this value is changed, products already existing on Fyndiq will be removed and uploaded again
-                     and orders might not be able to be imported with old SKU.',
+                    'If this value is changed, products already existing on Fyndiq will be removed and uploaded again and orders might not be able to be imported with old SKU.',
                     'fyndiq'
                 ),
             );
