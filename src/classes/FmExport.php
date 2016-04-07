@@ -383,7 +383,7 @@ class FmExport
 
         $price = (!empty($absolutePrice)) ? $absolutePrice : $product->get_price();
         if ((function_exists('wc_tax_enabled') && wc_tax_enabled())
-            || (!function_exists('wc_tax_enabled') && FmHelpers::fyndiq_wc_tax_enabled())
+            || (!function_exists('wc_tax_enabled') && FmHelpers::fyndiqWcTaxEnabled())
         ) {
             // this get the price including taxes for 1 quantity of this product
             $price = $product->get_price_including_tax(1, $price);
@@ -414,7 +414,7 @@ class FmExport
 
         $regularPrice = $product->get_regular_price();
         if ((function_exists('wc_tax_enabled') && wc_tax_enabled())
-            || (!function_exists('wc_tax_enabled') && FmHelpers::fyndiq_wc_tax_enabled())
+            || (!function_exists('wc_tax_enabled') && FmHelpers::fyndiqWcTaxEnabled())
         ) {
             // this get the price including taxes for 1 quantity of this product
             $regularPrice = $product->get_price_including_tax(1, $regularPrice);

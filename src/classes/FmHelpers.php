@@ -101,7 +101,7 @@ class FmHelpers
      *
      * @return bool|mixed|void
      */
-    static function fyndiq_wc_tax_enabled()
+    public static function fyndiqWcTaxEnabled()
     {
         if (function_exists('wc_tax_enabled')) {
             return wc_tax_enabled();
@@ -114,16 +114,16 @@ class FmHelpers
      *
      * @return bool
      */
-    static function fyndiq_wc_prices_include_tax()
+    public static function fyndiqWcPricesIncludeTax()
     {
         if (function_exists('wc_tax_enabled')) {
             return wc_prices_include_tax();
         }
-        return self::fyndiq_wc_tax_enabled() && get_option('woocommerce_prices_include_tax') === 'yes';
+        return self::fyndiqWcTaxEnabled() && get_option('woocommerce_prices_include_tax') === 'yes';
     }
 
     /**
-     * getAllTerms - gets an array of product attributes TODO: explain further
+     * Gets an array of product attributes TODO: explain further
      *
      * @return array - an array of product attributes
      */

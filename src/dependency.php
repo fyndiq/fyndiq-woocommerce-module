@@ -11,7 +11,6 @@ require_once 'include/tgm/class-tgm-plugin-activation.php';
 
 add_action('tgmpa_register', 'fyndiqRegisterRequiredPlugins');
 
-
 /**
  * Hooked to 'tgmpa_register' - function that loads the dependency library
  *

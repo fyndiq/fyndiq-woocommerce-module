@@ -196,7 +196,7 @@ class FmOrder extends FmPost
                 $product_total = ($order_row->unit_price_amount * $order_row->quantity)  /
                     ((100+intval($order_row->vat_percent)) / 100);
 
-                if (FmHelpers::fyndiq_wc_tax_enabled() && !FmHelpers::fyndiq_wc_prices_include_tax()) {
+                if (FmHelpers::fyndiqWcTaxEnabled() && !FmHelpers::fyndiqWcPricesIncludeTax()) {
                     $product_total = ($order_row->unit_price_amount*$order_row->quantity);
                 }
 
