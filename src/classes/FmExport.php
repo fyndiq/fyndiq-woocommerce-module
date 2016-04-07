@@ -152,8 +152,11 @@ class FmExport
     }
 
     /**
-     * @param $feedWriter
-     * @return mixed
+     * Gets the available products and processes them in a way that the CSV feed writer understands
+     *
+     * @param FyndiqCSVFeedWriter $feedWriter - instance of the feed writer
+     *
+     * @return mixed - the value of the 'write()' method of the FyndiqCSVFeedWriter class
      */
     protected function writeFeed($feedWriter)
     {
@@ -426,8 +429,8 @@ class FmExport
     /**
      * Gets the price of a product when on sale
      *
-     *  @param WordPress::WP_Post $product - product object of which to get the sale price of
-     *  @param $currency
+     *  @param WordPress::WP_Post $product  - product object of which to get the sale price of
+     *  @param string             $currency - the currency to get the price in
      *
      * @return mixed
      */
@@ -708,8 +711,11 @@ class FmExport
     }
 
     /**
-     * @param $key
-     * @param $product
+     * Gets the mapped field for a particular attribute key for a product
+     *
+     *  @param string                $key     - the attribute key of the product
+     *  @param int|WordPress:WP_Post $product - the post ID of the product, or the product object
+     *
      * @return string
      */
     private function getValueForFields($key, $product)
