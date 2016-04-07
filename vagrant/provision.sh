@@ -27,7 +27,7 @@ dpkg-reconfigure locales
 echo "mysql-server-5.5 mysql-server/root_password password 123" | sudo debconf-set-selections
 echo "mysql-server-5.5 mysql-server/root_password_again password 123" | sudo debconf-set-selections
 apt-get install -y mysql-server
-apt-get install -y apache2 php5 php5-mysql php5-gd php5-mcrypt php5-curl php5-xdebug
+apt-get install -y apache2 php5 php5-mysql php5-gd php5-mcrypt php5-curl php5-xdebug phpunit
 
 echo 'ServerName localhost' >> /etc/apache2/apache2.conf
 
