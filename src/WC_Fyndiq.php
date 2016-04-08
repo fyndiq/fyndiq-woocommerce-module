@@ -365,7 +365,7 @@ EOS;
         if ($column === self::ORDERS) {
             $fyndiqOrder = $this->fmWoo->getPostMeta($orderId, 'fyndiq_id', true);
             if ($fyndiqOrder != '') {
-                return $this->fmOutput->output($fyndiq_order);
+                return $this->fmOutput->output($fyndiqOrder);
             }
             $this->fmWoo->updatePostMeta($orderId, 'fyndiq_id', '-');
             $this->fmOutput->output('-');
@@ -472,6 +472,7 @@ EOS;
             ));
             FmError::renderErrorRaw($message, FmError::CLASS_ERROR, $this->fmOutput);
         }
+        //TODO: This probably needs to use our error handler properly, pretty sure that NOTICES is evil
         if (isset($_SESSION[self::NOTICES])) {
             $notices = $_SESSION[self::NOTICES];
             foreach ($notices as $type => $noticegroup) {
