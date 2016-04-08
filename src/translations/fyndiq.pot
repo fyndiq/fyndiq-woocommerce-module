@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "Project-Id-Version: Fyndiq WooCommerce\n"
-"POT-Creation-Date: 2016-04-08 16:50+0200\n"
+"POT-Creation-Date: 2016-04-08 17:19+0200\n"
 "PO-Revision-Date: 2016-04-08 14:34+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -45,7 +45,7 @@ msgid "Done"
 msgstr ""
 
 #: WC_Fyndiq.php:274 WC_Fyndiq.php:303 WC_Fyndiq.php:387
-#: classes/FmSettings.php:46 classes/FmSettings.php:137
+#: classes/FmSettings.php:46 classes/FmSettings.php:140
 msgid "Fyndiq"
 msgstr ""
 
@@ -285,11 +285,12 @@ msgstr ""
 
 #: classes/FmField.php:82
 msgid ""
-"Set this price to make this the price to be set on the product when "
-"exporting to Fyndiq"
+"This field, when set, overrides any other pricing for the product and is "
+"used as the sale price on Fyndiq"
 msgstr ""
 
 #: classes/FmField.php:145
+msgctxt "Label for checkbox"
 msgid "Order handled"
 msgstr ""
 
@@ -297,208 +298,178 @@ msgstr ""
 msgid "Report this order as handled to Fyndiq"
 msgstr ""
 
-#: classes/FmSettings.php:90
-msgid "Uh-oh. It looks like your Fyndiq credentials aren't correct."
+#: classes/FmSettings.php:91
+msgctxt "Warning to user if they try to do something not allowed"
+msgid "Uh-oh. It looks like you shouldn't be here."
 msgstr ""
 
-#: classes/FmSettings.php:145
+#: classes/FmSettings.php:148
 msgid "General Settings"
 msgstr ""
 
-#: classes/FmSettings.php:147
+#: classes/FmSettings.php:150
 msgid "The following options are used to configure Fyndiq"
 msgstr ""
 
-#: classes/FmSettings.php:153
+#: classes/FmSettings.php:156
 msgid "Username"
 msgstr ""
 
-#: classes/FmSettings.php:154
+#: classes/FmSettings.php:157
 msgid "This is the username you use for login on Fyndiq Merchant"
 msgstr ""
 
-#: classes/FmSettings.php:157
-msgid "Must be your username"
+#: classes/FmSettings.php:160
+msgid "The username you use to log in to the Fyndiq merchant page"
 msgstr ""
 
-#: classes/FmSettings.php:162
+#: classes/FmSettings.php:165
 msgid "API-token"
 msgstr ""
 
-#: classes/FmSettings.php:163
+#: classes/FmSettings.php:166
 msgid "This is the API V2 Token on Fyndiq"
 msgstr ""
 
-#: classes/FmSettings.php:166
+#: classes/FmSettings.php:169
 msgid "Must be API v2 token"
 msgstr ""
 
-#: classes/FmSettings.php:172
-msgid "Global Price Percentage"
+#: classes/FmSettings.php:175
+msgid "Global Percentage Price Discount"
 msgstr ""
 
-#: classes/FmSettings.php:174
+#: classes/FmSettings.php:177
 msgid ""
-"The percentage that will be removed from the price when sending to fyndiq."
+"The percentage discount be applied to all prices when sold through Fyndiq"
 msgstr ""
 
-#: classes/FmSettings.php:180
-msgid "Can be 0 if the price should be the same as in your shop."
+#: classes/FmSettings.php:183
+msgid "Can be set to '0' if no discount should be applied"
 msgstr ""
 
-#: classes/FmSettings.php:185
-msgid "Global Price Discount"
+#: classes/FmSettings.php:188
+msgid "Global Absolute Price Discount"
 msgstr ""
 
-#: classes/FmSettings.php:187
-msgid "The amount that will be removed from the price when sending to fyndiq."
+#: classes/FmSettings.php:190
+msgid "The absolute discount applied to all prices when sold through Fyndiq"
 msgstr ""
 
-#: classes/FmSettings.php:193
-msgid "Can be 0 if the price should not change"
+#: classes/FmSettings.php:196
+msgid "Can be '0' if no discount should be applied"
 msgstr ""
 
-#: classes/FmSettings.php:198
-msgid "Used Currency"
+#: classes/FmSettings.php:201
+msgid "Fyndiq Sales Currency"
 msgstr ""
 
-#: classes/FmSettings.php:200
-msgid "Choose currency to be used for Fyndiq."
+#: classes/FmSettings.php:203
+msgid "Select the currency to be used for sales through Fyndiq"
 msgstr ""
 
-#: classes/FmSettings.php:206 classes/FmSettings.php:254
-#: classes/FmSettings.php:296 classes/FmSettings.php:309
-#: classes/FmSettings.php:322 classes/FmSettings.php:335
-msgid "This must be picked accurate"
+#: classes/FmSettings.php:213
+msgid "Minimum Quantity Reserve Limit"
 msgstr ""
 
-#: classes/FmSettings.php:212
-msgid "Minimum Quantity Limit"
-msgstr ""
-
-#: classes/FmSettings.php:214
+#: classes/FmSettings.php:215
 msgid ""
-"this quantity will be reserved by you and will be removed from the quantity "
-"that is sent to Fyndiq."
+"This is the lower limit at which point a product is removed from sale on "
+"Fyndiq"
 msgstr ""
 
-#: classes/FmSettings.php:220
-msgid "Stay on 0 if you want to send all stock to Fyndiq."
+#: classes/FmSettings.php:222
+msgid "Setting this field to '0' allows all stock to be sold through Fyndiq"
 msgstr ""
 
-#: classes/FmSettings.php:225
-msgid "Enable Orders"
+#: classes/FmSettings.php:229
+msgid "Enable Fyndiq Orders"
 msgstr ""
 
-#: classes/FmSettings.php:227
-msgid "This will disable all order logic for Fyndiq"
+#: classes/FmSettings.php:231
+msgid "Sets whether orders may be placed through Fyndiq"
 msgstr ""
 
-#: classes/FmSettings.php:233
+#: classes/FmSettings.php:237
 msgid "Enable"
 msgstr ""
 
-#: classes/FmSettings.php:234
+#: classes/FmSettings.php:238
 msgid "Disable"
 msgstr ""
 
-#: classes/FmSettings.php:236
-msgid "Default is to have orders enabled"
-msgstr ""
-
-#: classes/FmSettings.php:241
+#: classes/FmSettings.php:245
 msgid "Order Status"
 msgstr ""
 
-#: classes/FmSettings.php:243
-msgid "When a order is imported from fyndiq, this status will be applied."
+#: classes/FmSettings.php:247
+msgid ""
+"When an order is imported from Fyndiq, this status will be applied in "
+"WooCommerce"
 msgstr ""
 
-#: classes/FmSettings.php:263
+#: classes/FmSettings.php:266
 msgid "Field Mappings"
 msgstr ""
 
-#: classes/FmSettings.php:271
-msgid "Description to use"
+#: classes/FmSettings.php:274
+msgid "Product Description Type"
 msgstr ""
 
-#: classes/FmSettings.php:273
-msgid "Set how you want your description to be exported to Fyndiq."
+#: classes/FmSettings.php:276
+msgid "Set how you want your product description to be exported to Fyndiq."
 msgstr ""
 
-#: classes/FmSettings.php:279
+#: classes/FmSettings.php:282
 msgid "Long Description"
 msgstr ""
 
-#: classes/FmSettings.php:280
+#: classes/FmSettings.php:283
 msgid "Short Description"
 msgstr ""
 
-#: classes/FmSettings.php:281
+#: classes/FmSettings.php:284
 msgid "Short and Long Description"
 msgstr ""
 
-#: classes/FmSettings.php:283
-msgid "Default is Long Description"
+#: classes/FmSettings.php:286
+msgid "The default is to use the long description"
 msgstr ""
 
-#: classes/FmSettings.php:288 classes/FmSettings.php:290
+#: classes/FmSettings.php:291
 msgid "EAN"
 msgstr ""
 
-#: classes/FmSettings.php:301 classes/FmSettings.php:303
+#: classes/FmSettings.php:299
 msgid "ISBN"
 msgstr ""
 
-#: classes/FmSettings.php:314 classes/FmSettings.php:316
+#: classes/FmSettings.php:307
 msgid "MPN"
 msgstr ""
 
-#: classes/FmSettings.php:327 classes/FmSettings.php:329
+#: classes/FmSettings.php:315 classes/FmSettings.php:316
+msgctxt "noun - in context of marketing"
 msgid "Brand"
 msgstr ""
 
-#: classes/FmSettings.php:343
-msgid "Reference to be in use"
-msgstr ""
-
-#: classes/FmSettings.php:345
-msgid ""
-"If you have multi SKU as in variations changing this will make it work better"
-msgstr ""
-
-#: classes/FmSettings.php:351
-msgid "SKU"
-msgstr ""
-
-#: classes/FmSettings.php:352
-msgid "Product and Article ID"
-msgstr ""
-
-#: classes/FmSettings.php:355
-msgid ""
-"If this value is changed, products already existing on Fyndiq will be "
-"removed and uploaded again and orders might not be able to be imported with "
-"old SKU."
-msgstr ""
-
-#: classes/FmSettings.php:368
+#: classes/FmSettings.php:329
 msgid "Troubleshooting"
 msgstr ""
 
-#: classes/FmSettings.php:375 classes/FmSettings.php:383
+#: classes/FmSettings.php:336 classes/FmSettings.php:344
 msgid "Enable Debug"
 msgstr ""
 
-#: classes/FmSettings.php:376
+#: classes/FmSettings.php:337
 msgid "Enables debugging."
 msgstr ""
 
-#: classes/FmSettings.php:380
+#: classes/FmSettings.php:341
 msgid "No"
 msgstr ""
 
-#: classes/FmSettings.php:381
+#: classes/FmSettings.php:342
 msgid "Yes"
 msgstr ""
 
