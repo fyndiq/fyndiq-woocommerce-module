@@ -51,7 +51,7 @@ class FmField
             $fmOutput->output(
                 sprintf(
                     '<div class="options_group"><p>%s</p></div>',
-                    __('Can\'t export this product to Fyndiq', 'fyndiq')
+                    __('This product can not be exported to Fyndiq', WC_Fyndiq::TEXT_DOMAIN)
                 )
             );
             return false;
@@ -66,8 +66,7 @@ class FmField
             array(
             'type' => 'checkbox',
             'class' => array('form-field', 'input-checkbox'),
-            'label' => __('Export to Fyndiq', 'fyndiq'),
-            'description' => __('mark this as true if you want to export to Fyndiq', 'fyndiq'),
+            'label' => _x('Export to Fyndiq', 'Label for a checkbox', WC_Fyndiq::TEXT_DOMAIN),
             ),
             (bool)$product->getIsExported()
         );
@@ -78,10 +77,10 @@ class FmField
             array(
             'type' => 'text',
             'class' => array('form-field', 'short'),
-            'label' => __('Fyndiq Absolute Price', 'fyndiq'),
+            'label' => _x('Fyndiq Absolute Price', 'Label for a checkbox', WC_Fyndiq::TEXT_DOMAIN),
             'description' => __(
-                'Set this price to make this the price to be set on the product when exporting to Fyndiq',
-                'fyndiq'
+                'This field, when set, overrides any other pricing for the product and is used as the sale price on Fyndiq',
+                WC_Fyndiq::TEXT_DOMAIN
             ),
             'required' => false,
             ),
@@ -143,8 +142,8 @@ class FmField
             array(
             'type' => 'checkbox',
             'class' => array('input-checkbox'),
-            'label' => __('Order handled', 'fyndiq'),
-            'description' => __('Report this order as handled to Fyndiq', 'fyndiq'),
+            'label' => _x('Order handled', 'Label for checkbox', WC_Fyndiq::TEXT_DOMAIN),
+            'description' => __('Report this order as handled to Fyndiq', WC_Fyndiq::TEXT_DOMAIN),
             ),
             (bool)$order->getIsHandled()
         );

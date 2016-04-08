@@ -46,7 +46,7 @@ class FmDiagnostics
     public static function pluginActionLink($links)
     {
         $checkUrl = esc_url(get_admin_url(null, 'admin.php?page=fyndiq-check'));
-        $links[] = '<a href="' . $checkUrl . '">' . __('Fyndiq Check', 'fyndiq') . '</a>';
+        $links[] = '<a href="' . $checkUrl . '">' . __('Fyndiq Diagnostics', 'fyndiq') . '</a>';
         return $links;
     }
 
@@ -96,8 +96,8 @@ class FmDiagnostics
         $testMessage = time();
         try {
             $exists =  file_exists($fileName) ?
-                __('exists', 'fyndiq') :
-                __('does not exist', 'fyndiq');
+                _x('exists', 'verb e.g. the file exists', 'fyndiq') :
+                _x('does not exist', 'verb e.g. the file does not exist', 'fyndiq');
             $messages[] = sprintf(__('Feed file name: `%s` (%s)', 'fyndiq'), $fileName, $exists);
             $tempFileName = FyndiqUtils::getTempFilename(dirname($fileName));
             if (dirname($tempFileName) !== dirname($fileName)) {
@@ -198,7 +198,7 @@ class FmDiagnostics
             FmHelpers::callApi('GET', 'settings/');
         } catch (Exception $e) {
             if ($e instanceof FyndiqAPIAuthorizationFailed) {
-                throw new Exception(__('Module is not authorized.', 'fyndiq'));
+                throw new Exception(__('The credentials in the plugin settings are not correct', 'fyndiq'));
             }
         }
         $messages[] = __('Successfully connected to the Fyndiq API', 'fyndiq');

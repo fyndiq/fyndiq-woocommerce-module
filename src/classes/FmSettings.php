@@ -43,7 +43,7 @@ class FmSettings
      */
     public static function addSettingsTab($settingsTabs)
     {
-        $settingsTabs[self::ID] = __('Fyndiq', 'fyndiq');
+        $settingsTabs[self::ID] = __('Fyndiq', WC_Fyndiq::TEXT_DOMAIN);
         return $settingsTabs;
     }
 
@@ -69,7 +69,7 @@ class FmSettings
     public static function pluginSettingsActionLink($links)
     {
         $settingUrl = esc_url(get_admin_url(null, 'admin.php?page=wc-settings&tab=products&section=' . self::ID));
-        $links[] = '<a href="'.$settingUrl.'">'.__('Settings', 'fyndiq').'</a>';
+        $links[] = '<a href="'.$settingUrl.'">'.__('Settings', WC_Fyndiq::TEXT_DOMAIN).'</a>';
         return $links;
     }
 
@@ -87,7 +87,10 @@ class FmSettings
         } catch (Exception $e) {
             if ($e->getMessage() === 'Unauthorized') {
                 WC_Admin_Settings::add_error(
-                    __('Uh-oh. It looks like your Fyndiq credentials aren\'t correct.', 'fyndiq')
+                    _x(
+                        'Uh-oh. It looks like you shouldn\'t be here.', 'Warning to user if they try to do something not allowed',
+                        WC_Fyndiq::TEXT_DOMAIN
+                    )
                 );
             }
             return false;
@@ -134,7 +137,7 @@ class FmSettings
         $settings = array();
 
         $settings[] = array(
-            'name'     => __('Fyndiq', 'fyndiq'),
+            'name'     => __('Fyndiq', WC_Fyndiq::TEXT_DOMAIN),
             'type'     => 'title',
             'desc'     => '',
             'id'       => 'wc_settings_wcfyndiq_section_title'
@@ -142,106 +145,106 @@ class FmSettings
 
         // Adds Title to the Settings
         $settings[] = array(
-            'name' => __('General Settings', 'fyndiq'),
+            'name' => __('General Settings', WC_Fyndiq::TEXT_DOMAIN),
             'type' => 'title',
-            'desc' => __('The following options are used to configure Fyndiq', 'fyndiq'),
+            'desc' => __('The following options are used to configure Fyndiq', WC_Fyndiq::TEXT_DOMAIN),
             'id' => 'wcfyndiq'
         );
 
         // Add second text field option
         $settings[] = array(
-            'name' => __('Username', 'fyndiq'),
-            'desc_tip' => __('This is the username you use for login on Fyndiq Merchant', 'fyndiq'),
+            'name' => __('Username', WC_Fyndiq::TEXT_DOMAIN),
+            'desc_tip' => __('This is the username you use for login on Fyndiq Merchant', WC_Fyndiq::TEXT_DOMAIN),
             'id' => 'wcfyndiq_username',
             'type' => 'text',
-            'desc' => __('Must be your username', 'fyndiq'),
+            'desc' => __('Must be your username', WC_Fyndiq::TEXT_DOMAIN),
         );
 
         // Add second text field option
         $settings[] = array(
-            'name' => __('API-token', 'fyndiq'),
-            'desc_tip' => __('This is the API V2 Token on Fyndiq', 'fyndiq'),
+            'name' => __('API-token', WC_Fyndiq::TEXT_DOMAIN),
+            'desc_tip' => __('This is the API V2 Token on Fyndiq', WC_Fyndiq::TEXT_DOMAIN),
             'id' => 'wcfyndiq_apitoken',
             'type' => 'text',
-            'desc' => __('Must be API v2 token', 'fyndiq'),
+            'desc' => __('Must be API v2 token', WC_Fyndiq::TEXT_DOMAIN),
         );
 
 
         //Price Percentage
         $settings[] = array(
-            'name' => __('Global Price Percentage', 'fyndiq'),
+            'name' => __('Global Price Percentage', WC_Fyndiq::TEXT_DOMAIN),
             'desc_tip' => __(
                 'The percentage that will be removed from the price when sending to fyndiq.',
-                'fyndiq'
+                WC_Fyndiq::TEXT_DOMAIN
             ),
             'id' => 'wcfyndiq_price_percentage',
             'type' => 'text',
             'default' => '10',
-            'desc' => __('Can be 0 if the price should be the same as in your shop.', 'fyndiq'),
+            'desc' => __('Can be 0 if the price should be the same as in your shop.', WC_Fyndiq::TEXT_DOMAIN),
         );
 
         //Price Discount
         $settings[] = array(
-            'name' => __('Global Price Discount', 'fyndiq'),
+            'name' => __('Global Price Discount', WC_Fyndiq::TEXT_DOMAIN),
             'desc_tip' => __(
                 'The amount that will be removed from the price when sending to fyndiq.',
-                'fyndiq'
+                WC_Fyndiq::TEXT_DOMAIN
             ),
             'id' => 'wcfyndiq_price_discount',
             'type' => 'text',
             'default' => '0',
-            'desc' => __('Can be 0 if the price should not change', 'fyndiq'),
+            'desc' => __('Can be 0 if the price should not change', WC_Fyndiq::TEXT_DOMAIN),
         );
 
         // Add currency setting
         $settings[] = array(
-            'name' => __('Used Currency', 'fyndiq'),
+            'name' => __('Used Currency', WC_Fyndiq::TEXT_DOMAIN),
             'desc_tip' => __(
                 'Choose currency to be used for Fyndiq.',
-                'fyndiq'
+                WC_Fyndiq::TEXT_DOMAIN
             ),
             'id' => 'wcfyndiq_currency',
             'type' => 'select',
             'options' => $currencies,
-            'desc' => __('This must be picked accurate', 'fyndiq'),
+            'desc' => __('This must be picked accurate', WC_Fyndiq::TEXT_DOMAIN),
 
         );
 
         //Minimum Quantity limit
         $settings[] = array(
-            'name' => __('Minimum Quantity Limit', 'fyndiq'),
+            'name' => __('Minimum Quantity Limit', WC_Fyndiq::TEXT_DOMAIN),
             'desc_tip' => __(
                 'this quantity will be reserved by you and will be removed from the quantity that is sent to Fyndiq.',
-                'fyndiq'
+                WC_Fyndiq::TEXT_DOMAIN
             ),
             'id' => 'wcfyndiq_quantity_minimum',
             'type' => 'text',
             'default' => '0',
-            'desc' => __('Stay on 0 if you want to send all stock to Fyndiq.', 'fyndiq'),
+            'desc' => __('Stay on 0 if you want to send all stock to Fyndiq.', WC_Fyndiq::TEXT_DOMAIN),
         );
 
         // Add Description picker
         $settings[] = array(
-            'name' => __('Enable Orders', 'fyndiq'),
+            'name' => __('Enable Orders', WC_Fyndiq::TEXT_DOMAIN),
             'desc_tip' => __(
                 'This will disable all order logic for Fyndiq',
-                'fyndiq'
+                WC_Fyndiq::TEXT_DOMAIN
             ),
             'id' => 'wcfyndiq_order_enable',
             'type' => 'select',
             'options' => array(
-                FmOrder::ORDERS_ENABLE => __('Enable', 'fyndiq'),
-                FmOrder::ORDERS_DISABLE => __('Disable', 'fyndiq'),
+                FmOrder::ORDERS_ENABLE => __('Enable', WC_Fyndiq::TEXT_DOMAIN),
+                FmOrder::ORDERS_DISABLE => __('Disable', WC_Fyndiq::TEXT_DOMAIN),
             ),
-            'desc' => __('Default is to have orders enabled', 'fyndiq'),
+            'desc' => __('Default is to have orders enabled', WC_Fyndiq::TEXT_DOMAIN),
         );
 
         // Add order status setting
         $settings[] = array(
-            'name' => __('Order Status', 'fyndiq'),
+            'name' => __('Order Status', WC_Fyndiq::TEXT_DOMAIN),
             'desc_tip' => __(
                 'When a order is imported from fyndiq, this status will be applied.',
-                'fyndiq'
+                WC_Fyndiq::TEXT_DOMAIN
             ),
             'id' => 'wcfyndiq_create_order_status',
             'type' => 'select',
@@ -251,7 +254,7 @@ class FmSettings
                 'pending' => 'pending',
                 'on-hold' => 'on-hold'
             ),
-            'desc' => __('This must be picked accurate', 'fyndiq')
+            'desc' => __('This must be picked accurate', WC_Fyndiq::TEXT_DOMAIN)
         );
 
         $settings[] = array(
@@ -260,7 +263,7 @@ class FmSettings
         );
 
         $settings[] = array(
-            'name'     => __('Field Mappings', 'fyndiq'),
+            'name'     => __('Field Mappings', WC_Fyndiq::TEXT_DOMAIN),
             'type'     => 'title',
             'desc'     => '',
             'id'       => 'wc_settings_wcfyndiq_section_title'
@@ -268,71 +271,71 @@ class FmSettings
 
         // Add Description picker
         $settings[] = array(
-            'name' => __('Description to use', 'fyndiq'),
+            'name' => __('Description to use', WC_Fyndiq::TEXT_DOMAIN),
             'desc_tip' => __(
                 'Set how you want your description to be exported to Fyndiq.',
-                'fyndiq'
+                WC_Fyndiq::TEXT_DOMAIN
             ),
             'id' => 'wcfyndiq_description_picker',
             'type' => 'select',
             'options' => array(
-                FmExport::DESCRIPTION_LONG => __('Long Description', 'fyndiq'),
-                FmExport::DESCRIPTION_SHORT => __('Short Description', 'fyndiq'),
-                FmExport::DESCRIPTION_SHORT_LONG => __('Short and Long Description', 'fyndiq'),
+                FmExport::DESCRIPTION_LONG => __('Long Description', WC_Fyndiq::TEXT_DOMAIN),
+                FmExport::DESCRIPTION_SHORT => __('Short Description', WC_Fyndiq::TEXT_DOMAIN),
+                FmExport::DESCRIPTION_SHORT_LONG => __('Short and Long Description', WC_Fyndiq::TEXT_DOMAIN),
             ),
-            'desc' => __('Default is Long Description', 'fyndiq'),
+            'desc' => __('Default is Long Description', WC_Fyndiq::TEXT_DOMAIN),
         );
 
         // Map Field for EAN
         $settings[] = array(
-            'name' => __('EAN', 'fyndiq'),
+            'name' => __('EAN', WC_Fyndiq::TEXT_DOMAIN),
             'desc_tip' => __(
                 'EAN',
-                'fyndiq'
+                WC_Fyndiq::TEXT_DOMAIN
             ),
             'id' => 'wcfyndiq_field_map_ean',
             'type' => 'select',
             'options' => $attributes,
-            'desc' => __('This must be picked accurate', 'fyndiq'),
+            'desc' => __('This must be picked accurate', WC_Fyndiq::TEXT_DOMAIN),
         );
 
         // Map Field for ISBN
         $settings[] = array(
-            'name' => __('ISBN', 'fyndiq'),
+            'name' => __('ISBN', WC_Fyndiq::TEXT_DOMAIN),
             'desc_tip' => __(
                 'ISBN',
-                'fyndiq'
+                WC_Fyndiq::TEXT_DOMAIN
             ),
             'id' => 'wcfyndiq_field_map_isbn',
             'type' => 'select',
             'options' => $attributes,
-            'desc' => __('This must be picked accurate', 'fyndiq'),
+            'desc' => __('This must be picked accurate', WC_Fyndiq::TEXT_DOMAIN),
         );
 
         // Map Field for MPN
         $settings[] = array(
-            'name' => __('MPN', 'fyndiq'),
+            'name' => __('MPN', WC_Fyndiq::TEXT_DOMAIN),
             'desc_tip' => __(
                 'MPN',
-                'fyndiq'
+                WC_Fyndiq::TEXT_DOMAIN
             ),
             'id' => 'wcfyndiq_field_map_mpn',
             'type' => 'select',
             'options' => $attributes,
-            'desc' => __('This must be picked accurate', 'fyndiq'),
+            'desc' => __('This must be picked accurate', WC_Fyndiq::TEXT_DOMAIN),
         );
 
         // Map Field for Brand
         $settings[] = array(
-            'name' => __('Brand', 'fyndiq'),
+            'name' => __('Brand', WC_Fyndiq::TEXT_DOMAIN),
             'desc_tip' => __(
                 'Brand',
-                'fyndiq'
+                WC_Fyndiq::TEXT_DOMAIN
             ),
             'id' => 'wcfyndiq_field_map_brand',
             'type' => 'select',
             'options' => $attributes,
-            'desc' => __('This must be picked accurate', 'fyndiq'),
+            'desc' => __('This must be picked accurate', WC_Fyndiq::TEXT_DOMAIN),
         );
 
 
@@ -340,20 +343,20 @@ class FmSettings
         if (isset($_GET['set_sku'])) {
             // Add SKU picker
             $settings[] = array(
-                'name' => __('Reference to be in use', 'fyndiq'),
+                'name' => __('Reference to be in use', WC_Fyndiq::TEXT_DOMAIN),
                 'desc_tip' => __(
                     'If you have multi SKU as in variations changing this will make it work better',
-                    'fyndiq'
+                    WC_Fyndiq::TEXT_DOMAIN
                 ),
                 'id' => 'wcfyndiq_reference_picker',
                 'type' => 'select',
                 'options' => array(
-                    FmExport::REF_SKU => __('SKU', 'fyndiq'),
-                    FmExport::REF_ID => __('Product and Article ID', 'fyndiq'),
+                    FmExport::REF_SKU => __('SKU', WC_Fyndiq::TEXT_DOMAIN),
+                    FmExport::REF_ID => __('Product and Article ID', WC_Fyndiq::TEXT_DOMAIN),
                 ),
                 'desc' => __(
                     'If this value is changed, products already existing on Fyndiq will be removed and uploaded again and orders might not be able to be imported with old SKU.',
-                    'fyndiq'
+                    WC_Fyndiq::TEXT_DOMAIN
                 ),
             );
         }
@@ -365,22 +368,22 @@ class FmSettings
 
         // Troubleshooting
         $settings[] = array(
-            'name' => __('Troubleshooting', 'fyndiq'),
+            'name' => __('Troubleshooting', WC_Fyndiq::TEXT_DOMAIN),
             'type' => 'title',
             'id' => 'wc_settings_troubleshooting'
         );
 
         // Enables the use of 'event=debug'
         $settings[] = array(
-            'name' => __('Enable Debug', 'fyndiq'),
-            'desc_tip' => __('Enables debugging.', 'fyndiq'),
+            'name' => __('Enable Debug', WC_Fyndiq::TEXT_DOMAIN),
+            'desc_tip' => __('Enables debugging.', WC_Fyndiq::TEXT_DOMAIN),
             'id' => 'wcfyndiq_enable_debug',
             'type' => 'select',
             'options' => array(
-                FmHelpers::DEBUG_DISABLED => __('No', 'fyndiq'),
-                FmHelpers::DEBUG_ENABLED => __('Yes', 'fyndiq'),
+                FmHelpers::DEBUG_DISABLED => __('No', WC_Fyndiq::TEXT_DOMAIN),
+                FmHelpers::DEBUG_ENABLED => __('Yes', WC_Fyndiq::TEXT_DOMAIN),
             ),
-            'desc' => __('Enable Debug', 'fyndiq'),
+            'desc' => __('Enable Debug', WC_Fyndiq::TEXT_DOMAIN),
         );
 
         $settings[] = array(

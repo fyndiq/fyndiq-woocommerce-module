@@ -8,6 +8,7 @@
  * Author URI: http://fyndiq.se
  * License: Commercial
  * Text Domain: fyndiq
+ * Domain Path: /translations
  * PHP Version 5
  */
 

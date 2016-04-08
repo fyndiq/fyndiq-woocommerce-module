@@ -184,7 +184,7 @@ class FmOrder extends FmPost
             if (isset($product)) {
                 // if downloadable
                 if ($product->is_downloadable()) {
-                    throw new Exception(__('ERROR - product is downloadable.', 'fyndiq'));
+                    throw new Exception(__('Error - product is marked as downloable. Virtual items may not be sold on Fyndiq', WC_Fyndiq::TEXT_DOMAIN));
                 }
                 // add item
                 $args = array(
@@ -347,7 +347,7 @@ class FmOrder extends FmPost
             'orders' => array()
         );
         if (!isset($_REQUEST['post'])) {
-            throw new Exception(__('Pick at least one Order', 'fyndiq'));
+            throw new Exception(__('Please select at least one order', WC_Fyndiq::TEXT_DOMAIN));
         }
 
         foreach ($_REQUEST['post'] as $order) {
