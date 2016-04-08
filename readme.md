@@ -8,7 +8,7 @@ Installing the plugin is simple, requiring the following steps:
 1. Navigate to `http://yoursitenamehere/wp-admin`
 1. Go to `Plugins -> Installed Plugins`
 1. Find the plugin called `Fyndiq WooCommerce` and click `Activate`
-1. Go to `WooCommerce > Settings`
+1. Go to `WooCommerce -> Settings`
 1. Click the `Fyndiq` tab
 1. Enter your `Username` and `API-token`, then click `Save changes`.
 
