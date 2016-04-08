@@ -224,7 +224,7 @@ class WC_Fyndiq
         );
         return array(
             '<a href="'. $settingUrl . '">' . $this->fmWoo->__('Settings') . '</a>',
-            '<a href="'. $checkUrl . '">' . $this->fmWoo->__('Fyndiq Check') . '</a>'
+            '<a href="'. $checkUrl . '">' . $this->fmWoo->__('Fyndiq Diagnostics') . '</a>'
         );
     }
 
@@ -242,7 +242,7 @@ EOS;
         printf(
             $script,
             get_site_url(),
-            __('Error!'),
+            __('An unknown error occurred!'),
             __('Loading') . '...',
             __('Done')
         );
@@ -279,7 +279,7 @@ EOS;
             sprintf(
                 '<a href="%s" class="button button-primary">%s</a>',
                 $meta['fyndiq_delivery_note'][0],
-                $this->fmWoo->__('Get Fyndiq Delivery Note')
+                $this->fmWoo->__('Get Fyndiq delivery note')
             )
         );
     }
@@ -331,7 +331,7 @@ EOS;
     public function fyndiqShowOrderErrorNotice()
     {
         return FmError::renderError(
-            $this->fmWoo->__('Some Fyndiq Orders failed to be imported, most likely due to stock or couldn\'t find product on Reference.'),
+            $this->fmWoo->__('Some orders from Fyndiq have failed to import, most likely due to insufficient stock or products with non-matching SKUs.'),
             FmError::CLASS_ERROR,
             $this->fmError
         );
@@ -504,7 +504,7 @@ EOS;
                 self::EXPORT_UNHANDLE => $this->fmWoo->__('Remove from Fyndiq'),
             ),
             'shop_order' => array(
-                self::DELIVERY_NOTE => $this->fmWoo->__('Get Fyndiq Delivery Note'),
+                self::DELIVERY_NOTE => $this->fmWoo->__('Get Fyndiq delivery note'),
                 self::ORDER_IMPORT => $this->fmWoo->__('Import From Fyndiq'),
                 self::ORDER_HANDLE => $this->fmWoo->__('Mark order(s) as handled'),
                 self::ORDER_UNHANDLE => $this->fmWoo->__('Mark order(s) as not handled')

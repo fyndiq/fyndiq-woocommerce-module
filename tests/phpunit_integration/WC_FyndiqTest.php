@@ -109,8 +109,8 @@ class FyndiqTest extends WP_UnitTestCase
         $this->wc_fyndiq->fyndiq_product_add_bulk_action();
         $this->expectOutputString("                    <script type=\"text/javascript\">
                         jQuery(document).ready(function () {
-                            jQuery('<option>').val('fyndiq_delivery').text('Get Fyndiq Delivery Note').appendTo(\"select[name='action']\");
-                            jQuery('<option>').val('fyndiq_delivery').text('Get Fyndiq Delivery Note').appendTo(\"select[name='action2']\");
+                            jQuery('<option>').val('fyndiq_delivery').text('Get Fyndiq delivery note').appendTo(\"select[name='action']\");
+                            jQuery('<option>').val('fyndiq_delivery').text('Get Fyndiq delivery note').appendTo(\"select[name='action2']\");
                             jQuery(jQuery(\".wrap h2\")[0]).append(\"<a href='#' id='fyndiq-order-import' class='add-new-h2'>Import From Fyndiq</a>\");
                         });
                     </script>
@@ -132,7 +132,7 @@ class FyndiqTest extends WP_UnitTestCase
         $this->wc_fyndiq->order_meta_box_delivery_note();
 
         $this->fmOuptut->method('output')
-            ->with('<a href="https://fyndiq.se/merchant/fake/delivery/note/32" class="button button-primary">Get Fyndiq Delivery Note</a>')
+            ->with('<a href="https://fyndiq.se/merchant/fake/delivery/note/32" class="button button-primary">Get Fyndiq delivery note</a>')
             ->willReturn(true);
     }
 

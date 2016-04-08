@@ -7,6 +7,7 @@
  * Author: Fyndiq AB
  * Author URI: http://fyndiq.se
  * License: Commercial
+ * Text Domain: fyndiq
  * PHP Version 5
  */
 
