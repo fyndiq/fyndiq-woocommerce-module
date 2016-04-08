@@ -64,7 +64,7 @@ class FmUpdate
         $fmOutput->output(
             sprintf(
                 '<div class="updated"><p>%s<a href="%s"></a></div></p>',
-                __('It exist a new version of Fyndiq plugin, install it by clicking on the link:', 'fyndiq'),
+                __('There are updates available to the Fyndiq plugin, to install them, click here:', WC_Fyndiq::TEXT_DOMAIN),
                 $url
             )
         );

@@ -154,7 +154,6 @@ class FmSettings
         // Add second text field option
         $settings[] = array(
             'name' => __('Username', WC_Fyndiq::TEXT_DOMAIN),
-            'desc_tip' => __('This is the username you use for login on Fyndiq Merchant', WC_Fyndiq::TEXT_DOMAIN),
             'id' => 'wcfyndiq_username',
             'type' => 'text',
             'desc' => __('The username you use to log in to the Fyndiq merchant page', WC_Fyndiq::TEXT_DOMAIN),
@@ -166,7 +165,7 @@ class FmSettings
             'desc_tip' => __('This is the API V2 Token on Fyndiq', WC_Fyndiq::TEXT_DOMAIN),
             'id' => 'wcfyndiq_apitoken',
             'type' => 'text',
-            'desc' => __('Must be API v2 token', WC_Fyndiq::TEXT_DOMAIN),
+            'desc' => __('Must be a new API v2 token, rather than an old style v1 token', WC_Fyndiq::TEXT_DOMAIN),
         );
 
 
@@ -313,7 +312,6 @@ class FmSettings
         // Map Field for Brand
         $settings[] = array(
             'name' => _x('Brand', 'noun - in context of marketing', WC_Fyndiq::TEXT_DOMAIN),
-            'desc_tip' => _x('Brand', 'noun - in context of marketing', WC_Fyndiq::TEXT_DOMAIN),
             'id' => 'wcfyndiq_field_map_brand',
             'type' => 'select',
             'options' => $attributes,
@@ -333,15 +331,14 @@ class FmSettings
 
         // Enables the use of 'event=debug'
         $settings[] = array(
-            'name' => __('Enable Debug', WC_Fyndiq::TEXT_DOMAIN),
-            'desc_tip' => __('Enables debugging.', WC_Fyndiq::TEXT_DOMAIN),
+            'name' => __('Enable Debug Tools', WC_Fyndiq::TEXT_DOMAIN),
             'id' => 'wcfyndiq_enable_debug',
             'type' => 'select',
             'options' => array(
                 FmHelpers::DEBUG_DISABLED => __('No', WC_Fyndiq::TEXT_DOMAIN),
                 FmHelpers::DEBUG_ENABLED => __('Yes', WC_Fyndiq::TEXT_DOMAIN),
             ),
-            'desc' => __('Enable Debug', WC_Fyndiq::TEXT_DOMAIN),
+            'desc' => __('Enables debug tools for Fyndiq', WC_Fyndiq::TEXT_DOMAIN),
         );
 
         $settings[] = array(

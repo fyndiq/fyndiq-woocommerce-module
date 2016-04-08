@@ -88,15 +88,14 @@ class FmOrder extends FmPost
         $status = get_option('wcfyndiq_create_order_status');
 
         $settings = array(
-            'status'        => $status,
-            'created_via'   => 'fyndiq'
+            'status'        => $status
         );
 
         foreach ($order->order_rows as $order_row) {
             // get product by item_id
             $product = FmOrder::getProductByReference($order_row->sku);
             if (!isset($product)) {
-                throw new Exception(sprintf(__('Product SKU ( %s ) not found.', 'fyndiq'), $order_row->sku));
+                throw new Exception(sprintf(__('Product SKU ( %s ) was not found.', WC_Fyndiq::TEXT_DOMAIN), $order_row->sku));
             }
         }
 
@@ -109,22 +108,22 @@ class FmOrder extends FmPost
                     'woocommerce_register_post_type_shop_order',
                     array(
                         'labels'              => array(
-                            'name'               => __('Orders', 'woocommerce'),
-                            'singular_name'      => __('Order', 'woocommerce'),
-                            'add_new'            => __('Add Order', 'woocommerce'),
-                            'add_new_item'       => __('Add New Order', 'woocommerce'),
-                            'edit'               => __('Edit', 'woocommerce'),
-                            'edit_item'          => __('Edit Order', 'woocommerce'),
-                            'new_item'           => __('New Order', 'woocommerce'),
-                            'view'               => __('View Order', 'woocommerce'),
-                            'view_item'          => __('View Order', 'woocommerce'),
-                            'search_items'       => __('Search Orders', 'woocommerce'),
-                            'not_found'          => __('No Orders found', 'woocommerce'),
-                            'not_found_in_trash' => __('No Orders found in trash', 'woocommerce'),
-                            'parent'             => __('Parent Orders', 'woocommerce'),
-                            'menu_name'          => _x('Orders', 'Admin menu name', 'woocommerce')
+                            'name'               => __('Orders', WC_Fyndiq::TEXT_DOMAIN),
+                            'singular_name'      => _x('Order', 'noun', WC_Fyndiq::TEXT_DOMAIN),
+                            'add_new'            => __('Add Order', WC_Fyndiq::TEXT_DOMAIN),
+                            'add_new_item'       => __('Add New Order', WC_Fyndiq::TEXT_DOMAIN),
+                            'edit'               => _x('Edit', 'noun', WC_Fyndiq::TEXT_DOMAIN),
+                            'edit_item'          => __('Edit Order', WC_Fyndiq::TEXT_DOMAIN),
+                            'new_item'           => __('New Order', WC_Fyndiq::TEXT_DOMAIN),
+                            'view'               => __('View Order', WC_Fyndiq::TEXT_DOMAIN),
+                            'view_item'          => __('View Order', WC_Fyndiq::TEXT_DOMAIN),
+                            'search_items'       => __('Search Orders', WC_Fyndiq::TEXT_DOMAIN),
+                            'not_found'          => __('No Orders found', WC_Fyndiq::TEXT_DOMAIN),
+                            'not_found_in_trash' => __('No Orders found in trash', WC_Fyndiq::TEXT_DOMAIN),
+                            'parent'             => __('Parent Orders', WC_Fyndiq::TEXT_DOMAIN),
+                            'menu_name'          => _x('Orders', 'Admin menu name', WC_Fyndiq::TEXT_DOMAIN)
                         ),
-                        'description'         => __('This is where store orders are stored.', 'woocommerce'),
+                        'description'         => __('This is where store orders are stored.', WC_Fyndiq::TEXT_DOMAIN),
                         'public'              => false,
                         'show_ui'             => true,
                         'capability_type'     => 'shop_order',
@@ -144,7 +143,7 @@ class FmOrder extends FmPost
         }
         $wc_order = wc_create_order($settings);
         if (is_wp_error($wc_order)) {
-            throw new Exception(__('ERROR - Could not create order', 'fyndiq'));
+            throw new Exception(__('Error - Could not create order', WC_Fyndiq::TEXT_DOMAIN));
         }
 
         $address = array(
@@ -205,7 +204,7 @@ class FmOrder extends FmPost
                 $wc_order->add_product($product, $order_row->quantity, $args);
                 $product->set_stock($order_row->quantity, 'subtract');
             } else {
-                throw new Exception(sprintf(__('Product SKU ( %s ) not found.', 'fyndiq'), $order_row->sku));
+                throw new Exception(sprintf(__('Product SKU ( %s ) not found.', WC_Fyndiq::TEXT_DOMAIN), $order_row->sku));
             }
         }
         $wc_order->calculate_totals();

@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "Project-Id-Version: Fyndiq WooCommerce\n"
-"POT-Creation-Date: 2016-04-08 17:19+0200\n"
+"POT-Creation-Date: 2016-04-08 17:38+0200\n"
 "PO-Revision-Date: 2016-04-08 14:34+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -315,167 +315,164 @@ msgstr ""
 msgid "Username"
 msgstr ""
 
-#: classes/FmSettings.php:157
-msgid "This is the username you use for login on Fyndiq Merchant"
-msgstr ""
-
-#: classes/FmSettings.php:160
+#: classes/FmSettings.php:159
 msgid "The username you use to log in to the Fyndiq merchant page"
 msgstr ""
 
-#: classes/FmSettings.php:165
+#: classes/FmSettings.php:164
 msgid "API-token"
 msgstr ""
 
-#: classes/FmSettings.php:166
+#: classes/FmSettings.php:165
 msgid "This is the API V2 Token on Fyndiq"
 msgstr ""
 
-#: classes/FmSettings.php:169
-msgid "Must be API v2 token"
+#: classes/FmSettings.php:168
+msgid "Must be a new API v2 token, rather than an old style v1 token"
 msgstr ""
 
-#: classes/FmSettings.php:175
+#: classes/FmSettings.php:174
 msgid "Global Percentage Price Discount"
 msgstr ""
 
-#: classes/FmSettings.php:177
+#: classes/FmSettings.php:176
 msgid ""
 "The percentage discount be applied to all prices when sold through Fyndiq"
 msgstr ""
 
-#: classes/FmSettings.php:183
+#: classes/FmSettings.php:182
 msgid "Can be set to '0' if no discount should be applied"
 msgstr ""
 
-#: classes/FmSettings.php:188
+#: classes/FmSettings.php:187
 msgid "Global Absolute Price Discount"
 msgstr ""
 
-#: classes/FmSettings.php:190
+#: classes/FmSettings.php:189
 msgid "The absolute discount applied to all prices when sold through Fyndiq"
 msgstr ""
 
-#: classes/FmSettings.php:196
+#: classes/FmSettings.php:195
 msgid "Can be '0' if no discount should be applied"
 msgstr ""
 
-#: classes/FmSettings.php:201
+#: classes/FmSettings.php:200
 msgid "Fyndiq Sales Currency"
 msgstr ""
 
-#: classes/FmSettings.php:203
+#: classes/FmSettings.php:202
 msgid "Select the currency to be used for sales through Fyndiq"
 msgstr ""
 
-#: classes/FmSettings.php:213
+#: classes/FmSettings.php:212
 msgid "Minimum Quantity Reserve Limit"
 msgstr ""
 
-#: classes/FmSettings.php:215
+#: classes/FmSettings.php:214
 msgid ""
 "This is the lower limit at which point a product is removed from sale on "
 "Fyndiq"
 msgstr ""
 
-#: classes/FmSettings.php:222
+#: classes/FmSettings.php:221
 msgid "Setting this field to '0' allows all stock to be sold through Fyndiq"
 msgstr ""
 
-#: classes/FmSettings.php:229
+#: classes/FmSettings.php:228
 msgid "Enable Fyndiq Orders"
 msgstr ""
 
-#: classes/FmSettings.php:231
+#: classes/FmSettings.php:230
 msgid "Sets whether orders may be placed through Fyndiq"
 msgstr ""
 
-#: classes/FmSettings.php:237
+#: classes/FmSettings.php:236
 msgid "Enable"
 msgstr ""
 
-#: classes/FmSettings.php:238
+#: classes/FmSettings.php:237
 msgid "Disable"
 msgstr ""
 
-#: classes/FmSettings.php:245
+#: classes/FmSettings.php:244
 msgid "Order Status"
 msgstr ""
 
-#: classes/FmSettings.php:247
+#: classes/FmSettings.php:246
 msgid ""
 "When an order is imported from Fyndiq, this status will be applied in "
 "WooCommerce"
 msgstr ""
 
-#: classes/FmSettings.php:266
+#: classes/FmSettings.php:265
 msgid "Field Mappings"
 msgstr ""
 
-#: classes/FmSettings.php:274
+#: classes/FmSettings.php:273
 msgid "Product Description Type"
 msgstr ""
 
-#: classes/FmSettings.php:276
+#: classes/FmSettings.php:275
 msgid "Set how you want your product description to be exported to Fyndiq."
 msgstr ""
 
-#: classes/FmSettings.php:282
+#: classes/FmSettings.php:281
 msgid "Long Description"
 msgstr ""
 
-#: classes/FmSettings.php:283
+#: classes/FmSettings.php:282
 msgid "Short Description"
 msgstr ""
 
-#: classes/FmSettings.php:284
+#: classes/FmSettings.php:283
 msgid "Short and Long Description"
 msgstr ""
 
-#: classes/FmSettings.php:286
+#: classes/FmSettings.php:285
 msgid "The default is to use the long description"
 msgstr ""
 
-#: classes/FmSettings.php:291
+#: classes/FmSettings.php:290
 msgid "EAN"
 msgstr ""
 
-#: classes/FmSettings.php:299
+#: classes/FmSettings.php:298
 msgid "ISBN"
 msgstr ""
 
-#: classes/FmSettings.php:307
+#: classes/FmSettings.php:306
 msgid "MPN"
 msgstr ""
 
-#: classes/FmSettings.php:315 classes/FmSettings.php:316
+#: classes/FmSettings.php:314
 msgctxt "noun - in context of marketing"
 msgid "Brand"
 msgstr ""
 
-#: classes/FmSettings.php:329
+#: classes/FmSettings.php:327
 msgid "Troubleshooting"
 msgstr ""
 
-#: classes/FmSettings.php:336 classes/FmSettings.php:344
-msgid "Enable Debug"
+#: classes/FmSettings.php:334
+msgid "Enable Debug Tools"
 msgstr ""
 
-#: classes/FmSettings.php:337
-msgid "Enables debugging."
-msgstr ""
-
-#: classes/FmSettings.php:341
+#: classes/FmSettings.php:338
 msgid "No"
 msgstr ""
 
-#: classes/FmSettings.php:342
+#: classes/FmSettings.php:339
 msgid "Yes"
+msgstr ""
+
+#: classes/FmSettings.php:341
+msgid "Enables debug tools for Fyndiq"
 msgstr ""
 
 #: classes/FmUpdate.php:67
 msgid ""
-"It exist a new version of Fyndiq plugin, install it by clicking on the link:"
+"There are updates available to the Fyndiq plugin, to install them, click "
+"here:"
 msgstr ""
 
 #: dependency.php:49 dependency.php:56
@@ -483,79 +480,84 @@ msgid ""
 "The Fyndiq WooCommerce integration plugin requires WooCommerce to function."
 msgstr ""
 
-#: models/FmOrder.php:99 models/FmOrder.php:208
+#: models/FmOrder.php:98
 #, php-format
-msgid "Product SKU ( %s ) not found."
+msgid "Product SKU ( %s ) was not found."
 msgstr ""
 
-#: models/FmOrder.php:112
+#: models/FmOrder.php:111
 msgid "Orders"
 msgstr ""
 
-#: models/FmOrder.php:113
+#: models/FmOrder.php:112
 msgid "Order"
 msgstr ""
 
-#: models/FmOrder.php:114
+#: models/FmOrder.php:113
 msgid "Add Order"
 msgstr ""
 
-#: models/FmOrder.php:115
+#: models/FmOrder.php:114
 msgid "Add New Order"
 msgstr ""
 
-#: models/FmOrder.php:116
+#: models/FmOrder.php:115
 msgid "Edit"
 msgstr ""
 
-#: models/FmOrder.php:117
+#: models/FmOrder.php:116
 msgid "Edit Order"
 msgstr ""
 
-#: models/FmOrder.php:118
+#: models/FmOrder.php:117
 msgid "New Order"
 msgstr ""
 
-#: models/FmOrder.php:119 models/FmOrder.php:120
+#: models/FmOrder.php:118 models/FmOrder.php:119
 msgid "View Order"
 msgstr ""
 
-#: models/FmOrder.php:121
+#: models/FmOrder.php:120
 msgid "Search Orders"
 msgstr ""
 
-#: models/FmOrder.php:122
+#: models/FmOrder.php:121
 msgid "No Orders found"
 msgstr ""
 
-#: models/FmOrder.php:123
+#: models/FmOrder.php:122
 msgid "No Orders found in trash"
 msgstr ""
 
-#: models/FmOrder.php:124
+#: models/FmOrder.php:123
 msgid "Parent Orders"
 msgstr ""
 
-#: models/FmOrder.php:125
+#: models/FmOrder.php:124
 msgctxt "Admin menu name"
 msgid "Orders"
 msgstr ""
 
-#: models/FmOrder.php:127
+#: models/FmOrder.php:126
 msgid "This is where store orders are stored."
 msgstr ""
 
-#: models/FmOrder.php:147
-msgid "ERROR - Could not create order"
+#: models/FmOrder.php:146
+msgid "Error - Could not create order"
 msgstr ""
 
-#: models/FmOrder.php:187
+#: models/FmOrder.php:186
 msgid ""
 "Error - product is marked as downloable. Virtual items may not be sold on "
 "Fyndiq"
 msgstr ""
 
-#: models/FmOrder.php:328 models/FmOrder.php:350
+#: models/FmOrder.php:207
+#, php-format
+msgid "Product SKU ( %s ) not found."
+msgstr ""
+
+#: models/FmOrder.php:327 models/FmOrder.php:349
 msgid "Please select at least one order"
 msgstr ""
 
