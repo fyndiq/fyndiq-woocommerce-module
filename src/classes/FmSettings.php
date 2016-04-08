@@ -88,7 +88,8 @@ class FmSettings
             if ($e->getMessage() === 'Unauthorized') {
                 WC_Admin_Settings::add_error(
                     _x(
-                        'Uh-oh. It looks like you shouldn\'t be here.', 'Warning to user if they try to do something not allowed',
+                        'Uh-oh. It looks like you shouldn\'t be here.',
+                        'Warning to user if they try to do something not allowed',
                         WC_Fyndiq::TEXT_DOMAIN
                     )
                 );
