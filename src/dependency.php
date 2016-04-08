@@ -7,11 +7,16 @@
 //Boilerplate security. Doesn't allow this file to be directly executed by the browser.
 defined('ABSPATH') || exit;
 
-require_once('include/tgm/class-tgm-plugin-activation.php');
+require_once 'include/tgm/class-tgm-plugin-activation.php';
 
-add_action('tgmpa_register', 'fyndiq_register_required_plugins');
+add_action('tgmpa_register', 'fyndiqRegisterRequiredPlugins');
 
-function fyndiq_register_required_plugins()
+/**
+ * Hooked to 'tgmpa_register' - function that loads the dependency library
+ *
+ * @return bool - always true
+ */
+function fyndiqRegisterRequiredPlugins()
 {
     tgmpa(
         array(
@@ -24,16 +29,33 @@ function fyndiq_register_required_plugins()
         ),
         // These are the settings for the library
         array(
-            'id'           => 'fyndiq',                 // Unique ID for hashing notices for multiple instances of TGMPA.
-            'default_path' => '',                      // Default absolute path to bundled plugins.
-            'menu'         => 'tgmpa-install-plugins', // Menu slug.
-            'parent_slug'  => 'plugins.php',            // Parent menu slug.
-            'capability'   => 'manage_options',    // Capability needed to view plugin install page, should be a capability associated with the parent menu used.
-            'has_notices'  => true,                    // Show admin notices or not.
-            'dismissable'  => false,                    // If false, a user cannot dismiss the nag message.
-            'dismiss_msg'  => sprintf('<div class=\'error\'><p>%s</p></div>', __('The Fyndiq WooCommerce integration plugin requires WooCommerce to function.', 'fyndiq')),                      // If 'dismissable' is false, this message will be output at top of nag.
-            'is_automatic' => false,                   // Automatically activate plugins after installation or not.
-            'message'      => sprintf('<div class=\'error\'><p>%s</p></div>', __('The Fyndiq WooCommerce integration plugin requires WooCommerce to function.', 'fyndiq')),                      // Message to output right before the plugins table.
+            // Unique ID for hashing notices for multiple instances of TGMPA
+            'id'           => 'fyndiq',
+            // Default absolute path to bundled plugins
+            'default_path' => '',
+            // Menu slug
+            'menu'         => 'fyndiq-tgmpa-install-plugins',
+            // Parent menu slug
+            'parent_slug'  => 'plugins.php',
+            // Capability needed to view plugin install page
+            'capability'   => 'manage_options',
+            // Show admin notices or not.
+            'has_notices'  => true,
+            // If false, a user cannot dismiss the nag message.
+            'dismissable'  => false,
+            // If 'dismissable' is false, this message will be output at top of nag.
+            'dismiss_msg'  => sprintf(
+                '<div class=\'error\'><p>%s</p></div>',
+                __('The Fyndiq WooCommerce integration plugin requires WooCommerce to function.', 'fyndiq')
+            ),
+            // Automatically activate plugins after installation or not.
+            'is_automatic' => false,
+            // Message to output right before the plugins table.
+            'message'      => sprintf(
+                '<div class=\'error\'><p>%s</p></div>',
+                __('The Fyndiq WooCommerce integration plugin requires WooCommerce to function.', 'fyndiq')
+            ),
         )
     );
+    return true;
 }

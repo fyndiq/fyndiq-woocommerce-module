@@ -1,21 +1,23 @@
 <?php
-/**
- * Handles showing errors on admin pages
- *
- */
-
 //Boilerplate security. Doesn't allow this file to be directly executed by the browser.
 defined('ABSPATH') || exit;
 
+/**
+ * Class FmError - Handles showing errors on admin pages
+ */
 class FmError
 {
 
+    /**CSS Class assigned to red error messages*/
     const CLASS_ERROR = 'error';
+    /**CSS Class assigned to green update messages*/
     const CLASS_UPDATED = 'updated';
 
 
     /**
-     * setHooks sets the error handling hooks
+     * Sets all WordPress hooks related to the Fields
+     *
+     * @return bool - Always returns true because add_action() aways returns true
      */
     public static function setHooks()
     {
@@ -23,8 +25,9 @@ class FmError
     }
 
     /**
-     * processErrorAction handles the admin_notices action
-     * @return bool
+     * Hooked to 'admin_notices' - handles the admin_notices action
+     *
+     *  @return bool - returns output from renderErrorRaw() on success, otherwise false
      */
     public static function processErrorAction()
     {
@@ -34,14 +37,17 @@ class FmError
                 urldecode($_REQUEST['fyndiqMessageType'])
             );
         }
+        return false;
     }
 
     /**
-     * renderError renders notification message and escapes the parameters
-     * @param  string $message error message
-     * @param  string $messageType message class
-     * @param  FmOutput $fmOutput
-     * @return bool
+     * Renders notification message and escapes the parameters
+     *
+     *  @param string       $message     Error message
+     *  @param string       $messageType Message class
+     *  @param FyndiqOutput $fmOutput    Output class instance
+     *
+     *  @return bool
      */
     public static function renderError($message, $messageType = self::CLASS_ERROR, $fmOutput = null)
     {
@@ -53,10 +59,12 @@ class FmError
     }
 
     /**
-     * renderErrorRaw renders notification message without escaping the parameters
-     * @param  string $message error message
-     * @param  string $messageType message class
-     * @param  FmOutput $fmOutput
+     * Renders notification message without escaping the parameters
+     *
+     * @param string       $message     Error message
+     * @param string       $messageType Message class
+     * @param FyndiqOutput $fmOutput    Output class instance
+     *
      * @return bool
      */
     public static function renderErrorRaw($message, $messageType = self::CLASS_ERROR, $fmOutput = null)
@@ -74,9 +82,12 @@ class FmError
     }
 
     /**
-     * [handleError sets error message and type and refreshes the page to show it
-     * @param  string $errorMessage error message
-     * @param  sting $messageType message class
+     * Sets error message and type and refreshes the page to show it
+     *
+     *  @param string $errorMessage Error message
+     *  @param string $messageType  Message CSS class
+     *
+     * @return null
      */
     public static function handleError($errorMessage, $messageType = self::CLASS_ERROR)
     {

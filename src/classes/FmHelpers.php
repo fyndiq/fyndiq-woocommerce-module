@@ -1,42 +1,61 @@
 <?php
-
 //Boilerplate security. Doesn't allow this file to be directly executed by the browser.
 defined('ABSPATH') || exit;
 
+/**
+ * Class FmHelpers
+ */
 class FmHelpers
 {
 
+    /**
+     * Commit hash constant
+     */
     const COMMIT = 'XXXXXX';
+
+    /**
+     * Plugin platform
+     */
     const PLATFORM = 'WooCommerce';
 
+    /**
+     * Debug disabled truth value
+     */
     const DEBUG_DISABLED = 0;
+
+    /**
+     * Debug enabled truth value
+     */
     const DEBUG_ENABLED = 1;
 
+    /**
+     * Checks whether options for an API connection have been set
+     *
+     * @return bool - true if options have been set
+     */
     public static function apiConnectionExists()
     {
         return !is_null(get_option('wcfyndiq_username')) && !is_null(get_option('wcfyndiq_apitoken'));
     }
 
-    public static function allSettingsExist()
-    {
-        return FmConfig::getBool('language') && FmConfig::getBool('currency');
-    }
 
     /**
-     * wrappers around FyndiqAPI
+     * Wrappers around FyndiqAPI
      * uses stored connection credentials for authentication
      *
-     * @param $method
-     * @param $path
-     * @param array $data
+     *  @param string $method - HTTP method used
+     *  @param string $path   - path on Fyndiq URL to make request to
+     *  @param array  $data   - array of data to be sent in request
+     *
      * @return mixed
+     * @throws Exception - when the API call fails
      */
     public static function callApi($method, $path, $data = array())
     {
         $username = get_option('wcfyndiq_username');
         $apiToken = get_option('wcfyndiq_apitoken');
 
-        $userAgent = self::get_user_agent();
+        $userAgent = self::getUserAgent();
 
         return FyndiqAPICall::callApiRaw(
             $userAgent,
@@ -49,33 +68,12 @@ class FmHelpers
         );
     }
 
-    static function get_woocommerce_version()
-    {
-        // If get_plugins() isn't available, require it
-        if (!function_exists('get_plugins')) {
-            require_once(ABSPATH . 'wp-admin/includes/plugin.php');
-        }
-
-        // Create the plugins folder and file variables
-        $plugin_folder = get_plugins('/' . 'woocommerce');
-        $plugin_file = 'woocommerce.php';
-
-        // If the plugin version number is set, return it
-        if (isset($plugin_folder[$plugin_file]['Version'])) {
-            return $plugin_folder[$plugin_file]['Version'];
-
-        } else {
-            // Otherwise return null
-            return null;
-        }
-    }
-
-    static function get_version_label()
-    {
-        return FyndiqUtils::getVersionLabel(self::get_plugin_version(), self::COMMIT);
-    }
-
-    static function get_plugin_version()
+    /**
+     * Gets the version of the Fyndiq plugin
+     *
+     * @return string - version string of the plugin
+     */
+    public static function getPluginVersion()
     {
         $plugin_folder = get_plugins('/' . 'woocommerce-fyndiq');
         $plugin_file = 'woocommerce-fyndiq.php';
@@ -90,19 +88,29 @@ class FmHelpers
         return $plugin_version;
     }
 
-    public static function get_user_agent()
+    /**
+     * Gets the user agent of the browser
+     *
+     * @return string - user agent string
+     */
+    public static function getUserAgent()
     {
         return FyndiqUtils::getUserAgentString(
             self::PLATFORM,
-            self::get_woocommerce_version(),
+            WC()->version,
             'module',
-            self::get_plugin_version(),
+            self::getPluginVersion(),
             self::COMMIT
         );
     }
 
 
-    static function fyndiq_wc_tax_enabled()
+    /**
+     * TODO: Why do we do this filtering stuff?
+     *
+     * @return bool|mixed|void
+     */
+    public static function fyndiqWcTaxEnabled()
     {
         if (function_exists('wc_tax_enabled')) {
             return wc_tax_enabled();
@@ -110,14 +118,24 @@ class FmHelpers
         return apply_filters('wc_tax_enabled', get_option('woocommerce_calc_taxes') === 'yes');
     }
 
-    static function fyndiq_wc_prices_include_tax()
+    /**
+     * TODO: Why do we do this filtering stuff?
+     *
+     * @return bool
+     */
+    public static function fyndiqWcPricesIncludeTax()
     {
         if (function_exists('wc_tax_enabled')) {
             return wc_prices_include_tax();
         }
-        return self::fyndiq_wc_tax_enabled() && get_option('woocommerce_prices_include_tax') === 'yes';
+        return self::fyndiqWcTaxEnabled() && get_option('woocommerce_prices_include_tax') === 'yes';
     }
 
+    /**
+     * Gets an array of product attributes TODO: explain further
+     *
+     * @return array - an array of product attributes
+     */
     public static function getAllTerms()
     {
         $attributes = array('' => '');
@@ -132,7 +150,11 @@ class FmHelpers
         // Get products attributes
         // This can be set per product and some product can have no attributes at all
         global $wpdb;
-        $results = $wpdb->get_results('SELECT * FROM wp_postmeta WHERE meta_key = "_product_attributes" AND meta_value != "a:0:{}"', OBJECT);
+        $results = $wpdb->get_results(
+            'SELECT * FROM wp_postmeta WHERE meta_key = "_product_attributes" 
+            AND meta_value != "a:0:{}"',
+            OBJECT
+        );
         foreach ($results as $meta) {
             $data = unserialize($meta->meta_value);
             foreach ($data as $key => $attribute) {

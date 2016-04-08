@@ -3,15 +3,38 @@
 //Boilerplate security. Doesn't allow this file to be directly executed by the browser.
 defined('ABSPATH') || exit;
 
+/**
+ * Class FmUpdate - handles updating the plugin
+ */
 class FmUpdate
 {
+    /**
+     * The URL of the JSON file containing the latest version number
+     */
     const UPDATE_URL = 'http://developers.fyndiq.com/repos/fyndiq/fyndiq-woocommerce-module/releases/latest.json';
 
-    function updateNotification()
+
+    /**
+     * Sets all WordPress hooks related to the Fields
+     *
+     * @return bool - Always returns true because add_action() aways returns true TODO: abstraction layer
+     */
+    public static function setHooks()
     {
+        add_action('admin_notices', array(__CLASS__, 'updateNotification'));
+    }
+
+    /**
+     * Hooked to 'admin_notices' - checks whether there is an available update and if so, calls function to render it
+     *
+     * @return bool - true if an update is needed, otherwise false
+     */
+    public static function updateNotification()
+    {
+        $updater = new FmUpdate();
         $time = get_option('wcfyndiq_update_date');
         if (!isset($time) || $time < strtotime('-1 day', time())) {
-            $version = $this->get_update_version();
+            $version = $updater->getUpdateVersion();
 
             if (!is_null($version)) {
                 update_option('wcfyndiq_update_version', $version->tag_name);
@@ -21,39 +44,62 @@ class FmUpdate
         }
 
         $version = get_option('wcfyndiq_update_version');
-        $current_version = FmHelpers::get_plugin_version();
+        $current_version = FmHelpers::getPluginVersion();
         if (!is_null($version) && version_compare($version, $current_version) > 0) {
-            add_action('admin_notices', array(&$this, 'updateNotificiation_shower'));
+            add_action('admin_notices', array(&$updater, 'renderUpdateNotification'));
+            return true;
         }
+        return false;
     }
 
-    function updateNotificiation_shower()
+    /**
+     * Renders the notification about existing fyndiq plugin updates
+     *
+     * @return bool - always true
+     */
+    private function renderUpdateNotification()
     {
         $url = get_option('wcfyndiq_update_url');
-        ?>
-        <div class="updated">
-        <p><?php _e('It exist a new version of Fyndiq plugin, install it by clicking on the link:', 'fyndiq'); ?> <a href="<?php echo $url; ?>"><?php echo $url; ?></a> </p>
-        </div>
-        <?php
+        $fmOutput = new FyndiqOutput();
+        $fmOutput->output(
+            sprintf(
+                '<div class="updated"><p>%s<a href="%s"></a></div></p>',
+                __('It exist a new version of Fyndiq plugin, install it by clicking on the link:', 'fyndiq'),
+                $url
+            )
+        );
+
+        return true;
     }
 
-    function get_update_version()
+    /**
+     * Gets the version of the update
+     *
+     * @return object|array|bool - returns version data if exists, false on error
+     */
+    private function getUpdateVersion()
     {
-        $data = $this->update_curl();
+        $data = $this->updateCurl();
         if (isset($data->tag_name)) {
             return $data;
         }
-        return null;
+        return false;
     }
 
-    function update_curl()
+    /**
+     * Gets the update data from the server
+     *
+     * @return array|object|bool - update data on success, otherwise false
+     */
+    private function updateCurl()
     {
         $response = wp_remote_get(self::UPDATE_URL);
 
-        if ((!is_wp_error($response)) && (isset($response['response']['code']) && 200 == $response['response']['code'])) {
+        if ((!is_wp_error($response))
+            && (isset($response['response']['code']) && 200 == $response['response']['code'])
+        ) {
             return json_decode($response['body']);
         }
-
-        return null;
+        return false;
     }
 }

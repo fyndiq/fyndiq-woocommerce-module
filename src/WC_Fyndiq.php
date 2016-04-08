@@ -11,35 +11,50 @@ class WC_Fyndiq
 
     const NOTICES = 'fyndiq_notices';
 
-    /** @var string key value for Fyndiq order column */
+    /**
+     * Key value for Fyndiq order column
+     */
     const ORDERS = 'fyndiq_order';
 
-    /** @var string key value for Fyndiq product column */
+    /**
+     * Key value for Fyndiq product column
+     */
     const EXPORT = 'fyndiq_export_column';
 
-    /** @var string the key for the bulk action in export */
+    /**
+     * Key for the bulk action in export
+     */
     const EXPORT_HANDLE = 'fyndiq_handle_export';
 
-    /** @var string the key for the bulk action in not export */
+    /**
+     * Key for the bulk action in not export
+     */
     const EXPORT_UNHANDLE = 'fyndiq_handle_no_export';
 
-    /** @var string the key for mark imported orders as handled */
+    /**
+     * Key for mark imported orders as handled
+     */
     const ORDER_HANDLE = 'fyndiq_handle_order';
 
-    /** @var string the key for mark imported orders as not handled */
+    /**
+     * Key for mark imported orders as not handled
+     */
     const ORDER_UNHANDLE = 'fyndiq_unhandle_order';
 
-    /** @var string the key for delivery note action */
+    /**
+     * Key for delivery note action
+     */
     const DELIVERY_NOTE = 'fyndiq_delivery';
 
-    /** @var string the key for order import action */
+    /**
+     * Key for order import action
+     */
     const ORDER_IMPORT = 'order_import';
 
     const ORDERS_DISABLE = 1;
     const ORDERS_ENABLE = 2;
 
     const TEXT_DOMAIN = 'fyndiq';
-
 
     public function __construct($fmWoo, $fmOutput)
     {
@@ -85,6 +100,7 @@ class WC_Fyndiq
         FmProduct::setHooks();
         FmField::setHooks();
         FmSettings::setHooks();
+        FmUpdate::setHooks();
     }
 
     /**
@@ -171,7 +187,7 @@ class WC_Fyndiq
 
         //functions
         if (isset($_GET['fyndiq_feed'])) {
-            $this->fmExport->generate_feed();
+            $this->fmExport->generateFeed();
         }
         if (isset($_GET['fyndiq_orders'])) {
             FmOrder::generateOrders();
@@ -212,7 +228,7 @@ class WC_Fyndiq
         );
     }
 
-    function fyndiqLoadJavascript()
+    public function fyndiqLoadJavascript()
     {
 
         $script = <<<EOS
@@ -290,7 +306,7 @@ EOS;
         try {
             $order = new FmOrder(FmOrder::getWordpressCurrentPostID());
 
-            FmField::fyndiq_generate_field(FmOrder::FYNDIQ_HANDLED_ORDER_META_FIELD, array(
+            FmField::fyndiqGenerateField(FmOrder::FYNDIQ_HANDLED_ORDER_META_FIELD, array(
                 'type' => 'checkbox',
                 'class' => array('input-checkbox'),
                 'label' => $this->fmWoo->__('Order handled'),
@@ -419,7 +435,7 @@ EOS;
                     _e('Can\'t be exported');
                 }
             }
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             FmError::handleError($e->getMessage());
         }
     }
@@ -459,7 +475,6 @@ EOS;
         if (isset($_SESSION[self::NOTICES])) {
             $notices = $_SESSION[self::NOTICES];
             foreach ($notices as $type => $noticegroup) {
-
                 echo '<div class="fn_message '.$class.'">';
                 $message = '<strong>'.$this->fmWoo->__('Fyndiq Validations').'</strong>';
                 $message .= '<ul>';
@@ -476,9 +491,7 @@ EOS;
     }
 
     /**
-     *
-     * Adds bulk actions to the dropdown by reading array and generating relevant JS
-     *
+     * Adds bulk actions to the drop-down by reading array and generating relevant JS
      */
     public function fyndiqAddBulkAction()
     {
@@ -537,10 +550,9 @@ EOS;
 
 
     /**
+     * This function acts as a dispatcher, taking various actions and routing them to the appropriate function*
      *
-     * This function acts as a dispatcher, taking various actions and routing them to the appropriate function
-     * @todo get all bulk actions to use the dispatcher
-     *
+     * @return mixed - return of function called by dispatcher
      */
     public function fyndiqBulkActionDispatcher()
     {
@@ -602,8 +614,10 @@ EOS;
     }
 
     /**
-     * handleNotification handles notification calls
-     * @param array $get $_GET array
+     * Handles notification calls
+     *
+     *  @param array $get $_GET array
+     *
      * @return bool
      */
     public function handleNotification($get)
@@ -630,8 +644,10 @@ EOS;
     }
 
     /**
-     * orderCreated handles new order notification
-     * @param array $get $_GET array
+     * Handles new order notification
+     *
+     *  @param array $get - $_GET array
+     *
      * @return bool
      */
     protected function orderCreated($get)
@@ -661,13 +677,14 @@ EOS;
     }
 
     /**
-     * debug handles the debug page
+     * Handles the debug page
+     *
      * @return bool
      */
     protected function debug()
     {
         FyndiqUtils::debugStart();
-        FyndiqUtils::debug('USER AGENT', FmHelpers::get_user_agent());
+        FyndiqUtils::debug('USER AGENT', FmHelpers::getUserAgent());
         $languageId = $this->fmWoo->WC()->countries->get_base_country();
         FyndiqUtils::debug('language', $languageId);
         FyndiqUtils::debug('taxonomy', FmHelpers::getAllTerms());
@@ -679,7 +696,8 @@ EOS;
     }
 
     /**
-     * ping handles ping notification
+     * Handles ping notification
+     *
      * @return bool
      */
     protected function ping()
@@ -741,8 +759,9 @@ EOS;
     }
 
     /**
-     * isDebugEnabled returns true if debug is enabled;
-     * @return bool
+     * Returns true if debug is enabled
+     *
+     * @return bool - whether debug is enabled
      */
     protected function isDebugEnabled()
     {

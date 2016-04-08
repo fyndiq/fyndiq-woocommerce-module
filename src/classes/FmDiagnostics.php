@@ -1,15 +1,16 @@
 <?php
+//Boilerplate security. Doesn't allow this file to be directly executed by the browser.
+defined('ABSPATH') || exit;
+
 /**
- *
- * Handles the diagnostic page for the plugin
- *
+ * Class FmDiagnostics - handles diagnostic page functionality
  */
-
-
 class FmDiagnostics
 {
     /**
-     * This registers the various hooks with WordPress
+     * Registers the various hooks with WordPress
+     *
+     * @return bool - always true
      */
     public static function setHooks()
     {
@@ -19,18 +20,28 @@ class FmDiagnostics
     }
 
     /**
-     * Adds the diagnostic page as a menu item
+     * Hooked to 'admin_menu' - adds the diagnostic page as a menu item
+     *
+     * @return false|string - The resulting page's hook_suffix. False if the user does not have the capability required.
      */
     public static function addDiagnosticMenuItem()
     {
-        return add_submenu_page('tools.php', 'Fyndiq Checker Page', 'Fyndiq', 'manage_options', 'fyndiq-check', array(get_called_class(), 'diagPage'));
+        return add_submenu_page(
+            'tools.php',
+            'Fyndiq Checker Page',
+            'Fyndiq',
+            'manage_options',
+            'fyndiq-check',
+            array(get_called_class(), 'diagPage')
+        );
     }
 
     /**
-     * Filter function that adds an action link in the WordPress plugin page for the diagnostic page
+     *  Filter function that adds an action link in the WordPress plugin page for the diagnostic page
      *
-     * @param $links - the existing action link array
-     * @return array - $links, with an added action link
+     *  @param - $links - the existing action link array
+     *
+     *  @return array - $links, with an added action link
      */
     public static function pluginActionLink($links)
     {
@@ -41,25 +52,33 @@ class FmDiagnostics
 
     /**
      * Outputs the raw HTML for the diagnostic page's body
+     *
+     * @return bool - true always.
+     *
+     * @throws Exception - throws the exceptions raised by diagnostic functions
      */
     public static function diagPage()
     {
         $fmOutput = new FyndiqOutput();
-        $fmOutput->output("<h1>" . __('Fyndiq Integration Diagnostic Page', 'fyndiq') . "</h1>");
-        $fmOutput->output("<p>" . __('This page contains diagnostic information that may be useful in the 
-        event that the Fyndiq WooCommerce integration plugin runs in to problems.', 'fyndiq') . "</p>");
+        $fmOutput->output('<h1>' . __('Fyndiq Integration Diagnostic Page', 'fyndiq') . '</h1>');
+        $fmOutput->output(
+            '<p>' . __(
+                'This page contains diagnostic information that may be useful in the event that the Fyndiq WooCommerce integration plugin runs in to problems.',
+                'fyndiq'
+            ) . '</p>'
+        );
 
-        $fmOutput->output("<h2>" . __('File Permissions', 'fyndiq') . "</h2>");
+        $fmOutput->output('<h2>' . __('File Permissions', 'fyndiq') . '</h2>');
         $fmOutput->output(self::probeFilePermissions());
 
-        $fmOutput->output("<h2>" . __('Classes', 'fyndiq') . "</h2>");
+        $fmOutput->output('<h2>' . __('Classes', 'fyndiq') . '</h2>');
         $fmOutput->output(self::probeModuleIntegrity());
 
-        $fmOutput->output("<h2>" . __('API Connection', 'fyndiq') . "</h2>");
+        $fmOutput->output('<h2>' . __('API Connection', 'fyndiq') . '</h2>');
         $fmOutput->output(self::probeConnection());
 
-        $fmOutput->output("<h2>" . __('Installed Plugins', 'fyndiq') . "</h2>");
-        $fmOutput->output(self::probePlugins());
+        $fmOutput->output('<h2>' . __('Installed Plugins', 'fyndiq') . '</h2>');
+        return $fmOutput->output(self::probePlugins());
     }
 
     /**
@@ -82,10 +101,15 @@ class FmDiagnostics
             $messages[] = sprintf(__('Feed file name: `%s` (%s)', 'fyndiq'), $fileName, $exists);
             $tempFileName = FyndiqUtils::getTempFilename(dirname($fileName));
             if (dirname($tempFileName) !== dirname($fileName)) {
-                throw new Exception(sprintf(
-                    __('Cannot create file. Please make sure that the server can create new files in `%s`', 'fyndiq'),
-                    dirname($fileName)
-                ));
+                throw new Exception(
+                    sprintf(
+                        __(
+                            'Cannot create file. Please make sure that the server can create new files in `%s`',
+                            'fyndiq'
+                        ),
+                        dirname($fileName)
+                    )
+                );
             }
             $messages[] = sprintf(__('Trying to create temporary file: `%s`', 'fyndiq'), $tempFileName);
             $file = fopen($tempFileName, 'w+');
@@ -107,9 +131,10 @@ class FmDiagnostics
     }
 
     /**
-     * Checks that all of the classes that we expect to be loaded are
+     * Checks that all of the classes that we expect to be loaded are done so
      *
      * @return string - HTML output of log data from the function
+     * @throws Exception - if classes are missing
      */
     private static function probeModuleIntegrity()
     {
@@ -145,10 +170,12 @@ class FmDiagnostics
                 $messages[] = sprintf(__('Class `%s` is <strong>NOT</strong> found.', 'fyndiq'), $className);
             }
             if ($missing) {
-                throw new Exception(sprintf(
-                    __('Required classes `%s` are missing.', 'fyndiq'),
-                    implode(',', $missing)
-                ));
+                throw new Exception(
+                    sprintf(
+                        __('Required classes `%s` are missing.', 'fyndiq'),
+                        implode(', ', $missing)
+                    )
+                );
             }
             return implode('<br />', $messages);
         } catch (Exception $e) {
@@ -161,7 +188,8 @@ class FmDiagnostics
      * Checks whether the plugin has successfully connected/authenticated to/with the Fyndiq backend
      *
      * @return string - HTML output of log data from the function
-     * @throws Exception FyndiqAPIAuthorizationFailed
+     *
+     * @throws Exception FyndiqAPIAuthorizationFailed - when the module is not connected to the Fyndiq API
      */
     private static function probeConnection()
     {

@@ -1,13 +1,12 @@
 <?php
+//Boilerplate security. Doesn't allow this file to be directly executed by the browser.
+defined('ABSPATH') || exit;
+
 /**
  * Class FmOrder
  *
  * Object model for orders
  */
-
-//Boilerplate security. Doesn't allow this file to be directly executed by the browser.
-defined('ABSPATH') || exit;
-
 class FmOrder extends FmPost
 {
     const FYNDIQ_ID_META_FIELD = 'fyndiq_id';
@@ -69,9 +68,7 @@ class FmOrder extends FmPost
         $this->setMetaData(self::FYNDIQ_ID_META_FIELD, $fyndiqId);
     }
 
-    /**
-     * Here be dragons. By dragons, I mean static methods.
-     */
+    //Here be dragons. By dragons, I mean static methods.
 
     public static function orderExists($fyndiqId)
     {
@@ -169,7 +166,12 @@ class FmOrder extends FmPost
         add_post_meta($wc_order->id, '_payment_method_title', 'Import', true);
 
         add_post_meta($wc_order->id, '_customer_user', 0, true);
-        add_post_meta($wc_order->id, '_completed_date', date_format(new DateTime($order->created), 'Y-m-d H:i:s e'), true);
+        add_post_meta(
+            $wc_order->id,
+            '_completed_date',
+            date_format(new DateTime($order->created), 'Y-m-d H:i:s e'),
+            true
+        );
         add_post_meta($wc_order->id, '_order_currency', $order->order_rows[0]->unit_price_currency, true);
         add_post_meta($wc_order->id, '_paid_date', date_format(new DateTime($order->created), 'Y-m-d H:i:s e'), true);
 
@@ -191,10 +193,11 @@ class FmOrder extends FmPost
                     )
                 );
 
-                $product_total = ($order_row->unit_price_amount * $order_row->quantity)  / ((100+intval($order_row->vat_percent)) / 100);
+                $product_total = ($order_row->unit_price_amount * $order_row->quantity)  /
+                    ((100 + intval($order_row->vat_percent)) / 100);
 
-                if (FmHelpers::fyndiq_wc_tax_enabled() && !FmHelpers::fyndiq_wc_prices_include_tax()) {
-                    $product_total = ($order_row->unit_price_amount*$order_row->quantity);
+                if (FmHelpers::fyndiqWcTaxEnabled() && !FmHelpers::fyndiqWcPricesIncludeTax()) {
+                    $product_total = ($order_row->unit_price_amount * $order_row->quantity);
                 }
 
                 $args['totals']['total'] = $product_total;
@@ -212,7 +215,12 @@ class FmOrder extends FmPost
     {
         global $wpdb;
 
-        $product_id = $wpdb->get_var($wpdb->prepare("SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_sku' AND meta_value='%s' LIMIT 1", $sku));
+        $product_id = $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_sku' AND meta_value='%s' LIMIT 1",
+                $sku
+            )
+        );
 
         if ($product_id) {
             $product = new WC_Product($product_id);
@@ -221,7 +229,6 @@ class FmOrder extends FmPost
             }
             return null;
         }
-
         return null;
     }
 
@@ -263,7 +270,7 @@ class FmOrder extends FmPost
      *                  ...
      * )
      * @throws Exception
-     *
+     * @return bool - always true
      */
     public static function setIsHandledBulk($orders)
     {
@@ -310,7 +317,8 @@ class FmOrder extends FmPost
      * Function that handles bulk actions related to setting order handling status
      *
      * @param bool $markStatus - whether the orders are handled or not
-     * @throws Exception
+     * @return bool - always true
+     * @throws Exception - if there are no request posts
      */
     public static function orderHandleBulkAction($markStatus)
     {
