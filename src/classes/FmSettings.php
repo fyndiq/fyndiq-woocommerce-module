@@ -210,7 +210,7 @@ class FmSettings
 
         // Minimum Quantity limit
         $settings[] = array(
-            'name' => __('Minimum Quantity Reserve Limit', WC_Fyndiq::TEXT_DOMAIN),
+            'name' => __('Minimum Product Quantity Reserve', WC_Fyndiq::TEXT_DOMAIN),
             'desc_tip' => __(
                 'This is the lower limit at which point a product is removed from sale on Fyndiq',
                 WC_Fyndiq::TEXT_DOMAIN
@@ -226,7 +226,7 @@ class FmSettings
 
         // Enables or disables trading through Fyndiq
         $settings[] = array(
-            'name' => __('Enable Fyndiq Orders', WC_Fyndiq::TEXT_DOMAIN),
+            'name' => __('Enable Orders From Fyndiq', WC_Fyndiq::TEXT_DOMAIN),
             'desc_tip' => __(
                 'Sets whether orders may be placed through Fyndiq',
                 WC_Fyndiq::TEXT_DOMAIN
@@ -242,7 +242,7 @@ class FmSettings
         // WooCommerce order status to be added to imported orders
         //TODO: check if we need this
         $settings[] = array(
-            'name' => __('Order Status', WC_Fyndiq::TEXT_DOMAIN),
+            'name' => __('Imported Order Status', WC_Fyndiq::TEXT_DOMAIN),
             'desc_tip' => __(
                 'When an order is imported from Fyndiq, this status will be applied in WooCommerce',
                 WC_Fyndiq::TEXT_DOMAIN

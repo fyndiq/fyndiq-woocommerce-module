@@ -1,6 +1,12 @@
 <?php
 /**
- * Plugin Name: Fyndiq Woocommerce
+ * Fyndiq WooCommerce
+ *
+ *  @author    Fyndiq AB
+ *  @copyright 2016 Fyndiq AB
+ *  @license   Commercial
+ *
+ * Plugin Name: Fyndiq WooCommerce
  * Plugin URI: http://developers.fyndiq.com/fyndiq-built-integrations/
  * Description: Export products and import orders to woocommerce from Fyndiq.
  * Version: 1.0.3
