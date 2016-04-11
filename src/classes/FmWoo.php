@@ -26,7 +26,9 @@ class FmWoo
 
     public function setDoingAJAX($value = true)
     {
-        define('DOING_AJAX', $value);
+        if (!defined('DOING_AJAX')) {
+            define('DOING_AJAX', $value);
+        }
     }
 
     public function addSubmenuPage($parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function = '')
