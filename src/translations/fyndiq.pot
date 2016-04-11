@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "Project-Id-Version: Fyndiq WooCommerce\n"
-"POT-Creation-Date: 2016-04-08 17:50+0200\n"
+"POT-Creation-Date: 2016-04-11 11:27+0200\n"
 "PO-Revision-Date: 2016-04-08 14:34+0200\n"
 "Last-Translator: \n"
 "Language-Team: Fyndiq <lewis.porter@fyndiq.com>\n"
@@ -45,7 +45,7 @@ msgid "Done"
 msgstr ""
 
 #: WC_Fyndiq.php:274 WC_Fyndiq.php:303 WC_Fyndiq.php:387
-#: classes/FmSettings.php:46 classes/FmSettings.php:140
+#: classes/FmSettings.php:46 classes/FmSettings.php:141
 msgid "Fyndiq"
 msgstr ""
 
@@ -153,11 +153,11 @@ msgid "Import From Fyndiq"
 msgstr ""
 
 #: WC_Fyndiq.php:501
-msgid "Mark order(s) as handled"
+msgid "Mark order(s) as handled on Fyndiq"
 msgstr ""
 
 #: WC_Fyndiq.php:502
-msgid "Mark order(s) as not handled"
+msgid "Mark order(s) as not handled on Fyndiq"
 msgstr ""
 
 #: WC_Fyndiq.php:587
@@ -303,12 +303,8 @@ msgctxt "Warning to user if they try to do something not allowed"
 msgid "Uh-oh. It looks like you shouldn't be here."
 msgstr ""
 
-#: classes/FmSettings.php:148
+#: classes/FmSettings.php:149
 msgid "General Settings"
-msgstr ""
-
-#: classes/FmSettings.php:150
-msgid "The following options are used to configure Fyndiq"
 msgstr ""
 
 #: classes/FmSettings.php:156
@@ -365,7 +361,7 @@ msgid "Select the currency to be used for sales through Fyndiq"
 msgstr ""
 
 #: classes/FmSettings.php:212
-msgid "Minimum Quantity Reserve Limit"
+msgid "Minimum Product Quantity Reserve"
 msgstr ""
 
 #: classes/FmSettings.php:214
@@ -379,7 +375,7 @@ msgid "Setting this field to '0' allows all stock to be sold through Fyndiq"
 msgstr ""
 
 #: classes/FmSettings.php:228
-msgid "Enable Fyndiq Orders"
+msgid "Enable Orders From Fyndiq"
 msgstr ""
 
 #: classes/FmSettings.php:230
@@ -395,7 +391,7 @@ msgid "Disable"
 msgstr ""
 
 #: classes/FmSettings.php:244
-msgid "Order Status"
+msgid "Imported Order Status"
 msgstr ""
 
 #: classes/FmSettings.php:246
@@ -466,7 +462,7 @@ msgid "Yes"
 msgstr ""
 
 #: classes/FmSettings.php:341
-msgid "Enables debug tools for Fyndiq"
+msgid "Enables debug tools for Fyndiq staff"
 msgstr ""
 
 #: classes/FmUpdate.php:67
@@ -594,7 +590,7 @@ msgid "Please select at least one product"
 msgstr ""
 
 #. Plugin Name of the plugin/theme
-msgid "Fyndiq Woocommerce"
+msgid "Fyndiq WooCommerce"
 msgstr ""
 
 #. Plugin URI of the plugin/theme
