@@ -147,9 +147,10 @@ class FmProduct extends FmPost
     /**
      * Sets the instantiated product as exported (or not according to $value)
      *
-     * @param bool $value - True if the product is to be exported, inverse applies.
+     *  @param bool $value - True if the product is to be exported, inverse applies.
+     *
      * @return bool|int|null - whatever the native WP function spits out
-     * @todo - write abstraction class
+     * @todo   - write abstraction class
      */
     public function setIsExported($value)
     {
@@ -269,7 +270,9 @@ class FmProduct extends FmPost
      */
     public static function getExportedProducts()
     {
-        $args = array(
+        global $post;
+        //TODO: Find some way to transition legacy users to boolean export status
+        $argsLegacyExported = array(
             'numberposts' => -1,
             'orderby' => 'post_date',
             'order' => 'DESC',
@@ -279,7 +282,24 @@ class FmProduct extends FmPost
             'meta_key' => self::FYNDIQ_EXPORT_META_KEY,
             'meta_value' => 'exported'
         );
-        return get_posts($args);
+
+        $argsNewExported = array(
+            'numberposts' => -1,
+            'orderby' => 'post_date',
+            'order' => 'DESC',
+            'post_type' => 'product',
+            'post_status' => 'publish',
+            'suppress_filters' => true,
+            'meta_key' => self::FYNDIQ_EXPORT_META_KEY,
+            'meta_value' => 1
+        );
+
+        $legacyExportedPosts = get_posts($argsLegacyExported);
+        $newExportedPosts = get_posts($argsNewExported);
+
+        $posts = $legacyExportedPosts + $newExportedPosts;
+
+        return $posts;
     }
 
 

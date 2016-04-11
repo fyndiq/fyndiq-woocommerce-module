@@ -74,12 +74,15 @@ class FmExport
     {
         $username = get_option('wcfyndiq_username');
         $token = get_option('wcfyndiq_apitoken');
-
+        
+        //TODO: This does 0 verification of feed token. wtf.
         if (isset($username) && isset($token)) {
             if (FyndiqUtils::mustRegenerateFile($this->filePath)) {
                 $this->feedFileHandling();
             }
             if (file_exists($this->filePath)) {
+                //Disable PHP errors so that they don't pollute the feed
+                $oldErrorLevel = error_reporting(0);
                 // Clean output buffer if possible. Not this is not guaranteed to work because we don't control
                 // when/if ob_start will be called
                 ob_get_clean();
@@ -88,6 +91,7 @@ class FmExport
                 $this->fmOutput->header('Last-Modified: ' . gmdate('D, d M Y H:i:s T', $lastModified));
                 $this->fmOutput->streamFile($file, 'feed.csv', 'text/csv', filesize($this->filePath));
                 fclose($file);
+                error_reporting($oldErrorLevel);
                 return true;
             }
             return false;
