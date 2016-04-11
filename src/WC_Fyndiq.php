@@ -5,7 +5,20 @@ defined('ABSPATH') || exit;
 class WC_Fyndiq
 {
     private $filePath = null;
-    private $fmWoo = null;
+
+
+    /**
+     * WooCommerce abstraction layer
+     *
+     * @var FmWoo - FmWoo instance
+     */
+    private $fmWoo;
+
+    /**
+     * Output class
+     *
+     * @var FyndiqOutput - FyndiqOutput instance
+     */
     private $fmOutput = null;
     private $fmExport = null;
 
@@ -116,10 +129,6 @@ class WC_Fyndiq
         );
 
         $this->fmWoo->addAction(
-            'woocommerce_admin_order_data_after_order_details',
-            array(&$this, 'fyndiqAddOrderField')
-        );
-        $this->fmWoo->addAction(
             'woocommerce_product_write_panel_tabs',
             array(&$this, 'fyndiqProductTab')
         );
@@ -224,7 +233,7 @@ class WC_Fyndiq
         );
         return array(
             '<a href="'. $settingUrl . '">' . $this->fmWoo->__('Settings') . '</a>',
-            '<a href="'. $checkUrl . '">' . $this->fmWoo->__('Fyndiq Check') . '</a>'
+            '<a href="'. $checkUrl . '">' . $this->fmWoo->_x('Fyndiq Diagnostics', 'Link to diagnostics page') . '</a>'
         );
     }
 
@@ -242,9 +251,9 @@ EOS;
         printf(
             $script,
             get_site_url(),
-            __('Error!'),
-            __('Loading') . '...',
-            __('Done')
+            $this->fmWoo->__('An unknown error occurred!'),
+            $this->fmWoo->_x('Loading', 'Present continuous tense e.g. \'The program is loading\'') . '...',
+            $this->fmWoo->_x('Done', 'Adjective e.g. \'The loading is done\'')
         );
 
         if (FmOrder::getOrdersEnabled()) {
@@ -279,7 +288,7 @@ EOS;
             sprintf(
                 '<a href="%s" class="button button-primary">%s</a>',
                 $meta['fyndiq_delivery_note'][0],
-                $this->fmWoo->__('Get Fyndiq Delivery Note')
+                $this->fmWoo->__('Get Fyndiq delivery note')
             )
         );
     }
@@ -296,27 +305,6 @@ EOS;
         );
     }
 
-    /**
-     *
-     * This is the hooked function for fields on the order pages
-     *
-     */
-    public function fyndiqAddOrderField()
-    {
-        try {
-            $order = new FmOrder(FmOrder::getWordpressCurrentPostID());
-
-            FmField::fyndiqGenerateField(FmOrder::FYNDIQ_HANDLED_ORDER_META_FIELD, array(
-                'type' => 'checkbox',
-                'class' => array('input-checkbox'),
-                'label' => $this->fmWoo->__('Order handled'),
-                'description' => $this->fmWoo->__('Report this order as handled to Fyndiq'),
-            ), (bool)$order->getIsHandled());
-        } catch (Exception $e) {
-            FmError::handleError($e->getMessage());
-        }
-    }
-
     public function fyndiqShowOrderError()
     {
         if (isset($_GET['post_type']) && $_GET['post_type'] == 'shop_order') {
@@ -331,7 +319,7 @@ EOS;
     public function fyndiqShowOrderErrorNotice()
     {
         return FmError::renderError(
-            $this->fmWoo->__('Some Fyndiq Orders failed to be imported, most likely due to stock or couldn\'t find product on Reference.'),
+            $this->fmWoo->__('Some orders from Fyndiq have failed to import, most likely due to insufficient stock or products with non-matching SKUs.'),
             FmError::CLASS_ERROR,
             $this->fmError
         );
@@ -356,7 +344,7 @@ EOS;
     //Hooked function for adding columns to the products page (manage_edit-shop_order_columns)
     public function fyndiqOrderAddColumn($defaults)
     {
-        $defaults[self::ORDERS] = $this->fmWoo->__('Fyndiq Order');
+        $defaults[self::ORDERS] = $this->fmWoo->_x('Fyndiq Order ID', 'Header for column of ID numbers');
         return $defaults;
     }
 
@@ -427,12 +415,12 @@ EOS;
             if ($column == self::EXPORT) {
                 if ($product->isProductExportable()) {
                     if ($product->getIsExported()) {
-                        _e('Exported');
+                        $this->fmOutput->output($this->fmWoo->_x('Exported', 'verb e.g. It has been exported'));
                     } else {
-                        _e('Not exported');
+                        $this->fmOutput->output($this->fmWoo->_x('Not exported', 'verb e.g. It has not been exported'));
                     }
                 } else {
-                    _e('Can\'t be exported');
+                    $this->fmOutput->output($this->fmWoo->_x('Not exportable', 'adjective e.g. The TV was not exportable'));
                 }
             }
         } catch (Exception $e) {
@@ -445,18 +433,20 @@ EOS;
     {
         if ($this->checkCurrency()) {
             $message = sprintf(
-                '<strong>%s</strong>: %s %s',
-                $this->fmWoo->__('Wrong Currency'),
-                $this->fmWoo->__('Fyndiq only works in EUR and SEK. change to correct currency. Current Currency:'),
+                '<strong>%s</strong>: %s %s: %s',
+                $this->fmWoo->_x('Unsupported Currency', 'Error message - the selected currency is invalid'),
+                $this->fmWoo->__('Fyndiq only supports trading in EUR or SEK. Please change your WooCommerce settings to the correct currency.'),
+                $this->fmWoo->_x('Current Currency', 'Stating what the current currency is set to, with trailing colon'),
                 $this->fmWoo->getWoocommerceCurrency()
             );
             FmError::renderErrorRaw($message, FmError::CLASS_ERROR, $this->fmOutput);
         }
         if ($this->checkCountry()) {
             $message = sprintf(
-                '<strong>%s</strong>: %s %s',
-                $this->fmWoo->__('Wrong Country'),
-                $this->fmWoo->__('Fyndiq only works in Sweden and Germany. change to correct country. Current Country:'),
+                '<strong>%s</strong>: %s %s: %s',
+                $this->fmWoo->__('Unsupported Country'),
+                $this->fmWoo->__('Fyndiq only currently supports trading in Sweden and Germany. Please change your WooCommerce settings to the correct country.'),
+                $this->fmWoo->_x('Current Country', 'Stating what the current country is set to, with trailing colon'),
                 $this->fmWoo->WC()->countries->get_base_country()
             );
             FmError::renderErrorRaw($message, FmError::CLASS_ERROR, $this->fmOutput);
@@ -465,10 +455,10 @@ EOS;
             $url = admin_url('admin.php?page=wc-settings&tab=wcfyndiq');
             $message = (sprintf(
                 '<strong>%s</strong>: %s <a href="%s">%s</a>',
-                $this->fmWoo->__('Fyndiq Credentials'),
-                $this->fmWoo->__('You need to set Fyndiq Credentials to make it work. Do it in '),
+                $this->fmWoo->_x('Fyndiq Credentials', 'header for error message'),
+                $this->fmWoo->__('You need to add your Fyndiq credentials to the settings to start using this plugin. You can find these settings here'),
                 $url,
-                $this->fmWoo->__('Woocommerce Settings > Fyndiq')
+                $this->fmWoo->_x('Woocommerce Settings > Fyndiq', 'Link to respective page')
             ));
             FmError::renderErrorRaw($message, FmError::CLASS_ERROR, $this->fmOutput);
         }
@@ -476,14 +466,15 @@ EOS;
         if (isset($_SESSION[self::NOTICES])) {
             $notices = $_SESSION[self::NOTICES];
             foreach ($notices as $type => $noticegroup) {
+                //TODO: Class is undefined?
                 echo '<div class="fn_message '.$class.'">';
-                $message = '<strong>'.$this->fmWoo->__('Fyndiq Validations').'</strong>';
+                $message = '<strong>'.$this->fmWoo->_x('Fyndiq Validation Error', 'header for error message').'</strong>';
                 $message .= '<ul>';
                 foreach ($noticegroup as $notice) {
                     $message .= '<li>'.wp_kses($notice, wp_kses_allowed_html('post')).'</li>';
                 }
                 $message .= '</ul>';
-                $message .= '<p>' . $this->fmWoo->__('The product will not be exported to Fyndiq until these validations are fixed.') . '</p>';
+                $message .= '<p>' . $this->fmWoo->__('This product can not be exported to Fyndiq until it meets the Fyndiq validation criteria') . '</p>';
                 $class = 'update' === $type ? 'updated' : $type;
                 FmError::renderErrorRaw($message, $class, $this->fmOutput);
             }
@@ -501,14 +492,14 @@ EOS;
         //Define bulk actions for the various page types
         $bulkActionArray = array(
             'product' => array(
-                self::EXPORT_HANDLE => $this->fmWoo->__('Export to Fyndiq'),
-                self::EXPORT_UNHANDLE => $this->fmWoo->__('Remove from Fyndiq'),
+                self::EXPORT_HANDLE => $this->fmWoo->_x('Export to Fyndiq', 'verb'),
+                self::EXPORT_UNHANDLE => $this->fmWoo->_x('Remove from Fyndiq', 'verb'),
             ),
             'shop_order' => array(
-                self::DELIVERY_NOTE => $this->fmWoo->__('Get Fyndiq Delivery Note'),
-                self::ORDER_IMPORT => $this->fmWoo->__('Import From Fyndiq'),
-                self::ORDER_HANDLE => $this->fmWoo->__('Mark order(s) as handled'),
-                self::ORDER_UNHANDLE => $this->fmWoo->__('Mark order(s) as not handled')
+                self::DELIVERY_NOTE => $this->fmWoo->__('Get Fyndiq delivery note'),
+                self::ORDER_IMPORT => $this->fmWoo->_x('Import From Fyndiq', 'verb'),
+                self::ORDER_HANDLE => $this->fmWoo->__('Mark order(s) as handled on Fyndiq'),
+                self::ORDER_UNHANDLE => $this->fmWoo->__('Mark order(s) as not handled on Fyndiq')
             )
         );
 
@@ -593,8 +584,8 @@ EOS;
         if ($pagenow == 'edit.php' && isset($_REQUEST['fyndiq_removed']) && (int)$_REQUEST['fyndiq_removed']) {
             $message = sprintf(
                 _n(
-                    'Products removed from Fyndiq.',
-                    '%s products removed from Fyndiq.',
+                    'Product removed from Fyndiq',
+                    '%s products removed from Fyndiq',
                     $_REQUEST['fyndiq_removed']
                 ),
                 number_format_i18n($_REQUEST['fyndiq_removed'])
@@ -604,8 +595,8 @@ EOS;
         if ($pagenow == 'edit.php' && isset($_REQUEST['fyndiq_exported']) && (int)$_REQUEST['fyndiq_exported']) {
             $message = sprintf(
                 _n(
-                    'Products exported to Fyndiq.',
-                    '%s products exported to Fyndiq.',
+                    'Product exported to Fyndiq',
+                    '%s products exported to Fyndiq',
                     $_REQUEST['fyndiq_exported']
                 ),
                 number_format_i18n($_REQUEST['fyndiq_exported'])

@@ -64,6 +64,14 @@ class FmWoo
         return __($text, $domain);
     }
 
+    public function _x($text, $context, $domain = null)
+    {
+        if (is_null($domain)) {
+            $domain = $this->defaultTextDomain;
+        }
+        return _x($text, $context, $domain);
+    }
+
     public function loadPluginTextdomain($domain, $deprecated = false, $plugin_rel_path = false)
     {
         return load_plugin_textdomain($domain, $deprecated, $plugin_rel_path);

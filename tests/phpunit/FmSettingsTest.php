@@ -96,7 +96,7 @@ class FmSettingsTest extends WP_UnitTestCase
             'name' => 'Description to use',
             'desc_tip' => __(
                 'Set how you want your description to be exported to Fyndiq.',
-                'fyndiq'
+                WC_Fyndiq::TEXT_DOMAIN
             ),
             'id' => 'wcfyndiq_description_picker',
             'type' => 'select',
@@ -113,7 +113,7 @@ class FmSettingsTest extends WP_UnitTestCase
             'name' => 'EAN',
             'desc_tip' => __(
                 'EAN',
-                'fyndiq'
+                WC_Fyndiq::TEXT_DOMAIN
             ),
             'id' => 'wcfyndiq_field_map_ean',
             'type' => 'select',
@@ -126,7 +126,7 @@ class FmSettingsTest extends WP_UnitTestCase
             'name' => 'ISBN',
             'desc_tip' => __(
                 'ISBN',
-                'fyndiq'
+                WC_Fyndiq::TEXT_DOMAIN
             ),
             'id' => 'wcfyndiq_field_map_isbn',
             'type' => 'select',
@@ -139,7 +139,7 @@ class FmSettingsTest extends WP_UnitTestCase
             'name' => 'MPN',
             'desc_tip' => __(
                 'MPN',
-                'fyndiq'
+                WC_Fyndiq::TEXT_DOMAIN
             ),
             'id' => 'wcfyndiq_field_map_mpn',
             'type' => 'select',
@@ -152,7 +152,7 @@ class FmSettingsTest extends WP_UnitTestCase
             'name' => 'Brand',
             'desc_tip' => __(
                 'Brand',
-                'fyndiq'
+                WC_Fyndiq::TEXT_DOMAIN
             ),
             'id' => 'wcfyndiq_field_map_brand',
             'type' => 'select',
@@ -170,7 +170,7 @@ class FmSettingsTest extends WP_UnitTestCase
 
     function testAddSettingsTab()
     {
-        $expected = array('wcfyndiq' => __('Fyndiq', 'fyndiq'));
+        $expected = array('wcfyndiq' => __('Fyndiq', WC_Fyndiq::TEXT_DOMAIN));
         $return = FmSettings::addSettingsTab(array());
         $this->assertEquals($expected, $return);
     }

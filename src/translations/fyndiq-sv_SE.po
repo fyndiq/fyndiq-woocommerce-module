@@ -1,452 +1,1208 @@
-# 
+#
 # Translators:
 # Håkan Nylén <confacted@gmail.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: Fyndiq Modules: Woocommerce\n"
-"POT-Creation-Date: 2015-10-16 10:31+0100\n"
-"PO-Revision-Date: 2015-11-18 09:55+0000\n"
-"Last-Translator: Håkan Nylén <confacted@gmail.com>\n"
-"Language-Team: Swedish (http://www.transifex.com/fyndiq/fyndiq-modules-woocommerce/language/sv/)\n"
+"POT-Creation-Date: 2016-04-08 18:31+0200\n"
+"PO-Revision-Date: 2016-04-08 18:47+0200\n"
+"Last-Translator: Lewis Porter <lewis.porter@gmail.com>\n"
+"Language-Team: Swedish (http://www.transifex.com/fyndiq/fyndiq-modules-"
+"woocommerce/language/sv/)\n"
+"Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: sv\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 1.7.6\n"
+"X-Generator: Poedit 1.8.7\n"
 "X-Poedit-Basepath: ..\n"
-"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
-"X-Poedit-SourceCharset: UTF-8\n"
 
-#: WC_Fyndiq.php:103
+#: WC_Fyndiq.php:235 classes/FmSettings.php:72
 msgid "Settings"
 msgstr "Inställningar"
 
-#: WC_Fyndiq.php:104
-msgid "Fyndiq Check"
-msgstr "Fyndiq Check"
+#: WC_Fyndiq.php:236
+msgctxt "Link to diagnostics page"
+msgid "Fyndiq Diagnostics"
+msgstr "Fyndiq Diagnostik"
 
-#: WC_Fyndiq.php:116 WC_Fyndiq.php:159
-msgid "Fyndiq"
-msgstr "Fyndiq"
+#: WC_Fyndiq.php:254
+msgid "An unknown error occurred!"
+msgstr "Ett okänt fel inträffade"
 
-#: WC_Fyndiq.php:149
-msgid "Error!"
-msgstr "Fel!"
-
-#: WC_Fyndiq.php:150
+#: WC_Fyndiq.php:255
+msgctxt "Present continuous tense e.g. 'The program is loading'"
 msgid "Loading"
 msgstr "Laddar"
 
-#: WC_Fyndiq.php:151
+#: WC_Fyndiq.php:256
+msgctxt "Adjective e.g. 'The loading is done'"
 msgid "Done"
 msgstr "Klar"
 
-#: WC_Fyndiq.php:174
-msgid "Fyndiq Settings"
-msgstr "Fyndiq Inställningar"
+#: WC_Fyndiq.php:274 WC_Fyndiq.php:303 WC_Fyndiq.php:387
+#: classes/FmSettings.php:46 classes/FmSettings.php:141
+msgid "Fyndiq"
+msgstr "Fyndiq"
 
-#: WC_Fyndiq.php:176
-msgid "The following options are used to configure Fyndiq"
-msgstr "De följande inställningar är för att ställa in Fyndiq"
+#: WC_Fyndiq.php:291 WC_Fyndiq.php:499
+msgid "Get Fyndiq delivery note"
+msgstr "Hämta Fyndiq följesedel"
 
-#: WC_Fyndiq.php:183
-msgid "Username"
-msgstr "Användarnamn"
-
-#: WC_Fyndiq.php:184
-msgid "This is the username you use for login on Fyndiq Merchant"
-msgstr "Detta är användarnmanet du använder för att logga in på Fyndiq Handlare"
-
-#: WC_Fyndiq.php:187
-msgid "Must be your username"
-msgstr "Måste vara ditt användarnamn"
-
-#: WC_Fyndiq.php:194
-msgid "API-token"
-msgstr "API-token"
-
-#: WC_Fyndiq.php:195
-msgid "This is the API V2 Token on Fyndiq"
-msgstr "Detta är API V2 Token på Fyndiq"
-
-#: WC_Fyndiq.php:198
-msgid "Must be API v2 token"
-msgstr "Måste vara API v2 token"
-
-#: WC_Fyndiq.php:205
-msgid "Global Price Percentage"
-msgstr "Global Pris Procentenhet"
-
-#: WC_Fyndiq.php:207
+#: WC_Fyndiq.php:322
 msgid ""
-"The percentage that will be removed from the price when sending to fyndiq."
-msgstr "Procenten som tas bort från priset när det skickas till Fyndiq."
+"Some orders from Fyndiq have failed to import, most likely due to "
+"insufficient stock or products with non-matching SKUs."
+msgstr ""
+"Några Fyndiq ordrar fick problem att importerats. Troligast är på grund av "
+"kvantitet eller inte kunde hitta produkten på Referensen."
 
-#: WC_Fyndiq.php:213
-msgid "Can be 0 if the price should be the same as in your shop."
-msgstr "Kan vara 0 om priset ska vara samma som i din butik."
+#: WC_Fyndiq.php:347
+msgctxt "Header for column of ID numbers"
+msgid "Fyndiq Order ID"
+msgstr "Fyndiq Ordernummer"
 
-#: WC_Fyndiq.php:220
-msgid "Order Status"
-msgstr "Order Status"
-
-#: WC_Fyndiq.php:222
-msgid "When a order is imported from fyndiq, this status will be applied."
-msgstr "När en order importeras från Fyndiq, så sätts denna status på ordern."
-
-#: WC_Fyndiq.php:233
-msgid "This must be picked accurate"
-msgstr "Denna uppgift måste väljas korrekt."
-
-#: WC_Fyndiq.php:241
-msgid "Minimum Quantity Limit"
-msgstr "Minsta kvantitet-gräns"
-
-#: WC_Fyndiq.php:243
-msgid ""
-"this quantity will be reserved by you and will be removed from the quantity "
-"that is sent to Fyndiq."
-msgstr "Denna kvantitet blir reserverad av dig och tas bort från kvantitet som skickas till Fyndiq."
-
-#: WC_Fyndiq.php:249
-msgid "Stay on 0 if you want to send all stock to Fyndiq."
-msgstr "Låt den vara 0 om du vill att all kvantitet ska skickas till Fyndiq."
-
-#: WC_Fyndiq.php:265
-msgid "Reference to be in use"
-msgstr "Referens som ska användas"
-
-#: WC_Fyndiq.php:267
-msgid ""
-"If you have multi SKU as in variations changing this will make it work "
-"better"
-msgstr "Om du har samma SKU i variationerna så kan ändring av detta fungera bättre"
-
-#: WC_Fyndiq.php:273
-msgid "SKU"
-msgstr "SKU"
-
-#: WC_Fyndiq.php:274
-msgid "Product and Article ID"
-msgstr "Produkt och Artikel ID"
-
-#: WC_Fyndiq.php:276
-msgid ""
-"If this value is changed, products already existing on Fyndiq will be "
-"removed and uploaded again and orders might not be able to be imported with "
-"old SKU."
-msgstr "Om denna fält ändras så kommer produkter som redan finns på fyndiq att raderas och läggas till igen och ordrar med gamla Referenser till artiklar kan ha problem att importeras."
-
-#: WC_Fyndiq.php:273
-msgid "Fyndiq credentials was wrong, try again."
-msgstr "Fyndiq användaruppgifterna var fel, testa igen."
-
-#: WC_Fyndiq.php:286
-msgid "Set how you want your description to be exported to Fyndiq."
-msgstr "Sätt hur du vill ha din Beskrivning ska hanteras när exporterad till Fyndiq."
-
-#: WC_Fyndiq.php:292
-msgid "Long Description"
-msgstr "Lång Beskrivning"
-
-#: WC_Fyndiq.php:293
-msgid "Short Description"
-msgstr "Kort Beskrvining"
-
-#: WC_Fyndiq.php:294
-msgid "Short and Long Description"
-msgstr "Kort och Lång Beskrivning"
-
-#: WC_Fyndiq.php:296
-msgid "Default is Long Description"
-msgstr "förvald är Lång Beskrivning"
-
-#: WC_Fyndiq.php:306
-msgid "Can't export this product to Fyndiq"
-msgstr "Kan inte exportera denna produkt till Fyndiq"
-
-#: WC_Fyndiq.php:321
-msgid "This will disable all order logic for Fyndiq"
-msgstr "Detta kommer stänga av all order logik för Fyndiq"
-
-#: WC_Fyndiq.php:327
-msgid "Enable"
-msgstr "Aktiverad"
-
-#: WC_Fyndiq.php:328
-msgid "Disable"
-msgstr "Inaktiverad"
-
-#: WC_Fyndiq.php:330
-msgid "Default is to have orders enabled"
-msgstr "Förvald är Aktiverad"
-
-#: WC_Fyndiq.php:310
-msgid "Fyndiq Product Settings"
-msgstr "Fyndiq Produkt Inställningar"
-
-#: WC_Fyndiq.php:320 WC_Fyndiq.php:354 WC_Fyndiq.php:638
-msgid "Export to Fyndiq"
-msgstr "Exportera till Fyndiq"
-
-#: WC_Fyndiq.php:321 WC_Fyndiq.php:356
-msgid "mark this as true if you want to export to Fyndiq"
-msgstr "Markera detta om du vill exportera denna produkt till Fyndiq"
-
-#: WC_Fyndiq.php:333 WC_Fyndiq.php:365
-msgid "Fyndiq Discount Percentage"
-msgstr "Fyndiq rabatt procentenhet."
-
-#: WC_Fyndiq.php:335 WC_Fyndiq.php:368
-msgid ""
-"The percentage specific for this product, it will override the globel "
-"percentage for this product."
-msgstr "Denna procent är specific för denna produkt, den skriver över den globala procenten för denna produkt."
-
-#: WC_Fyndiq.php:376
-msgid "Fyndiq Price with set Discount percentage: "
-msgstr "Fyndiq-pris med rabatt-procenten"
-
-#: WC_Fyndiq.php:395
-#, php-format
-msgid "Title needs to be between %s and %s in length, now it is: %s"
-msgstr "Titeln behöver vara mellan %s och %s i längd, nu är den: %s"
-
-#: WC_Fyndiq.php:410
-#, php-format
-msgid "Description needs to be between %s and %s in length, now it is: %s"
-msgstr "Beskrivningen behöver vara mellan %s och %s i längden, nu är den: %s"
-
-#: WC_Fyndiq.php:425
-#, php-format
-msgid "SKU needs to be between %s and %s in length, now it is: %s"
-msgstr "SKU behöver vara mellan %s och %s i längden, nu är den: %s"
-
-#: WC_Fyndiq.php:439
-#, php-format
-msgid "Regular Price needs to be set above 0, now it is: %s"
-msgstr "Vanliga Priset behöver vara över 0, nu är den: %s"
-
-#: WC_Fyndiq.php:477
-msgid "Fyndiq Exported"
-msgstr "Fyndiq Exporterad"
-
-#: WC_Fyndiq.php:478
-msgid "Fyndiq Status"
-msgstr "Fyndiq Status"
-
-#: WC_Fyndiq.php:492
+#: WC_Fyndiq.php:418
+#, fuzzy
+msgctxt "verb e.g. It has been exported"
 msgid "Exported"
 msgstr "Exporterad"
 
-#: WC_Fyndiq.php:494 WC_Fyndiq.php:498
+#: WC_Fyndiq.php:420
+msgctxt "verb e.g. It has not been exported"
 msgid "Not exported"
-msgstr "Inte Exporterad"
+msgstr "Inte exporterad"
 
-#: WC_Fyndiq.php:499
-msgid ""
-"Some Fyndiq Orders failed to be imported, most likely due to stock or "
-"couldn't find product on Reference."
-msgstr "Några Fyndiq Ordrar fick problem att importats. Troligast är på grund av kvantitet eller inte kunde hitta produkten på Referensen."
-
-#: WC_Fyndiq.php:501
-msgid "Can't be exported"
+#: WC_Fyndiq.php:423
+msgctxt "adjective e.g. The TV was not exportable"
+msgid "Not exportable"
 msgstr "Kan inte exporteras"
 
-#: WC_Fyndiq.php:510
-msgid "Pending"
-msgstr "Avvaktar"
+#: WC_Fyndiq.php:437
+msgctxt "Error message - the selected currency is invalid"
+msgid "Unsupported Currency"
+msgstr "Icke-stödda Valuta"
 
-#: WC_Fyndiq.php:512
-msgid "For Sale"
-msgstr "Säljes"
-
-#: WC_Fyndiq.php:515
-msgid "-"
-msgstr "-"
-
-#: WC_Fyndiq.php:525
-msgid "Wrong Currency"
-msgstr "Fel Valuta"
-
-#: WC_Fyndiq.php:526
+#: WC_Fyndiq.php:438
 msgid ""
-"Fyndiq only works in EUR and SEK. change to correct currency. Current "
-"Currency:"
-msgstr "Fyndiq funkar bara i EUR och SEK. Ändra till korrekt valuta. Nuvarande valuta:"
+"Fyndiq only supports trading in EUR or SEK. Please change your WooCommerce "
+"settings to the correct currency."
+msgstr ""
 
-#: WC_Fyndiq.php:533
-msgid "Wrong Country"
+#: WC_Fyndiq.php:439
+msgctxt "Stating what the current currency is set to, with trailing colon"
+msgid "Current Currency"
+msgstr "Aktuell Valuta"
+
+#: WC_Fyndiq.php:447
+msgid "Unsupported Country"
+msgstr "Icke-stöttat Land"
+
+#: WC_Fyndiq.php:448
+#, fuzzy
+msgid ""
+"Fyndiq only currently supports trading in Sweden and Germany. Please change "
+"your WooCommerce settings to the correct country."
+msgstr ""
+"Fyndiq funkar bara i Sverige och i Tyskland. Ändra till korrekt land. "
+"Nuvarande Land:"
+
+#: WC_Fyndiq.php:449
+#, fuzzy
+msgctxt "Stating what the current country is set to, with trailing colon"
+msgid "Current Country"
 msgstr "Fel Land"
 
-#: WC_Fyndiq.php:534
-msgid ""
-"Fyndiq only works in Sweden and Germany. change to correct country. Current "
-"Country:"
-msgstr "Fyndiq funkar bara i Sverige och i Tyskland. Ändra till korrekt land. Nuvarande Land:"
-
-#: WC_Fyndiq.php:542
+#: WC_Fyndiq.php:458
+#, fuzzy
+msgctxt "header for error message"
 msgid "Fyndiq Credentials"
 msgstr "Fyndiq Konto-uppgifter"
 
-#: WC_Fyndiq.php:543
-msgid "You need to set Fyndiq Credentials to make it work. Do it in "
-msgstr "Du måste ställa in Fyndiq konto-uppgifterna för att det ska funka. Det gör du i "
+#: WC_Fyndiq.php:459
+msgid ""
+"You need to add your Fyndiq credentials to the settings to start using this "
+"plugin. You can find these settings here"
+msgstr ""
 
-#: WC_Fyndiq.php:545
-msgid "Woocommerce Settings > Products > Fyndiq"
+#: WC_Fyndiq.php:461
+#, fuzzy
+msgctxt "Link to respective page"
+msgid "Woocommerce Settings > Fyndiq"
 msgstr "Woocommerce Inställningar > Produkter > Fyndiq"
 
-#: WC_Fyndiq.php:553
-msgid "Fyndiq Validations"
+#: WC_Fyndiq.php:471
+#, fuzzy
+msgctxt "header for error message"
+msgid "Fyndiq Validation Error"
 msgstr "Fyndiq Valideringar"
 
-#: WC_Fyndiq.php:559
+#: WC_Fyndiq.php:477
+#, fuzzy
 msgid ""
-"The product will not be exported to Fyndiq until these validations are "
-"fixed."
-msgstr "Produkten kommer inte exporteras till Fyndiq förens dessa valideringar är åtgärdade."
+"This product can not be exported to Fyndiq until it meets the Fyndiq "
+"validation criteria"
+msgstr ""
+"Produkten kommer inte exporteras till Fyndiq förens dessa valideringar är "
+"åtgärdade."
 
-#: WC_Fyndiq.php:589
-msgid "Fyndiq Order"
-msgstr "Fyndiq Order"
+#: WC_Fyndiq.php:495
+#, fuzzy
+msgctxt "verb"
+msgid "Export to Fyndiq"
+msgstr "Exportera till Fyndiq"
 
-#: WC_Fyndiq.php:639
+#: WC_Fyndiq.php:496
+#, fuzzy
+msgctxt "verb"
 msgid "Remove from Fyndiq"
 msgstr "Ta bort från Fyndiq"
 
-#: WC_Fyndiq.php:640
-msgid "Update Fyndiq Status"
-msgstr "Uppdatera Fyndiq Status"
-
-#: WC_Fyndiq.php:660
-msgid "Get Fyndiq Delivery Note"
-msgstr "Hämta Fyndiq Följesedel"
-
-#: WC_Fyndiq.php:661
+#: WC_Fyndiq.php:500
+#, fuzzy
+msgctxt "verb"
 msgid "Import From Fyndiq"
 msgstr "Importera från Fyndiq"
 
-#: WC_Fyndiq.php:731
-#, php-format
-msgid "Products removed from Fyndiq."
-msgid_plural "%s products removed from Fyndiq."
+#: WC_Fyndiq.php:501
+msgid "Mark order(s) as handled"
+msgstr ""
+
+#: WC_Fyndiq.php:502
+msgid "Mark order(s) as not handled"
+msgstr ""
+
+#: WC_Fyndiq.php:587
+#, fuzzy, php-format
+msgid "Product removed from Fyndiq"
+msgid_plural "%s products removed from Fyndiq"
 msgstr[0] "Produkten togs bort från Fyndiq"
 msgstr[1] "%s produkter togs bort från Fyndiq."
 
-#: WC_Fyndiq.php:742
-#, php-format
-msgid "Products exported to Fyndiq."
-msgid_plural "%s products exported to Fyndiq."
+#: WC_Fyndiq.php:598
+#, fuzzy, php-format
+msgid "Product exported to Fyndiq"
+msgid_plural "%s products exported to Fyndiq"
 msgstr[0] "Produkten exporterades till Fyndiq"
 msgstr[1] "%s produkter exporterades till Fyndiq."
 
-#: WC_Fyndiq.php:1424
-msgid "Fyndiq Checker Page"
-msgstr "Fyndiq Check Sida"
+#: classes/FmDiagnostics.php:49
+#, fuzzy
+msgid "Fyndiq Diagnostics"
+msgstr "Fyndiq Valideringar"
 
-#: WC_Fyndiq.php:1425
+#: classes/FmDiagnostics.php:63
+msgid "Fyndiq Integration Diagnostic Page"
+msgstr ""
+
+#: classes/FmDiagnostics.php:66
 msgid ""
-"This is a page to check all the important requirements to make the Fyndiq "
-"work."
-msgstr "Denna sida kontrollerar så all viktiga krav för att Fyndiq pluginet ska funka, fungerar."
+"This page contains diagnostic information that may be useful in the event "
+"that the Fyndiq WooCommerce integration plugin runs in to problems."
+msgstr ""
 
-#: WC_Fyndiq.php:1427
-msgid "File Permission"
+#: classes/FmDiagnostics.php:71
+#, fuzzy
+msgid "File Permissions"
 msgstr "Filrättigheter"
 
-#: WC_Fyndiq.php:1430
+#: classes/FmDiagnostics.php:74
 msgid "Classes"
 msgstr "Klasser"
 
-#: WC_Fyndiq.php:1433
+#: classes/FmDiagnostics.php:77
 msgid "API Connection"
 msgstr "API Anslutning"
 
-#: WC_Fyndiq.php:1461
-msgid "Exists"
+#: classes/FmDiagnostics.php:80
+msgid "Installed Plugins"
+msgstr "Installerade Tillägg"
+
+#: classes/FmDiagnostics.php:99
+#, fuzzy
+msgctxt "verb e.g. the file exists"
+msgid "exists"
 msgstr "Existerar"
 
-#: WC_Fyndiq.php:1462
+#: classes/FmDiagnostics.php:100
+#, fuzzy
+msgctxt "verb e.g. the file does not exist"
 msgid "does not exist"
 msgstr "Existerar inte"
 
-#: WC_Fyndiq.php:1463
+#: classes/FmDiagnostics.php:101
 #, php-format
 msgid "Feed file name: `%s` (%s)"
 msgstr "Filnamnet: `%s` (%s)"
 
-#: WC_Fyndiq.php:1467
+#: classes/FmDiagnostics.php:107
 #, php-format
 msgid ""
-"Cannot create file. Please make sure that the server can create new files in"
-" `%s`"
-msgstr "Kan inte skapa filen. Vänligen var säker att server kan skapa filer i `%s`"
+"Cannot create file. Please make sure that the server can create new files in "
+"`%s`"
+msgstr ""
+"Kan inte skapa filen. Vänligen var säker att server kan skapa filer i `%s`"
 
-#: WC_Fyndiq.php:1471
+#: classes/FmDiagnostics.php:114
 #, php-format
 msgid "Trying to create temporary file: `%s`"
 msgstr "Försöker skapa temporär fil: `%s`"
 
-#: WC_Fyndiq.php:1474
+#: classes/FmDiagnostics.php:117
 #, php-format
 msgid "Cannot create file: `%s`"
 msgstr "Kan inte skapa fil: `%s`"
 
-#: WC_Fyndiq.php:1480
+#: classes/FmDiagnostics.php:122
 #, php-format
 msgid "File `%s` successfully read."
 msgstr "Filen `%s` lästes utan problem."
 
-#: WC_Fyndiq.php:1483
+#: classes/FmDiagnostics.php:125
 #, php-format
 msgid "Successfully deleted temp file `%s`"
 msgstr "Lyckades ta bort temporära filen `%s`"
 
-#: WC_Fyndiq.php:1508
+#: classes/FmDiagnostics.php:167
 #, php-format
 msgid "Class `%s` is found."
 msgstr "Klassen `%s` hittades."
 
-#: WC_Fyndiq.php:1511
-#, php-format
-msgid "Class `%s` is NOT found."
+#: classes/FmDiagnostics.php:170
+#, fuzzy, php-format
+msgid "Class `%s` is <strong>NOT</strong> found."
 msgstr "Klassen `%s` hittades INTE."
 
-#: WC_Fyndiq.php:1515
+#: classes/FmDiagnostics.php:175
 #, php-format
 msgid "Required classes `%s` are missing."
 msgstr "Nödvändiga klasserna `%s` saknas."
 
-#: WC_Fyndiq.php:1532
-msgid "Module is not authorized."
-msgstr "Modulen är inte auktoriserad."
+#: classes/FmDiagnostics.php:201
+msgid "The credentials in the plugin settings are not correct"
+msgstr ""
 
-#: WC_Fyndiq.php:1535
-msgid "Connection to Fyndiq successfully tested"
-msgstr "Anslutningen till Fyndiq testades utan problem."
+#: classes/FmDiagnostics.php:204
+#, fuzzy
+msgid "Successfully connected to the Fyndiq API"
+msgstr "Lyckades ta bort temporära filen `%s`"
 
-#: models/FmOrder.php:31 models/FmOrder.php:133
+#: classes/FmField.php:54
+#, fuzzy
+msgid "This product can not be exported to Fyndiq"
+msgstr "Produkten exporterades till Fyndiq"
+
+#: classes/FmField.php:69
+#, fuzzy
+msgctxt "Label for a checkbox"
+msgid "Export to Fyndiq"
+msgstr "Exportera till Fyndiq"
+
+#: classes/FmField.php:80
+#, fuzzy
+msgctxt "Label for a checkbox"
+msgid "Fyndiq Absolute Price"
+msgstr "Fyndiq rabatt procentenhet."
+
+#: classes/FmField.php:82
+msgid ""
+"This field, when set, overrides any other pricing for the product and is "
+"used as the sale price on Fyndiq"
+msgstr ""
+
+#: classes/FmField.php:145
+msgctxt "Label for checkbox"
+msgid "Order handled"
+msgstr ""
+
+#: classes/FmField.php:146
+#, fuzzy
+msgid "Report this order as handled to Fyndiq"
+msgstr "Kan inte exportera denna produkt till Fyndiq"
+
+#: classes/FmSettings.php:91
+msgctxt "Warning to user if they try to do something not allowed"
+msgid "Uh-oh. It looks like you shouldn't be here."
+msgstr ""
+
+#: classes/FmSettings.php:149
+#, fuzzy
+msgid "General Settings"
+msgstr "Inställningar"
+
+#: classes/FmSettings.php:156
+msgid "Username"
+msgstr "Användarnamn"
+
+#: classes/FmSettings.php:159
+#, fuzzy
+msgid "The username you use to log in to the Fyndiq merchant page"
+msgstr ""
+"Detta är användarnmanet du använder för att logga in på Fyndiq Handlare"
+
+#: classes/FmSettings.php:164
+msgid "API-token"
+msgstr "API-token"
+
+#: classes/FmSettings.php:165
+msgid "This is the API V2 Token on Fyndiq"
+msgstr "Detta är API V2 Token på Fyndiq"
+
+#: classes/FmSettings.php:168
+msgid "Must be a new API v2 token, rather than an old style v1 token"
+msgstr ""
+
+#: classes/FmSettings.php:174
+#, fuzzy
+msgid "Global Percentage Price Discount"
+msgstr "Global Pris Procentenhet"
+
+#: classes/FmSettings.php:176
+#, fuzzy
+msgid ""
+"The percentage discount be applied to all prices when sold through Fyndiq"
+msgstr "Procenten som tas bort från priset när det skickas till Fyndiq."
+
+#: classes/FmSettings.php:182
+msgid "Can be set to '0' if no discount should be applied"
+msgstr ""
+
+#: classes/FmSettings.php:187
+#, fuzzy
+msgid "Global Absolute Price Discount"
+msgstr "Global Pris Procentenhet"
+
+#: classes/FmSettings.php:189
+msgid "The absolute discount applied to all prices when sold through Fyndiq"
+msgstr ""
+
+#: classes/FmSettings.php:195
+msgid "Can be '0' if no discount should be applied"
+msgstr ""
+
+#: classes/FmSettings.php:200
+#, fuzzy
+msgid "Fyndiq Sales Currency"
+msgstr "Fyndiq Check"
+
+#: classes/FmSettings.php:202
+msgid "Select the currency to be used for sales through Fyndiq"
+msgstr ""
+
+#: classes/FmSettings.php:212
+#, fuzzy
+msgid "Minimum Product Quantity Reserve"
+msgstr "Minsta kvantitet-gräns"
+
+#: classes/FmSettings.php:214
+msgid ""
+"This is the lower limit at which point a product is removed from sale on "
+"Fyndiq"
+msgstr ""
+
+#: classes/FmSettings.php:221
+msgid "Setting this field to '0' allows all stock to be sold through Fyndiq"
+msgstr ""
+
+#: classes/FmSettings.php:228
+#, fuzzy
+msgid "Enable Orders From Fyndiq"
+msgstr "Importera från Fyndiq"
+
+#: classes/FmSettings.php:230
+msgid "Sets whether orders may be placed through Fyndiq"
+msgstr ""
+
+#: classes/FmSettings.php:236
+msgid "Enable"
+msgstr "Aktiverad"
+
+#: classes/FmSettings.php:237
+msgid "Disable"
+msgstr "Inaktiverad"
+
+#: classes/FmSettings.php:244
+#, fuzzy
+msgid "Imported Order Status"
+msgstr "Order Status"
+
+#: classes/FmSettings.php:246
+#, fuzzy
+msgid ""
+"When an order is imported from Fyndiq, this status will be applied in "
+"WooCommerce"
+msgstr "När en order importeras från Fyndiq, så sätts denna status på ordern."
+
+#: classes/FmSettings.php:265
+msgid "Field Mappings"
+msgstr ""
+
+#: classes/FmSettings.php:273
+#, fuzzy
+msgid "Product Description Type"
+msgstr "Kort Beskrvining"
+
+#: classes/FmSettings.php:275
+#, fuzzy
+msgid "Set how you want your product description to be exported to Fyndiq."
+msgstr ""
+"Sätt hur du vill ha din Beskrivning ska hanteras när exporterad till Fyndiq."
+
+#: classes/FmSettings.php:281
+msgid "Long Description"
+msgstr "Lång Beskrivning"
+
+#: classes/FmSettings.php:282
+msgid "Short Description"
+msgstr "Kort Beskrvining"
+
+#: classes/FmSettings.php:283
+msgid "Short and Long Description"
+msgstr "Kort och Lång Beskrivning"
+
+#: classes/FmSettings.php:285
+#, fuzzy
+msgid "The default is to use the long description"
+msgstr "förvald är Lång Beskrivning"
+
+#: classes/FmSettings.php:290
+msgid "EAN"
+msgstr ""
+
+#: classes/FmSettings.php:298
+msgid "ISBN"
+msgstr ""
+
+#: classes/FmSettings.php:306
+msgid "MPN"
+msgstr ""
+
+#: classes/FmSettings.php:314
+msgctxt "noun - in context of marketing"
+msgid "Brand"
+msgstr ""
+
+#: classes/FmSettings.php:327
+msgid "Troubleshooting"
+msgstr ""
+
+#: classes/FmSettings.php:334
+msgid "Enable Debug Tools"
+msgstr ""
+
+#: classes/FmSettings.php:338
+msgid "No"
+msgstr ""
+
+#: classes/FmSettings.php:339
+msgid "Yes"
+msgstr ""
+
+#: classes/FmSettings.php:341
+msgid "Enables debug tools for Fyndiq staff"
+msgstr ""
+
+#: classes/FmUpdate.php:67
+msgid ""
+"There are updates available to the Fyndiq plugin, to install them, click "
+"here:"
+msgstr ""
+
+#: dependency.php:49 dependency.php:56
+msgid ""
+"The Fyndiq WooCommerce integration plugin requires WooCommerce to function."
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:331
+msgid "Install Required Plugins"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:332
+msgid "Install Plugins"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:333
+#, php-format
+msgid "Installing Plugin: %s"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:334
+#, php-format
+msgid "Updating Plugin: %s"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:335
+msgid "Something went wrong with the plugin API."
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:337
+#, php-format
+msgid "This theme requires the following plugin: %1$s."
+msgid_plural "This theme requires the following plugins: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: include/tgm/class-tgm-plugin-activation.php:342
+#, php-format
+msgid "This theme recommends the following plugin: %1$s."
+msgid_plural "This theme recommends the following plugins: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: include/tgm/class-tgm-plugin-activation.php:347
+#, php-format
+msgid ""
+"The following plugin needs to be updated to its latest version to ensure "
+"maximum compatibility with this theme: %1$s."
+msgid_plural ""
+"The following plugins need to be updated to their latest version to ensure "
+"maximum compatibility with this theme: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: include/tgm/class-tgm-plugin-activation.php:352
+#, php-format
+msgid "There is an update available for: %1$s."
+msgid_plural "There are updates available for the following plugins: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: include/tgm/class-tgm-plugin-activation.php:357
+#, php-format
+msgid "The following required plugin is currently inactive: %1$s."
+msgid_plural "The following required plugins are currently inactive: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: include/tgm/class-tgm-plugin-activation.php:362
+#, php-format
+msgid "The following recommended plugin is currently inactive: %1$s."
+msgid_plural "The following recommended plugins are currently inactive: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: include/tgm/class-tgm-plugin-activation.php:367
+msgid "Begin installing plugin"
+msgid_plural "Begin installing plugins"
+msgstr[0] ""
+msgstr[1] ""
+
+#: include/tgm/class-tgm-plugin-activation.php:372
+msgid "Begin updating plugin"
+msgid_plural "Begin updating plugins"
+msgstr[0] ""
+msgstr[1] ""
+
+#: include/tgm/class-tgm-plugin-activation.php:377
+msgid "Begin activating plugin"
+msgid_plural "Begin activating plugins"
+msgstr[0] ""
+msgstr[1] ""
+
+#: include/tgm/class-tgm-plugin-activation.php:381
+msgid "Return to Required Plugins Installer"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:382
+msgid "Return to the dashboard"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:383
+#: include/tgm/class-tgm-plugin-activation.php:3171
+msgid "Plugin activated successfully."
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:384
+#: include/tgm/class-tgm-plugin-activation.php:2974
+msgid "The following plugin was activated successfully:"
+msgid_plural "The following plugins were activated successfully:"
+msgstr[0] ""
+msgstr[1] ""
+
+#: include/tgm/class-tgm-plugin-activation.php:385
+#, php-format
+msgid "No action taken. Plugin %1$s was already active."
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:386
+#, php-format
+msgid ""
+"Plugin not activated. A higher version of %s is needed for this theme. "
+"Please update the plugin."
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:387
+#, php-format
+msgid "All plugins installed and activated successfully. %1$s"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:388
+msgid "Dismiss this notice"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:389
+msgid ""
+"There are one or more required or recommended plugins to install, update or "
+"activate."
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:390
+msgid "Please contact the administrator of this site for help."
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:593
+msgid "This plugin needs to be updated to be compatible with your theme."
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:594
+msgid "Update Required"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:711
+msgid "Set the parent_slug config variable instead."
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:906
+#: include/tgm/class-tgm-plugin-activation.php:3585
+msgid "Return to the Dashboard"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:1013
+msgid ""
+"The remote plugin package does not contain a folder with the desired slug "
+"and renaming did not work."
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:1013
+#: include/tgm/class-tgm-plugin-activation.php:1016
+msgid ""
+"Please contact the plugin provider and ask them to package their plugin "
+"according to the WordPress guidelines."
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:1016
+msgid ""
+"The remote plugin package consists of more than one file, but the files are "
+"not packaged in a folder."
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:1200
+#: include/tgm/class-tgm-plugin-activation.php:2970
+msgctxt "plugin A *and* plugin B"
+msgid "and"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2017
+#, php-format
+msgctxt "%s = version number"
+msgid "TGMPA v%s"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2303
+msgid "Required"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2306
+msgid "Recommended"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2322
+msgid "WordPress Repository"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2325
+msgid "External Source"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2328
+msgid "Pre-Packaged"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2345
+msgid "Not Installed"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2349
+msgid "Installed But Not Activated"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2351
+msgid "Active"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2357
+msgid "Required Update not Available"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2360
+msgid "Requires Update"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2363
+msgid "Update recommended"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2371
+#, php-format
+msgctxt "%1$s = install status, %2$s = update status"
+msgid "%1$s, %2$s"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2416
+#, php-format
+msgctxt "plugins"
+msgid "All <span class=\"count\">(%s)</span>"
+msgid_plural "All <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2419
+#, php-format
+msgid "To Install <span class=\"count\">(%s)</span>"
+msgid_plural "To Install <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2422
+#, php-format
+msgid "Update Available <span class=\"count\">(%s)</span>"
+msgid_plural "Update Available <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2425
+#, php-format
+msgid "To Activate <span class=\"count\">(%s)</span>"
+msgid_plural "To Activate <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2507
+msgctxt "as in: \"version nr unknown\""
+msgid "unknown"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2515
+msgid "Installed version:"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2523
+msgid "Minimum required version:"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2535
+#, fuzzy
+msgid "Available version:"
+msgstr "Filrättigheter"
+
+#: include/tgm/class-tgm-plugin-activation.php:2558
+#, php-format
+msgid ""
+"No plugins to install, update or activate. <a href=\"%1$s\">Return to the "
+"Dashboard</a>"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2572
+msgid "Plugin"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2573
+msgid "Source"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2574
+msgid "Type"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2578
+msgid "Version"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2579
+#, fuzzy
+msgid "Status"
+msgstr "Order Status"
+
+#: include/tgm/class-tgm-plugin-activation.php:2627
+#, php-format
+msgctxt "%2$s = plugin name in screen reader markup"
+msgid "Install %2$s"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2631
+#, php-format
+msgctxt "%2$s = plugin name in screen reader markup"
+msgid "Update %2$s"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2636
+#, php-format
+msgctxt "%2$s = plugin name in screen reader markup"
+msgid "Activate %2$s"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2706
+msgid "Upgrade message from the plugin author:"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2739
+msgid "Install"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2745
+msgid "Update"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2748
+msgid "Activate"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2779
+msgid "No plugins were selected to be installed. No action taken."
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2781
+msgid "No plugins were selected to be updated. No action taken."
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2822
+msgid "No plugins are available to be installed at this time."
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2824
+msgid "No plugins are available to be updated at this time."
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2930
+msgid "No plugins were selected to be activated. No action taken."
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:2956
+msgid "No plugins are available to be activated at this time."
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:3170
+msgid "Plugin activation failed."
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:3509
+#, php-format
+msgid "Updating Plugin %1$s (%2$d/%3$d)"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:3511
+#, php-format
+msgid "An error occurred while installing %1$s: <strong>%2$s</strong>."
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:3512
+#, php-format
+msgid "The installation of %1$s failed."
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:3516
+msgid ""
+"The installation and activation process is starting. This process may take a "
+"while on some hosts, so please be patient."
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:3517
+#, php-format
+msgid "%1$s installed and activated successfully."
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:3517
+#: include/tgm/class-tgm-plugin-activation.php:3523
+msgid "Show Details"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:3517
+#: include/tgm/class-tgm-plugin-activation.php:3523
+msgid "Hide Details"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:3518
+msgid "All installations and activations have been completed."
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:3519
+#, php-format
+msgid "Installing and Activating Plugin %1$s (%2$d/%3$d)"
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:3522
+msgid ""
+"The installation process is starting. This process may take a while on some "
+"hosts, so please be patient."
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:3523
+#, fuzzy, php-format
+msgid "%1$s installed successfully."
+msgstr "Filen `%s` lästes utan problem."
+
+#: include/tgm/class-tgm-plugin-activation.php:3524
+msgid "All installations have been completed."
+msgstr ""
+
+#: include/tgm/class-tgm-plugin-activation.php:3525
+#, php-format
+msgid "Installing Plugin %1$s (%2$d/%3$d)"
+msgstr ""
+
+#: models/FmOrder.php:98
+#, fuzzy, php-format
+msgid "Product SKU ( %s ) was not found."
+msgstr "Produkt SKU:n ( %s ) hittades inte."
+
+#: models/FmOrder.php:111
+#, fuzzy
+msgid "Orders"
+msgstr "Order Status"
+
+#: models/FmOrder.php:112
+msgctxt "noun"
+msgid "Order"
+msgstr ""
+
+#: models/FmOrder.php:113
+msgid "Add Order"
+msgstr "Lägg till order"
+
+#: models/FmOrder.php:114
+msgid "Add New Order"
+msgstr "Lägg till ny order"
+
+#: models/FmOrder.php:115
+msgctxt "noun"
+msgid "Edit"
+msgstr "Redigera"
+
+#: models/FmOrder.php:116
+msgid "Edit Order"
+msgstr "Redigera Order"
+
+#: models/FmOrder.php:117
+msgid "New Order"
+msgstr "Ny order"
+
+#: models/FmOrder.php:118 models/FmOrder.php:119
+msgid "View Order"
+msgstr "Visa Order"
+
+#: models/FmOrder.php:120
+msgid "Search Orders"
+msgstr ""
+
+#: models/FmOrder.php:121
+msgid "No Orders found"
+msgstr ""
+
+#: models/FmOrder.php:122
+msgid "No Orders found in trash"
+msgstr ""
+
+#: models/FmOrder.php:123
+msgid "Parent Orders"
+msgstr ""
+
+#: models/FmOrder.php:124
+#, fuzzy
+msgctxt "Admin menu name"
+msgid "Orders"
+msgstr "Order Status"
+
+#: models/FmOrder.php:126
+msgid "This is where store orders are stored."
+msgstr ""
+
+#: models/FmOrder.php:146
+#, fuzzy
+msgid "Error - Could not create order"
+msgstr "FEL - Kunde inte skapa order"
+
+#: models/FmOrder.php:186
+msgid ""
+"Error - product is marked as downloable. Virtual items may not be sold on "
+"Fyndiq"
+msgstr ""
+
+#: models/FmOrder.php:207
 #, php-format
 msgid "Product SKU ( %s ) not found."
 msgstr "Produkt SKU:n ( %s ) hittades inte."
 
-#: models/FmOrder.php:78
-msgid "ERROR - Could not create order"
-msgstr "FEL - Kunde inte skapa order"
-
-#: models/FmOrder.php:113
-msgid "ERROR - product is downloadable."
-msgstr "FEL - Produkten är nedladdningsbar."
-
-#: FmUpdate.php:33
-msgid ""
-"It exist a new version of Fyndiq plugin, install it by clicking on the link:"
-msgstr "Det finns en ny version av Fyndiq pluginet, installera den genom att klicka på länken:"
-
-#: WC_Fyndiq.php:849
-msgid "Pick at least one Order"
+#: models/FmOrder.php:327 models/FmOrder.php:349
+#, fuzzy
+msgid "Please select at least one order"
 msgstr "Välj minst en order"
+
+#: models/FmPost.php:22
+msgid ""
+"Whoops. An error occurred when generating a post. Please tell Fyndiq: FmPost "
+"instantiated with bad ID"
+msgstr ""
+
+#: models/FmProduct.php:205
+#, php-format
+msgid "Title needs to be between %s and %s in length, now it is: %s"
+msgstr "Titeln behöver vara mellan %s och %s i längd, nu är den: %s"
+
+#: models/FmProduct.php:219
+#, php-format
+msgid "Description needs to be between %s and %s in length, now it is: %s"
+msgstr "Beskrivningen behöver vara mellan %s och %s i längden, nu är den: %s"
+
+#: models/FmProduct.php:233
+#, php-format
+msgid "SKU needs to be between %s and %s in length, now it is: %s"
+msgstr "SKU behöver vara mellan %s och %s i längden, nu är den: %s"
+
+#: models/FmProduct.php:247
+#, php-format
+msgid "Regular Price needs to be set above 0, now it is: %s"
+msgstr "Vanliga Priset behöver vara över 0, nu är den: %s"
+
+#: models/FmProduct.php:323
+#, fuzzy
+msgid "Please select at least one product"
+msgstr "Välj minst en order"
+
+#~ msgid "Error!"
+#~ msgstr "Fel!"
+
+#~ msgid "Fyndiq Settings"
+#~ msgstr "Fyndiq Inställningar"
+
+#~ msgid "The following options are used to configure Fyndiq"
+#~ msgstr "De följande inställningar är för att ställa in Fyndiq"
+
+#~ msgid "Must be your username"
+#~ msgstr "Måste vara ditt användarnamn"
+
+#~ msgid "Must be API v2 token"
+#~ msgstr "Måste vara API v2 token"
+
+#~ msgid "Can be 0 if the price should be the same as in your shop."
+#~ msgstr "Kan vara 0 om priset ska vara samma som i din butik."
+
+#~ msgid "This must be picked accurate"
+#~ msgstr "Denna uppgift måste väljas korrekt."
+
+#~ msgid ""
+#~ "this quantity will be reserved by you and will be removed from the "
+#~ "quantity that is sent to Fyndiq."
+#~ msgstr ""
+#~ "Denna kvantitet blir reserverad av dig och tas bort från kvantitet som "
+#~ "skickas till Fyndiq."
+
+#~ msgid "Stay on 0 if you want to send all stock to Fyndiq."
+#~ msgstr ""
+#~ "Låt den vara 0 om du vill att all kvantitet ska skickas till Fyndiq."
+
+#~ msgid "Reference to be in use"
+#~ msgstr "Referens som ska användas"
+
+#~ msgid ""
+#~ "If you have multi SKU as in variations changing this will make it work "
+#~ "better"
+#~ msgstr ""
+#~ "Om du har samma SKU i variationerna så kan ändring av detta fungera bättre"
+
+#~ msgid "SKU"
+#~ msgstr "SKU"
+
+#~ msgid "Product and Article ID"
+#~ msgstr "Produkt och Artikel ID"
+
+#~ msgid ""
+#~ "If this value is changed, products already existing on Fyndiq will be "
+#~ "removed and uploaded again and orders might not be able to be imported "
+#~ "with old SKU."
+#~ msgstr ""
+#~ "Om denna fält ändras så kommer produkter som redan finns på fyndiq att "
+#~ "raderas och läggas till igen och ordrar med gamla Referenser till "
+#~ "artiklar kan ha problem att importeras."
+
+#~ msgid "Fyndiq credentials was wrong, try again."
+#~ msgstr "Fyndiq användaruppgifterna var fel, testa igen."
+
+#~ msgid "This will disable all order logic for Fyndiq"
+#~ msgstr "Detta kommer stänga av all order logik för Fyndiq"
+
+#~ msgid "Default is to have orders enabled"
+#~ msgstr "Förvald är Aktiverad"
+
+#~ msgid "Fyndiq Product Settings"
+#~ msgstr "Fyndiq Produkt Inställningar"
+
+#~ msgid "mark this as true if you want to export to Fyndiq"
+#~ msgstr "Markera detta om du vill exportera denna produkt till Fyndiq"
+
+#~ msgid ""
+#~ "The percentage specific for this product, it will override the globel "
+#~ "percentage for this product."
+#~ msgstr ""
+#~ "Denna procent är specific för denna produkt, den skriver över den globala "
+#~ "procenten för denna produkt."
+
+#~ msgid "Fyndiq Price with set Discount percentage: "
+#~ msgstr "Fyndiq-pris med rabatt-procenten"
+
+#~ msgid "Fyndiq Exported"
+#~ msgstr "Fyndiq Exporterad"
+
+#~ msgid "Fyndiq Status"
+#~ msgstr "Fyndiq Status"
+
+#~ msgid "Can't be exported"
+#~ msgstr "Kan inte exporteras"
+
+#~ msgid "Pending"
+#~ msgstr "Avvaktar"
+
+#~ msgid "For Sale"
+#~ msgstr "Säljes"
+
+#~ msgid "-"
+#~ msgstr "-"
+
+#~ msgid "You need to set Fyndiq Credentials to make it work. Do it in "
+#~ msgstr ""
+#~ "Du måste ställa in Fyndiq konto-uppgifterna för att det ska funka. Det "
+#~ "gör du i "
+
+#~ msgid "Update Fyndiq Status"
+#~ msgstr "Uppdatera Fyndiq Status"
+
+#~ msgid "Fyndiq Checker Page"
+#~ msgstr "Fyndiq Check Sida"
+
+#~ msgid ""
+#~ "This is a page to check all the important requirements to make the Fyndiq "
+#~ "work."
+#~ msgstr ""
+#~ "Denna sida kontrollerar så all viktiga krav för att Fyndiq pluginet ska "
+#~ "funka, fungerar."
+
+#~ msgid "Module is not authorized."
+#~ msgstr "Modulen är inte auktoriserad."
+
+#~ msgid "Connection to Fyndiq successfully tested"
+#~ msgstr "Anslutningen till Fyndiq testades utan problem."
+
+#~ msgid "ERROR - product is downloadable."
+#~ msgstr "FEL - Produkten är nedladdningsbar."
+
+#~ msgid ""
+#~ "It exist a new version of Fyndiq plugin, install it by clicking on the "
+#~ "link:"
+#~ msgstr ""
+#~ "Det finns en ny version av Fyndiq pluginet, installera den genom att "
+#~ "klicka på länken:"

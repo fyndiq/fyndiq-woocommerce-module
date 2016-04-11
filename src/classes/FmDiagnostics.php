@@ -46,7 +46,7 @@ class FmDiagnostics
     public static function pluginActionLink($links)
     {
         $checkUrl = esc_url(get_admin_url(null, 'admin.php?page=fyndiq-check'));
-        $links[] = '<a href="' . $checkUrl . '">' . __('Fyndiq Check', 'fyndiq') . '</a>';
+        $links[] = '<a href="' . $checkUrl . '">' . __('Fyndiq Diagnostics', WC_Fyndiq::TEXT_DOMAIN) . '</a>';
         return $links;
     }
 
@@ -60,24 +60,24 @@ class FmDiagnostics
     public static function diagPage()
     {
         $fmOutput = new FyndiqOutput();
-        $fmOutput->output('<h1>' . __('Fyndiq Integration Diagnostic Page', 'fyndiq') . '</h1>');
+        $fmOutput->output('<h1>' . __('Fyndiq Integration Diagnostic Page', WC_Fyndiq::TEXT_DOMAIN) . '</h1>');
         $fmOutput->output(
             '<p>' . __(
                 'This page contains diagnostic information that may be useful in the event that the Fyndiq WooCommerce integration plugin runs in to problems.',
-                'fyndiq'
+                WC_Fyndiq::TEXT_DOMAIN
             ) . '</p>'
         );
 
-        $fmOutput->output('<h2>' . __('File Permissions', 'fyndiq') . '</h2>');
+        $fmOutput->output('<h2>' . __('File Permissions', WC_Fyndiq::TEXT_DOMAIN) . '</h2>');
         $fmOutput->output(self::probeFilePermissions());
 
-        $fmOutput->output('<h2>' . __('Classes', 'fyndiq') . '</h2>');
+        $fmOutput->output('<h2>' . __('Classes', WC_Fyndiq::TEXT_DOMAIN) . '</h2>');
         $fmOutput->output(self::probeModuleIntegrity());
 
-        $fmOutput->output('<h2>' . __('API Connection', 'fyndiq') . '</h2>');
+        $fmOutput->output('<h2>' . __('API Connection', WC_Fyndiq::TEXT_DOMAIN) . '</h2>');
         $fmOutput->output(self::probeConnection());
 
-        $fmOutput->output('<h2>' . __('Installed Plugins', 'fyndiq') . '</h2>');
+        $fmOutput->output('<h2>' . __('Installed Plugins', WC_Fyndiq::TEXT_DOMAIN) . '</h2>');
         return $fmOutput->output(self::probePlugins());
     }
 
@@ -96,33 +96,33 @@ class FmDiagnostics
         $testMessage = time();
         try {
             $exists =  file_exists($fileName) ?
-                __('exists', 'fyndiq') :
-                __('does not exist', 'fyndiq');
-            $messages[] = sprintf(__('Feed file name: `%s` (%s)', 'fyndiq'), $fileName, $exists);
+                _x('exists', 'verb e.g. the file exists', WC_Fyndiq::TEXT_DOMAIN) :
+                _x('does not exist', 'verb e.g. the file does not exist', WC_Fyndiq::TEXT_DOMAIN);
+            $messages[] = sprintf(__('Feed file name: `%s` (%s)', WC_Fyndiq::TEXT_DOMAIN), $fileName, $exists);
             $tempFileName = FyndiqUtils::getTempFilename(dirname($fileName));
             if (dirname($tempFileName) !== dirname($fileName)) {
                 throw new Exception(
                     sprintf(
                         __(
                             'Cannot create file. Please make sure that the server can create new files in `%s`',
-                            'fyndiq'
+                            WC_Fyndiq::TEXT_DOMAIN
                         ),
                         dirname($fileName)
                     )
                 );
             }
-            $messages[] = sprintf(__('Trying to create temporary file: `%s`', 'fyndiq'), $tempFileName);
+            $messages[] = sprintf(__('Trying to create temporary file: `%s`', WC_Fyndiq::TEXT_DOMAIN), $tempFileName);
             $file = fopen($tempFileName, 'w+');
             if (!$file) {
-                throw new Exception(sprintf(__('Cannot create file: `%s`', 'fyndiq'), $tempFileName));
+                throw new Exception(sprintf(__('Cannot create file: `%s`', WC_Fyndiq::TEXT_DOMAIN), $tempFileName));
             }
             fwrite($file, $testMessage);
             fclose($file);
             if ($testMessage == file_get_contents($tempFileName)) {
-                $messages[] = sprintf(__('File `%s` successfully read.', 'fyndiq'), $tempFileName);
+                $messages[] = sprintf(__('File `%s` successfully read.', WC_Fyndiq::TEXT_DOMAIN), $tempFileName);
             }
             FyndiqUtils::deleteFile($tempFileName);
-            $messages[] = sprintf(__('Successfully deleted temp file `%s`', 'fyndiq'), $tempFileName);
+            $messages[] = sprintf(__('Successfully deleted temp file `%s`', WC_Fyndiq::TEXT_DOMAIN), $tempFileName);
             return implode('<br />', $messages);
         } catch (Exception $e) {
             $messages[] = $e->getMessage();
@@ -164,15 +164,15 @@ class FmDiagnostics
         try {
             foreach ($checkClasses as $className) {
                 if (class_exists($className)) {
-                    $messages[] = sprintf(__('Class `%s` is found.', 'fyndiq'), $className);
+                    $messages[] = sprintf(__('Class `%s` is found.', WC_Fyndiq::TEXT_DOMAIN), $className);
                     continue;
                 }
-                $messages[] = sprintf(__('Class `%s` is <strong>NOT</strong> found.', 'fyndiq'), $className);
+                $messages[] = sprintf(__('Class `%s` is <strong>NOT</strong> found.', WC_Fyndiq::TEXT_DOMAIN), $className);
             }
             if ($missing) {
                 throw new Exception(
                     sprintf(
-                        __('Required classes `%s` are missing.', 'fyndiq'),
+                        __('Required classes `%s` are missing.', WC_Fyndiq::TEXT_DOMAIN),
                         implode(', ', $missing)
                     )
                 );
@@ -198,10 +198,10 @@ class FmDiagnostics
             FmHelpers::callApi('GET', 'settings/');
         } catch (Exception $e) {
             if ($e instanceof FyndiqAPIAuthorizationFailed) {
-                throw new Exception(__('Module is not authorized.', 'fyndiq'));
+                throw new Exception(__('The credentials in the plugin settings are not correct', WC_Fyndiq::TEXT_DOMAIN));
             }
         }
-        $messages[] = __('Successfully connected to the Fyndiq API', 'fyndiq');
+        $messages[] = __('Successfully connected to the Fyndiq API', WC_Fyndiq::TEXT_DOMAIN);
         return implode('<br />', $messages);
     }
 

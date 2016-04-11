@@ -202,7 +202,7 @@ class FmProduct extends FmPost
                 $postTitleLength > FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::PRODUCT_TITLE]) {
                 FmError::handleError(
                     sprintf(
-                        __('Title needs to be between %s and %s in length, now it is: %s', 'fyndiq'),
+                        __('Title needs to be between %s and %s in length, now it is: %s', WC_Fyndiq::TEXT_DOMAIN),
                         FyndiqFeedWriter::$minLength[FyndiqFeedWriter::PRODUCT_TITLE],
                         FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::PRODUCT_TITLE],
                         $postTitleLength
@@ -216,7 +216,7 @@ class FmProduct extends FmPost
                 $postDescriptionLength > FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::PRODUCT_DESCRIPTION]) {
                 FmError::handleError(
                     sprintf(
-                        __('Description needs to be between %s and %s in length, now it is: %s', 'fyndiq'),
+                        __('Description needs to be between %s and %s in length, now it is: %s', WC_Fyndiq::TEXT_DOMAIN),
                         FyndiqFeedWriter::$minLength[FyndiqFeedWriter::PRODUCT_DESCRIPTION],
                         FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::PRODUCT_DESCRIPTION],
                         $postDescriptionLength
@@ -230,7 +230,7 @@ class FmProduct extends FmPost
                 $postSKULength > FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::ARTICLE_SKU]) {
                 FmError::handleError(
                     sprintf(
-                        __('SKU needs to be between %s and %s in length, now it is: %s', 'fyndiq'),
+                        __('SKU needs to be between %s and %s in length, now it is: %s', WC_Fyndiq::TEXT_DOMAIN),
                         FyndiqFeedWriter::$minLength[FyndiqFeedWriter::ARTICLE_SKU],
                         FyndiqFeedWriter::$lengthLimitedColumns[FyndiqFeedWriter::ARTICLE_SKU],
                         $postSKULength
@@ -244,7 +244,7 @@ class FmProduct extends FmPost
             if ($type != 'variable' && $postRegularPrice <= 0) {
                 FmError::handleError(
                     sprintf(
-                        __('Regular Price needs to be set above 0, now it is: %s', 'fyndiq'),
+                        __('Regular Price needs to be set above 0, now it is: %s', WC_Fyndiq::TEXT_DOMAIN),
                         $postRegularPrice
                     )
                 );

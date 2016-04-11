@@ -20,7 +20,7 @@ class FmPost
             throw new Exception(
                 __(
                     'Whoops. An error occurred when generating a post. Please tell Fyndiq: FmPost instantiated with bad ID',
-                    'fyndiq'
+                    WC_Fyndiq::TEXT_DOMAIN
                 )
             );
         }
