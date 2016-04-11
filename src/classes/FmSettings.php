@@ -148,7 +148,6 @@ class FmSettings
         $settings[] = array(
             'name' => __('General Settings', WC_Fyndiq::TEXT_DOMAIN),
             'type' => 'title',
-            'desc' => __('The following options are used to configure Fyndiq', WC_Fyndiq::TEXT_DOMAIN),
             'id' => 'wcfyndiq'
         );
 
@@ -339,7 +338,7 @@ class FmSettings
                 FmHelpers::DEBUG_DISABLED => __('No', WC_Fyndiq::TEXT_DOMAIN),
                 FmHelpers::DEBUG_ENABLED => __('Yes', WC_Fyndiq::TEXT_DOMAIN),
             ),
-            'desc' => __('Enables debug tools for Fyndiq', WC_Fyndiq::TEXT_DOMAIN),
+            'desc' => __('Enables debug tools for Fyndiq staff', WC_Fyndiq::TEXT_DOMAIN),
         );
 
         $settings[] = array(

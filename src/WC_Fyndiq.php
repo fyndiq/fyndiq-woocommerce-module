@@ -498,8 +498,8 @@ EOS;
             'shop_order' => array(
                 self::DELIVERY_NOTE => $this->fmWoo->__('Get Fyndiq delivery note'),
                 self::ORDER_IMPORT => $this->fmWoo->_x('Import From Fyndiq', 'verb'),
-                self::ORDER_HANDLE => $this->fmWoo->__('Mark order(s) as handled'),
-                self::ORDER_UNHANDLE => $this->fmWoo->__('Mark order(s) as not handled')
+                self::ORDER_HANDLE => $this->fmWoo->__('Mark order(s) as handled on Fyndiq'),
+                self::ORDER_UNHANDLE => $this->fmWoo->__('Mark order(s) as not handled on Fyndiq')
             )
         );
 

@@ -46,14 +46,14 @@ function fyndiqRegisterRequiredPlugins()
             // If 'dismissable' is false, this message will be output at top of nag.
             'dismiss_msg'  => sprintf(
                 '<div class=\'error\'><p>%s</p></div>',
-                __('The Fyndiq WooCommerce integration plugin requires WooCommerce to function.', WC_Fyndiq::TEXT_DOMAIN)
+                __('The Fyndiq WooCommerce integration plugin requires WooCommerce to function.', 'fyndiq')
             ),
             // Automatically activate plugins after installation or not.
             'is_automatic' => false,
             // Message to output right before the plugins table.
             'message'      => sprintf(
                 '<div class=\'error\'><p>%s</p></div>',
-                __('The Fyndiq WooCommerce integration plugin requires WooCommerce to function.', WC_Fyndiq::TEXT_DOMAIN)
+                __('The Fyndiq WooCommerce integration plugin requires WooCommerce to function.', 'fyndiq')
             ),
         )
     );

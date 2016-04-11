@@ -3,6 +3,7 @@
  * Fyndiq WooCommerce
  *
  *  @author    Fyndiq AB
+ *  @package   WcFyndiq
  *  @copyright 2016 Fyndiq AB
  *  @license   Commercial
  *
