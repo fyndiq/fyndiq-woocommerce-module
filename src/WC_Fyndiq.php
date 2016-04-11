@@ -415,12 +415,12 @@ EOS;
             if ($column == self::EXPORT) {
                 if ($product->isProductExportable()) {
                     if ($product->getIsExported()) {
-                        $this->fmOutput->output($this->fmWoo->_x('Exported', 'verb e.g. It has been exported'));
+                        echo $this->fmWoo->_x('Exported', 'verb e.g. It has been exported');
                     } else {
-                        $this->fmOutput->output($this->fmWoo->_x('Not exported', 'verb e.g. It has not been exported'));
+                        echo $this->fmWoo->_x('Not exported', 'verb e.g. It has not been exported');
                     }
                 } else {
-                    $this->fmOutput->output($this->fmWoo->_x('Not exportable', 'adjective e.g. The TV was not exportable'));
+                    echo $this->fmWoo->_x('Not exportable', 'adjective e.g. The TV was not exportable');
                 }
             }
         } catch (Exception $e) {

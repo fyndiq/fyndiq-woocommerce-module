@@ -15,6 +15,9 @@ class FyndiqTest extends WP_UnitTestCase
             ->getMock();
 
         $this->fmWoo->method('__')
+            ->will($this->returnArgument(0));
+
+        $this->fmWoo->method('_x')
              ->will($this->returnArgument(0));
 
         $this->fmOuptut = $this->getMockBuilder('stdClass')
@@ -71,7 +74,7 @@ class FyndiqTest extends WP_UnitTestCase
     {
         $default = array();
         $data = $this->wc_fyndiq->fyndiqOrderAddColumn($default);
-        $this->assertEquals(array('fyndiq_order' => 'Fyndiq Order'), $data);
+        $this->assertEquals(array('fyndiq_order' => 'Fyndiq Order ID'), $data);
     }
 
     /**
@@ -153,11 +156,11 @@ class FyndiqTest extends WP_UnitTestCase
 
         $this->wc_fyndiq->fyndiqProductColumnExport('fyndiq_export_column', $p);
 
-        $this->expectOutputString("not exported");
+        $this->expectOutputString('Not exportable');
 
-        $this->wc_fyndiq->fyndiqProductColumnExport('fyndiq_export_column', $p);
+       $this->wc_fyndiq->fyndiqProductColumnExport('fyndiq_export_column', $p);
 
-        $this->expectOutputString("Can't be exportedCan't be exported");
+        $this->expectOutputString("Not exportableNot exportable");
     }
 
     function test_fyndiq_product_column_export_downloadable()
@@ -169,7 +172,7 @@ class FyndiqTest extends WP_UnitTestCase
 
         $this->wc_fyndiq->fyndiqProductColumnExport('fyndiq_export_column', $p);
 
-        $this->expectOutputString("Can't be exported");
+        $this->expectOutputString('Not exportable');
     }
 
     function test_fyndiq_order_meta_boxes()
@@ -299,7 +302,7 @@ class FyndiqTest extends WP_UnitTestCase
         $this->wc_fyndiq->fyndiqLoadJavascript();
         $this->expectOutputString("        <script type=\"text/javascript\">
             var wordpressurl = 'http://example.org';
-            var trans_error = 'Error!';
+            var trans_error = 'An unknown error occurred!';
             var trans_loading = 'Loading...';
             var trans_done = 'Done';
         </script>");
