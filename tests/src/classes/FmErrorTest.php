@@ -66,6 +66,4 @@ class FmErrorTest extends PHPUnit_Framework_TestCase
         $result = FmError::renderErrorRaw($message, $messageType, $fmOutput);
         $this->assertTrue($result);
     }
-
-
 }

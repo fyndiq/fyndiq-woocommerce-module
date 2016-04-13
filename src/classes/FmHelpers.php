@@ -63,8 +63,7 @@ class FmHelpers
             $apiToken,
             $method,
             $path,
-            $data,
-            array('FyndiqAPI', 'call')
+            $data
         );
     }
 
@@ -151,7 +150,7 @@ class FmHelpers
         // This can be set per product and some product can have no attributes at all
         global $wpdb;
         $results = $wpdb->get_results(
-            'SELECT * FROM wp_postmeta WHERE meta_key = "_product_attributes" 
+            'SELECT * FROM wp_postmeta WHERE meta_key = "_product_attributes"
             AND meta_value != "a:0:{}"',
             OBJECT
         );
