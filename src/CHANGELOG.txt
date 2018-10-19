@@ -1,0 +1,29 @@
+Version 1.0.7
+* Bugfix: Changed calls from deprecated to new wc functions
+
+Version 1.0.6
+* Bugfix: Stock calculation on import order
+
+Version 1.0.5
+* Bugfix: Product can be exported without Fyndiq Discount Percentage
+
+Version 1.0.4
+* Bugfix: Product table sortable by name, sku, price
+
+Version 1.0.3
+* Enhancement: Fixed support for Wordpess 4.4
+* Enhancement: Moved Fyndiq settings to own tab for clarity
+* Bugfix: Fixed attributes
+* Bugfix: Fixed URLs
+
+Version 1.0.2
+* Bugfix: Fixed validation of Description using Description setting
+* Bugfix: Fixed error when getting feed when function is disabled
+
+Version 1.0.1
+* Enhancement: Fixed Order creation Error handling
+* Bugfix: Fixed SELF issue
+* Bugfix: Fixed order min_date being set
+
+Version 1.0.0
+* Initial release

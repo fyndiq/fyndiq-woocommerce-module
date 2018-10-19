@@ -2,7 +2,7 @@
 class FmHelpers
 {
 
-    const COMMIT = '4b8ea0c';
+    const COMMIT = 'XXXXXX';
 
     public static function apiConnectionExists()
     {

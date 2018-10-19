@@ -1,14 +1,7 @@
 <?php
 
-//Boilerplate security. Doesn't allow this file to be directly executed by the browser.
-defined('ABSPATH') || exit;
-
 class FmOrderFetch extends FyndiqPaginatedFetch
 {
-    
-    protected $settingExists;
-    protected $storeId;
-
     public function __construct($settingExists = false)
     {
         $this->storeId = 0;
@@ -37,10 +30,11 @@ class FmOrderFetch extends FyndiqPaginatedFetch
     public function processData($data)
     {
         $errors = array();
+        $orderModel = new FmOrder();
         foreach ($data as $order) {
             try {
-                if (!FmOrder::orderExists($order->id)) {
-                    FmOrder::createOrder($order);
+                if (!$orderModel->orderExists($order->id)) {
+                    $orderModel->createOrder($order);
                 }
             } catch (Exception $e) {
                 $errors[] = $e->getMessage();

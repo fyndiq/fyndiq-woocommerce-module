@@ -1,80 +1,31 @@
 <?php
 /**
- * Fyndiq WooCommerce
- *
- *  @author    Fyndiq AB
- *  @package   WcFyndiq
- *  @copyright 2016 Fyndiq AB
- *  @license   Commercial
- *
- * Plugin Name: Fyndiq WooCommerce
+ * Plugin Name: Fyndiq Woocommerce
  * Plugin URI: http://developers.fyndiq.com/fyndiq-built-integrations/
  * Description: Export products and import orders to woocommerce from Fyndiq.
- * Version: 1.0.3
+ * Version: 1.0.7
  * Author: Fyndiq AB
  * Author URI: http://fyndiq.se
- * License: Commercial
- * Text Domain: fyndiq
- * Domain Path: /translations
- * PHP Version 5
+ * License: MIT
  */
 
-//Boilerplate security. Doesn't allow this file to be directly executed by the browser.
-defined('ABSPATH') || exit;
+if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
+    if (!class_exists('WC_Fyndiq')) {
+        session_start();
+        require_once('include/api/fyndiqAPI.php');
+        require_once('classes/FmHelpers.php');
+        require_once('classes/FmUpdate.php');
+        require_once('classes/FmExport.php');
+        require_once('include/shared/src/init.php');
+        require_once('models/FmOrder.php');
+        require_once('models/FmOrderFetch.php');
+        require_once('models/FmProduct.php');
+        require_once('models/FmProductFetch.php');
+        require_once('WC_Fyndiq.php');
 
-//Include plugin.php so that is_plugin_inactive() works
-require_once ABSPATH . 'wp-admin/includes/plugin.php';
+        $fmOuput = new FyndiqOutput();
 
-require_once 'dependency.php';
-
-if (is_plugin_active('woocommerce/woocommerce.php')) {
-    // Handle deactivating the module.
-    register_deactivation_hook(__FILE__, 'fyndiqDeactivate');
-    /**
-     * Callback to 'register_deactivation_hook'
-     *
-     * @return bool - always true
-     */
-    function fyndiqDeactivate()
-    {
-        //First empty the settings on fyndiq
-        if (!$this->checkCredentials()) {
-            $data = array(
-                FyndiqUtils::NAME_PRODUCT_FEED_URL => '',
-                FyndiqUtils::NAME_PING_URL => '',
-                FyndiqUtils::NAME_NOTIFICATION_URL => ''
-            );
-            try {
-                FmHelpers::callApi('PATCH', 'settings/', $data);
-            } catch (Exception $e) {
-            }
-        }
-        // Delete all settings
-        delete_option('wcfyndiq_ping_token');
-        delete_option('wcfyndiq_username');
-        delete_option('wcfyndiq_apitoken');
-        return true;
+        // finally instantiate our plugin class and add it to the set of globals
+        $GLOBALS['wc_fyndiq'] = new WC_Fyndiq($fmOuput, __FILE__);
     }
-
-    // Require the necessary files
-    require_once 'classes/FmWoo.php';
-    require_once 'models/FmPost.php';
-    require_once 'classes/FmError.php';
-    require_once 'classes/FmHelpers.php';
-    require_once 'classes/FmUpdate.php';
-    require_once 'classes/FmExport.php';
-    require_once 'classes/FmField.php';
-    require_once 'include/shared/src/init.php';
-    require_once 'models/FmOrder.php';
-    require_once 'models/FmOrderFetch.php';
-    require_once 'models/FmProduct.php';
-    require_once 'classes/FmSettings.php';
-    require_once 'classes/FmDiagnostics.php';
-
-    require_once 'WC_Fyndiq.php';
-
-    //Let's get the ball rolling.
-    $fmWoo = new FmWoo(WC_Fyndiq::TEXT_DOMAIN);
-    $fmOutput = new FyndiqOutput();
-    new WC_Fyndiq($fmWoo, $fmOutput);
 }

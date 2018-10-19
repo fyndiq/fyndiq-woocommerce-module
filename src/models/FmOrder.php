@@ -1,80 +1,12 @@
 <?php
-//Boilerplate security. Doesn't allow this file to be directly executed by the browser.
-defined('ABSPATH') || exit;
 
-/**
- * Class FmOrder
- *
- * Object model for orders
- */
-class FmOrder extends FmPost
+class FmOrder
 {
-    const FYNDIQ_ID_META_FIELD = 'fyndiq_id';
-    const FYNDIQ_HANDLED_ORDER_META_FIELD = '_fyndiq_handled_order';
-
-    const ORDERS_DISABLE = 1;
-    const ORDERS_ENABLE = 2;
-
-    //Getter for whether the order is handled. Takes into account $_POST when called.
-    public function getIsHandled()
-    {
-        //If we're saving the post, look in the HTTP POST data.
-        if ((isset($_POST['action']) && isset($_POST['post_type'])) &&
-            ($_POST['action'] == 'editpost' && $_POST['post_type'] == 'shop_order')) {
-            //Is only set if box is ticked.
-            return isset($_POST['_fyndiq_handled_order']);
-            //Otherwise, look in the metadata.
-        } elseif (!get_post_meta($this->getPostId(), self::FYNDIQ_HANDLED_ORDER_META_FIELD, true)) {
-            return false;
-        }
-        return true;
-    }
-
-    public function setIsHandled($value)
-    {
-        /**
-         * This might seem inadequate in terms of input sanity,
-         * but actually would be no different than an if statement.
-         */
-        $this->setMetaData(self::FYNDIQ_HANDLED_ORDER_META_FIELD, (bool)$value);
-
-        $fyndiqId = $this->getFyndiqOrderId();
-
-        if (!$fyndiqId) {
-            return false;
-        }
-        $markPair = new stdClass();
-        $markPair->id = $fyndiqId;
-        $markPair->marked = (bool)$value;
-
-        $data = new stdClass();
-        $data->orders = array($markPair);
-        FmHelpers::callApi('POST', 'orders/marked/', $data);
-    }
-
-
-    public function getFyndiqOrderId()
-    {
-        $orderID = $this->getMetaData(self::FYNDIQ_ID_META_FIELD);
-
-        if ($orderID === '-') {
-                return false;
-        }
-        return (int)$orderID;
-    }
-
-    public function setFyndiqOrderId($fyndiqId)
-    {
-        $this->setMetaData(self::FYNDIQ_ID_META_FIELD, $fyndiqId);
-    }
-
-    //Here be dragons. By dragons, I mean static methods.
-
-    public static function orderExists($fyndiqId)
+    public function orderExists($fyndiq_id)
     {
         $args = array(
             'meta_key' => '',
-            'meta_value' => $fyndiqId,
+            'meta_value' => $fyndiq_id,
             'post_type' => 'shop_order',
             'posts_per_page' => -1,
             'post_status' => array_keys(wc_get_order_statuses())
@@ -83,19 +15,20 @@ class FmOrder extends FmPost
         return count($posts) > 0;
     }
 
-    public static function createOrder($order)
+    public function createOrder($order)
     {
         $status = get_option('wcfyndiq_create_order_status');
 
         $settings = array(
-            'status'        => $status
+            'status'        => $status,
+            'created_via'   => 'fyndiq'
         );
 
         foreach ($order->order_rows as $order_row) {
             // get product by item_id
-            $product = FmOrder::getProductByReference($order_row->sku);
+            $product = $this->getProductByReference($order_row->sku);
             if (!isset($product)) {
-                throw new Exception(sprintf(__('Product SKU ( %s ) was not found.', WC_Fyndiq::TEXT_DOMAIN), $order_row->sku));
+                throw new Exception(sprintf(__('Product SKU ( %s ) not found.', 'fyndiq'), $order_row->sku));
             }
         }
 
@@ -108,22 +41,22 @@ class FmOrder extends FmPost
                     'woocommerce_register_post_type_shop_order',
                     array(
                         'labels'              => array(
-                            'name'               => __('Orders', WC_Fyndiq::TEXT_DOMAIN),
-                            'singular_name'      => _x('Order', 'noun', WC_Fyndiq::TEXT_DOMAIN),
-                            'add_new'            => __('Add Order', WC_Fyndiq::TEXT_DOMAIN),
-                            'add_new_item'       => __('Add New Order', WC_Fyndiq::TEXT_DOMAIN),
-                            'edit'               => _x('Edit', 'noun', WC_Fyndiq::TEXT_DOMAIN),
-                            'edit_item'          => __('Edit Order', WC_Fyndiq::TEXT_DOMAIN),
-                            'new_item'           => __('New Order', WC_Fyndiq::TEXT_DOMAIN),
-                            'view'               => __('View Order', WC_Fyndiq::TEXT_DOMAIN),
-                            'view_item'          => __('View Order', WC_Fyndiq::TEXT_DOMAIN),
-                            'search_items'       => __('Search Orders', WC_Fyndiq::TEXT_DOMAIN),
-                            'not_found'          => __('No Orders found', WC_Fyndiq::TEXT_DOMAIN),
-                            'not_found_in_trash' => __('No Orders found in trash', WC_Fyndiq::TEXT_DOMAIN),
-                            'parent'             => __('Parent Orders', WC_Fyndiq::TEXT_DOMAIN),
-                            'menu_name'          => _x('Orders', 'Admin menu name', WC_Fyndiq::TEXT_DOMAIN)
-                        ),
-                        'description'         => __('This is where store orders are stored.', WC_Fyndiq::TEXT_DOMAIN),
+                                'name'               => __('Orders', 'woocommerce'),
+                                'singular_name'      => __('Order', 'woocommerce'),
+                                'add_new'            => __('Add Order', 'woocommerce'),
+                                'add_new_item'       => __('Add New Order', 'woocommerce'),
+                                'edit'               => __('Edit', 'woocommerce'),
+                                'edit_item'          => __('Edit Order', 'woocommerce'),
+                                'new_item'           => __('New Order', 'woocommerce'),
+                                'view'               => __('View Order', 'woocommerce'),
+                                'view_item'          => __('View Order', 'woocommerce'),
+                                'search_items'       => __('Search Orders', 'woocommerce'),
+                                'not_found'          => __('No Orders found', 'woocommerce'),
+                                'not_found_in_trash' => __('No Orders found in trash', 'woocommerce'),
+                                'parent'             => __('Parent Orders', 'woocommerce'),
+                                'menu_name'          => _x('Orders', 'Admin menu name', 'woocommerce')
+                            ),
+                        'description'         => __('This is where store orders are stored.', 'woocommerce'),
                         'public'              => false,
                         'show_ui'             => true,
                         'capability_type'     => 'shop_order',
@@ -143,7 +76,7 @@ class FmOrder extends FmPost
         }
         $wc_order = wc_create_order($settings);
         if (is_wp_error($wc_order)) {
-            throw new Exception(__('Error - Could not create order', WC_Fyndiq::TEXT_DOMAIN));
+            throw new Exception(__('ERROR - Could not create order', 'fyndiq'));
         }
 
         $address = array(
@@ -165,12 +98,7 @@ class FmOrder extends FmPost
         add_post_meta($wc_order->id, '_payment_method_title', 'Import', true);
 
         add_post_meta($wc_order->id, '_customer_user', 0, true);
-        add_post_meta(
-            $wc_order->id,
-            '_completed_date',
-            date_format(new DateTime($order->created), 'Y-m-d H:i:s e'),
-            true
-        );
+        add_post_meta($wc_order->id, '_completed_date', date_format(new DateTime($order->created), 'Y-m-d H:i:s e'), true);
         add_post_meta($wc_order->id, '_order_currency', $order->order_rows[0]->unit_price_currency, true);
         add_post_meta($wc_order->id, '_paid_date', date_format(new DateTime($order->created), 'Y-m-d H:i:s e'), true);
 
@@ -178,48 +106,47 @@ class FmOrder extends FmPost
 
         foreach ($order->order_rows as $order_row) {
             // get product by item_id
-            $product = FmOrder::getProductByReference($order_row->sku);
+            $product = $this->getProductByReference($order_row->sku);
 
             if (isset($product)) {
                 // if downloadable
                 if ($product->is_downloadable()) {
-                    throw new Exception(__('Error - product is marked as downloable. Virtual items may not be sold on Fyndiq', WC_Fyndiq::TEXT_DOMAIN));
+                    throw new Exception(__('ERROR - product is downloadable.', 'fyndiq'));
                 }
                 // add item
                 $args = array(
-                    'totals' => array(
-                        'taxdata' => array()
-                    )
+                  'totals' => array(
+                    'taxdata' => array()
+                  )
                 );
 
-                $product_total = ($order_row->unit_price_amount * $order_row->quantity)  /
-                    ((100 + intval($order_row->vat_percent)) / 100);
+                $product_total = ($order_row->unit_price_amount * $order_row->quantity)  / ((100+intval($order_row->vat_percent)) / 100);
 
-                if (FmHelpers::fyndiqWcTaxEnabled() && !FmHelpers::fyndiqWcPricesIncludeTax()) {
-                    $product_total = ($order_row->unit_price_amount * $order_row->quantity);
+                if (FmHelpers::fyndiq_wc_tax_enabled() && !FmHelpers::fyndiq_wc_prices_include_tax()) {
+                    $product_total = ($order_row->unit_price_amount*$order_row->quantity);
                 }
 
                 $args['totals']['total'] = $product_total;
 
                 $wc_order->add_product($product, $order_row->quantity, $args);
-                $product->set_stock($order_row->quantity, 'subtract');
+                global $woocommerce;
+                if( version_compare( $woocommerce->version, '3.0.0', ">=" ) ) {
+                    wc_update_product_stock( $product, $order_row->quantity, 'decrease' );
+                } else {
+                    $product->set_stock($order_row->quantity, 'subtract');
+                }
             } else {
-                throw new Exception(sprintf(__('Product SKU ( %s ) not found.', WC_Fyndiq::TEXT_DOMAIN), $order_row->sku));
+                throw new Exception(sprintf(__('Product SKU ( %s ) not found.', 'fyndiq'), $order_row->sku));
             }
         }
         $wc_order->calculate_totals();
     }
 
-    public static function getProductBySku($sku)
+    public function getProductBySku($sku)
     {
         global $wpdb;
 
-        $product_id = $wpdb->get_var(
-            $wpdb->prepare(
-                "SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_sku' AND meta_value='%s' LIMIT 1",
-                $sku
-            )
-        );
+        $product_id = $wpdb->get_var($wpdb->prepare("SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_sku' AND meta_value='%s' LIMIT 1", $sku));
 
         if ($product_id) {
             $product = new WC_Product($product_id);
@@ -228,10 +155,11 @@ class FmOrder extends FmPost
             }
             return null;
         }
+
         return null;
     }
 
-    public static function getProductById($product_id)
+    public function getProductById($product_id)
     {
         $product = new WC_Product($product_id);
         if (!is_null($product->post)) {
@@ -240,7 +168,7 @@ class FmOrder extends FmPost
         return null;
     }
 
-    public static function getProductByReference($reference)
+    public function getProductByReference($reference)
     {
         $option = get_option('wcfyndiq_reference_picker');
         if (empty($reference)) {
@@ -249,133 +177,9 @@ class FmOrder extends FmPost
         switch ($option) {
             case FmExport::REF_ID:
                 $id = explode(FmExport::REF_DELIMITER, $reference);
-                return (count($id) == 2) ? FmOrder::getProductById(end($id)) : FmOrder::getProductById(reset($id));
+                return (count($id) == 2) ? $this->getProductById(end($id)) : $this->getProductById(reset($id));
             default:
-                return FmOrder::getProductBySku($reference);
+                return $this->getProductBySku($reference);
         }
-    }
-
-    /**
-     *
-     * Sets whether the given orders are marked as processed to Fyndiq or not
-     *
-     * @param $orders - an array of orders in the structure:
-     *
-     * array(
-     *        array(
-     *              id => postIDvalue,
-     *              marked => boolean
-     *              ),
-     *                  ...
-     * )
-     * @throws Exception
-     * @return bool - always true
-     */
-    public static function setIsHandledBulk($orders)
-    {
-        //Try to send the data to the API
-        FmHelpers::callApi('POST', 'orders/marked/', $orders);
-
-        //If the API call worked, update the orders on WC
-        foreach ($orders as $order) {
-            $orderObject = new FmOrder($order['id']);
-            $orderObject->setIsHandled((bool) $order['marked']);
-        }
-        return true;
-    }
-
-
-    //This probably can be removed with some refactoring.
-    public static function setOrderError()
-    {
-        if (get_option('wcfyndiq_order_error') !== false) {
-            return update_option('wcfyndiq_order_error', true);
-        }
-        return add_option('wcfyndiq_order_error', true, null, false);
-    }
-
-    public static function generateOrders()
-    {
-        $fmOutput = new FyndiqOutput();
-
-        define('DOING_AJAX', true);
-        try {
-            $orderFetch = new FmOrderFetch(false, true);
-            $result = $orderFetch->getAll();
-            update_option('wcfyndiq_order_time', time());
-        } catch (Exception $e) {
-            $result = $e->getMessage();
-            FmOrder::setOrderError();
-        }
-
-        $fmOutput->outputJSON($result);
-        return wp_die();
-    }
-
-    /**
-     * Function that handles bulk actions related to setting order handling status
-     *
-     * @param bool $markStatus - whether the orders are handled or not
-     * @return bool - always true
-     * @throws Exception - if there are no request posts
-     */
-    public static function orderHandleBulkAction($markStatus)
-    {
-        $postsArray = FmPost::getRequestPostsArray();
-
-        if (empty($postsArray)) {
-            throw new Exception(__('Please select at least one order', WC_Fyndiq::TEXT_DOMAIN));
-        }
-
-        $data = new stdClass();
-
-        foreach ($postsArray as $postId) {
-            $markPair = new stdClass();
-            $markPair->id = $postId;
-            $markPair->marked = (bool)$markStatus;
-            $data->orders[] = $markPair;
-        }
-        return FmOrder::setIsHandledBulk($data);
-    }
-
-    public static function deliveryNoteBulkAction()
-    {
-        $output = new FyndiqOutput();
-
-        $orders = array(
-            'orders' => array()
-        );
-        if (!isset($_REQUEST['post'])) {
-            throw new Exception(__('Please select at least one order', WC_Fyndiq::TEXT_DOMAIN));
-        }
-
-        foreach ($_REQUEST['post'] as $order) {
-            $meta = get_post_custom($order);
-            if (isset($meta['fyndiq_id']) && isset($meta['fyndiq_id'][0]) && $meta['fyndiq_id'][0] != '') {
-                $orders['orders'][] = array('order' => intval($meta['fyndiq_id'][0]));
-            }
-        }
-
-        $ret = FmHelpers::callApi('POST', 'delivery_notes/', $orders);
-
-        if ($ret['status'] == 200) {
-            $fileName = 'delivery_notes-' . implode('-', $_REQUEST['post']) . '.pdf';
-            $file = fopen('php://temp', 'wb+');
-            fputs($file, $ret['data']);
-            $output->streamFile($file, $fileName, 'application/pdf', strlen($ret['data']));
-            fclose($file);
-        } else {
-            throw new Exception($ret['data']);
-        }
-        exit();
-    }
-
-    public static function getOrdersEnabled()
-    {
-        $setting = get_option('wcfyndiq_order_enable');
-        if (!isset($setting) || $setting == false) {
-            return true;
-        }
-        return ($setting == self::ORDERS_ENABLE);
     }
 }
