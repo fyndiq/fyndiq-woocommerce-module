@@ -40,4 +40,3 @@ Add `192.168.13.102 woocommerce` to your hosts file to access the server.
 * `scss-lint` - lint checks the SCSS files using `scss-lint`;
 * `sniff` - checks the code for styling issues;
 * `sniff-fix` - tries to fix the styling issues
-* `test` - runs the PHPUnit tests;
