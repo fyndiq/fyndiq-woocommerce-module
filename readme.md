@@ -1,5 +1,8 @@
 # fyndiq-woocommerce-module
-This is the official Fyndiq integration plugin for WooCommerce.
+This is the official Fyndiq integration plugin for WooCommerce. 
+
+## Open source
+This plugin is free to use and modify, but it is no longer maintained by Fyndiq. If you want to update it, please fork the repository and do any changes you like in your own repository. 
 
 ## Installation
 Installing the plugin is simple, requiring the following steps:
